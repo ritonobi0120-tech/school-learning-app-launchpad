@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ナンプレを開いています</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="launch-shell">
+    <header class="launch-top panel compact">
+      <div>
+        <p class="eyebrow">school launcher</p>
+        <h1>ナンプレ</h1>
+        <p class="top-copy">パズルを開いています。</p>
+      </div>
+      <div class="top-actions">
+        <a class="button ghost" href="./index.html">一覧へ戻る</a>
+        <a class="button solid" href="https://script.google.com/macros/s/AKfycbyTy6qDe-_Hbuo4B_UhiD80HafwjleEz_sYYiC_ZDO0se360txTiwaw-OISnvXTYUxQ2A/exec" target="_blank" rel="noreferrer">新しいタブで開く</a>
+      </div>
+    </header>
+
+    <section class="frame-wrap panel">
+      <div class="frame-status" id="frameStatus">
+        <div class="spinner"></div>
+        <p>アプリを開いています…</p>
+        <small>学校の回線では少し時間がかかることがあります。</small>
+      </div>
+      <iframe id="appFrame" title="ナンプレ" loading="eager" referrerpolicy="no-referrer" src="https://script.google.com/macros/s/AKfycbyTy6qDe-_Hbuo4B_UhiD80HafwjleEz_sYYiC_ZDO0se360txTiwaw-OISnvXTYUxQ2A/exec"></iframe>
+    </section>
+
+    <section class="help panel compact">
+      <h2>うまく開かないとき</h2>
+      <ol>
+        <li>5秒待っても真っ白なら、右上の <b>新しいタブで開く</b> を押す</li>
+        <li>それでもだめなら、いったん一覧へ戻ってもう一度開く</li>
+        <li>学校の設定で止められているときは、先生にこのページを見せる</li>
+      </ol>
+      <p class="direct-row">直接リンク: https://script.google.com/macros/s/AKfycbyTy6qDe-_Hbuo4B_UhiD80HafwjleEz_sYYiC_ZDO0se360txTiwaw-OISnvXTYUxQ2A/exec</p>
+    </section>
+  </main>
+  <script>
+    const frame = document.getElementById('appFrame');
+    const status = document.getElementById('frameStatus');
+    let settled = false;
+    frame.addEventListener('load', () => {
+      settled = true;
+      status.classList.add('hide');
+      frame.classList.add('ready');
+    });
+    setTimeout(() => {
+      if (settled) return;
+      status.querySelector('p').textContent = 'まだ準備中です…';
+      status.querySelector('small').textContent = '見えないときは「新しいタブで開く」も試してください。';
+    }, 5000);
+  </script>
+</body>
+</html>
