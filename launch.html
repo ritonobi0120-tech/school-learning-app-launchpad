@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>学習アプリを開いています</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="launch-shell">
+    <header class="launch-top panel compact">
+      <div>
+        <p class="eyebrow">school-friendly launcher</p>
+        <h1 id="appTitle">読み込み中…</h1>
+        <p class="top-copy" id="appCopy">少し待つとアプリが出ます。</p>
+      </div>
+      <div class="top-actions">
+        <a class="button ghost" href="./index.html">一覧へ戻る</a>
+        <a class="button solid" id="directLink" href="#" target="_blank" rel="noreferrer">新しいタブで開く</a>
+      </div>
+    </header>
+
+    <section class="frame-wrap panel">
+      <div class="frame-status" id="frameStatus">
+        <div class="spinner"></div>
+        <p>アプリを開いています…</p>
+        <small>学校の回線では少し時間がかかることがあります。</small>
+      </div>
+      <iframe id="appFrame" title="学習アプリ" loading="eager" referrerpolicy="no-referrer"></iframe>
+    </section>
+
+    <section class="help panel compact">
+      <h2>うまく開かないとき</h2>
+      <ol>
+        <li>5秒待っても真っ白なら、右上の <b>新しいタブで開く</b> を押す</li>
+        <li>それでもだめなら、このページの URL を先生に見せる</li>
+        <li>学校の設定で <code>script.google.com</code> が止められている場合は、先生側の許可が必要です</li>
+      </ol>
+      <p class="direct-row">直接リンク: <span id="directUrl"></span></p>
+    </section>
+  </main>
+  <script>
+    const APPS = {
+      nump: {
+        title: 'ナンプレ',
+        copy: 'パズルを開いています。',
+        url: 'https://script.google.com/macros/s/AKfycbyTy6qDe-_Hbuo4B_UhiD80HafwjleEz_sYYiC_ZDO0se360txTiwaw-OISnvXTYUxQ2A/exec'
+      },
+      hyakumasu: {
+        title: '百マス計算',
+        copy: '百マス計算を開いています。',
+        url: 'https://script.google.com/macros/s/AKfycbylyeUdOyXqV_vUq5Dd9Fr9O5bLKjIrHclO0nCXL57NbWY6p7VWwFY3WM-zW7-MxQdjRQ/exec'
+      },
+      division: {
+        title: '割り算の筆算',
+        copy: '図書館のアプリを開いています。',
+        url: 'https://script.google.com/macros/s/AKfycbxqlVSVCsj3M2TgzfCFhMRjPsoWxSC2wQClXe4rMUq2ODeupK-dMoswf3a4vJMxVRfq/exec'
+      }
+    };
+
+    const params = new URLSearchParams(location.search);
+    const appKey = params.get('app');
+    const selected = APPS[appKey] || APPS.division;
+    document.title = selected.title + ' を開いています';
+    document.getElementById('appTitle').textContent = selected.title;
+    document.getElementById('appCopy').textContent = selected.copy;
+    document.getElementById('directLink').href = selected.url;
+    document.getElementById('directUrl').textContent = selected.url;
+    const frame = document.getElementById('appFrame');
+    const status = document.getElementById('frameStatus');
+    frame.src = selected.url;
+    let settled = false;
+
+    frame.addEventListener('load', () => {
+      settled = true;
+      status.classList.add('hide');
+      frame.classList.add('ready');
+    });
+
+    setTimeout(() => {
+      if (settled) return;
+      status.querySelector('p').textContent = 'まだ準備中です…';
+      status.querySelector('small').textContent = '見えないときは「新しいタブで開く」も試してください。';
+    }, 5000);
+  </script>
+</body>
+</html>
