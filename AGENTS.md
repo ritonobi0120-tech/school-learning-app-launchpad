@@ -14,7 +14,7 @@ This repo contains launcher/wrapper pages only. Recovered app bodies are managed
 
 - ナンプレ source: `C:\Users\riton\Projects\school-learning-app-sources\nump\apps-script`
 - 百マス計算 source: `C:\Users\riton\Projects\school-learning-app-sources\hyakumasu\apps-script`
-- 割り算の筆算 source: not recovered yet.
+- 割り算の筆算 source: `C:\Users\riton\Projects\school-learning-app-sources\division\apps-script` as a reconstructed editable baseline.
 
 ## Rules
 
@@ -22,7 +22,7 @@ This repo contains launcher/wrapper pages only. Recovered app bodies are managed
 - Do not change deployed Google Apps Script URLs unless the user asks.
 - Do not publish or push without user confirmation.
 - If the user asks to debug app behavior inside ナンプレ or 百マス計算, edit the recovered source repo, not these launcher pages.
-- If the user asks to debug 割り算の筆算 internals, first recover/export the Apps Script source and put it under `school-learning-app-sources\division\apps-script`.
+- If the user asks to debug 割り算の筆算 internals, edit the reconstructed source and mention that the original school Apps Script source is still not recovered.
 
 ## Main Files
 
