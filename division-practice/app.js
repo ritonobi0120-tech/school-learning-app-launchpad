@@ -328,11 +328,11 @@ function renderAnswerInput(problem) {
         <div class="remainder-fields">
           <label class="answer-field" for="quotient">
             <span>商</span>
-            <input id="quotient" class="answer-input answer-box" name="quotient" inputmode="numeric" autocomplete="off" pattern="[0-9]*" maxlength="2" placeholder="□">
+            <input id="quotient" class="answer-input answer-box" name="quotient" inputmode="none" autocomplete="off" pattern="[0-9]*" maxlength="2" placeholder="□" readonly aria-readonly="true">
           </label>
           <div class="answer-separator">→</div>
           <label class="answer-field" for="remainder">
-            <input id="remainder" class="answer-input answer-box" name="remainder" inputmode="numeric" autocomplete="off" pattern="[0-9]*" maxlength="1" placeholder="□" aria-label="あまり">
+            <input id="remainder" class="answer-input answer-box" name="remainder" inputmode="none" autocomplete="off" pattern="[0-9]*" maxlength="1" placeholder="□" aria-label="あまり" readonly aria-readonly="true">
           </label>
         </div>
       </div>
@@ -342,7 +342,7 @@ function renderAnswerInput(problem) {
   return `
     <div class="field answer-box-wrap">
       <label for="answer" class="answer-label">${problem.withRemainder ? "答え（商→あまり）" : "答え"}</label>
-      <input id="answer" class="answer-input answer-box" name="answer" inputmode="numeric" autocomplete="off" pattern="[0-9]*" maxlength="4" placeholder="□">
+      <input id="answer" class="answer-input answer-box" name="answer" inputmode="none" autocomplete="off" pattern="[0-9]*" maxlength="4" placeholder="□" readonly aria-readonly="true">
     </div>
   `;
 }

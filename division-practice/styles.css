@@ -673,6 +673,10 @@ button {
   font-size: 38px;
   font-weight: 900;
   text-align: center;
+  caret-color: transparent;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .answer-input:focus {
