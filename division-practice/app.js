@@ -72,7 +72,7 @@ function createProblem(answeredCount) {
       stage: "前半",
       label: "九九でわる",
       divisors: [2, 3, 4, 5],
-      quotients: [3, 4, 5, 6, 7, 8, 9]
+      quotients: [3, 4, 5, 6, 7, 8]
     });
   }
 
@@ -81,62 +81,70 @@ function createProblem(answeredCount) {
       number,
       stage: "中盤",
       label: "あまりなし",
-      divisors: [2, 3, 4, 5, 6, 7, 8, 9],
-      quotients: [8, 9, 10, 11, 12, 14, 15, 16, 18, 20]
+      divisors: [2, 3, 4, 5, 6],
+      quotients: [4, 5, 6, 7, 8, 9, 12, 13]
     });
   }
 
   if (number <= 35) {
-    return createMixedProblem({
+    return createNoRemainderProblem({
       number,
       stage: "後半",
-      label: "あまり入門",
-      remainderRate: .36,
-      divisors: [2, 3, 4, 5, 6, 7, 8, 9],
-      remainderMinQuotient: 4,
-      remainderMaxQuotient: 12,
-      noRemainderMinQuotient: 8,
-      noRemainderMaxQuotient: 18
+      label: "2けた強化",
+      divisors: [3, 4, 5, 6, 7, 8, 9],
+      quotients: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+      maxDividend: 99
     });
   }
 
-  if (number <= 60) {
-    return createMixedProblem({
+  if (number <= 50) {
+    return createNoRemainderProblem({
       number,
       stage: "終盤",
-      label: "あまり強化",
-      remainderRate: .5,
-      divisors: [2, 3, 4, 5, 6, 7, 8, 9],
-      remainderMinQuotient: 6,
-      remainderMaxQuotient: 24,
-      noRemainderMinQuotient: 10,
-      noRemainderMaxQuotient: 30
+      label: "2けた完成",
+      divisors: [4, 5, 6, 7, 8, 9],
+      quotients: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      maxDividend: 99
     });
   }
 
-  if (number <= 80) {
+  if (number <= 65) {
     return createMixedProblem({
       number,
       stage: "最終盤",
-      label: "スピード勝負",
-      remainderRate: .62,
-      divisors: [2, 3, 4, 5, 6, 7, 8, 9],
+      label: "あまり入門",
+      remainderRate: .28,
+      divisors: [2, 3, 4, 5, 6],
       remainderMinQuotient: 8,
-      remainderMaxQuotient: 32,
-      noRemainderMinQuotient: 12,
-      noRemainderMaxQuotient: 36
+      remainderMaxQuotient: 18,
+      noRemainderMinQuotient: 14,
+      noRemainderMaxQuotient: 26
+    });
+  }
+
+  if (number <= 85) {
+    return createMixedProblem({
+      number,
+      stage: "ラスト前",
+      label: "あまり強化",
+      remainderRate: .42,
+      divisors: [3, 4, 5, 6, 7, 8, 9],
+      remainderMinQuotient: 10,
+      remainderMaxQuotient: 26,
+      noRemainderMinQuotient: 16,
+      noRemainderMaxQuotient: 34
     });
   }
 
   return createMixedProblem({
     number,
-    stage: "極限",
+    stage: "ラスト",
     label: "100日目前",
-    remainderRate: .7,
-    divisors: [2, 3, 4, 5, 6, 7, 8, 9],
-    remainderMinQuotient: 10,
-    remainderMaxQuotient: 38,
-    noRemainderMinQuotient: 16,
+    remainderRate: .55,
+    divisors: [4, 5, 6, 7, 8, 9],
+    remainderMinQuotient: 12,
+    remainderMaxQuotient: 32,
+    noRemainderMinQuotient: 18,
     noRemainderMaxQuotient: 42
   });
 }
@@ -163,11 +171,7 @@ function createMixedProblem(config) {
 }
 
 function createNoRemainderProblem(config) {
-  const divisor = pick(config.divisors);
-  const quotient = config.quotients
-    ? pick(config.quotients)
-    : randomInt(config.minQuotient, config.maxQuotient);
-  const dividend = divisor * quotient;
+  const { divisor, quotient, dividend } = pickNoRemainderFactors(config);
   return {
     number: config.number,
     stage: config.stage,
@@ -181,9 +185,8 @@ function createNoRemainderProblem(config) {
 }
 
 function createRemainderProblem(config) {
-  const divisor = pick(config.divisors);
   const quotient = randomInt(config.minQuotient, config.maxQuotient);
-  const remainder = randomInt(1, divisor - 1);
+  const { divisor, remainder } = pickRemainderParts(config.divisors);
   return {
     number: config.number,
     stage: config.stage,
@@ -193,6 +196,46 @@ function createRemainderProblem(config) {
     quotient,
     remainder,
     withRemainder: true
+  };
+}
+
+function pickRemainderParts(divisors) {
+  if (Math.random() < .5) {
+    const divisor = pick(divisors);
+    return {
+      divisor,
+      remainder: randomInt(1, divisor - 1)
+    };
+  }
+
+  const maxRemainder = Math.max(...divisors) - 1;
+  const remainder = randomInt(1, maxRemainder);
+  const eligibleDivisors = divisors.filter((divisor) => divisor > remainder);
+  return {
+    divisor: pick(eligibleDivisors.length ? eligibleDivisors : divisors),
+    remainder
+  };
+}
+
+function pickNoRemainderFactors(config) {
+  const quotients = config.quotients
+    ? [...new Set(config.quotients)]
+    : Array.from(
+        { length: config.maxQuotient - config.minQuotient + 1 },
+        (_, index) => config.minQuotient + index
+      );
+  const eligibleQuotients = quotients.filter((quotient) =>
+    config.divisors.some((divisor) => !config.maxDividend || divisor * quotient <= config.maxDividend)
+  );
+  const quotient = pick(eligibleQuotients.length ? eligibleQuotients : quotients);
+  const eligibleDivisors = config.divisors.filter((divisor) =>
+    !config.maxDividend || divisor * quotient <= config.maxDividend
+  );
+  const divisor = pick(eligibleDivisors.length ? eligibleDivisors : config.divisors);
+  return {
+    divisor,
+    quotient,
+    dividend: divisor * quotient
   };
 }
 
@@ -216,7 +259,7 @@ function renderHome() {
         </div>
         <div class="home-center">
           <div class="brand">10秒チャレンジ</div>
-          <h1>10秒わり算トレーニング</h1>
+          <h1><span>10秒わり算</span><span>トレーニング</span></h1>
         </div>
         <div class="home-bottom">
           <div class="home-mission">
@@ -726,13 +769,27 @@ function playTimeUpSound() {
 
 function playClearSound() {
   playToneSequence([
-    { at: 0, freq: 523, duration: .08, gain: .036, type: "triangle" },
-    { at: .07, freq: 659, duration: .08, gain: .038, type: "triangle" },
-    { at: .14, freq: 784, duration: .08, gain: .04, type: "triangle" },
-    { at: .21, freq: 1047, duration: .15, gain: .045, type: "sine" },
-    { at: .33, freq: 1319, duration: .16, gain: .043, type: "sine" },
-    { at: .48, freq: 1760, duration: .22, gain: .036, type: "sine" }
-  ], { quietFor: .85 });
+    { at: 0, freq: 196, duration: .18, gain: .052, type: "triangle", attack: .006 },
+    { at: 0, freq: 784, duration: .16, gain: .058, type: "square", attack: .004 },
+    { at: 0, freq: 988, duration: .16, gain: .046, type: "triangle", attack: .004 },
+    { at: 0, freq: 1175, duration: .16, gain: .04, type: "triangle", attack: .004 },
+
+    { at: .18, freq: 262, duration: .2, gain: .052, type: "triangle", attack: .006 },
+    { at: .18, freq: 1047, duration: .18, gain: .06, type: "square", attack: .004 },
+    { at: .18, freq: 1319, duration: .18, gain: .048, type: "triangle", attack: .004 },
+    { at: .18, freq: 1568, duration: .18, gain: .042, type: "triangle", attack: .004 },
+
+    { at: .43, freq: 392, duration: .12, gain: .04, type: "triangle", attack: .004 },
+    { at: .51, freq: 523, duration: .12, gain: .044, type: "triangle", attack: .004 },
+    { at: .59, freq: 659, duration: .12, gain: .048, type: "triangle", attack: .004 },
+    { at: .67, freq: 784, duration: .12, gain: .052, type: "triangle", attack: .004 },
+
+    { at: .82, freq: 262, duration: .6, gain: .058, type: "triangle", attack: .012 },
+    { at: .82, freq: 1047, duration: .55, gain: .07, type: "square", attack: .006 },
+    { at: .82, freq: 1319, duration: .55, gain: .054, type: "triangle", attack: .006 },
+    { at: .82, freq: 1568, duration: .55, gain: .048, type: "sine", attack: .006 },
+    { at: 1.04, freq: 2093, duration: .38, gain: .034, type: "sine", attack: .01 }
+  ], { quietFor: 1.62 });
 }
 
 function playUrgentBeat(remaining) {
