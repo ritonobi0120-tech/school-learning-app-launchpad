@@ -926,13 +926,9 @@ app.addEventListener("focusin", (event) => {
   state.activeAnswerInputId = event.target.id;
 });
 
-app.addEventListener("keydown", (event) => {
-  if (!state.running || !state.problem?.withRemainder) return;
-  if (!event.target.matches("#quotient")) return;
-  if (event.key !== "Enter") return;
-  event.preventDefault();
-  const remainderInput = document.getElementById("remainder");
-  if (remainderInput) remainderInput.focus({ preventScroll: true });
+document.addEventListener("keydown", (event) => {
+  if (!state.running) return;
+  if (handleAnswerKeyboard(event)) return;
 });
 
 renderHome();
@@ -950,6 +946,50 @@ function useKeypad(key) {
   }
   if (input.value !== before) playInputSound(key === "clear" || key === "backspace" ? "erase" : "digit");
   input.focus({ preventScroll: true });
+}
+
+function handleAnswerKeyboard(event) {
+  const key = event.key;
+  const isDigit = /^[0-9]$/.test(key);
+  const isBackspace = key === "Backspace";
+  const isDelete = key === "Delete";
+  const isEnter = key === "Enter";
+  const isTab = key === "Tab";
+
+  if (isDigit) {
+    event.preventDefault();
+    useKeypad(key);
+    return true;
+  }
+
+  if (isBackspace || isDelete) {
+    event.preventDefault();
+    useKeypad(isBackspace ? "backspace" : "clear");
+    return true;
+  }
+
+  if (!isEnter && !isTab) return false;
+
+  const form = app.querySelector(".answer-form");
+  if (!form) return false;
+
+  if (state.problem?.withRemainder && document.activeElement?.matches?.("#quotient")) {
+    event.preventDefault();
+    const remainderInput = document.getElementById("remainder");
+    if (remainderInput) {
+      state.activeAnswerInputId = "remainder";
+      remainderInput.focus({ preventScroll: true });
+    }
+    return true;
+  }
+
+  if (isEnter) {
+    event.preventDefault();
+    submitAnswer(form);
+    return true;
+  }
+
+  return false;
 }
 
 function sanitizeInputValue(value, maxLength) {
