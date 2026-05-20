@@ -131,7 +131,7 @@ function createProblem(answeredCount) {
   return createMixedProblem({
     number,
     stage: "極限",
-    label: "100問目前",
+    label: "100日目前",
     remainderRate: .7,
     divisors: [2, 3, 4, 5, 6, 7, 8, 9],
     remainderMinQuotient: 10,
@@ -200,10 +200,10 @@ function renderHome() {
   stopActiveRun();
   const completeBadge = state.best >= CLEAR_COUNT
     ? `
-        <div class="home-complete-badge" aria-label="100問100問達成">
+        <div class="home-complete-badge" aria-label="100日達成">
           <span>★</span>
-          <strong>100問達成</strong>
-          <small>100問到達</small>
+          <strong>100日達成</strong>
+          <small>100日到達</small>
         </div>
       `
     : "";
@@ -212,7 +212,7 @@ function renderHome() {
       <div class="home-screen">
         ${completeBadge}
         <div class="home-top">
-          <button class="home-tool-btn" type="button" data-action="howto" aria-label="あそびかた" title="あそびかた">?</button>
+          <button class="home-tool-btn" type="button" data-action="howto" aria-label="使い方" title="使い方">?</button>
         </div>
         <div class="home-center">
           <div class="brand">10秒チャレンジ</div>
@@ -221,7 +221,7 @@ function renderHome() {
         <div class="home-bottom">
           <div class="home-mission">
             <strong>10秒で答えて記録をのばそう</strong>
-            <span>現在の最高記録 <b>${state.best}</b>問</span>
+            <span>現在の最高記録 <b>${state.best}</b>日</span>
           </div>
           <button class="primary home-cta" type="button" data-action="start">スタート</button>
         </div>
@@ -247,8 +247,8 @@ function renderPractice() {
             </div>
           </div>
           <div class="session-topbar-right">
-            <span class="session-best">記録 ${state.answered}問</span>
-            <span class="session-best">過去最高 ${bestLabel}問</span>
+            <span class="session-best">記録 ${state.answered}日</span>
+            <span class="session-best">過去最高 ${bestLabel}日</span>
           </div>
         </div>
         <div class="timer-progress" aria-hidden="true">
@@ -465,8 +465,8 @@ function submitAnswer(form) {
 
 function parseAnswer(data, problem) {
   if (problem.withRemainder) {
-    const quotientDigits = String(data.get("quotient") || "").replace(/\D/g, "");
-    const remainderDigits = String(data.get("remainder") || "").replace(/\D/g, "");
+    const quotientDigits = normalizeDigits(data.get("quotient")).replace(/\D/g, "");
+    const remainderDigits = normalizeDigits(data.get("remainder")).replace(/\D/g, "");
     if (!quotientDigits || !remainderDigits) return null;
     return {
       quotient: Number(quotientDigits),
@@ -474,7 +474,7 @@ function parseAnswer(data, problem) {
     };
   }
 
-  const digits = String(data.get("answer") || "").replace(/\D/g, "");
+  const digits = normalizeDigits(data.get("answer")).replace(/\D/g, "");
   if (!digits) return null;
   return {
     quotient: Number(digits),
@@ -489,8 +489,8 @@ function showMissingAnswerFeedback(data, problem) {
     return;
   }
 
-  const quotientDigits = String(data.get("quotient") || "").replace(/\D/g, "");
-  const remainderDigits = String(data.get("remainder") || "").replace(/\D/g, "");
+  const quotientDigits = normalizeDigits(data.get("quotient")).replace(/\D/g, "");
+  const remainderDigits = normalizeDigits(data.get("remainder")).replace(/\D/g, "");
   if (!quotientDigits) {
     showFeedback("商を入れてね。", true);
     document.getElementById("quotient")?.focus({ preventScroll: true });
@@ -551,11 +551,11 @@ function showCorrectAnswerReveal(problem, userAnswer) {
         <div class="wrong-result-summary">
           <div>
             <span>今回の記録</span>
-            <strong>${state.answered}<small>問</small></strong>
+            <strong>${state.answered}<small>日</small></strong>
           </div>
           <div>
             <span>最高記録</span>
-            <strong>${state.best}<small>問</small></strong>
+            <strong>${state.best}<small>日</small></strong>
           </div>
         </div>
         <div class="wrong-answer-note">
@@ -783,11 +783,11 @@ function renderResult() {
         <div class="result-score-grid">
           <div class="result-score-card primary-score">
             <span>今回の記録</span>
-            <strong>${state.answered}<small>問</small></strong>
+            <strong>${state.answered}<small>日</small></strong>
           </div>
           <div class="result-score-card">
             <span>最高記録</span>
-            <strong>${state.best}<small>問</small></strong>
+            <strong>${state.best}<small>日</small></strong>
           </div>
         </div>
         <div class="result-review">
@@ -838,12 +838,12 @@ function renderClearResult() {
     <section class="screen clear-shell">
       <div class="clear-screen">
         <div class="clear-content">
-          <div class="brand">100問到達</div>
-          <h2>100問達成</h2>
+          <div class="brand">100日到達</div>
+          <h2>100日達成</h2>
           <p>10秒算を最後までやりきった</p>
           <div class="clear-stats">
             <span>今回の記録</span>
-            <strong>${CLEAR_COUNT}問</strong>
+            <strong>${CLEAR_COUNT}日</strong>
           </div>
         </div>
         <div class="clear-actions">
@@ -867,7 +867,7 @@ function showHowTo() {
   app.innerHTML = `
     <section class="screen howto-screen">
       <div class="result-card howto-card">
-        <div class="brand">あそびかた</div>
+        <div class="brand">使い方</div>
         <h2>10秒で答えを送る</h2>
         <div class="review howto-panel">
           <strong>操作のしかた</strong>
@@ -950,7 +950,8 @@ function useKeypad(key) {
 
 function handleAnswerKeyboard(event) {
   const key = event.key;
-  const isDigit = /^[0-9]$/.test(key);
+  const digit = normalizeDigit(key);
+  const isDigit = digit !== "";
   const isBackspace = key === "Backspace";
   const isDelete = key === "Delete";
   const isEnter = key === "Enter";
@@ -958,7 +959,7 @@ function handleAnswerKeyboard(event) {
 
   if (isDigit) {
     event.preventDefault();
-    useKeypad(key);
+    useKeypad(digit);
     return true;
   }
 
@@ -993,10 +994,21 @@ function handleAnswerKeyboard(event) {
 }
 
 function sanitizeInputValue(value, maxLength) {
-  const digits = String(value || "").replace(/\D/g, "");
+  const digits = normalizeDigits(value).replace(/\D/g, "");
   const limit = Number(maxLength);
   if (!Number.isFinite(limit) || limit <= 0) return digits;
   return digits.slice(0, limit);
+}
+
+function normalizeDigits(value) {
+  return String(value || "").replace(/[０-９]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) - 0xfee0)
+  );
+}
+
+function normalizeDigit(value) {
+  const normalized = normalizeDigits(value);
+  return /^[0-9]$/.test(normalized) ? normalized : "";
 }
 
 function getActiveAnswerInput() {
