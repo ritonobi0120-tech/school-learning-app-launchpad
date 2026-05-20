@@ -233,6 +233,7 @@ function renderHome() {
 function renderPractice() {
   const p = state.problem;
   const bestLabel = Math.max(state.best, state.answered);
+  const problemTextSizeClass = String(p.dividend).length >= 3 ? "problem-text-wide" : "";
   app.innerHTML = `
     <section class="screen">
       <div class="practice-card session-card compact-session">
@@ -255,7 +256,7 @@ function renderPractice() {
         </div>
         <div class="question-area session-main">
           <div class="question problem-board">
-            <div class="formula problem-text"><span>${p.dividend}</span><span>÷</span><span>${p.divisor}</span></div>
+            <div class="formula problem-text ${problemTextSizeClass}"><span>${p.dividend}</span><span>÷</span><span>${p.divisor}</span></div>
           </div>
           <div class="session-side">
             <form class="answer-form" data-action="answer">
@@ -967,6 +968,4 @@ function getActiveAnswerInput() {
   }
   return document.getElementById("answer") || document.getElementById("quotient");
 }
-
-
 

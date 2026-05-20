@@ -624,11 +624,14 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(18px, 4vw, 34px);
+  max-width: 100%;
+  min-width: 0;
+  gap: clamp(14px, 3vw, 28px);
   font-size: clamp(54px, 12vw, 112px);
   line-height: 1;
   font-weight: 900;
   letter-spacing: 0;
+  white-space: nowrap;
 }
 
 .answer-form {
@@ -925,10 +928,15 @@ button {
 }
 
 .session-main .problem-text {
-  font-size: clamp(90px, 11vw, 150px);
+  font-size: clamp(84px, 9vw, 134px);
   font-weight: 1000;
   color: #1e1b4b;
-  letter-spacing: .01em;
+  letter-spacing: 0;
+}
+
+.session-main .problem-text-wide {
+  gap: clamp(8px, 1.8vw, 18px);
+  font-size: clamp(68px, 7.4vw, 108px);
 }
 
 .session-main .problem-text span {
@@ -1777,7 +1785,13 @@ button {
   }
 
   .session-main .problem-text {
-    font-size: clamp(46px, 15vw, 82px);
+    gap: clamp(8px, 2vw, 14px);
+    font-size: clamp(42px, 13vw, 72px);
+  }
+
+  .session-main .problem-text-wide {
+    gap: clamp(5px, 1.4vw, 9px);
+    font-size: clamp(34px, 10.5vw, 56px);
   }
 
   .session-side {
@@ -2224,6 +2238,11 @@ button {
 
   .session-main .problem-text {
     font-size: clamp(38px, 13vw, 58px);
+  }
+
+  .session-main .problem-text-wide {
+    gap: 4px;
+    font-size: clamp(31px, 9.8vw, 44px);
   }
 
   .session-side {
