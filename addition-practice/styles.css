@@ -961,7 +961,7 @@ button {
 }
 
 .session-main .problem-text span:nth-child(2) {
-  transform: translateY(-.08em);
+  transform: translateY(.06em);
 }
 
 .session-main .problem-text span:not(:nth-child(2)) {
