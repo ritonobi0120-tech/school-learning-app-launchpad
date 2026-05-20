@@ -1646,15 +1646,28 @@ button {
 }
 
 @media (max-width: 760px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
   .app {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
     padding: 0;
   }
 
   .screen,
   .hero {
     width: 100%;
-    min-height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    align-content: stretch;
+    gap: 0;
     border-radius: 0;
+    overflow: hidden;
   }
 
   .topbar {
@@ -1663,12 +1676,20 @@ button {
 
   .home-shell {
     width: 100%;
+    height: 100dvh;
+  }
+
+  .result-shell,
+  .clear-shell {
+    height: 100dvh;
   }
 
   .home-screen {
-    min-height: 100vh;
+    --home-pad: clamp(12px, 3.4vw, 18px);
+    height: 100%;
+    min-height: 0;
     border-radius: 0;
-    grid-template-rows: auto minmax(270px, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     background:
       linear-gradient(90deg, rgba(4, 10, 28, .62) 0%, rgba(4, 10, 28, .34) 46%, rgba(4, 10, 28, 0) 100%),
       linear-gradient(180deg, rgba(4, 10, 28, .58) 0%, rgba(4, 10, 28, .2) 34%, rgba(4, 10, 28, .05) 62%, rgba(4, 10, 28, .48) 100%),
@@ -1685,7 +1706,7 @@ button {
     min-height: 0;
     align-self: center;
     justify-items: start;
-    padding: 12px 14px;
+    padding: 10px 12px;
     background: linear-gradient(90deg, rgba(4, 10, 28, .52), rgba(4, 10, 28, .24) 82%, rgba(4, 10, 28, .04));
   }
 
@@ -1698,7 +1719,7 @@ button {
 
   .home-bottom {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 10px;
     align-items: stretch;
   }
 
@@ -1707,18 +1728,18 @@ button {
   }
 
   .home-mission strong {
-    font-size: clamp(20px, 5.5vw, 27px);
+    font-size: clamp(18px, 5vw, 25px);
     white-space: nowrap;
   }
 
   .home-mission span {
-    font-size: clamp(15px, 4.2vw, 20px);
+    font-size: clamp(14px, 4vw, 19px);
   }
 
   .home-cta {
-    min-height: 72px;
+    min-height: 62px;
     border-radius: 18px;
-    font-size: clamp(26px, 7vw, 34px);
+    font-size: clamp(24px, 6.5vw, 32px);
   }
 
   .home-complete-badge {
@@ -1754,7 +1775,7 @@ button {
   }
 
   .session-card {
-    height: 100vh;
+    height: 100dvh;
     min-height: 0;
     border-radius: 0;
     padding: 8px;
@@ -1954,9 +1975,11 @@ button {
 
   .result-card.result-timeout,
   .result-card.result-stop {
-    min-height: 100vh;
+    height: 100dvh;
+    min-height: 0;
     border-radius: 0;
-    padding: 18px;
+    padding: 14px;
+    overflow: hidden;
   }
 
   .result-hero h2 {
@@ -1985,7 +2008,48 @@ button {
   }
 
   .howto-screen {
-    min-height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+  }
+
+  .howto-card {
+    height: 100%;
+    min-height: 0;
+    align-content: center;
+    gap: 10px;
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .howto-card h2 {
+    font-size: clamp(28px, 8vw, 44px);
+  }
+
+  .howto-panel {
+    gap: 6px;
+    padding: 9px;
+  }
+
+  .howto-panel strong {
+    font-size: 16px;
+  }
+
+  .howto-panel span {
+    font-size: clamp(12px, 3.7vw, 14px);
+    line-height: 1.28;
+  }
+
+  .howto-card .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .howto-card .primary,
+  .howto-card .ghost {
+    min-height: 44px;
+    padding: 7px 10px;
+    font-size: 17px;
   }
 }
 
@@ -2142,7 +2206,7 @@ button {
 @media (max-width: 760px) and (max-height: 700px) {
   .result-card.result-timeout,
   .result-card.result-stop {
-    height: 100vh;
+    height: 100dvh;
     min-height: 0;
     gap: 8px;
     padding: 10px 12px;
@@ -2222,6 +2286,38 @@ button {
 }
 
 @media (max-width: 360px) and (max-height: 600px) {
+  .home-screen {
+    --home-pad: 10px;
+  }
+
+  .home-tool-btn {
+    width: 46px;
+    height: 46px;
+    font-size: 24px;
+  }
+
+  .home-center {
+    width: min(83%, 290px);
+    padding: 9px 10px;
+  }
+
+  .home-center h1 {
+    font-size: clamp(27px, 8vw, 34px);
+  }
+
+  .home-mission strong {
+    font-size: 17px;
+  }
+
+  .home-mission span {
+    font-size: 13px;
+  }
+
+  .home-cta {
+    min-height: 56px;
+    font-size: 24px;
+  }
+
   .session-card {
     padding: 6px;
     gap: 5px;
