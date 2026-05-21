@@ -617,24 +617,24 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
 const K='nanpureCodex.state.v6',KB='nanpureCodex.state.v6.backup',KV='nanpureCodex.state.v5',KO='nanpureCodex.state.v4',LG='sudokuCurrentGame',LC='sudokuRecoveryCode',PX='NPCX4',PX_OLD='NPCX3',AL='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const TITLE_RANKS=[
   {need:0,title:'ナンプレ はじめてさん',icon:'🌱'},
-  {need:4,title:'ナンプレ みならい',icon:'🧩'},
-  {need:8,title:'ナンプレ たんけんたい',icon:'🧭'},
-  {need:13,title:'ナンプレ ふくたいちょう',icon:'🪄'},
-  {need:19,title:'ナンプレ たいちょう',icon:'🦉'},
-  {need:26,title:'ナンプレ えいゆう',icon:'⚔️'},
-  {need:34,title:'ナンプレ めいじん',icon:'🎯'},
-  {need:43,title:'ナンプレ マスター',icon:'🧠'},
-  {need:54,title:'ナンプレ ヒーロー',icon:'🦸'},
-  {need:68,title:'ナンプレ チャンピオン',icon:'🏅'},
-  {need:85,title:'ナンプレ キング',icon:'👑'},
-  {need:105,title:'ナンプレ だいおう',icon:'🏆'},
-  {need:130,title:'ナンプレ レジェンド',icon:'🌟'},
-  {need:160,title:'ナンプレ スーパーレジェンド',icon:'🚀'},
-  {need:200,title:'ナンプレ でんせつ',icon:'🌈'}
+  {need:3,title:'ナンプレ みならい',icon:'🧩'},
+  {need:9,title:'ナンプレ たんけんたい',icon:'🧭'},
+  {need:18,title:'ナンプレ ふくたいちょう',icon:'🪄'},
+  {need:30,title:'ナンプレ たいちょう',icon:'🦉'},
+  {need:45,title:'ナンプレ えいゆう',icon:'⚔️'},
+  {need:63,title:'ナンプレ めいじん',icon:'🎯'},
+  {need:84,title:'ナンプレ マスター',icon:'🧠'},
+  {need:108,title:'ナンプレ ヒーロー',icon:'🦸'},
+  {need:135,title:'ナンプレ チャンピオン',icon:'🏅'},
+  {need:168,title:'ナンプレ キング',icon:'👑'},
+  {need:207,title:'ナンプレ だいおう',icon:'🏆'},
+  {need:252,title:'ナンプレ レジェンド',icon:'🌟'},
+  {need:303,title:'ナンプレ スーパーレジェンド',icon:'🚀'},
+  {need:360,title:'ナンプレ でんせつ',icon:'🌈'}
 ];
 
 
-const STAR_WEIGHTS={easy:1,medium:2,hard:3,oni:5};
+const STAR_WEIGHTS={easy:1,medium:2,hard:3,oni:4};
 const CFG={easy:{id:1,l:'初級',d:'数字が多めで、1つずつ見つけて進める入口です。',g:[50,55],h:3,u:null},medium:{id:2,l:'中級',d:'これまでの初級レベル。落ち着いて見れば進めます。',g:[40,44],h:2,u:{k:'easy',n:5}},hard:{id:3,l:'上級',d:'これまでの中級レベル。候補を見比べて進めます。',g:[33,36],h:1,u:{k:'medium',n:5}},oni:{id:4,l:'鬼',d:'緊急クエスト。旧上級レベルの本気問題です。',g:[28,31],h:1,u:{k:'hard',n:5}}};
 const BADGES=[
   {id:'first_clear',icon:'🌱',name:'はじめの一歩',desc:'最初の1回をクリア'},
@@ -854,7 +854,7 @@ function showWin(data){
   el.wintime.textContent=fmt(data.time);
   el.winbest.textContent=fmt(data.best);
   renderWinStars(data.starCount||0,data.starReasons||[]);
-  if(el.winstartotal)el.winstartotal.innerHTML='<span>集めたスター</span><b>'+allStars+'こ</b>';
+  if(el.winstartotal)el.winstartotal.innerHTML='<span>星ポイント</span><b>'+allStars+'P</b>';
   if(el.winstarlevel)el.winstarlevel.innerHTML='<span>次の称号</span><b>'+(titleNow.max?'最高ランク！':'あと '+titleNow.remain+'P')+'</b>';
   if(el.wincomplete){
     el.wincomplete.className='wincomplete'+((data.allClear||data.emergency)?'':' hide');
@@ -1175,7 +1175,7 @@ function firstEmpty(g){for(let i=0;i<81;i++)if(g.puzzle[i]===0&&g.user[i]===0)re
 function hintTarget(g){if(!g||g.status!=='playing'||g.hints<=0)return -1;if(sel!=null&&g.puzzle[sel]===0&&g.user[sel]===0)return sel;return firstEmpty(g)}
 function isLockedCell(g,i){return !!(g&&((g.puzzle&&g.puzzle[i]!==0)||(g.hinted&&g.hinted[i])))}
 function titleInfo(){return titleInfoForPoints(totalStarPoints())}
-function titleGuideText(){return TITLE_RANKS.map(r=>r.need+'P  '+r.title).join('\n')+'\n初級★=+1 / 中級★=+2 / 上級★=+3 / 鬼★=+5'}
+function titleGuideText(){return TITLE_RANKS.map(r=>r.need+'P  '+r.title).join('\n')+'\n初級★=+1 / 中級★=+2 / 上級★=+3 / 鬼★=+4'}
 function starPointGuideHtml(){
   return '<p>星ポイントは、クリアでもらえるごほうびです。</p>'
     +'<ul>'
@@ -1213,7 +1213,7 @@ function put(v){const g=S.game;if(!g||sel==null||busy||g.status!=='playing')retu
 function undo(){const g=S.game;if(!g||!g.history.length||busy||g.status!=='playing')return;g.future.push(snap(g));applySnap(g,g.history.pop());save();paint();msg('1手もどしました。')}
 function redo(){const g=S.game;if(!g||!g.future.length||busy||g.status!=='playing')return;g.history.push(snap(g));applySnap(g,g.future.pop());save();paint();msg('やりなおしました。')}
 function gradeNow(){const g=S.game;if(!g||busy||g.status!=='playing')return;const bad=emptyHints();let wrong=0,firstWrong=-1;if(g.user.some(v=>v===0)){const empty=g.user.filter(v=>v===0).length;msg('まだ '+empty+' マス空いています。全て埋めてから採点してください。');toast('まだ '+empty+' マス空いています。','warn',3200);return}for(let i=0;i<81;i++){if(g.puzzle[i]!==0||g.hinted[i])continue;if(g.user[i]!==g.solution[i]){bad[i]=1;wrong++;if(firstWrong<0)firstWrong=i}}g.badMarks=bad;if(!wrong){finish();return}g.finishedMs=currentElapsed(g);g.status='checked';markAttemptState(g,'checked');if(firstWrong>=0)sel=firstWrong;save();paint();msg('間違いが '+wrong+' マスあります。赤いマスを押すと、正解と見直す場所が分かります。');toast('採点しました。赤いマスを確認してください。','warn',4200)}
-function finish(){const g=S.game;if(!g||g.status==='won')return;const beforePoints=totalStarPoints(),beforeInfo=titleInfoForPoints(beforePoints),beforeTitle=beforeInfo.lv,wasMedium=unlocked('medium'),wasHard=unlocked('hard'),wasOni=unlocked('oni'),stars=starInfo(g),found=[],pointGain=stars.count*STAR_WEIGHTS[g.difficulty];g.status='won';g.finishedMs=currentElapsed(g);markAttemptState(g,'won');S.stats[g.difficulty]++;S.stars[g.difficulty]=clamp((S.stars[g.difficulty]||0)+stars.count,0,255);if(S.best[g.difficulty]==null||g.finishedMs<S.best[g.difficulty])S.best[g.difficulty]=g.finishedMs;awardBadge('first_clear',found);if(stars.noHint)awardBadge('no_hint',found);if(stars.count===3)awardBadge('star3',found);if(g.difficulty==='hard')awardBadge('hard_clear',found);if(g.difficulty==='oni')awardBadge('oni_clear',found);if(g.usedMemo)awardBadge('memo_clear',found);if(!wasMedium&&unlocked('medium'))awardBadge('medium_unlock',found);if(!wasHard&&unlocked('hard'))awardBadge('hard_unlock',found);if(!wasOni&&unlocked('oni'))awardBadge('oni_unlock',found);if(g.mode==='daily')applyDailyClear(g,found);save();paint();const afterPoints=totalStarPoints(),afterTitle=titleLevel(afterPoints),ti=titleInfo(),progress=progressMeterFor(g.difficulty),perfect=stars.count===3,allClear=ti.max,allClearNow=!beforeInfo.max&&allClear,oniUnlockedNow=!wasOni&&unlocked('oni'),headline=oniUnlockedNow?'緊急クエスト発生！':allClearNow?'全クリ達成！':afterTitle>beforeTitle?'しょうごうアップ！':perfect?'かんぺき！':'クリア！',displayBadges=overlayBadges(found),main=oniUnlockedNow?'鬼が出現しました。':allClearNow?'完全クリア！':afterTitle>beforeTitle?'称号アップ！':'星ポイント +'+pointGain;msg(allClearNow?'全クリ達成！ 全ての称号を集めました。':'クリア！ '+CFG[g.difficulty].l+' を1回クリアしました。');toast(oniUnlockedNow?'緊急クエスト発生！ 鬼が出現！':allClearNow?'全クリ達成！ ナンプレ大冒険 完全クリア！':afterTitle>beforeTitle?'クリア！ あたらしい しょうごうだよ。':perfect?'かんぺき！ ヒントを全部のこして クリア！':'クリア！ ほしポイント +'+pointGain+'！','ok',oniUnlockedNow?7000:5200);playCorrectRing();setTimeout(()=>showWin({headline:headline,text:main,time:g.finishedMs,best:S.best[g.difficulty],title:ti.title,stage:progressSummary(g.difficulty),stars:stars.label,starCount:stars.count,starReasons:stars.reasons,difficulty:g.difficulty,mode:g.mode||'normal',badges:displayBadges,progress:progress,cta:oniUnlockedNow?'鬼に挑戦できます。':allClear?'最高ランクに到達しました。':winCtaText(g.difficulty),perfect:perfect,allClear:allClear,emergency:oniUnlockedNow,nextDifficulty:oniUnlockedNow?'oni':null}),840)}
+function finish(){const g=S.game;if(!g||g.status==='won')return;const beforePoints=totalStarPoints(),beforeInfo=titleInfoForPoints(beforePoints),beforeTitle=beforeInfo.lv,wasMedium=unlocked('medium'),wasHard=unlocked('hard'),wasOni=unlocked('oni'),stars=starInfo(g),found=[],pointGain=stars.count*STAR_WEIGHTS[g.difficulty];g.status='won';g.finishedMs=currentElapsed(g);markAttemptState(g,'won');S.stats[g.difficulty]++;S.stars[g.difficulty]=clamp((S.stars[g.difficulty]||0)+stars.count,0,255);if(S.best[g.difficulty]==null||g.finishedMs<S.best[g.difficulty])S.best[g.difficulty]=g.finishedMs;awardBadge('first_clear',found);if(stars.noHint)awardBadge('no_hint',found);if(stars.count===3)awardBadge('star3',found);if(g.difficulty==='hard')awardBadge('hard_clear',found);if(g.difficulty==='oni')awardBadge('oni_clear',found);if(g.usedMemo)awardBadge('memo_clear',found);if(!wasMedium&&unlocked('medium'))awardBadge('medium_unlock',found);if(!wasHard&&unlocked('hard'))awardBadge('hard_unlock',found);if(!wasOni&&unlocked('oni'))awardBadge('oni_unlock',found);if(g.mode==='daily')applyDailyClear(g,found);save();paint();const afterPoints=totalStarPoints(),afterTitle=titleLevel(afterPoints),ti=titleInfo(),progress=progressMeterFor(g.difficulty),perfect=stars.count===3,allClear=ti.max,allClearNow=!beforeInfo.max&&allClear,oniUnlockedNow=!wasOni&&unlocked('oni'),headline=oniUnlockedNow?'緊急クエスト発生！':allClearNow?'全クリ達成！':afterTitle>beforeTitle?'しょうごうアップ！':perfect?'かんぺき！':'クリア！',displayBadges=overlayBadges(found),main=oniUnlockedNow?'鬼が出現しました。 星ポイント +'+pointGain:allClearNow?'完全クリア！ 星ポイント +'+pointGain:afterTitle>beforeTitle?'称号アップ！ 星ポイント +'+pointGain:'星ポイント +'+pointGain;msg(allClearNow?'全クリ達成！ 全ての称号を集めました。':'クリア！ '+CFG[g.difficulty].l+' を1回クリアしました。');toast(oniUnlockedNow?'緊急クエスト発生！ 鬼が出現！':allClearNow?'全クリ達成！ ナンプレ大冒険 完全クリア！':afterTitle>beforeTitle?'クリア！ あたらしい しょうごうだよ。':perfect?'かんぺき！ ヒントを全部のこして クリア！':'クリア！ ほしポイント +'+pointGain+'！','ok',oniUnlockedNow?7000:5200);playCorrectRing();setTimeout(()=>showWin({headline:headline,text:main,time:g.finishedMs,best:S.best[g.difficulty],title:ti.title,stage:progressSummary(g.difficulty),stars:stars.label,starCount:stars.count,starReasons:stars.reasons,difficulty:g.difficulty,mode:g.mode||'normal',badges:displayBadges,progress:progress,cta:oniUnlockedNow?'鬼に挑戦できます。':allClear?'最高ランクに到達しました。':winCtaText(g.difficulty),perfect:perfect,allClear:allClear,emergency:oniUnlockedNow,nextDifficulty:oniUnlockedNow?'oni':null}),840)}
 function hint(){const g=S.game;if(!g||busy||g.status!=='playing')return;const target=hintTarget(g);if(target<0){toast('ヒントを使える空きマスがありません。','warn');return}pushHist(g);clearBadMarks(g);sel=target;g.user[target]=g.solution[target];g.hinted[target]=1;g.notes[target]=0;clearPeerNotes(g,target,g.solution[target]);g.hints--;save();sel=nextEmpty(target);paint();msg('ヒントで正しい数字を入れました。');toast('ヒントを1回使いました。','ok')}
 async function copyCode(){if(!el.out.value)return;try{await navigator.clipboard.writeText(el.out.value)}catch(e){el.out.select();document.execCommand('copy')}toast('ひきつぎコードをコピーしました。','ok')}
 function loadCode(){const x=el.inp.value.trim();if(!x){toast('コードを貼り付けてください。','warn');return}try{const prefs={panel:S.panel,best:Object.assign({},S.best),stars:Object.assign({},S.stars),badges:(S.badges||[]).slice(),daily:Object.assign({},S.daily),attemptStates:Object.assign({},S.attemptStates||{})};const r=dec(x);if(r.mode==='legacy'){S.stats.easy=r.stats.easy;S.stats.medium=r.stats.medium;S.stats.hard=r.stats.hard;save();paint();msg('旧版コードからクリア回数を引き継ぎました。');toast('旧版コードからクリア回数を引き継ぎました。','ok',5200)}else{hideWin(true);S=r.state;S.panel='play';S.best.easy=S.best.easy??prefs.best.easy;S.best.medium=S.best.medium??prefs.best.medium;S.best.hard=S.best.hard??prefs.best.hard;S.stars=prefs.stars;S.badges=prefs.badges;S.daily=prefs.daily;S.attemptStates=prefs.attemptStates;if(S.game){ensureAttemptId(S.game);enforceAttemptSeal(S.game)}homeMode=false;syncSel();save();paint();if(S.game&&S.game.status==='won'){showLoadedWin(S.game);msg('クリア済みの問題を読み込みました。結果を見て次の問題へ進めます。')}else if(S.game&&S.game.status==='checked'){msg('ひきつぎコードを読み込みました。採点ずみの問題なので、正解を見ながら次へ進めます。')}else{msg('ひきつぎコードを読み込みました。続きから遊べます。')}toast('ひきつぎコードを読み込みました。','ok')}}catch(e){msg(e.message);toast(e.message,'err',4200)}}
@@ -1242,4 +1242,5 @@ init().catch(()=>{msg('初期化に失敗しました。ページを再読み込
 </script>
 </body>
 </html>
+
 
