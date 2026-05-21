@@ -1762,7 +1762,7 @@ button {
     min-height: 0;
     align-self: start;
     justify-items: start;
-    margin-top: clamp(118px, 23vh, 190px);
+    margin-top: clamp(56px, 9vh, 72px);
     padding: 10px 12px;
     background: linear-gradient(90deg, rgba(4, 10, 28, .52), rgba(4, 10, 28, .24) 82%, rgba(4, 10, 28, .04));
   }
@@ -2375,7 +2375,7 @@ button {
 
   .home-center {
     width: min(83%, 290px);
-    margin-top: clamp(92px, 21vh, 128px);
+    margin-top: clamp(40px, 8vh, 56px);
     padding: 9px 10px;
   }
 
