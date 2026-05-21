@@ -98,6 +98,9 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
 .homepathitem.easy{background:rgba(255,255,255,.4)}
 .homepathitem.medium{background:rgba(255,255,255,.34)}
 .homepathitem.hard{background:rgba(255,255,255,.3)}
+.homepathitem.oni{background:linear-gradient(135deg,rgba(255,255,255,.38),rgba(254,226,226,.42));border-color:rgba(239,68,68,.25)}
+.homepathitem.oni.current{background:linear-gradient(135deg,rgba(254,226,226,.88),rgba(255,237,213,.72));border-color:rgba(239,68,68,.32)}
+.homepathitem.oni.current b,.homepathitem.oni.current span{color:#991b1b}
 .homepathitem.current{background:linear-gradient(135deg,rgba(255,239,184,.78),rgba(255,232,173,.62));border-color:rgba(245,158,11,.22)}
 .homepathitem.current b{color:#9a4f00}
 .homepathitem.current span{color:#a16207}
@@ -205,13 +208,13 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
 .pane[data-pane="play"]>.mini:first-child #unlock{display:none}
 .pane.on{display:grid}
 .mini{background:#f8fafc;border:2px solid #cbd5e1;border-radius:16px;padding:8px}
-.diffs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.diffs{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .diff{min-height:56px;padding:7px;background:#fff;color:var(--txt);border:2px solid #94a3b8;text-align:left}
 .diff b{display:block;margin-bottom:3px;font-size:14px}
 .diff s{display:block;color:#475569;line-height:1.25;font-size:11px;font-weight:500;text-decoration:none}
 .diff.on{background:#dbeafe;border-color:#1d4ed8;color:#1e3a8a}
 .diff.lock{border-style:dashed;color:#64748b;background:#f8fafc}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 .stat{background:#fff;border-radius:14px;padding:12px;text-align:center}
 .stat b{display:block;font-size:22px;margin-top:4px}
 .bestlist{display:grid;gap:6px;margin-top:10px}
@@ -254,6 +257,12 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
 .winbox.allclear .winstatline b{color:#4c1d95}
 .winbox.allclear .winprogressbox{background:linear-gradient(180deg,#fdf4ff 0,#ffffff 100%);border-color:#d8b4fe}
 .winbox.allclear .wincta{background:#faf5ff;border-color:#d8b4fe;color:#6d28d9}
+.winbox.emergency{border:3px solid #ef4444;background:linear-gradient(180deg,#fff1f2 0,#ffffff 46%,#fff7ed 100%);box-shadow:0 22px 60px rgba(185,28,28,.22);animation:emergencyPop .58s cubic-bezier(.2,.9,.2,1)}
+.winbox.emergency h3{color:#991b1b}
+.winbox.emergency .wincomplete{background:linear-gradient(135deg,#fee2e2 0,#fff7ed 100%);border-color:#f87171}
+.winbox.emergency .wincompleteicon{background:linear-gradient(135deg,#991b1b 0,#f97316 100%)}
+.winbox.emergency .wincta{background:#fff7ed;border-color:#fb923c;color:#9a3412}
+@keyframes emergencyPop{0%{transform:scale(.94) rotate(-1deg)}34%{transform:scale(1.035) rotate(1deg)}68%{transform:scale(.99) rotate(-.4deg)}100%{transform:scale(1) rotate(0)}}
 .dailyrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;padding:6px 8px;border-radius:14px;background:#fff;border:1px solid #e5e7eb}
 .dailyrow b{display:block;font-size:12px}
 .badgegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-height:122px;overflow:auto;padding-right:2px}
@@ -428,6 +437,7 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
                     <div class="homepathitem current"><b>初級</b><span>挑戦中</span></div>
                     <div class="homepathitem lock"><b>中級</b><span>あと 5 回で解放</span></div>
                     <div class="homepathitem lock"><b>上級</b><span>あと 5 回で解放</span></div>
+                    <div class="homepathitem oni lock"><b>？？？</b><span>緊急クエスト</span></div>
                   </div>
                 </div>
                 <div class="hometitlecard">
@@ -520,11 +530,13 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
               <div class="stat">初級<b id="se">0</b></div>
               <div class="stat">中級<b id="sm">0</b></div>
               <div class="stat">上級<b id="sh">0</b></div>
+              <div class="stat">鬼<b id="so">0</b></div>
             </div>
             <div class="bestlist">
               <div class="bestitem"><span>初級ベスト</span><b id="be">--:--</b></div>
               <div class="bestitem"><span>中級ベスト</span><b id="bm">--:--</b></div>
               <div class="bestitem"><span>上級ベスト</span><b id="bh">--:--</b></div>
+              <div class="bestitem"><span>鬼ベスト</span><b id="bo">--:--</b></div>
 <div class="bestitem"><span>星ポイント</span><b id="starsum">0</b></div>
               <div class="bestitem"><span>れんぞく最高</span><b id="streakbest">0日</b></div>
             </div>
@@ -588,8 +600,8 @@ const TITLE_RANKS=[
 ];
 
 
-const STAR_WEIGHTS={easy:1,medium:2,hard:3};
-const CFG={easy:{id:1,l:'初級',d:'数字が多めで、1つずつ見つけて進める入口です。',g:[50,55],h:3,u:null},medium:{id:2,l:'中級',d:'これまでの初級レベル。落ち着いて見れば進めます。',g:[40,44],h:2,u:{k:'easy',n:5}},hard:{id:3,l:'上級',d:'これまでの中級レベル。候補を見比べて進めます。',g:[33,36],h:1,u:{k:'medium',n:5}}};
+const STAR_WEIGHTS={easy:1,medium:2,hard:3,oni:5};
+const CFG={easy:{id:1,l:'初級',d:'数字が多めで、1つずつ見つけて進める入口です。',g:[50,55],h:3,u:null},medium:{id:2,l:'中級',d:'これまでの初級レベル。落ち着いて見れば進めます。',g:[40,44],h:2,u:{k:'easy',n:5}},hard:{id:3,l:'上級',d:'これまでの中級レベル。候補を見比べて進めます。',g:[33,36],h:1,u:{k:'medium',n:5}},oni:{id:4,l:'鬼',d:'緊急クエスト。旧上級レベルの本気問題です。',g:[28,31],h:1,u:{k:'hard',n:1}}};
 const BADGES=[
   {id:'first_clear',icon:'🌱',name:'はじめの一歩',desc:'最初の1回をクリア'},
   {id:'no_hint',icon:'💡',name:'ノーヒント',desc:'ヒントなしでクリア'},
@@ -600,10 +612,12 @@ const BADGES=[
   {id:'medium_unlock',icon:'🧭',name:'中級解放',desc:'初級を5回クリア'},
   {id:'hard_unlock',icon:'🗝️',name:'上級解放',desc:'中級を5回クリア'},
   {id:'hard_clear',icon:'👑',name:'上級クリア',desc:'上級を1回クリア'},
+  {id:'oni_unlock',icon:'🚨',name:'鬼解放',desc:'上級クリアで緊急クエストが発生'},
+  {id:'oni_clear',icon:'👹',name:'鬼クリア',desc:'鬼を1回クリア'},
   {id:'memo_clear',icon:'📝',name:'メモ名人',desc:'メモを使ってクリア'}
 ];
-const BANKS={'easy':[{p:'608100030541380006790520814309002687805630402204978051036295170180763940000014263',s:'628147539541389726793526814319452687875631492264978351436295178182763945957814263',c:26},{p:'300576280578312694026908750050620800490837520602095037960051008015003970200789105',s:'349576281578312694126948753753624819491837526682195437967251348815463972234789165',c:27},{p:'923080570071265903040030012364000001580126390190740685719300060458619200036804059',s:'923481576871265943645937812364598721587126394192743685719352468458619237236874159',c:28},{p:'086000930702089410914760000149870350853024061020035094308602500065090128091450673',s:'586241937732589416914763285149876352853924761627135894378612549465397128291458673',c:29},{p:'010600902306402510200903804020390050080264079063701408639027145502139786870040200',s:'418675932396482517257913864724398651185264379963751428639827145542139786871546293',c:30},{p:'079300020134280070286050430600034080823605100097020063058410706760003814941007352',s:'579341628134286975286759431615934287823675149497128563358412796762593814941867352',c:31},{p:'180407592900015700547092163010006805695728430874301920709503214301200689028069000',s:'186437592932615748547892163213946875695728431874351926769583214351274689428169357',c:26},{p:'508000016092601070361570840100890034783140250249357168935408027000065091607003485',s:'578234916492681573361579842156892734783146259249357168935418627824765391617923485',c:27},{p:'571960408802547691040218050093850274008002109020091506310024065205100703087605910',s:'571963428832547691946218357193856274658472139724391586319724865265189743487635912',c:28},{p:'050000746010207039769045812108603470526804093037051208670590004280406000005732681',s:'352189746814267539769345812198623475526874193437951268671598324283416957945732681',c:29},{p:'094000502016500007275341698002460900001795263960210800140052786059100324700634100',s:'394876512816529437275341698532468971481795263967213845143952786659187324728634159',c:30},{p:'702053810001087200589210730327560001910034002000129573000690305053042067496075008',s:'742953816631487259589216734327568491915734682864129573278691345153842967496375128',c:31},{p:'753008600246053178180007352860002930407509216010030785590760803024890567670305401',s:'753218649246953178189647352865172934437589216912436785591764823324891567678325491',c:26},{p:'680290004149057006200086917020800769968574032071900508013629485456700090892045600',s:'687291354149357826235486917524813769968574132371962548713629485456738291892145673',c:27},{p:'980034201207698030400712980030807060108946753674053892090081020861200049002360018',s:'986534271217698435453712986539827164128946753674153892395481627861275349742369518',c:28},{p:'697308405040975368058410002420500897080730620976842100009150086502003709004297001',s:'697328415241975368358416972423561897185739624976842153739154286512683749864297531',c:29}],'medium':[{p:'620140509541080026090000800319050687070000090204070351006000070180060945907014063',s:'628147539541389726793526814319452687875631492264978351436295178182763945957814263',c:38},{p:'349570000570002604006900050750000019401807506680000037060201300805400072000089165',s:'349576281578312694126948753753624819491837526682195437967251348815463972234789165',c:40},{p:'023001576071060940040937000004090720080126090092040600000352060058010230236800150',s:'923481576871265943645937812364598721587126394192743685719352468458619237236874159',c:38},{p:'006000937702580406904063005009876002050000060600135800300610509405097108290000600',s:'586241937732589416914763285149876352853924761627135894378612549465397128291458673',c:40},{p:'010075932306480510007000860020008600005204300003700020039000100042039706871540090',s:'418675932396482517257913864724398651185264379963751428639827145542139786871546293',c:41},{p:'509341600004280005280750431000004207003605100407100000358012096700093800001867302',s:'579341628134286975286759431615934287823675149497128563358412796762593814941867352',c:37},{p:'186030500002005040040800163013946800000728000004351920769003010050200600008060357',s:'186437592932615748547892163213946875695728431874351926769583214351274689428169357',c:40},{p:'008034916492000000301509040006002730703106209049300100030408607000000391617920400',s:'578234916492681573361579842156892734783146259249357168935418627824765391617923485',c:39}],'hard':[{p:'501003428000547001000000300100056004650070039700390006000000000200189000487600902',s:'571963428832547691946218357193856274658472139724391586319724865265189743487635912',c:72},{p:'052080000810207530069045000008003470000070000037900200000590320083406057000030680',s:'352189746814267539769345812198623475526874193437951268671598324283416957945732681',c:61},{p:'090076012006529000075001690000000970080705060067000000043900780000187300720600050',s:'394876512816529437275341698532468971481795263967213845143952786659187324728634159',c:80},{p:'742050006001407050580000700027008000915000682000100570008000045050802900400070128',s:'742953816631487259589216734327568491915734682864129573278691345153842967496375128',c:69},{p:'050000600046900100089607000065170904037000210902036780000704820004001560008000000',s:'753218649246953178189647352865172934437589216912436785591764823324891567678325491',c:62},{p:'007000300040050020000080017504800769068504130371002508710020000050030090002000600',s:'687291354149357826235486917524813769968574132371962548713629485456738291892145673',c:78},{p:'086000001210690000000000900539807060128040753070103892000000000000075049700000510',s:'986534271217698435453712986539827164128946753674153892395481627861275349742369518',c:84},{p:'090008400241970360058400900003060090000000000070040100009004280012083749004200030',s:'697328415241975368358416972423561897185739624976842153739154286512683749864297531',c:93}]};
-const ORD=['easy','medium','hard'],ID={1:'easy',2:'medium',3:'hard'},D=[1,2,3,4,5,6,7,8,9],PANELS=['play','progress','transfer'];
+const BANKS={easy:[{p:'608100030541380006790520814309002687805630402204978051036295170180763940000014263',s:'628147539541389726793526814319452687875631492264978351436295178182763945957814263',c:26},{p:'300576280578312694026908750050620800490837520602095037960051008015003970200789105',s:'349576281578312694126948753753624819491837526682195437967251348815463972234789165',c:27},{p:'923080570071265903040030012364000001580126390190740685719300060458619200036804059',s:'923481576871265943645937812364598721587126394192743685719352468458619237236874159',c:28},{p:'086000930702089410914760000149870350853024061020035094308602500065090128091450673',s:'586241937732589416914763285149876352853924761627135894378612549465397128291458673',c:29},{p:'010600902306402510200903804020390050080264079063701408639027145502139786870040200',s:'418675932396482517257913864724398651185264379963751428639827145542139786871546293',c:30},{p:'079300020134280070286050430600034080823605100097020063058410706760003814941007352',s:'579341628134286975286759431615934287823675149497128563358412796762593814941867352',c:31},{p:'180407592900015700547092163010006805695728430874301920709503214301200689028069000',s:'186437592932615748547892163213946875695728431874351926769583214351274689428169357',c:26},{p:'508000016092601070361570840100890034783140250249357168935408027000065091607003485',s:'578234916492681573361579842156892734783146259249357168935418627824765391617923485',c:27},{p:'571960408802547691040218050093850274008002109020091506310024065205100703087605910',s:'571963428832547691946218357193856274658472139724391586319724865265189743487635912',c:28},{p:'050000746010207039769045812108603470526804093037051208670590004280406000005732681',s:'352189746814267539769345812198623475526874193437951268671598324283416957945732681',c:29},{p:'094000502016500007275341698002460900001795263960210800140052786059100324700634100',s:'394876512816529437275341698532468971481795263967213845143952786659187324728634159',c:30},{p:'702053810001087200589210730327560001910034002000129573000690305053042067496075008',s:'742953816631487259589216734327568491915734682864129573278691345153842967496375128',c:31},{p:'753008600246053178180007352860002930407509216010030785590760803024890567670305401',s:'753218649246953178189647352865172934437589216912436785591764823324891567678325491',c:26},{p:'680290004149057006200086917020800769968574032071900508013629485456700090892045600',s:'687291354149357826235486917524813769968574132371962548713629485456738291892145673',c:27},{p:'980034201207698030400712980030807060108946753674053892090081020861200049002360018',s:'986534271217698435453712986539827164128946753674153892395481627861275349742369518',c:28},{p:'697308405040975368058410002420500897080730620976842100009150086502003709004297001',s:'697328415241975368358416972423561897185739624976842153739154286512683749864297531',c:29}],medium:[{p:'620140509541080026090000800319050687070000090204070351006000070180060945907014063',s:'628147539541389726793526814319452687875631492264978351436295178182763945957814263',c:38},{p:'349570000570002604006900050750000019401807506680000037060201300805400072000089165',s:'349576281578312694126948753753624819491837526682195437967251348815463972234789165',c:40},{p:'023001576071060940040937000004090720080126090092040600000352060058010230236800150',s:'923481576871265943645937812364598721587126394192743685719352468458619237236874159',c:38},{p:'006000937702580406904063005009876002050000060600135800300610509405097108290000600',s:'586241937732589416914763285149876352853924761627135894378612549465397128291458673',c:40},{p:'010075932306480510007000860020008600005204300003700020039000100042039706871540090',s:'418675932396482517257913864724398651185264379963751428639827145542139786871546293',c:41},{p:'509341600004280005280750431000004207003605100407100000358012096700093800001867302',s:'579341628134286975286759431615934287823675149497128563358412796762593814941867352',c:37},{p:'186030500002005040040800163013946800000728000004351920769003010050200600008060357',s:'186437592932615748547892163213946875695728431874351926769583214351274689428169357',c:40},{p:'008034916492000000301509040006002730703106209049300100030408607000000391617920400',s:'578234916492681573361579842156892734783146259249357168935418627824765391617923485',c:39}],hard:[{p:'501003428000547001000000300100056004650070039700390006000000000200189000487600902',s:'571963428832547691946218357193856274658472139724391586319724865265189743487635912',c:72},{p:'052080000810207530069045000008003470000070000037900200000590320083406057000030680',s:'352189746814267539769345812198623475526874193437951268671598324283416957945732681',c:61},{p:'090076012006529000075001690000000970080705060067000000043900780000187300720600050',s:'394876512816529437275341698532468971481795263967213845143952786659187324728634159',c:80},{p:'742050006001407050580000700027008000915000682000100570008000045050802900400070128',s:'742953816631487259589216734327568491915734682864129573278691345153842967496375128',c:69},{p:'050000600046900100089607000065170904037000210902036780000704820004001560008000000',s:'753218649246953178189647352865172934437589216912436785591764823324891567678325491',c:62},{p:'007000300040050020000080017504800769068504130371002508710020000050030090002000600',s:'687291354149357826235486917524813769968574132371962548713629485456738291892145673',c:78},{p:'086000001210690000000000900539807060128040753070103892000000000000075049700000510',s:'986534271217698435453712986539827164128946753674153892395481627861275349742369518',c:84},{p:'090008400241970360058400900003060090000000000070040100009004280012083749004200030',s:'697328415241975368358416972423561897185739624976842153739154286512683749864297531',c:93}],oni:[{p:'082070000795002010004105000000560900570000043009013000000706100050300469000050700',s:'182974356795632814634185297348567921571298643269413578923746185857321469416859732',c:109},{p:'046207050000100003082009000760000501000000000405000037000700340200003000010904780',s:'146237958597168423382459176768342591931875264425691837859716342274583619613924785',c:168},{p:'090300802000702003000060700600100908004000300107009005009020000300904000501003020',s:'796341852458792613213568794625137948984256371137489265849625137372914586561873429',c:133},{p:'080000706100508390000000008500903201010000080902107000400000000001702009697000010',s:'289314756176528394345679128568943271714256983932187645423891567851762439697435812',c:124},{p:'500010400003000001028340900000090608000204000706030000004085160900000800601020009',s:'597812436463759281128346975312597648859264317746138592274985163935671824681423759',c:109},{p:'000500090005080103000670200500803600096000830048102005002016000809020300030008000',s:'284531796765289143913674258527893614196745832348162975472316589859427361631958427',c:141},{p:'200073000008000020005826000004700081050000070380001600000319500010000900000540107',s:'246173895138954726795826413924765381651438279387291654472319568513687942869542137',c:114},{p:'400900000023000048900064500700010004000407000800050009009185002170000480000006003',s:'457928361623571948918364527765819234291437856834652719349185672176293485582746193',c:127}]};
+const ORD=['easy','medium','hard','oni'],ID={1:'easy',2:'medium',3:'hard',4:'oni'},D=[1,2,3,4,5,6,7,8,9],PANELS=['play','progress','transfer'];
 const R=[],C=[],B=[],U=[];for(let r=0;r<9;r++)R.push(Array.from({length:9},(_,c)=>r*9+c));for(let c=0;c<9;c++)C.push(Array.from({length:9},(_,r)=>r*9+c));for(let br=0;br<3;br++)for(let bc=0;bc<3;bc++){const u=[];for(let r=br*3;r<br*3+3;r++)for(let c=bc*3;c<bc*3+3;c++)u.push(r*9+c);B.push(u)}U.push.apply(U,R);U.push.apply(U,C);U.push.apply(U,B);
 const P=Array.from({length:81},(_,i)=>Array.from(new Set(U.filter(u=>u.includes(i)).flat().filter(v=>v!==i))));
 const $=id=>document.getElementById(id);
@@ -640,13 +654,13 @@ function saneWin(x){
     allClear:x.allClear===true
   }
 }
-function hydrateWinData(x){if(!x)return null;return{headline:x.headline,text:x.text,time:x.time,best:x.best,title:x.title,stars:'★'.repeat(x.starCount)+'☆'.repeat(3-x.starCount),starCount:x.starCount,starReasons:x.starReasons,difficulty:x.difficulty,mode:x.mode,badges:(x.badgeIds||[]).map(id=>BADGES.find(b=>b.id===id)).filter(Boolean),progress:x.progress,cta:x.cta,perfect:!!x.perfect,allClear:!!x.allClear}}
-function captureWinData(x){if(!x)return null;return saneWin({headline:x.headline,text:x.text,time:x.time,best:x.best,title:x.title,starCount:x.starCount,starReasons:x.starReasons,difficulty:x.difficulty,mode:x.mode,badgeIds:(x.badges||[]).map(b=>b.id).filter(Boolean),progress:x.progress,cta:x.cta,perfect:x.perfect,allClear:x.allClear})}
-function emptyRotation(){return{easy:{remaining:[],last:-1},medium:{remaining:[],last:-1},hard:{remaining:[],last:-1}}}
+function hydrateWinData(x){if(!x)return null;return{headline:x.headline,text:x.text,time:x.time,best:x.best,title:x.title,stars:'★'.repeat(x.starCount)+'☆'.repeat(3-x.starCount),starCount:x.starCount,starReasons:x.starReasons,difficulty:x.difficulty,mode:x.mode,badges:(x.badgeIds||[]).map(id=>BADGES.find(b=>b.id===id)).filter(Boolean),progress:x.progress,cta:x.cta,perfect:!!x.perfect,allClear:!!x.allClear,emergency:!!x.emergency,nextDifficulty:CFG[x.nextDifficulty]?x.nextDifficulty:null}}
+function captureWinData(x){if(!x)return null;return saneWin({headline:x.headline,text:x.text,time:x.time,best:x.best,title:x.title,starCount:x.starCount,starReasons:x.starReasons,difficulty:x.difficulty,mode:x.mode,badgeIds:(x.badges||[]).map(b=>b.id).filter(Boolean),progress:x.progress,cta:x.cta,perfect:x.perfect,allClear:x.allClear,emergency:x.emergency,nextDifficulty:x.nextDifficulty})}
+function emptyRotation(){return{easy:{remaining:[],last:-1},medium:{remaining:[],last:-1},hard:{remaining:[],last:-1},oni:{remaining:[],last:-1}}}
 
 
-function base(){return{stats:{easy:0,medium:0,hard:0},best:{easy:null,medium:null,hard:null},stars:{easy:0,medium:0,hard:0},badges:[],daily:{doneKey:'',lastClearKey:'',streak:0,bestStreak:0},attemptStates:{},rotation:emptyRotation(),cur:'easy',panel:'play',ui:{homeMode:true,selected:null,winVisible:false,playMenuOpen:false,msg:'',lastWin:null,savedAt:0},game:null}}
-function totalStarPoints(stars){const a=stars||((S&&S.stars)||{easy:0,medium:0,hard:0});return (a.easy||0)*STAR_WEIGHTS.easy+(a.medium||0)*STAR_WEIGHTS.medium+(a.hard||0)*STAR_WEIGHTS.hard}
+function base(){return{stats:{easy:0,medium:0,hard:0,oni:0},best:{easy:null,medium:null,hard:null,oni:null},stars:{easy:0,medium:0,hard:0,oni:0},badges:[],daily:{doneKey:'',lastClearKey:'',streak:0,bestStreak:0},attemptStates:{},rotation:emptyRotation(),cur:'easy',panel:'play',ui:{homeMode:true,selected:null,winVisible:false,playMenuOpen:false,msg:'',lastWin:null,savedAt:0},game:null}}
+function totalStarPoints(stars){const a=stars||((S&&S.stars)||{easy:0,medium:0,hard:0,oni:0});return ORD.reduce((sum,k)=>sum+((a[k]||0)*(STAR_WEIGHTS[k]||1)),0)}
 function titleLevel(points){let lv=0;for(let i=0;i<TITLE_RANKS.length;i++)if(points>=TITLE_RANKS[i].need)lv=i;return lv}
 function lvl(_stats,stars){return titleLevel(totalStarPoints(stars))}
 function titleInfoForPoints(points){
@@ -659,12 +673,15 @@ function sane(x){
   s.stats.easy=clamp(x.stats&&x.stats.easy,0,255);
   s.stats.medium=clamp(x.stats&&x.stats.medium,0,255);
   s.stats.hard=clamp(x.stats&&x.stats.hard,0,255);
+  s.stats.oni=clamp(x.stats&&x.stats.oni,0,255);
   s.best.easy=Number.isFinite(+(x.best&&x.best.easy))?+(x.best&&x.best.easy):null;
   s.best.medium=Number.isFinite(+(x.best&&x.best.medium))?+(x.best&&x.best.medium):null;
   s.best.hard=Number.isFinite(+(x.best&&x.best.hard))?+(x.best&&x.best.hard):null;
+  s.best.oni=Number.isFinite(+(x.best&&x.best.oni))?+(x.best&&x.best.oni):null;
   s.stars.easy=clamp(x.stars&&x.stars.easy,0,255);
   s.stars.medium=clamp(x.stars&&x.stars.medium,0,255);
   s.stars.hard=clamp(x.stars&&x.stars.hard,0,255);
+  s.stars.oni=clamp(x.stars&&x.stars.oni,0,255);
   s.badges=Array.isArray(x.badges)?x.badges.filter(id=>BADGES.some(b=>b.id===id)).slice(0,32):[];
   s.daily.doneKey=typeof x.daily?.doneKey==='string'?x.daily.doneKey:'';
   s.daily.lastClearKey=typeof x.daily?.lastClearKey==='string'?x.daily.lastClearKey:'';
@@ -775,8 +792,9 @@ function showWin(data){
   if(el.winstartotal)el.winstartotal.innerHTML='<span>集めたスター</span><b>'+allStars+'こ</b>';
   if(el.winstarlevel)el.winstarlevel.innerHTML='<span>次の称号まで</span><b>'+(titleNow.max?'最高ランク！':'あと '+titleNow.remain+' ポイント')+'</b>';
   if(el.wincomplete){
-    el.wincomplete.className='wincomplete'+(data.allClear?'':' hide');
+    el.wincomplete.className='wincomplete'+((data.allClear||data.emergency)?'':' hide');
     if(data.allClear)el.wincomplete.innerHTML='<div class="wincompleteicon">👑</div><div><b>全クリ達成！</b><span>全ての称号を集めました。ナンプレ大冒険 完全クリアです。</span></div>';
+    else if(data.emergency)el.wincomplete.innerHTML='<div class="wincompleteicon">🚨</div><div><b>緊急クエスト発生！</b><span>鬼の門が開きました。旧上級レベルの本気問題に挑めます。</span></div>';
   }
   el.wintitle.textContent=data.title;
   el.winprogresslabel.textContent=data.progress.label;
@@ -792,8 +810,9 @@ function showWin(data){
   if(winbox){
     winbox.classList.toggle('perfect',!!data.perfect);
     winbox.classList.toggle('allclear',!!data.allClear);
+    winbox.classList.toggle('emergency',!!data.emergency);
   }
-  el.win.className='ov';
+  el.win.className='ov'+(data.emergency?' emergency-alert':'');
   if(S)save()
 }
 function unlocked(k){const u=CFG[k].u;return !u||S.stats[u.k]>=u.n}
@@ -843,9 +862,10 @@ function twistSeedWithMap(seed,map){let puzzle=parseBoard(seed.p),solution=parse
 function twistSeed(seed){return twistSeedWithMap(seed,[0].concat(shuf(D)))}
 function pause(){return new Promise(r=>setTimeout(r,0))}
 BANKS.hard=buildHardBank(BANKS.hard,4);
+BANKS.oni=buildHardBank(BANKS.oni,4);
 
 
-async function gen(k){await pause();const bank=BANKS[k]||BANKS.easy;if(!bank.length)throw new Error('No puzzle bank for '+k);const seed=nextBankSeed(k);if(k==='hard')return{puzzle:parseBoard(seed.p),solution:parseBoard(seed.s),givens:(seed.p.match(/[1-9]/g)||[]).length,score:seed.c||0};return twistSeed(seed)}
+async function gen(k){await pause();const bank=BANKS[k]||BANKS.easy;if(!bank.length)throw new Error('No puzzle bank for '+k);const seed=nextBankSeed(k);if(k==='hard'||k==='oni')return{puzzle:parseBoard(seed.p),solution:parseBoard(seed.s),givens:(seed.p.match(/[1-9]/g)||[]).length,score:seed.c||0};return twistSeed(seed)}
 function done(g){return g.user.every((v,i)=>v===g.solution[i])}
 function noteNums(mask){const out=[];for(let n=1;n<=9;n++)if(mask&(1<<(n-1)))out.push(n);return out}
 function clearPeerNotes(g,i,v){const bit=~(1<<(v-1));for(const p of P[i])g.notes[p]&=bit}
@@ -892,7 +912,7 @@ function trimAttemptStates(){const keys=Object.keys(S.attemptStates||{});if(keys
 function markAttemptState(g,state){if(!g||!state)return;const id=ensureAttemptId(g),key=String(id),cur=S.attemptStates[key]||'';S.attemptStates[key]=cur==='won'||state==='won'?'won':'checked';trimAttemptStates()}
 function deriveBadMarks(g){const bad=emptyHints();if(!g)return bad;for(let i=0;i<81;i++){if(g.puzzle[i]!==0||(g.hinted&&g.hinted[i]))continue;if(g.user[i]!==0&&g.user[i]!==g.solution[i])bad[i]=1}return bad}
 function enforceAttemptSeal(g){if(!g)return;const sealed=attemptStateFor(g);if(sealed==='won'){g.user=g.solution.slice();g.notes=emptyNotes();g.badMarks=emptyHints();g.status='won';g.finishedMs=Number.isFinite(+g.finishedMs)?+g.finishedMs:0;return}if(g.status==='checked'||sealed==='checked'){g.status='checked';g.finishedMs=Number.isFinite(+g.finishedMs)?+g.finishedMs:currentElapsed(g);g.badMarks=deriveBadMarks(g)}}
-function totalStars(st){const a=st||S.stars;return (a.easy||0)+(a.medium||0)+(a.hard||0)}
+function totalStars(st){const a=st||S.stars;return ORD.reduce((sum,k)=>sum+(a[k]||0),0)}
 function dateKey(d){const y=d.getFullYear(),m=pad2(d.getMonth()+1),day=pad2(d.getDate());return y+'-'+m+'-'+day}
 function todayKey(){return dateKey(new Date())}
 function prevKey(key){const [y,m,d]=String(key||'').split('-').map(v=>parseInt(v,10));if(!y||!m||!d)return'';const dt=new Date(y,m-1,d);dt.setDate(dt.getDate()-1);return dateKey(dt)}
@@ -901,6 +921,7 @@ function stageNoFor(k,stats){const st=stats||S.stats;return clamp((st&&st[k]||0)
 function clearsFor(k){return S&&S.stats?S.stats[k]||0:0}
 function unlockGap(k){const u=CFG[k].u;return u?Math.max(0,u.n-clearsFor(u.k)):0}
 function unlockInfo(k){
+  if(k==='oni')return { title:'鬼 出現中', detail:'緊急クエストに挑戦できます', chip:'鬼 出現中', ratio:1 };
   if(k==='easy'){
     const done=Math.min(clearsFor('easy'),5),remain=Math.max(0,5-done);
     return unlocked('medium')
@@ -913,9 +934,18 @@ function unlockInfo(k){
       ? { title:'上級 解放済み', detail:'中級 5 / 5 クリア', chip:'上級 解放済み', ratio:1 }
       : { title:'上級まで', detail:'あと '+remain+' 回', chip:'上級まで あと '+remain+' 回', ratio:done/5 };
   }
-  return { title:'全級 解放済み', detail:'上級まで挑戦できます', chip:'全級 解放済み', ratio:1 };
+  const done=Math.min(clearsFor('hard'),1),remain=Math.max(0,1-done);
+  return unlocked('oni')
+    ? { title:'鬼 出現中', detail:'緊急クエストに挑戦できます', chip:'鬼 出現中', ratio:1 }
+    : { title:'鬼まで', detail:'上級をクリアすると出現', chip:'鬼まで あと '+remain+' 回', ratio:done };
 }
 function progressMeterFor(k){
+  if(k==='oni'){
+    const ti=titleInfo(),points=totalStarPoints();
+    return ti.max
+      ? {label:'最高ランク', value:points+' / '+ti.nextNeed, sub:'ナンプレ でんせつ 到達！', ratio:1}
+      : {label:'鬼チャレンジ', value:points+' / '+ti.nextNeed, sub:'鬼クリアは星ポイントが大きいです。', ratio:Math.max(0,Math.min(1,points/ti.nextNeed))};
+  }
   if(k==='easy'){
     const done=Math.min(clearsFor('easy'),5),goal=5,remain=Math.max(0,goal-done);
     return done>=goal
@@ -928,14 +958,18 @@ function progressMeterFor(k){
       ? {label:'次の目標', value:'5 / 5', sub:'上級が解放されました。', ratio:1}
       : {label:'上級まで', value:done+' / '+goal, sub:'あと '+remain+' 回', ratio:done/goal};
   }
+  if(k==='hard'){
+    const done=Math.min(clearsFor('hard'),1);
+    if(!unlocked('oni'))return {label:'鬼まで', value:done+' / 1', sub:'上級をクリアすると緊急クエストが出現します。', ratio:done};
+  }
   const ti=titleInfo(),points=totalStarPoints();
   return ti.max
     ? {label:'最高ランク', value:points+' / '+ti.nextNeed, sub:'ナンプレ でんせつ 到達！', ratio:1}
     : {label:'次の称号まで', value:points+' / '+ti.nextNeed, sub:'あと '+ti.remain+' ポイント', ratio:Math.max(0,Math.min(1,points/ti.nextNeed))};
 }
 function progressChipText(k){return unlockInfo(k).chip}
-function progressRoadmap(){return'初級 5回 → 中級 5回 → 上級へ！'}
-function progressSummary(k){if(k==='hard'){const ti=titleInfo();return 'ほしポイント '+totalStarPoints()+' / つぎまで あと '+ti.remain+' ポイント'}if(k==='medium')return CFG[k].l+' '+Math.min(clearsFor('medium'),5)+'/5 ・ '+(unlocked('hard')?'上級 ひらいた！':'上級まで あと '+unlockGap('hard')+' 回');return CFG[k].l+' '+Math.min(clearsFor('easy'),5)+'/5 ・ '+(unlocked('medium')?'中級 ひらいた！':'中級まで あと '+unlockGap('medium')+' 回')}
+function progressRoadmap(){return'初級 5回 → 中級 5回 → 上級 → 鬼！'}
+function progressSummary(k){if(k==='oni'){const ti=titleInfo();return '鬼クリア '+clearsFor('oni')+'回 ・ つぎまで あと '+ti.remain+' ポイント'}if(k==='hard'){return unlocked('oni')?'鬼 出現中！':'上級 0/1 ・ 鬼まで あと 1 回'}if(k==='medium')return CFG[k].l+' '+Math.min(clearsFor('medium'),5)+'/5 ・ '+(unlocked('hard')?'上級 ひらいた！':'上級まで あと '+unlockGap('hard')+' 回');return CFG[k].l+' '+Math.min(clearsFor('easy'),5)+'/5 ・ '+(unlocked('medium')?'中級 ひらいた！':'中級まで あと '+unlockGap('medium')+' 回')}
 function homeFocusSummary(k){
   if(k==='easy'){
     const done=Math.min(clearsFor('easy'),5),goal=5,remain=Math.max(0,goal-done);
@@ -949,8 +983,13 @@ function homeFocusSummary(k){
       ? {text:'上級に挑戦できます',sub:'次は上級に挑戦しましょう。',ratio:1,caption:goal+' / '+goal+' クリア'}
       : {text:'中級を 5 回クリアして上級を解放',sub:'現在 '+done+' / '+goal+' ・ あと '+remain+' 回',ratio:done/goal,caption:done+' / '+goal+' クリア'};
   }
+  if(k==='hard'){
+    return unlocked('oni')
+      ? {text:'緊急クエスト「鬼」が出現中',sub:'ホームで鬼を選べます。旧上級レベルの本気問題です。',ratio:1,caption:'EMERGENCY'}
+      : {text:'上級をクリアして鬼を出現させよう',sub:'上級クリア後に緊急クエストが出ます。',ratio:Math.min(clearsFor('hard'),1),caption:Math.min(clearsFor('hard'),1)+' / 1 クリア'};
+  }
   const ti=titleInfo();
-  return {text:'上級で星ポイントを集めよう',sub:ti.max?'最高ランク到達！':'次の称号まで あと '+ti.remain+' ポイント',ratio:ti.max?1:Math.max(0,Math.min(1,totalStarPoints()/ti.nextNeed)),caption:ti.max?'COMPLETE':totalStarPoints()+' / '+ti.nextNeed};
+  return {text:'鬼で星ポイントを集めよう',sub:ti.max?'最高ランク到達！':'次の称号まで あと '+ti.remain+' ポイント',ratio:ti.max?1:Math.max(0,Math.min(1,totalStarPoints()/ti.nextNeed)),caption:ti.max?'COMPLETE':totalStarPoints()+' / '+ti.nextNeed};
 }
 function homeRoadmapHtml(){
   const easyState=S.cur==='easy'?'current':(clearsFor('easy')>0||unlocked('medium')?'done':'current');
@@ -968,11 +1007,12 @@ function homeRoadmapHtml(){
 function winCtaText(k){
   if(k==='easy')return unlocked('medium')?'中級がひらきました。ホームに戻ると、すぐ中級をえらべます。':'つぎの問題へ進むと、初級の別の問題をすぐ始められます。';
   if(k==='medium')return unlocked('hard')?'上級がひらきました。ホームに戻ると、すぐ上級をえらべます。':'つぎの問題へ進むと、中級の別の問題をすぐ始められます。';
-  return 'つぎの問題へ進むと、上級の別の問題をすぐ始められます。';
+  if(k==='hard')return unlocked('oni')?'緊急クエスト「鬼」がひらきました。覚悟ができたら挑戦できます。':'つぎの問題へ進むと、上級の別の問題をすぐ始められます。';
+  return '鬼の別問題へ進みます。最高難度なので、メモを使ってじっくり攻めましょう。';
 }
 function defaultWinData(g,textOverride){
   const ti=titleInfo(),progress=progressMeterFor(g.difficulty),stars=starInfo(g);
-  return{headline:ti.max?'全クリ達成！':stars.count===3?'かんぺき！':'クリア済み',text:textOverride||'前回の結果です。',time:g.finishedMs,best:S.best[g.difficulty],title:ti.title,stage:progressSummary(g.difficulty),stars:stars.label,starCount:stars.count,starReasons:stars.reasons,difficulty:g.difficulty,mode:g.mode||'normal',badges:[],progress:progress,cta:ti.max?'ホームで最高ランクを確認できます。':winCtaText(g.difficulty),perfect:stars.count===3,allClear:ti.max}
+  return{headline:ti.max?'全クリ達成！':stars.count===3?'かんぺき！':'クリア済み',text:textOverride||'前回の結果です。',time:g.finishedMs,best:S.best[g.difficulty],title:ti.title,stage:progressSummary(g.difficulty),stars:stars.label,starCount:stars.count,starReasons:stars.reasons,difficulty:g.difficulty,mode:g.mode||'normal',badges:[],progress:progress,cta:ti.max?'ホームで最高ランクを確認できます。':winCtaText(g.difficulty),perfect:stars.count===3,allClear:ti.max,emergency:false,nextDifficulty:null}
 }
 
 
@@ -983,11 +1023,11 @@ function hasBadge(id){return S.badges.indexOf(id)>=0}
 function awardBadge(id,found){if(!hasBadge(id)){S.badges.push(id);if(found)found.push(id)}}
 function overlayBadges(ids){return ids.map(badgeById).filter(Boolean).filter(b=>!['no_hint','star3'].includes(b.id))}
 function badgeCard(b,locked){const tip=locked?b.desc:b.name+'：'+b.desc;return'<div class=\"badge'+(locked?' lock':'')+'\" title=\"'+tip+'\"><div class=\"badgeicon\">'+(locked?'🔒':b.icon)+'</div><div><b>'+(locked?'???':b.name)+'</b><span>'+(locked?'まだひみつです。':b.desc)+'</span></div></div>'}
-function dailyInfo(){const key=todayKey(),opened=ORD.filter(unlocked),list=opened.length?opened:['easy'],difficulty=list[hashStr('d:'+key)%list.length],done=S.daily.doneKey===key;return{key:key,difficulty:difficulty,done:done,label:done?'今日のチャレンジ クリアずみ':'今日だけの1問'}}
-function dailyGame(info){const bank=BANKS[info.difficulty]||BANKS.easy,seed=bank[hashStr('p:'+info.key+':'+info.difficulty)%bank.length];if(info.difficulty==='hard')return{puzzle:parseBoard(seed.p),solution:parseBoard(seed.s),givens:(seed.p.match(/[1-9]/g)||[]).length,score:seed.c||0};return twistSeedWithMap(seed,digitMap(info.key+':'+info.difficulty))}
+function dailyInfo(){const key=todayKey(),opened=ORD.filter(k=>k!=='oni'&&unlocked(k)),list=opened.length?opened:['easy'],difficulty=list[hashStr('d:'+key)%list.length],done=S.daily.doneKey===key;return{key:key,difficulty:difficulty,done:done,label:done?'今日のチャレンジ クリアずみ':'今日だけの1問'}}
+function dailyGame(info){const bank=BANKS[info.difficulty]||BANKS.easy,seed=bank[hashStr('p:'+info.key+':'+info.difficulty)%bank.length];if(info.difficulty==='hard'||info.difficulty==='oni')return{puzzle:parseBoard(seed.p),solution:parseBoard(seed.s),givens:(seed.p.match(/[1-9]/g)||[]).length,score:seed.c||0};return twistSeedWithMap(seed,digitMap(info.key+':'+info.difficulty))}
 function paintBadges(){const unlockedIds=new Set(S.badges);el.badges.innerHTML=BADGES.map(b=>badgeCard(b,!unlockedIds.has(b.id))).join('');el.badgesummary.textContent='集めたバッジ '+S.badges.length+' / '+BADGES.length+' ・ ほしポイント '+totalStarPoints()+' ・ 最高れんぞく '+S.daily.bestStreak+' 日';}
 function applyDailyClear(g,found){const key=g.dailyKey||todayKey();if(S.daily.doneKey!==key){S.daily.streak=S.daily.lastClearKey===prevKey(key)?clamp(S.daily.streak+1,0,255):1;S.daily.bestStreak=Math.max(S.daily.bestStreak,S.daily.streak);S.daily.lastClearKey=key;S.daily.doneKey=key}awardBadge('daily_clear',found);if(S.daily.streak>=3)awardBadge('streak3',found);if(S.daily.streak>=7)awardBadge('streak7',found)}
-function enc(st){const eSec=Math.min(65535,Math.floor(currentElapsed(st.game)/1000)),hi=Math.floor(eSec/256),lo=eSec%256,statusCode=st.game.status==='won'?1:st.game.status==='checked'?2:0,attemptId=ensureAttemptId(st.game)>>>0;const meta=[6,clamp(st.stats.easy,0,255),clamp(st.stats.medium,0,255),clamp(st.stats.hard,0,255),lvl(st.stats,st.stars),CFG[st.cur].id,clamp(st.game.hints,0,9),statusCode,hi,lo];const pak=pack(st.game.puzzle.concat(st.game.solution,st.game.user));const noteBytes=new Uint8Array(162);const hintBytes=new Uint8Array(81);for(let i=0;i<81;i++){const mask=clamp(st.game.notes&&st.game.notes[i],0,511);noteBytes[i*2]=(mask>>8)&255;noteBytes[i*2+1]=mask&255;hintBytes[i]=st.game.hinted&&st.game.hinted[i]?1:0}const attemptBytes=new Uint8Array([(attemptId>>>24)&255,(attemptId>>>16)&255,(attemptId>>>8)&255,attemptId&255]);const bytes=new Uint8Array(meta.length+pak.length+noteBytes.length+hintBytes.length+attemptBytes.length+1);bytes.set(meta,0);bytes.set(pak,meta.length);bytes.set(noteBytes,meta.length+pak.length);bytes.set(hintBytes,meta.length+pak.length+noteBytes.length);bytes.set(attemptBytes,meta.length+pak.length+noteBytes.length+hintBytes.length);bytes[bytes.length-1]=sum(bytes.subarray(0,bytes.length-1));return PX+'-'+b64u(bytes)}
+function enc(st){const eSec=Math.min(65535,Math.floor(currentElapsed(st.game)/1000)),hi=Math.floor(eSec/256),lo=eSec%256,statusCode=st.game.status==='won'?1:st.game.status==='checked'?2:0,attemptId=ensureAttemptId(st.game)>>>0;const meta=[7,clamp(st.stats.easy,0,255),clamp(st.stats.medium,0,255),clamp(st.stats.hard,0,255),clamp(st.stats.oni,0,255),lvl(st.stats,st.stars),CFG[st.cur].id,clamp(st.game.hints,0,9),statusCode,hi,lo];const pak=pack(st.game.puzzle.concat(st.game.solution,st.game.user));const noteBytes=new Uint8Array(162);const hintBytes=new Uint8Array(81);for(let i=0;i<81;i++){const mask=clamp(st.game.notes&&st.game.notes[i],0,511);noteBytes[i*2]=(mask>>8)&255;noteBytes[i*2+1]=mask&255;hintBytes[i]=st.game.hinted&&st.game.hinted[i]?1:0}const attemptBytes=new Uint8Array([(attemptId>>>24)&255,(attemptId>>>16)&255,(attemptId>>>8)&255,attemptId&255]);const bytes=new Uint8Array(meta.length+pak.length+noteBytes.length+hintBytes.length+attemptBytes.length+1);bytes.set(meta,0);bytes.set(pak,meta.length);bytes.set(noteBytes,meta.length+pak.length);bytes.set(hintBytes,meta.length+pak.length+noteBytes.length);bytes.set(attemptBytes,meta.length+pak.length+noteBytes.length+hintBytes.length);bytes[bytes.length-1]=sum(bytes.subarray(0,bytes.length-1));return PX+'-'+b64u(bytes)}
 function legacy(code){if(!/^[A-Z0-9]{6}$/.test(code))return null;const base=code.slice(0,5),chk=AL.charAt(base.split('').reduce((a,c)=>a+c.charCodeAt(0),0)%32);if(chk!==code[5])return null;return{easy:parseInt(code[1],36)||0,medium:parseInt(code[2],36)||0,hard:parseInt(code[3],36)||0}}
 function dec(txt){
 txt=txt.trim();
@@ -999,11 +1039,13 @@ return{mode:'legacy',stats:l}
 const parseFull=(prefix,withNotes)=>{
   const bytes=u64(txt.slice(prefix.length+1));
   if(sum(bytes.subarray(0,bytes.length-1))!==bytes[bytes.length-1])throw new Error('コードがこわれています。');
-  const head=bytes.slice(0,10);
-  const body=bytes.subarray(10,bytes.length-1);
+  const version=bytes[0],headLen=version>=7?11:10;
+  const head=bytes.slice(0,headLen);
+  const body=bytes.subarray(headLen,bytes.length-1);
   const pakLen=Math.ceil(243/2);
   const vals=unpack(body.subarray(0,pakLen),243);
-  const elapsed=(head[8]*256+head[9])*1000;
+    const ix=version>=7?1:0;
+  const elapsed=(head[8+ix]*256+head[9+ix])*1000;
   const notes=emptyNotes();
   const hinted=emptyHints();
   if(withNotes){
@@ -1014,22 +1056,22 @@ const parseFull=(prefix,withNotes)=>{
   }
   const extraOffset=pakLen+(withNotes?243:0);
   const attemptId=body.length>=extraOffset+4?((((body[extraOffset]||0)<<24)>>>0)|((body[extraOffset+1]||0)<<16)|((body[extraOffset+2]||0)<<8)|(body[extraOffset+3]||0)):0;
-  const status=head[7]===1?'won':head[7]===2?'checked':'playing';
+  const status=head[7+ix]===1?'won':head[7+ix]===2?'checked':'playing';
   return{
     mode:'full',
     state:sane({
-      stats:{easy:head[1],medium:head[2],hard:head[3]},
-      best:{easy:null,medium:null,hard:null},
-      cur:ID[head[5]]||'easy',
+      stats:{easy:head[1],medium:head[2],hard:head[3],oni:version>=7?head[4]:0},
+      best:{easy:null,medium:null,hard:null,oni:null},
+      cur:ID[head[5+ix]]||'easy',
       panel:'play',
       game:{
-        difficulty:ID[head[5]]||'easy',
+        difficulty:ID[head[5+ix]]||'easy',
         puzzle:vals.slice(0,81),
         solution:vals.slice(81,162),
         user:vals.slice(162,243),
         notes:notes,
         hinted:hinted,
-        hints:head[6],
+        hints:head[6+ix],
         status:status,
         givens:vals.slice(0,81).filter(Boolean).length,
         score:0,
@@ -1063,7 +1105,7 @@ function firstEmpty(g){for(let i=0;i<81;i++)if(g.puzzle[i]===0&&g.user[i]===0)re
 function hintTarget(g){if(!g||g.status!=='playing'||g.hints<=0)return -1;if(sel!=null&&g.puzzle[sel]===0&&g.user[sel]===0)return sel;return firstEmpty(g)}
 function isLockedCell(g,i){return !!(g&&((g.puzzle&&g.puzzle[i]!==0)||(g.hinted&&g.hinted[i])))}
 function titleInfo(){return titleInfoForPoints(totalStarPoints())}
-function titleGuideText(){return TITLE_RANKS.map(r=>r.need+'P  '+r.title).join('\n')+'\n初級★=+1 / 中級★=+2 / 上級★=+3'}
+function titleGuideText(){return TITLE_RANKS.map(r=>r.need+'P  '+r.title).join('\n')+'\n初級★=+1 / 中級★=+2 / 上級★=+3 / 鬼★=+5'}
 function starPointGuideHtml(){
   return '<p>星ポイントは、クリアでもらえるごほうびです。</p>'
     +'<ul>'
@@ -1071,7 +1113,7 @@ function starPointGuideHtml(){
     +'<li>ヒントを残してクリアで もう1こ</li>'
     +'<li>ヒントを全部残すと さらに星1こ</li>'
     +'</ul>'
-    +'<p><b>初級の星1こ = '+STAR_WEIGHTS.easy+'ポイント</b><br><b>中級の星1こ = '+STAR_WEIGHTS.medium+'ポイント</b><br><b>上級の星1こ = '+STAR_WEIGHTS.hard+'ポイント</b></p>'
+    +'<p><b>初級の星1こ = '+STAR_WEIGHTS.easy+'ポイント</b><br><b>中級の星1こ = '+STAR_WEIGHTS.medium+'ポイント</b><br><b>上級の星1こ = '+STAR_WEIGHTS.hard+'ポイント</b><br><b>鬼の星1こ = '+STAR_WEIGHTS.oni+'ポイント</b></p>'
     +'<p>集めると、称号がレベルアップします。</p>'
 }
 function hasResume(){return !!(S&&S.game&&S.game.status==='playing')}
@@ -1082,10 +1124,10 @@ function resumeGame(){if(!hasResume()){toast('続きから遊べる問題はあ�
 function fitBoardArea(){const wrap=document.querySelector('.boardwrap');if(!wrap)return;const maxH=Math.max(320,Math.floor(wrap.clientHeight)-2);const stageW=Math.max(320,Math.floor(wrap.clientWidth)-(homeMode?0:164)-2);const boardSize=Math.max(380,Math.min(stageW,maxH,820));el.board.style.width=boardSize+'px';if(homeMode){const homeH=Math.max(340,Math.floor(window.innerHeight)-8);el.homebox.style.width=stageW+'px';el.homebox.style.height=homeH+'px';el.homebox.style.minHeight='0px'}else{el.homebox.style.height='';el.homebox.style.width=Math.min(boardSize,stageW)+'px';el.homebox.style.minHeight=Math.max(300,Math.min(maxH,Math.round(boardSize*.72)))+'px'}wrap.style.setProperty('--board-size',boardSize+'px')}
 function scheduleFit(){if(fitTimer)cancelAnimationFrame(fitTimer);fitTimer=requestAnimationFrame(()=>{fitTimer=null;fitBoardArea()})}
 function paintDigits(){const g=S.game;for(let n=1;n<=9;n++){let left='-';let cls='digit';if(g){const remain=g.solution.filter((v,i)=>v===n&&g.user[i]!==n).length;left=String(remain);if(remain===0)cls+=' done'}const d=digs[n-1];d.className=cls;d.innerHTML='<b>'+n+'</b><span>のこり '+left+'</span>'}}
-function paintTop(){el.se.textContent=S.stats.easy;el.sm.textContent=S.stats.medium;el.sh.textContent=S.stats.hard;el.be.textContent=fmt(S.best.easy);el.bm.textContent=fmt(S.best.medium);el.bh.textContent=fmt(S.best.hard);el.starsum.textContent=totalStarPoints();el.streakbest.textContent=S.daily.bestStreak+'日';const ti=titleInfo(),tip=titleGuideText();el.ti.textContent=ti.icon;el.tt.innerHTML='<b>'+ti.title+'</b>';el.ts.textContent=ti.sub;el.pti.textContent=ti.icon;el.ptt.innerHTML='<b>'+ti.title+'</b>';el.pts.textContent=ti.sub;el.tt.title=tip;el.ts.title=tip;el.ptt.title=tip;el.pts.title=tip;const topTitle=el.tt.closest('.titlebox'),paneTitle=el.ptt.closest('.titlebox');if(topTitle)topTitle.title=tip;if(paneTitle)paneTitle.title=tip;el.cd.textContent=CFG[S.cur].l;el.cs.textContent=busy?'作成中…':'自動保存中';if(el.ct)el.ct.textContent=fmt(S.game?currentElapsed(S.game):0);const di=dailyInfo();el.dailylabel.textContent=di.done?'きょうのチャレンジ クリアずみ':'きょうのチャレンジ';el.dailystatus.textContent=CFG[di.difficulty].l+' / れんぞく '+S.daily.streak+' 日';el.dailybtn.textContent=di.done?'もう一回':'今日の1問';const currentDiff=!homeMode&&S.game?S.game.difficulty:S.cur,ui=unlockInfo(currentDiff);el.stagechip.textContent=progressChipText(currentDiff);el.unlocktitle.textContent=ui.title;el.unlocktext.textContent=ui.detail;el.unlockfill.style.width=Math.round(ui.ratio*100)+'%';if(!homeMode&&S.game){el.cg.textContent='初期数字 '+S.game.givens;el.ch.textContent='ヒント残り '+S.game.hints;el.hint.textContent='ヒント 残り'+S.game.hints;el.out.value=enc(S)}else{el.cg.textContent='初期数字 0';el.ch.textContent='ヒント上限 '+CFG[S.cur].h;el.hint.textContent='ヒント '+CFG[S.cur].h+'回';el.out.value=S.game?enc(S):''}paintBadges()}
+function paintTop(){el.se.textContent=S.stats.easy;el.sm.textContent=S.stats.medium;el.sh.textContent=S.stats.hard;if(el.so)el.so.textContent=S.stats.oni;el.be.textContent=fmt(S.best.easy);el.bm.textContent=fmt(S.best.medium);el.bh.textContent=fmt(S.best.hard);if(el.bo)el.bo.textContent=fmt(S.best.oni);el.starsum.textContent=totalStarPoints();el.streakbest.textContent=S.daily.bestStreak+'日';const ti=titleInfo(),tip=titleGuideText();el.ti.textContent=ti.icon;el.tt.innerHTML='<b>'+ti.title+'</b>';el.ts.textContent=ti.sub;el.pti.textContent=ti.icon;el.ptt.innerHTML='<b>'+ti.title+'</b>';el.pts.textContent=ti.sub;el.tt.title=tip;el.ts.title=tip;el.ptt.title=tip;el.pts.title=tip;const topTitle=el.tt.closest('.titlebox'),paneTitle=el.ptt.closest('.titlebox');if(topTitle)topTitle.title=tip;if(paneTitle)paneTitle.title=tip;el.cd.textContent=CFG[S.cur].l;el.cs.textContent=busy?'作成中…':'自動保存中';if(el.ct)el.ct.textContent=fmt(S.game?currentElapsed(S.game):0);const di=dailyInfo();el.dailylabel.textContent=di.done?'きょうのチャレンジ クリアずみ':'きょうのチャレンジ';el.dailystatus.textContent=CFG[di.difficulty].l+' / れんぞく '+S.daily.streak+' 日';el.dailybtn.textContent=di.done?'もう一回':'今日の1問';const currentDiff=!homeMode&&S.game?S.game.difficulty:S.cur,ui=unlockInfo(currentDiff);el.stagechip.textContent=progressChipText(currentDiff);el.unlocktitle.textContent=ui.title;el.unlocktext.textContent=ui.detail;el.unlockfill.style.width=Math.round(ui.ratio*100)+'%';if(!homeMode&&S.game){el.cg.textContent='初期数字 '+S.game.givens;el.ch.textContent='ヒント残り '+S.game.hints;el.hint.textContent='ヒント 残り'+S.game.hints;el.out.value=enc(S)}else{el.cg.textContent='初期数字 0';el.ch.textContent='ヒント上限 '+CFG[S.cur].h;el.hint.textContent='ヒント '+CFG[S.cur].h+'回';el.out.value=S.game?enc(S):''}paintBadges()}
 function paintTabs(){const cur=PANELS.includes(S.panel)?S.panel:'play';Array.from(el.tabs.querySelectorAll('[data-tab]')).forEach(b=>b.className='tab'+(b.dataset.tab===cur?' on':''));document.querySelectorAll('[data-pane]').forEach(p=>p.className='pane'+(p.dataset.pane===cur?' on':''))}
 function paintDiff(){el.diffs.innerHTML='';ORD.forEach(k=>{const c=CFG[k],b=document.createElement('button');b.type='button';b.className='diff'+(S.cur===k?' on':'')+(!unlocked(k)?' lock':'');b.dataset.k=k;b.innerHTML='<b>'+c.l+'</b><s>'+c.d+'</s>';b.disabled=busy;el.diffs.appendChild(b)});el.unlock.textContent=progressRoadmap()}
-function paintHome(){const resume=hasResume(),ti=titleInfo(),focus=homeFocusSummary(S.cur);document.body.classList.toggle('playing',!homeMode);document.body.classList.toggle('home-mode',homeMode);el.homebox.className='homebox'+(homeMode?'':' hide');el.board.className='board'+(homeMode?' hide':'');el.infobar.classList.add('hide');if(el.leftdock)el.leftdock.classList.toggle('hide',homeMode);if(el.rightdock)el.rightdock.classList.toggle('hide',homeMode);if(el.playmenu){el.playmenu.classList.toggle('hide',homeMode);if(homeMode)el.playmenu.open=false}el.homepath.innerHTML=homeRoadmapHtml();el.homelead.textContent=resume?'前回の続きから、すぐ再開できます。':'クリアを重ねると、中級・上級へ進めます。';const homeHeading=el.homebox.querySelector('.homeheadline h2');if(homeHeading)homeHeading.textContent='星を集めて扉をひらこう';if(el.homesave){el.homesave.className='homesave'+(resume?'':' hide');el.homesave.textContent='前回の続きあり'}if(el.homefocustext)el.homefocustext.textContent=focus.text;if(el.homefocussub)el.homefocussub.textContent=focus.sub;if(el.homegoalfill)el.homegoalfill.style.width=Math.round((focus.ratio||0)*100)+'%';if(el.homestart)el.homestart.textContent='この級に挑戦';el.homecontinue.className='soft homecontinue'+(resume?'':' hide');el.homecontinue.textContent='続きから再開';el.homecontinueinfo.className='homehelper'+(resume?'':' hide');el.homecontinueinfo.textContent='続きからは前回の問題、新しく始めると今の級で遊べます。';if($('hometitle'))$('hometitle').textContent=ti.title;if($('hometitleicon'))$('hometitleicon').textContent=ti.icon;if($('homepointsum'))$('homepointsum').textContent=totalStarPoints();if(el.homepointshelpbody)el.homepointshelpbody.innerHTML=starPointGuideHtml();el.homegoaltext.textContent=ti.max?'最高ランクに到達しました':'レベルアップまで あと '+ti.remain+' ポイント';if(el.homenexttitle)el.homenexttitle.textContent='？？？？';scheduleFit()}
+function paintHome(){const resume=hasResume(),ti=titleInfo(),focus=homeFocusSummary(S.cur);document.body.classList.toggle('playing',!homeMode);document.body.classList.toggle('home-mode',homeMode);el.homebox.className='homebox'+(homeMode?'':' hide');el.board.className='board'+(homeMode?' hide':'');el.infobar.classList.add('hide');if(el.leftdock)el.leftdock.classList.toggle('hide',homeMode);if(el.rightdock)el.rightdock.classList.toggle('hide',homeMode);if(el.playmenu){el.playmenu.classList.toggle('hide',homeMode);if(homeMode)el.playmenu.open=false}el.homepath.innerHTML=homeRoadmapHtml();el.homelead.textContent=resume?'前回の続きから、すぐ再開できます。':unlocked('oni')?'緊急クエスト「鬼」が出現しました。':'クリアを重ねると、中級・上級へ進めます。';const homeHeading=el.homebox.querySelector('.homeheadline h2');if(homeHeading)homeHeading.textContent='星を集めて扉をひらこう';if(el.homesave){el.homesave.className='homesave'+(resume?'':' hide');el.homesave.textContent='前回の続きあり'}if(el.homefocustext)el.homefocustext.textContent=focus.text;if(el.homefocussub)el.homefocussub.textContent=focus.sub;if(el.homegoalfill)el.homegoalfill.style.width=Math.round((focus.ratio||0)*100)+'%';if(el.homestart)el.homestart.textContent='この級に挑戦';el.homecontinue.className='soft homecontinue'+(resume?'':' hide');el.homecontinue.textContent='続きから再開';el.homecontinueinfo.className='homehelper'+(resume?'':' hide');el.homecontinueinfo.textContent='続きからは前回の問題、新しく始めると今の級で遊べます。';if($('hometitle'))$('hometitle').textContent=ti.title;if($('hometitleicon'))$('hometitleicon').textContent=ti.icon;if($('homepointsum'))$('homepointsum').textContent=totalStarPoints();if(el.homepointshelpbody)el.homepointshelpbody.innerHTML=starPointGuideHtml();el.homegoaltext.textContent=ti.max?'最高ランクに到達しました':'レベルアップまで あと '+ti.remain+' ポイント';if(el.homenexttitle)el.homenexttitle.textContent='？？？？';scheduleFit()}
 function paintBoard(){const g=S.game;for(let i=0;i<81;i++){const b=cells[i];b.className='cell';if(i%9===2||i%9===5)b.className+=' r';if(Math.floor(i/9)===2||Math.floor(i/9)===5)b.className+=(b.className.indexOf('r')>-1?'b':' b');if(!g){b.querySelector('.cell-main').textContent='';b.querySelector('.cell-notes').innerHTML='';continue}const fx=g.puzzle[i],v=g.user[i],mask=(g.notes&&g.notes[i])||0,hinted=!!(g.hinted&&g.hinted[i]);b.querySelector('.cell-main').textContent=v||'';if(fx)b.className+=' fixed';else if(hinted)b.className+=' hinted';else if(v)b.className+=' userfill';if(sel===i)b.className+=' sel';if(g.badMarks&&g.badMarks[i])b.className+=' bad';if(g.status==='won'&&v)b.className+=' win';const notes=b.querySelector('.cell-notes');if(!v&&mask){let html='';for(let n=1;n<=9;n++){const on=(mask&(1<<(n-1)))!==0;html+='<span>'+(on?n:'')+'</span>'}notes.innerHTML=html}else notes.innerHTML='';const kind=fx?'最初からの数字':hinted?'ヒントで開いた数字':v?'自分で入れた数字':'空';b.setAttribute('aria-label',(Math.floor(i/9)+1)+'行'+(i%9+1)+'列 '+kind+(v?' '+v:''))}}
 function paintInfo(){const g=S.game;if(homeMode){el.sel.textContent=hasResume()?'続きから再開するか、新しい問題を始めてください。':'級を選んでスタートしてください。';el.cand.textContent='プレイ中は Ctrl + 数字でメモできます。';return}if(!g){el.sel.textContent='問題を作成するとここに表示されます。';el.cand.textContent='-';return}if(sel==null){el.sel.textContent='マスを選ぶとここに表示されます。';el.cand.textContent=g.status==='checked'?'採点済みです。マスを押すと正解と見直す場所が分かります。':'数字入力 / Ctrl+数字でメモ / 全て埋めたら採点';return}const r=Math.floor(sel/9)+1,c=sel%9+1,f=g.puzzle[sel]!==0,v=g.user[sel],hinted=!!(g.hinted&&g.hinted[sel]),notes=noteNums((g.notes&&g.notes[sel])||0);el.sel.textContent=f?r+'行'+c+'列（最初の数字）':hinted?r+'行'+c+'列（ヒントの数字）':r+'行'+c+'列'+(v?' / 入力: '+v:'');el.cand.textContent=f?'この数字は変更できません。':hinted?'ヒントで開いた数字です。':g.status==='checked'?'採点済みです。マスを押すと正解と見直す場所が分かります。':notes.length?'メモ: '+notes.join(' ・ ')+' / Ctrl+数字で更新':'数字入力 / Ctrl+数字でメモ / 全て埋めたら採点'}
 function paintKeys(){const g=S.game,sv=g&&sel!=null?g.user[sel]:0,editable=!!(g&&sel!=null&&!isLockedCell(g,sel)&&g.status==='playing'),cs=editable?new Set(cand(g.user,sel)):new Set();D.forEach(n=>{const b=kbtn[n];b.disabled=!editable||busy;let cls='key';if(sv===n)cls+=' cur';if(cs.has(n))cls+=' cand';if(cs.size&&!cs.has(n)&&sv!==n)cls+=' off';b.className=cls});kbtn.x.disabled=!editable||busy}
@@ -1101,12 +1143,12 @@ function put(v){const g=S.game;if(!g||sel==null||busy||g.status!=='playing')retu
 function undo(){const g=S.game;if(!g||!g.history.length||busy||g.status!=='playing')return;g.future.push(snap(g));applySnap(g,g.history.pop());save();paint();msg('1手もどしました。')}
 function redo(){const g=S.game;if(!g||!g.future.length||busy||g.status!=='playing')return;g.history.push(snap(g));applySnap(g,g.future.pop());save();paint();msg('やりなおしました。')}
 function gradeNow(){const g=S.game;if(!g||busy||g.status!=='playing')return;const bad=emptyHints();let wrong=0,firstWrong=-1;if(g.user.some(v=>v===0)){const empty=g.user.filter(v=>v===0).length;msg('まだ '+empty+' マス空いています。全て埋めてから採点してください。');toast('まだ '+empty+' マス空いています。','warn',3200);return}for(let i=0;i<81;i++){if(g.puzzle[i]!==0||g.hinted[i])continue;if(g.user[i]!==g.solution[i]){bad[i]=1;wrong++;if(firstWrong<0)firstWrong=i}}g.badMarks=bad;if(!wrong){finish();return}g.finishedMs=currentElapsed(g);g.status='checked';markAttemptState(g,'checked');if(firstWrong>=0)sel=firstWrong;save();paint();msg('間違いが '+wrong+' マスあります。赤いマスを押すと、正解と見直す場所が分かります。');toast('採点しました。赤いマスを確認してください。','warn',4200)}
-function finish(){const g=S.game;if(!g||g.status==='won')return;const beforePoints=totalStarPoints(),beforeInfo=titleInfoForPoints(beforePoints),beforeTitle=beforeInfo.lv,wasMedium=unlocked('medium'),wasHard=unlocked('hard'),stars=starInfo(g),found=[],pointGain=stars.count*STAR_WEIGHTS[g.difficulty];g.status='won';g.finishedMs=currentElapsed(g);markAttemptState(g,'won');S.stats[g.difficulty]++;S.stars[g.difficulty]=clamp((S.stars[g.difficulty]||0)+stars.count,0,255);if(S.best[g.difficulty]==null||g.finishedMs<S.best[g.difficulty])S.best[g.difficulty]=g.finishedMs;awardBadge('first_clear',found);if(stars.noHint)awardBadge('no_hint',found);if(stars.count===3)awardBadge('star3',found);if(g.difficulty==='hard')awardBadge('hard_clear',found);if(g.usedMemo)awardBadge('memo_clear',found);if(!wasMedium&&unlocked('medium'))awardBadge('medium_unlock',found);if(!wasHard&&unlocked('hard'))awardBadge('hard_unlock',found);if(g.mode==='daily')applyDailyClear(g,found);save();paint();const afterPoints=totalStarPoints(),afterTitle=titleLevel(afterPoints),ti=titleInfo(),progress=progressMeterFor(g.difficulty),perfect=stars.count===3,allClear=ti.max,allClearNow=!beforeInfo.max&&allClear,headline=allClearNow?'全クリ達成！':afterTitle>beforeTitle?'しょうごうアップ！':perfect?'かんぺき！':'クリア！',displayBadges=overlayBadges(found),main=allClearNow?'全ての称号を集めました。 / ナンプレ大冒険 完全クリア！':afterTitle>beforeTitle?'あたらしい しょうごう: '+ti.title+' / ほしポイント +'+pointGain:displayBadges.length?'あたらしい ごほうびが ふえたよ。 / ほしポイント +'+pointGain:'ほしポイント +'+pointGain+'！';msg(allClearNow?'全クリ達成！ 全ての称号を集めました。':'クリア！ '+CFG[g.difficulty].l+' を1回クリアしました。');toast(allClearNow?'全クリ達成！ ナンプレ大冒険 完全クリア！':afterTitle>beforeTitle?'クリア！ あたらしい しょうごうだよ。':perfect?'かんぺき！ ヒントを全部のこして クリア！':'クリア！ ほしポイント +'+pointGain+'！','ok',5200);showWin({headline:headline,text:main,time:g.finishedMs,best:S.best[g.difficulty],title:ti.title,stage:progressSummary(g.difficulty),stars:stars.label,starCount:stars.count,starReasons:stars.reasons,difficulty:g.difficulty,mode:g.mode||'normal',badges:displayBadges,progress:progress,cta:allClear?'ホームで最高ランクを確認できます。':winCtaText(g.difficulty),perfect:perfect,allClear:allClear})}
+function finish(){const g=S.game;if(!g||g.status==='won')return;const beforePoints=totalStarPoints(),beforeInfo=titleInfoForPoints(beforePoints),beforeTitle=beforeInfo.lv,wasMedium=unlocked('medium'),wasHard=unlocked('hard'),wasOni=unlocked('oni'),stars=starInfo(g),found=[],pointGain=stars.count*STAR_WEIGHTS[g.difficulty];g.status='won';g.finishedMs=currentElapsed(g);markAttemptState(g,'won');S.stats[g.difficulty]++;S.stars[g.difficulty]=clamp((S.stars[g.difficulty]||0)+stars.count,0,255);if(S.best[g.difficulty]==null||g.finishedMs<S.best[g.difficulty])S.best[g.difficulty]=g.finishedMs;awardBadge('first_clear',found);if(stars.noHint)awardBadge('no_hint',found);if(stars.count===3)awardBadge('star3',found);if(g.difficulty==='hard')awardBadge('hard_clear',found);if(g.difficulty==='oni')awardBadge('oni_clear',found);if(g.usedMemo)awardBadge('memo_clear',found);if(!wasMedium&&unlocked('medium'))awardBadge('medium_unlock',found);if(!wasHard&&unlocked('hard'))awardBadge('hard_unlock',found);if(!wasOni&&unlocked('oni'))awardBadge('oni_unlock',found);if(g.mode==='daily')applyDailyClear(g,found);save();paint();const afterPoints=totalStarPoints(),afterTitle=titleLevel(afterPoints),ti=titleInfo(),progress=progressMeterFor(g.difficulty),perfect=stars.count===3,allClear=ti.max,allClearNow=!beforeInfo.max&&allClear,oniUnlockedNow=!wasOni&&unlocked('oni'),headline=oniUnlockedNow?'緊急クエスト発生！':allClearNow?'全クリ達成！':afterTitle>beforeTitle?'しょうごうアップ！':perfect?'かんぺき！':'クリア！',displayBadges=overlayBadges(found),main=oniUnlockedNow?'上級クリア！ / 旧上級レベルの「鬼」が出現しました。':allClearNow?'全ての称号を集めました。 / ナンプレ大冒険 完全クリア！':afterTitle>beforeTitle?'あたらしい しょうごう: '+ti.title+' / ほしポイント +'+pointGain:displayBadges.length?'あたらしい ごほうびが ふえたよ。 / ほしポイント +'+pointGain:'ほしポイント +'+pointGain+'！';msg(allClearNow?'全クリ達成！ 全ての称号を集めました。':'クリア！ '+CFG[g.difficulty].l+' を1回クリアしました。');toast(oniUnlockedNow?'緊急クエスト発生！ 鬼が出現！':allClearNow?'全クリ達成！ ナンプレ大冒険 完全クリア！':afterTitle>beforeTitle?'クリア！ あたらしい しょうごうだよ。':perfect?'かんぺき！ ヒントを全部のこして クリア！':'クリア！ ほしポイント +'+pointGain+'！','ok',oniUnlockedNow?7000:5200);showWin({headline:headline,text:main,time:g.finishedMs,best:S.best[g.difficulty],title:ti.title,stage:progressSummary(g.difficulty),stars:stars.label,starCount:stars.count,starReasons:stars.reasons,difficulty:g.difficulty,mode:g.mode||'normal',badges:displayBadges,progress:progress,cta:oniUnlockedNow?'「このままつづける」で鬼に挑戦できます。ホームから選んでもOKです。':allClear?'ホームで最高ランクを確認できます。':winCtaText(g.difficulty),perfect:perfect,allClear:allClear,emergency:oniUnlockedNow,nextDifficulty:oniUnlockedNow?'oni':null})}
 function hint(){const g=S.game;if(!g||busy||g.status!=='playing')return;const target=hintTarget(g);if(target<0){toast('ヒントを使える空きマスがありません。','warn');return}pushHist(g);clearBadMarks(g);sel=target;g.user[target]=g.solution[target];g.hinted[target]=1;g.notes[target]=0;clearPeerNotes(g,target,g.solution[target]);g.hints--;save();sel=nextEmpty(target);paint();msg('ヒントで正しい数字を入れました。');toast('ヒントを1回使いました。','ok')}
 function developerSolve(){const g=S.game;if(!g||busy||g.status!=='playing')return;pushHist(g);clearBadMarks(g);g.user=g.solution.slice();g.notes=emptyNotes();save();paint();msg('答えを全て入力しました。採点して結果を確認してください。');toast('答えを入力しました。採点してください。','ok',2400)}
 async function copyCode(){if(!el.out.value)return;try{await navigator.clipboard.writeText(el.out.value)}catch(e){el.out.select();document.execCommand('copy')}toast('ひきつぎコードをコピーしました。','ok')}
 function loadCode(){const x=el.inp.value.trim();if(!x){toast('コードを貼り付けてください。','warn');return}try{const prefs={panel:S.panel,best:Object.assign({},S.best),stars:Object.assign({},S.stars),badges:(S.badges||[]).slice(),daily:Object.assign({},S.daily),attemptStates:Object.assign({},S.attemptStates||{})};const r=dec(x);if(r.mode==='legacy'){S.stats.easy=r.stats.easy;S.stats.medium=r.stats.medium;S.stats.hard=r.stats.hard;save();paint();msg('旧版コードからクリア回数を引き継ぎました。');toast('旧版コードからクリア回数を引き継ぎました。','ok',5200)}else{hideWin(true);S=r.state;S.panel='play';S.best.easy=S.best.easy??prefs.best.easy;S.best.medium=S.best.medium??prefs.best.medium;S.best.hard=S.best.hard??prefs.best.hard;S.stars=prefs.stars;S.badges=prefs.badges;S.daily=prefs.daily;S.attemptStates=prefs.attemptStates;if(S.game){ensureAttemptId(S.game);enforceAttemptSeal(S.game)}homeMode=false;syncSel();save();paint();if(S.game&&S.game.status==='won'){showLoadedWin(S.game);msg('クリア済みの問題を読み込みました。結果を見て次の問題へ進めます。')}else if(S.game&&S.game.status==='checked'){msg('ひきつぎコードを読み込みました。採点ずみの問題なので、正解を見ながら次へ進めます。')}else{msg('ひきつぎコードを読み込みました。続きから遊べます。')}toast('ひきつぎコードを読み込みました。','ok')}}catch(e){msg(e.message);toast(e.message,'err',4200)}}
-async function advanceAfterResult(){const g=S.game;if(!g||busy)return;if(g.mode==='daily'){goHome();return}const current=puzzleKey(g);await start(g.difficulty,{avoidKey:current})}
+async function advanceAfterResult(){const g=S.game;if(!g||busy)return;if(g.mode==='daily'){goHome();return}const current=puzzleKey(g),next=(lastWin&&CFG[lastWin.nextDifficulty])?lastWin.nextDifficulty:g.difficulty;await start(next,{avoidKey:current})}
 function reopenResult(){if(lastWin)showWin(lastWin)}
 function build(){el.board.innerHTML='';cells=[];for(let i=0;i<81;i++){const b=document.createElement('button');b.type='button';b.className='cell';b.dataset.i=i;b.innerHTML='<div class="cell-main"></div><div class="cell-notes"></div>';el.board.appendChild(b);cells.push(b)}el.keys.innerHTML='';kbtn={};D.forEach(n=>{const b=document.createElement('button');b.type='button';b.className='key';b.textContent=n;b.dataset.n=n;el.keys.appendChild(b);kbtn[n]=b});const x=document.createElement('button');x.type='button';x.className='key';x.textContent='⌫';x.dataset.n='x';el.keys.appendChild(x);kbtn.x=x;el.digits.innerHTML='';digs=[];for(let i=1;i<=9;i++){const d=document.createElement('button');d.type='button';d.className='digit';d.disabled=true;d.dataset.n=i;el.digits.appendChild(d);digs.push(d)}}
 function startTimer(){if(timer)clearInterval(timer);timer=setInterval(()=>{if(S&&S.game&&S.game.status==='playing')el.ct.textContent=fmt(currentElapsed(S.game))},1000)}
@@ -1131,3 +1173,4 @@ init().catch(()=>{msg('初期化に失敗しました。ページを再読み込
 </script>
 </body>
 </html>
+
