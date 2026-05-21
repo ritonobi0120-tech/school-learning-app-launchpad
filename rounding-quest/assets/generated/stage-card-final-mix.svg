@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <defs>
+      <linearGradient id="bg" x1="70" y1="42" x2="440" y2="460" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#fff2bd"/>
+        <stop offset=".55" stop-color="#ffca4c"/>
+        <stop offset="1" stop-color="#d75d73"/>
+      </linearGradient>
+      <radialGradient id="shine" cx="32%" cy="24%" r="70%">
+        <stop offset="0" stop-color="#ffffff" stop-opacity=".86"/>
+        <stop offset=".42" stop-color="#ffffff" stop-opacity=".18"/>
+        <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+        <feDropShadow dx="0" dy="18" stdDeviation="12" flood-color="#392500" flood-opacity=".24"/>
+      </filter>
+    </defs>
+    <rect x="0" y="0" width="512" height="512" fill="url(#bg)"/><rect x="20" y="20" width="472" height="472" rx="108" fill="url(#shine)" opacity=".48"/>
+    
+    <path d="M84 91c66-39 158-50 253-13" fill="none" stroke="#ffffff" stroke-width="22" stroke-linecap="round" opacity=".32"/>
+    <circle cx="91" cy="377" r="21" fill="#ffffff" opacity=".25"/>
+    <circle cx="422" cy="111" r="15" fill="#ffffff" opacity=".38"/>
+    <circle cx="403" cy="391" r="27" fill="#ffffff" opacity=".18"/>
+    <g filter="url(#shadow)">
+      <g>
+        <path d="M99 389h314l-34-199-76 80-47-139-47 139-76-80z" fill="#ffd84f" stroke="#765000" stroke-width="18" stroke-linejoin="round"/>
+        <circle cx="256" cy="127" r="34" fill="#fff5ba" stroke="#d89500" stroke-width="14"/>
+        <circle cx="121" cy="192" r="28" fill="#5ad0b0" stroke="#0a6d5e" stroke-width="12"/>
+        <circle cx="391" cy="192" r="28" fill="#ff8d99" stroke="#8b3240" stroke-width="12"/>
+        <path d="M145 389h222M162 332h188" stroke="#fff8cd" stroke-width="18" stroke-linecap="round" opacity=".9"/>
+        <path d="M256 54v37" stroke="#ffffff" stroke-width="18" stroke-linecap="round" opacity=".85"/>
+      </g></g>
+    <rect x="18" y="18" width="476" height="476" rx="112" fill="none" stroke="#ffffff" stroke-width="18" opacity=".78"/>
+    <rect x="31" y="31" width="450" height="450" rx="98" fill="none" stroke="#7d5200" stroke-width="8" opacity=".33"/>
+  </svg>

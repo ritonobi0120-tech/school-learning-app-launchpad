@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>四捨五入ダンジョン</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="spark-layer" id="sparkLayer" aria-hidden="true"></div>
+  <main class="app-shell">
+    <section class="hero" id="homeView">
+      <div class="hero-copy">
+        <div class="guide-row">
+          <img src="./assets/rpg/guide-spirit.png" alt="">
+          <p class="eyebrow">小学4年 算数・がい数RPG</p>
+        </div>
+        <h1><span>四捨五入</span><span>ダンジョン</span></h1>
+        <p>1章30こ。5問ずつ進もう。</p>
+        <div class="hero-actions">
+          <button class="primary start-cta" id="startButton">クエスト開始</button>
+          <button class="secondary" id="reviewButton">直しの道</button>
+        </div>
+        <p class="save-note">進み具合はこのブラウザに自動保存されます。</p>
+      </div>
+      <div class="quest-panel" aria-label="進み具合">
+        <div class="quest-image">
+          <img src="./assets/rpg/world-map.png" alt="">
+          <div class="map-overlay" id="homeMapOverlay" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stage-select" id="stageSelect" aria-label="出題の4つの章"></section>
+
+    <section class="work-area hidden" id="sessionView">
+      <header class="session-top">
+        <div>
+          <p class="eyebrow" id="modeLabel">れんしゅう</p>
+          <h2 id="questionCounter">1 / 5</h2>
+        </div>
+        <div class="session-map" id="sessionMap" aria-label="冒険の進み具合"></div>
+        <div class="meter" aria-label="正解数">
+          <span id="scoreText">0正解</span>
+          <div><i id="scoreBar"></i></div>
+        </div>
+        <div class="combo-chip" id="comboChip">連続 0</div>
+      </header>
+
+      <article class="question-card">
+        <div class="stage-banner" id="stageBanner"></div>
+        <div class="problem-side">
+          <p class="question-label" id="questionLabel">どの位まで残すか</p>
+          <h3 id="questionText"></h3>
+          <p class="support hidden" id="supportText"></p>
+          <div class="answer-row">
+            <input id="answerInput" inputmode="numeric" autocomplete="off" maxlength="9" placeholder="数字で答える">
+            <button class="primary" id="submitButton">答える</button>
+          </div>
+          <div class="tenkey" id="tenkey" aria-label="数字入力"></div>
+          <div class="type-badges" id="typeBadges" aria-label="クエスト型"></div>
+        </div>
+        <div class="visual-side" id="visualBoard" aria-label="考え方の図"></div>
+      </article>
+      <div class="feedback hidden" id="feedbackBox"></div>
+    </section>
+
+    <section class="result-view hidden" id="resultView">
+      <div class="result-main">
+        <p class="eyebrow">結果</p>
+        <h2 id="resultTitle"></h2>
+        <p id="resultCopy"></p>
+        <div class="reward-scene" id="rewardScene" aria-hidden="true"></div>
+        <div class="result-actions">
+          <button class="primary" id="againButton">次の5問へ</button>
+          <button class="secondary hidden" id="resultReviewButton">見直しに行く</button>
+          <button class="secondary" id="homeButton">ホームへ</button>
+        </div>
+      </div>
+      <div class="mistake-list" id="mistakeList"></div>
+    </section>
+  </main>
+
+  <script src="./rounding-core.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
