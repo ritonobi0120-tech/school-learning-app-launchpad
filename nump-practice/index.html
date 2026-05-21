@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ナンプレ</title>
+  <style>
+    body {
+      font-family: 'Meiryo', 'Hiragino Kaku Gothic Pro', sans-serif;
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f5f5f5;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .container {
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      background: white;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 1px;
+      margin: 20px 0;
+      border: 2px solid #333;
+    }
+    
+    .cell {
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      background: white;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .cell.fixed {
+      background-color: #f0f0f0;
+      cursor: default;
+    }
+    
+    .cell.selected {
+      background-color: #e3f2fd;
+    }
+    
+    .cell.error {
+      color: #d32f2f;
+    }
+    
+    .cell.hinted {
+      color: #2e7d32;
+    }
+    
+    /* Add borders for 3x3 boxes - 修正済み */
+    .cell:nth-child(3n):not(:nth-child(9n)) {
+      border-right: 2px solid #333;
+    }
+    
+    .cell:nth-child(9n) {
+      border-right: 2px solid #333;
+    }
+    
+    .grid-container > .cell:nth-child(n+19):nth-child(-n+27),
+    .grid-container > .cell:nth-child(n+46):nth-child(-n+54) {
+      border-bottom: 2px solid #333;
+    }
+    
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #1976d2;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      flex: 1;
+    }
+    
+    button:hover {
+      background-color: #1565c0;
+    }
+    
+    button:disabled {
+      background-color: #bbdefb;
+      cursor: not-allowed;
+    }
+    
+    .hint-button {
+      background-color: #388e3c;
+    }
+    
+    .hint-button:hover {
+      background-color: #2e7d32;
+    }
+    
+    .hint-button:disabled {
+      background-color: #c8e6c9;
+    }
+    
+    .check-button {
+      background-color: #f57c00;
+    }
+    
+    .check-button:hover {
+      background-color: #ef6c00;
+    }
+    
+    .retry-button {
+      background-color: #d32f2f;
+    }
+    
+    .retry-button:hover {
+      background-color: #b71c1c;
+    }
+    
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      background-color: #e3f2fd;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .recovery-code {
+      font-family: monospace;
+      font-size: 1.5rem;
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+      letter-spacing: 2px;
+    }
+    
+    .difficulty-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .difficulty-option {
+      flex: 1 0 45%;
+      padding: 10px;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    
+    .difficulty-option.active {
+      background-color: #e3f2fd;
+      border-color: #1976d2;
+    }
+    
+    .difficulty-option.locked {
+      background-color: #f5f5f5;
+      border-color: #ddd;
+      color: #999;
+      cursor: not-allowed;
+    }
+    
+    .recovery-input {
+      font-family: monospace;
+      font-size: 1.2rem;
+      padding: 8px;
+      width: 100%;
+      max-width: 200px;
+      text-align: center;
+      letter-spacing: 2px;
+      margin: 10px auto;
+      display: block;
+    }
+    
+    .game-complete {
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .celebration {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    
+    /* Screens */
+    .screen {
+      display: none;
+    }
+    
+    .active-screen {
+      display: block;
+    }
+    
+    /* Start Screen */
+    .start-screen {
+      text-align: center;
+    }
+    
+    .main-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .main-menu button {
+      padding: 12px;
+      font-size: 1.1rem;
+    }
+    
+    .title-icon {
+      font-size: 1.4em;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    
+    .title-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    
+    .difficulty-description {
+      font-size: 0.85rem;
+      margin-top: 5px;
+      color: #555;
+    }
+    
+    /* 称号レベルアップ演出用スタイル */
+    .title-upgrade-modal .modal-content {
+      background-color: #f8f9fa;
+      border: 3px solid #4caf50;
+      padding: 30px;
+      max-width: 450px;
+    }
+    
+    .title-effect {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      animation: sparkle 1.5s infinite alternate;
+    }
+    
+    .title-compare {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 20px 0;
+    }
+    
+    .old-title, .new-title {
+      text-align: center;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    
+    .old-title {
+      background-color: #e9ecef;
+      color: #495057;
+    }
+    
+    .new-title {
+      background-color: #d4edda;
+      color: #155724;
+      font-weight: bold;
+      transform: scale(1.1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .arrow {
+      font-size: 1.5rem;
+      margin: 0 10px;
+    }
+    
+    @keyframes sparkle {
+      0% { opacity: 0.7; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1.05); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Start Screen -->
+    <div id="startScreen" class="screen active-screen">
+      <h1>なんぷれアプリ</h1>
+      <div class="main-menu">
+        <button id="newGameBtn">はじめから</button>
+        <button id="continueGameBtn">つづきから</button>
+      </div>
+    </div>
+    
+    <!-- Recovery Code Input Screen -->
+    <div id="recoveryInputScreen" class="screen">
+      <h1>ふっかつのじゅもん</h1>
+      <p>前回のゲームから続けるためのコードを入力してください</p>
+      <input type="text" id="recoveryInput" class="recovery-input" maxlength="6" placeholder="ABCDEF">
+      <div class="button-group">
+        <button id="submitRecoveryBtn">けってい</button>
+        <button id="backToStartBtn">もどる</button>
+      </div>
+    </div>
+    
+    <!-- Difficulty Selection Screen -->
+    <div id="difficultyScreen" class="screen">
+      <h1>難易度を選択</h1>
+      <div class="status-bar">
+        <div class="title-display">称号: <span id="playerTitle"><span class="title-icon"></span>なんぷれ見習い</span></div>
+      </div>
+      <div class="difficulty-selector">
+        <div class="difficulty-option active" data-difficulty="1">
+          初級
+          <div class="difficulty-description">四隅の3x3ブロックが全て埋まっていて、簡単な消去法だけで解けます。</div>
+          <div>クリア: <span id="beginnerClears">0</span>回</div>
+        </div>
+        <div class="difficulty-option locked" data-difficulty="2">
+          中級
+          <div class="difficulty-description">約半分（35-40マス）が埋まっています。候補数字の検討が必要です。</div>
+          <div>クリア: <span id="intermediateClears">0</span>回</div>
+          <div><small>初級5回クリアで解放</small></div>
+        </div>
+        <div class="difficulty-option locked" data-difficulty="3">
+          上級
+          <div class="difficulty-description">約1/4（20-25マス）だけが埋まっています。複雑な解法技術が必要です。</div>
+          <div>クリア: <span id="advancedClears">0</span>回</div>
+          <div><small>中級5回クリアで解放</small></div>
+        </div>
+      </div>
+      <p>現在のふっかつのじゅもん</p>
+      <div class="recovery-code" id="currentRecoveryCode">------</div>
+      <div class="button-group">
+        <button id="startSelectedDifficultyBtn">はじめる</button>
+        <button id="backToStartFromDifficultyBtn">もどる</button>
+      </div>
+    </div>
+    
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+      <h1>なんぷれ</h1>
+      <div class="status-bar">
+        <div>難易度: <span id="currentDifficulty">初級</span></div>
+        <div>ヒント: <span id="hintsRemaining">3</span>回</div>
+      </div>
+      <div class="grid-container" id="sudokuGrid"></div>
+      <div class="controls">
+        <div class="button-group" id="gameButtons">
+          <button id="checkAnswerBtn" class="check-button">答え合わせ</button>
+          <button id="useHintBtn" class="hint-button">ヒントを使う</button>
+        </div>
+        <button id="quitGameBtn">終了する</button>
+      </div>
+    </div>
+    
+    <!-- Game Complete Screen -->
+    <div id="gameCompleteScreen" class="screen">
+      <div class="game-complete">
+        <div class="celebration">🎉</div>
+        <h1>クリア！</h1>
+        <p>おめでとうございます！ なんぷれをクリアしました。</p>
+        <p>称号: <span id="newPlayerTitle">なんぷれ見習い</span></p>
+        <p>ふっかつのじゅもん:</p>
+        <div class="recovery-code" id="newRecoveryCode">------</div>
+        <button id="nextGameBtn">次の問題へ</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- New Game Modal -->
+  <div id="newGameModal" class="modal">
+    <div class="modal-content">
+      <h2>ふっかつのじゅもん</h2>
+      <p>このコードを使って、いつでも続きからプレイできます。大切に保管してください。</p>
+      <div class="recovery-code" id="newGameRecoveryCode">------</div>
+      <button id="confirmNewGameBtn">わかりました</button>
+    </div>
+  </div>
+  
+  <!-- 称号獲得モーダル（新規追加） -->
+  <div id="titleUpgradeModal" class="modal title-upgrade-modal">
+    <div class="modal-content">
+      <div class="title-effect">✨✨✨</div>
+      <h2>称号レベルアップ！</h2>
+      <div class="title-compare">
+        <div class="old-title">
+          <span id="oldTitleIcon" class="title-icon"></span>
+          <p id="oldTitleName"></p>
+        </div>
+        <div class="arrow">➡️</div>
+        <div class="new-title">
+          <span id="newTitleIcon" class="title-icon"></span>
+          <p id="newTitleName"></p>
+        </div>
+      </div>
+      <button id="confirmTitleUpgradeBtn">やったね！</button>
+    </div>
+  </div>
+  
+  <script>
+// Code.gs file - Server-side code
+
+
+
+// Generate a random character for recovery code
+function getRandomChar() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Avoiding similar looking characters
+  return chars.charAt(Math.floor(Math.random() * chars.length));
+}
+
+// Generate a checksum for the recovery code
+function generateChecksum(code) {
+  let sum = 0;
+  for (let i = 0; i < code.length; i++) {
+    sum += code.charCodeAt(i);
+  }
+  return 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'.charAt(sum % 32);
+}
+
+// Validate the recovery code
+function validateRecoveryCode(code) {
+  if (code.length !== 6) return false;
+  
+  const checksum = generateChecksum(code.substring(0, 5));
+  return code[5] === checksum;
+}
+
+// Parse the recovery code to get game state
+function parseRecoveryCode(code) {
+  if (!validateRecoveryCode(code)) {
+    return null;
+  }
+  
+  // Extract data from the code
+  // Format: R-BBB-T-C where R=random, B=beginner clears, I=intermediate clears, A=advanced clears, T=title, C=checksum
+  const beginnerClears = parseInt(code[1], 36);
+  const intermediateClears = parseInt(code[2], 36);
+  const advancedClears = parseInt(code[3], 36);
+  const titleLevel = parseInt(code[4], 36);
+  
+  return {
+    beginnerClears: beginnerClears,
+    intermediateClears: intermediateClears,
+    advancedClears: advancedClears,
+    titleLevel: titleLevel
+  };
+}
+
+// Generate a recovery code from game state
+function generateRecoveryCode(beginnerClears, intermediateClears, advancedClears, challengeClears, titleLevel) {
+  const randomChar = getRandomChar();
+  const beginnerChar = beginnerClears.toString(36).toUpperCase();
+  const intermediateChar = intermediateClears.toString(36).toUpperCase();
+  const advancedChar = advancedClears.toString(36).toUpperCase();
+  const titleChar = titleLevel.toString(36).toUpperCase();
+  
+  const baseCode = randomChar + beginnerChar + intermediateChar + advancedChar + titleChar;
+  const checksum = generateChecksum(baseCode);
+  
+  return baseCode + checksum;
+}
+
+// Generate a Sudoku puzzle with the specified difficulty
+function generateSudokuPuzzle(difficultyInfo) {
+  // パラメータの型をチェック - 下位互換性のため
+  let level, forceCellsToKeep = false, cellsToKeep, initialLayout = "random", cornerFillMode = "none";
+  
+  if (typeof difficultyInfo === 'number') {
+    // 旧形式: 単一の数値パラメータ
+    level = difficultyInfo;
+  } else if (typeof difficultyInfo === 'object' && difficultyInfo !== null) {
+    // 新形式: オブジェクトパラメータ
+    level = difficultyInfo.level || 1;
+    forceCellsToKeep = difficultyInfo.forceCellsToKeep || false;
+    cellsToKeep = difficultyInfo.cellsToKeep;
+    initialLayout = difficultyInfo.initialLayout || "random";
+    cornerFillMode = difficultyInfo.cornerFillMode || "none";
+  } else {
+    // デフォルト
+    level = 1;
+  }
+  
+  // セルの保持数を決定
+  if (forceCellsToKeep && cellsToKeep) {
+    // クライアントから明示的に指定された場合はその値を使用
+    cellsToKeep = cellsToKeep;
+  } else {
+    // 難易度に基づいてデフォルト値を設定
+    switch(level) {
+      case 1: // 初級
+        cellsToKeep = Math.floor(Math.random() * 6) + 50; // 50-55個
+        break;
+      case 2: // 中級
+        cellsToKeep = Math.floor(Math.random() * 6) + 35; // 35-40個
+        break;
+      case 3: // 上級
+        cellsToKeep = Math.floor(Math.random() * 6) + 20; // 20-25個
+        break;
+      default:
+        cellsToKeep = 35; // デフォルト
+    }
+  }
+  
+  // 解答グリッドを生成
+  const solution = generateSolvedGrid();
+  
+  // 削除するセル数を計算
+  const cellsToRemove = 81 - cellsToKeep;
+  
+  // 特別なレイアウト条件を考慮してセルを削除
+  const puzzle = removeCellsWithLayout(solution, cellsToRemove, initialLayout, cornerFillMode, level);
+  
+  return {
+    puzzle: puzzle,
+    solution: solution
+  };
+}
+
+// レイアウト条件を考慮してセルを削除する関数
+function removeCellsWithLayout(solution, cellsToRemove, initialLayout, cornerFillMode, level) {
+  const puzzle = JSON.parse(JSON.stringify(solution)); // Deep copy
+  const positions = [];
+  
+  // 四隅の3x3ブロックのセルを特定
+  const cornerCells = [];
+  
+  // 左上の3x3
+  for (let row = 0; row < 3; row++) {
+    for (let col = 0; col < 3; col++) {
+      cornerCells.push({ row, col });
+    }
+  }
+  
+  // 右上の3x3
+  for (let row = 0; row < 3; row++) {
+    for (let col = 6; col < 9; col++) {
+      cornerCells.push({ row, col });
+    }
+  }
+  
+  // 左下の3x3
+  for (let row = 6; row < 9; row++) {
+    for (let col = 0; col < 3; col++) {
+      cornerCells.push({ row, col });
+    }
+  }
+  
+  // 右下の3x3
+  for (let row = 6; row < 9; row++) {
+    for (let col = 6; col < 9; col++) {
+      cornerCells.push({ row, col });
+    }
+  }
+  
+  // 四隅以外のセルを特定
+  const nonCornerCells = [];
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (!cornerCells.some(cell => cell.row === row && cell.col === col)) {
+        nonCornerCells.push({ row, col });
+      }
+    }
+  }
+  
+  // 初級モードで四隅を必ず埋める場合
+  if (level === 1 && (initialLayout === "cornerBlocksMandatory" || cornerFillMode === "fullMandatory")) {
+    // まずnonCornerCellsからセルを削除
+    shuffleArray(nonCornerCells);
+    
+    let remainingToRemove = cellsToRemove;
+    let i = 0;
+    
+    // 四隅以外のセルをできるだけ削除
+    while (remainingToRemove > 0 && i < nonCornerCells.length) {
+      const pos = nonCornerCells[i];
+      puzzle[pos.row][pos.col] = 0;
+      remainingToRemove--;
+      i++;
+    }
+    
+    // 四隅のセルも削除する必要がある場合（ごく少数）
+    if (remainingToRemove > 0) {
+      shuffleArray(cornerCells);
+      i = 0;
+      while (remainingToRemove > 0 && i < cornerCells.length) {
+        const pos = cornerCells[i];
+        puzzle[pos.row][pos.col] = 0;
+        remainingToRemove--;
+        i++;
+      }
+    }
+  } else {
+    // 通常モード：すべてのセルをリストに入れる
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        positions.push({ row, col });
+      }
+    }
+    
+    // ランダムにセルを削除
+    shuffleArray(positions);
+    for (let i = 0; i < cellsToRemove && i < positions.length; i++) {
+      const pos = positions[i];
+      puzzle[pos.row][pos.col] = 0;
+    }
+  }
+  
+  return puzzle;
+}
+
+// Generate a solved Sudoku grid
+function generateSolvedGrid() {
+  // This is a simplified implementation - in a real app, you'd want a more sophisticated generator
+  // Using a pre-filled valid grid and shuffling
+  
+  // Start with an empty 9x9 grid
+  const grid = Array(9).fill().map(() => Array(9).fill(0));
+  
+  // Fill the grid using backtracking algorithm
+  if (!solveGrid(grid)) {
+    console.error("Could not generate a valid Sudoku grid");
+    return Array(9).fill().map(() => Array(9).fill(0));
+  }
+  
+  return grid;
+}
+
+// Solve the Sudoku grid using backtracking
+function solveGrid(grid) {
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (grid[row][col] === 0) {
+        // Shuffle the numbers 1-9 to create different puzzles
+        const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        shuffleArray(nums);
+        
+        for (let i = 0; i < nums.length; i++) {
+          const num = nums[i];
+          if (isValidPlacement(grid, row, col, num)) {
+            grid[row][col] = num;
+            
+            if (solveGrid(grid)) {
+              return true;
+            }
+            
+            grid[row][col] = 0;
+          }
+        }
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+// Check if a number can be placed at the specified position
+function isValidPlacement(grid, row, col, num) {
+  // Check row
+  for (let i = 0; i < 9; i++) {
+    if (grid[row][i] === num) return false;
+  }
+  
+  // Check column
+  for (let i = 0; i < 9; i++) {
+    if (grid[i][col] === num) return false;
+  }
+  
+  // Check 3x3 box
+  const boxRow = Math.floor(row / 3) * 3;
+  const boxCol = Math.floor(col / 3) * 3;
+  
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      if (grid[boxRow + i][boxCol + j] === num) return false;
+    }
+  }
+  
+  return true;
+}
+
+// Helper function to shuffle an array in-place
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+</script>
+
+<script>
+(function () {
+  const api = { validateRecoveryCode, parseRecoveryCode, generateRecoveryCode, generateSudokuPuzzle };
+  function createRunner(successHandler, failureHandler) {
+    return new Proxy({}, {
+      get(_target, prop) {
+        if (prop === 'withSuccessHandler') {
+          return function (handler) { return createRunner(handler, failureHandler); };
+        }
+        if (prop === 'withFailureHandler') {
+          return function (handler) { return createRunner(successHandler, handler); };
+        }
+        return function (...args) {
+          try {
+            if (typeof api[prop] !== 'function') throw new Error('Unknown local API: ' + String(prop));
+            const result = api[prop](...args);
+            if (successHandler) setTimeout(function () { successHandler(result); }, 0);
+          } catch (error) {
+            console.error(error);
+            if (failureHandler) setTimeout(function () { failureHandler(error); }, 0);
+          }
+          return createRunner(null, null);
+        };
+      }
+    });
+  }
+  window.google = window.google || {};
+  window.google.script = window.google.script || {};
+  window.google.script.run = createRunner(null, null);
+})();
+</script>
+<script>
+    // Game state
+    let gameState = {
+      beginnerClears: 0,
+      intermediateClears: 0,
+      advancedClears: 0,
+      titleLevel: 0,
+      currentDifficulty: 1,
+      hintsRemaining: 3,
+      recoveryCode: "",
+      puzzle: null,
+      solution: null,
+      userGrid: null,
+      selectedCell: null,
+      currentGameState: null,
+      specialCells: null,
+      hasCheckedAnswer: false, // 答え合わせをしたかどうかのフラグ
+      skipGameStateCheck: false, // 保存されたゲーム状態のチェックをスキップするフラグ
+      debug: true
+    };
+    
+    // Title levels - 調整版
+    const TITLES = [
+      "なんぷれ見習い",     // 0 - 初期称号
+      "なんぷれ初心者",     // 1 - 初級5回クリア
+      "なんぷれ名人",       // 2 - 中級5回クリア
+      "なんぷれ達人",       // 3 - 上級5回クリア
+      "なんぷれマスター",   // 4 - 上級10回クリア
+      "なんぷれ王",         // 5 - 上級15回クリア
+      "なんぷれ仙人",       // 6 - 上級20回クリア
+      "なんぷれ神",         // 7 - 上級25回クリア
+      "なんぷれ大統領",     // 8 - 上級30回クリア
+      "なんぷれ皇帝",       // 9 - 上級40回クリア
+      "なんぷれ宇宙人"      // 10 - 上級50回クリア（最終称号）
+    ];
+    
+    // Title icons - 称号アイコン
+    const ICONS = [
+      "🔰",  // 見習い
+      "🌱",  // 初心者
+      "🏆",  // 名人
+      "💫",  // 達人
+      "🔮",  // マスター
+      "👑",  // 王
+      "🧙‍♂️",  // 仙人
+      "⚡",  // 神
+      "🎖️",  // 大統領
+      "🏯",  // 皇帝
+      "👽"   // 宇宙人
+    ];
+    
+    // Difficulty names
+    const DIFFICULTY_NAMES = ["", "初級", "中級", "上級"];
+    
+    // 難易度の説明（サーバー側で実装される難易度の違いを反映）
+    const DIFFICULTY_DETAILS = [
+      "",
+      "初級: 四隅の3x3ブロックが全て埋まっていて、簡単な消去法だけで解けます。",
+      "中級: 約半分（35-40マス）が埋まっています。候補数字の検討が必要です。",
+      "上級: 約1/4（20-25マス）だけが埋まっています。複雑な解法技術が必要です。"
+    ];
+    
+    // DOM Elements
+    const startScreen = document.getElementById('startScreen');
+    const recoveryInputScreen = document.getElementById('recoveryInputScreen');
+    const difficultyScreen = document.getElementById('difficultyScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const gameCompleteScreen = document.getElementById('gameCompleteScreen');
+    const newGameModal = document.getElementById('newGameModal');
+    const titleUpgradeModal = document.getElementById('titleUpgradeModal');
+    const gameButtons = document.getElementById('gameButtons');
+    
+    const sudokuGrid = document.getElementById('sudokuGrid');
+    const beginnerClearsEl = document.getElementById('beginnerClears');
+    const intermediateClearsEl = document.getElementById('intermediateClears');
+    const advancedClearsEl = document.getElementById('advancedClears');
+    const playerTitleEl = document.getElementById('playerTitle');
+    const currentDifficultyEl = document.getElementById('currentDifficulty');
+    const hintsRemainingEl = document.getElementById('hintsRemaining');
+    const currentRecoveryCodeEl = document.getElementById('currentRecoveryCode');
+    const newGameRecoveryCodeEl = document.getElementById('newGameRecoveryCode');
+    const newRecoveryCodeEl = document.getElementById('newRecoveryCode');
+    const newPlayerTitleEl = document.getElementById('newPlayerTitle');
+    const recoveryInput = document.getElementById('recoveryInput');
+    
+    // 称号アップグレード関連のDOM要素
+    const oldTitleIconEl = document.getElementById('oldTitleIcon');
+    const oldTitleNameEl = document.getElementById('oldTitleName');
+    const newTitleIconEl = document.getElementById('newTitleIcon');
+    const newTitleNameEl = document.getElementById('newTitleName');
+    
+    // Button Elements
+    const newGameBtn = document.getElementById('newGameBtn');
+    const continueGameBtn = document.getElementById('continueGameBtn');
+    const submitRecoveryBtn = document.getElementById('submitRecoveryBtn');
+    const backToStartBtn = document.getElementById('backToStartBtn');
+    const startSelectedDifficultyBtn = document.getElementById('startSelectedDifficultyBtn');
+    const backToStartFromDifficultyBtn = document.getElementById('backToStartFromDifficultyBtn');
+    const checkAnswerBtn = document.getElementById('checkAnswerBtn');
+    const useHintBtn = document.getElementById('useHintBtn');
+    const quitGameBtn = document.getElementById('quitGameBtn');
+    const confirmNewGameBtn = document.getElementById('confirmNewGameBtn');
+    const nextGameBtn = document.getElementById('nextGameBtn');
+    const confirmTitleUpgradeBtn = document.getElementById('confirmTitleUpgradeBtn');
+    
+    // デバッグログ関数
+    function log(message) {
+      if (gameState.debug) {
+        console.log("[なんぷれ] " + message);
+      }
+    }
+    
+    // Initialize
+    function initialize() {
+      try {
+        log("アプリの初期化を開始");
+        
+        // イベントリスナーを設定
+        setupEventListeners();
+        
+        // 保存されたコードがあるか確認
+        const savedCode = localStorage.getItem('sudokuRecoveryCode');
+        if (savedCode) {
+          log("保存されたコードを検出: " + savedCode);
+          // 続行ボタンを有効化
+          continueGameBtn.disabled = false;
+        } else {
+          log("保存されたコードがありません");
+          // 続行ボタンを無効化
+          continueGameBtn.disabled = true;
+        }
+        
+        // キーボードイベントリスナー
+        document.addEventListener('keydown', handleKeyDown);
+        
+        // 開発者モードショートカット
+        document.addEventListener('keydown', function(e) {
+          if (e.ctrlKey && e.key === 'o' && gameScreen.classList.contains('active-screen')) {
+            log("開発者モード有効化");
+            showSolution();
+          }
+        });
+        
+        // 称号アップグレードモーダルの閉じるボタン
+        confirmTitleUpgradeBtn.addEventListener('click', function() {
+          titleUpgradeModal.style.display = 'none';
+        });
+        
+        log("初期化完了");
+      } catch (e) {
+        console.error("初期化中にエラーが発生しました:", e);
+      }
+    }
+    
+    // 称号獲得演出を表示する関数
+    function showTitleUpgradeEffect(oldTitleLevel, newTitleLevel) {
+      // 称号情報を取得
+      const oldTitle = TITLES[oldTitleLevel];
+      const newTitle = TITLES[newTitleLevel];
+      const oldIcon = ICONS[oldTitleLevel];
+      const newIcon = ICONS[newTitleLevel];
+      
+      // モーダル内容を設定
+      oldTitleIconEl.textContent = oldIcon;
+      oldTitleNameEl.textContent = oldTitle;
+      newTitleIconEl.textContent = newIcon;
+      newTitleNameEl.textContent = newTitle;
+      
+      // モーダルを表示
+      titleUpgradeModal.style.display = 'flex';
+      
+      // 効果音を鳴らす（オプション）
+      // この部分はGASの制限によりコメントアウト
+      // const titleSound = new Audio('path/to/levelup.mp3');
+      // titleSound.play();
+      
+      log(`称号獲得演出: ${oldTitle} → ${newTitle}`);
+    }
+    
+    // Setup Event Listeners
+    function setupEventListeners() {
+      try {
+        // スタート画面ボタン
+        newGameBtn.addEventListener('click', function() {
+          log("はじめからボタン押下");
+          startNewGame();
+        });
+        continueGameBtn.addEventListener('click', function() {
+          log("つづきからボタン押下");
+          showRecoveryInputScreen();
+        });
+        
+        // リカバリーコード入力画面ボタン
+        submitRecoveryBtn.addEventListener('click', function() {
+          log("けっていボタン押下");
+          handleRecoverySubmit(false);
+        });
+        backToStartBtn.addEventListener('click', function() {
+          log("もどるボタン押下");
+          showStartScreen();
+        });
+        
+        // 難易度選択画面ボタン
+        startSelectedDifficultyBtn.addEventListener('click', function() {
+          log("はじめるボタン押下");
+          startGameWithSelectedDifficulty();
+        });
+        backToStartFromDifficultyBtn.addEventListener('click', function() {
+          log("もどるボタン押下");
+          showStartScreen();
+        });
+        
+        // 難易度オプション
+        document.querySelectorAll('.difficulty-option').forEach(option => {
+          option.addEventListener('click', function() {
+            if (!this.classList.contains('locked')) {
+              document.querySelectorAll('.difficulty-option').forEach(opt => opt.classList.remove('active'));
+              this.classList.add('active');
+              gameState.currentDifficulty = parseInt(this.getAttribute('data-difficulty'));
+              log("難易度選択: " + gameState.currentDifficulty);
+            }
+          });
+        });
+        
+        // ゲーム画面ボタン
+        checkAnswerBtn.addEventListener('click', function() {
+          log("答え合わせボタン押下");
+          checkAnswer();
+        });
+        useHintBtn.addEventListener('click', function() {
+          log("ヒントを使うボタン押下");
+          useHint();
+        });
+        quitGameBtn.addEventListener('click', function() {
+          log("終了するボタン押下");
+          quitGame();
+        });
+        
+        // 新規ゲームモーダルボタン
+        confirmNewGameBtn.addEventListener('click', function() {
+          log("わかりましたボタン押下");
+          newGameModal.style.display = 'none';
+          showDifficultyScreen();
+        });
+        
+        // ゲーム完了画面ボタン
+        nextGameBtn.addEventListener('click', function() {
+          log("次の問題へボタン押下");
+          showDifficultyScreen();
+        });
+        
+        log("イベントリスナー設定完了");
+      } catch (e) {
+        console.error("イベントリスナー設定中にエラーが発生しました:", e);
+      }
+    }
+    
+    // Show Solution (Developer Mode)
+    function showSolution() {
+      if (!gameState.solution) return;
+      
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          const index = row * 9 + col;
+          const cell = sudokuGrid.children[index];
+          const value = gameState.solution[row][col];
+          cell.textContent = value;
+        }
+      }
+    }
+    
+    // Handle Key Down
+    function handleKeyDown(e) {
+      if (!gameScreen.classList.contains('active-screen') || !gameState.selectedCell || gameState.hasCheckedAnswer) return;
+      
+      const key = e.key;
+      const selectedCellData = gameState.selectedCell.dataset;
+      const row = parseInt(selectedCellData.row);
+      const col = parseInt(selectedCellData.col);
+      
+      // 固定マスは変更不可
+      if (gameState.puzzle[row][col] !== 0) return;
+      
+      if (key >= '1' && key <= '9') {
+        // 数字入力
+        const value = parseInt(key);
+        gameState.userGrid[row][col] = value;
+        gameState.selectedCell.textContent = value;
+        gameState.selectedCell.classList.remove('error');
+        
+        log("数字入力: " + row + "," + col + " = " + value);
+        
+        // 変更を保存
+        saveCurrentGameState();
+      } else if (key === '0' || key === 'Backspace' || key === 'Delete') {
+        // セルをクリア
+        gameState.userGrid[row][col] = 0;
+        gameState.selectedCell.textContent = '';
+        gameState.selectedCell.classList.remove('error', 'hinted');
+        
+        log("セルをクリア: " + row + "," + col);
+        
+        // 変更を保存
+        saveCurrentGameState();
+      }
+    }
+    
+    // Handle Recovery Submit
+    function handleRecoverySubmit(isAutoRestore) {
+      const code = recoveryInput.value.toUpperCase();
+      log("リカバリーコード処理: " + code);
+      
+      // コード形式の検証
+      if (!/^[A-Z0-9]{6}$/.test(code)) {
+        if (!isAutoRestore) {
+          alert('正しい形式のコードを入力してください。');
+        }
+        log("無効なコード形式");
+        return;
+      }
+      
+      // チェックサム検証
+      google.script.run
+        .withSuccessHandler(function(isValid) {
+          if (!isValid) {
+            if (!isAutoRestore) {
+              alert('無効なコードです。もう一度お試しください。');
+            }
+            log("無効なチェックサム");
+            return;
+          }
+          
+          // コードを解析
+          google.script.run
+            .withSuccessHandler(function(state) {
+              if (!state) {
+                if (!isAutoRestore) {
+                  alert('コードの解析に失敗しました。もう一度お試しください。');
+                }
+                log("コード解析失敗");
+                return;
+              }
+              
+              // 状態を更新
+              gameState.beginnerClears = state.beginnerClears || 0;
+              gameState.intermediateClears = state.intermediateClears || 0;
+              gameState.advancedClears = state.advancedClears || 0;
+              gameState.titleLevel = state.titleLevel || 0;
+              gameState.recoveryCode = code;
+              
+              log("ゲーム状態を更新: " + JSON.stringify(state));
+              
+              // ローカルストレージに保存
+              localStorage.setItem('sudokuRecoveryCode', code);
+              
+              // 保存されたゲームを確認
+              try {
+                const savedGameString = localStorage.getItem('sudokuCurrentGame');
+                if (savedGameString) {
+                  gameState.currentGameState = JSON.parse(savedGameString);
+                  log("保存されたゲームを検出");
+                }
+              } catch (e) {
+                console.error('保存されたゲームの復元に失敗:', e);
+                gameState.currentGameState = null;
+              }
+              
+              // UI更新して難易度画面を表示
+              updateDifficultyScreen();
+              showDifficultyScreen();
+            })
+            .parseRecoveryCode(code);
+        })
+        .validateRecoveryCode(code);
+    }
+    
+    // Start New Game
+    function startNewGame() {
+      log("新しいゲームを開始");
+      
+      // 初期状態にリセット
+      gameState = {
+        beginnerClears: 0,
+        intermediateClears: 0,
+        advancedClears: 0,
+        titleLevel: 0,
+        currentDifficulty: 1,
+        hintsRemaining: 3,
+        recoveryCode: "",
+        puzzle: null,
+        solution: null,
+        userGrid: null,
+        selectedCell: null,
+        currentGameState: null,
+        specialCells: null,
+        hasCheckedAnswer: false,
+        skipGameStateCheck: false,
+        debug: true
+      };
+      
+      // 保存されたゲーム状態をクリア
+      localStorage.removeItem('sudokuCurrentGame');
+      
+      // リカバリーコード生成
+      google.script.run
+        .withSuccessHandler(function(code) {
+          gameState.recoveryCode = code;
+          newGameRecoveryCodeEl.textContent = code;
+          localStorage.setItem('sudokuRecoveryCode', code);
+          
+          // モーダルを表示
+          newGameModal.style.display = 'flex';
+          log("リカバリーコード生成: " + code);
+        })
+        .withFailureHandler(function(error) {
+          console.error("リカバリーコード生成エラー:", error);
+          alert("エラーが発生しました。もう一度お試しください。");
+        })
+        .generateRecoveryCode(
+          gameState.beginnerClears,
+          gameState.intermediateClears,
+          gameState.advancedClears,
+          0, // チャレンジクリア数は0固定（廃止したため）
+          gameState.titleLevel
+        );
+    }
+    
+    // Show Recovery Input Screen
+    function showRecoveryInputScreen() {
+      log("リカバリーコード入力画面を表示");
+      hideAllScreens();
+      recoveryInputScreen.classList.add('active-screen');
+      
+      // 入力欄にフォーカス
+      recoveryInput.focus();
+      
+      // 保存されたコードがあれば設定
+      const savedCode = localStorage.getItem('sudokuRecoveryCode');
+      if (savedCode) {
+        recoveryInput.value = savedCode;
+        log("保存されたコードを設定: " + savedCode);
+      }
+    }
+    
+    // Update Difficulty Screen UI
+    function updateDifficultyScreen() {
+      // クリア回数を更新
+      beginnerClearsEl.textContent = gameState.beginnerClears;
+      intermediateClearsEl.textContent = gameState.intermediateClears;
+      advancedClearsEl.textContent = gameState.advancedClears;
+      
+      // 称号を更新
+      const titleIcon = ICONS[gameState.titleLevel] || "🔰";
+      playerTitleEl.innerHTML = `<span class="title-icon">${titleIcon}</span>${TITLES[gameState.titleLevel]}`;
+      
+      // リカバリーコードを更新
+      currentRecoveryCodeEl.textContent = gameState.recoveryCode;
+      
+      // 難易度オプションを更新
+      const difficultyOptions = document.querySelectorAll('.difficulty-option');
+      
+      // すべてのオプションをリセット
+      difficultyOptions.forEach(option => {
+        option.classList.remove('active', 'locked');
+      });
+      
+      // 現在の難易度をアクティブに
+      difficultyOptions[gameState.currentDifficulty - 1].classList.add('active');
+      
+      // 中級ロック/ロック解除
+      if (gameState.beginnerClears < 5) {
+        difficultyOptions[1].classList.add('locked');
+      }
+      
+      // 上級ロック/ロック解除
+      if (gameState.intermediateClears < 5) {
+        difficultyOptions[2].classList.add('locked');
+      }
+      
+      log("難易度画面のUI更新完了");
+    }
+    
+    // Show Difficulty Screen
+    function showDifficultyScreen() {
+      hideAllScreens();
+      difficultyScreen.classList.add('active-screen');
+      
+      // UI更新
+      updateDifficultyScreen();
+      log("難易度選択画面を表示");
+    }
+    
+    // Start Game with Selected Difficulty
+    function startGameWithSelectedDifficulty() {
+      // 選択された難易度がロック解除されているか確認
+      const difficultyOptions = document.querySelectorAll('.difficulty-option');
+      const selectedOption = difficultyOptions[gameState.currentDifficulty - 1];
+      
+      if (selectedOption.classList.contains('locked')) {
+        alert('この難易度はまだロックされています。条件を満たしてから挑戦してください。');
+        log("ロックされた難易度を選択");
+        return;
+      }
+      
+      // 保存されたゲームがあるか確認（resetPuzzleから呼ばれた場合はスキップ）
+      if (gameState.currentGameState && gameState.currentGameState.difficulty === gameState.currentDifficulty && !gameState.skipGameStateCheck) {
+        if (confirm('前回プレイした問題から再開しますか？')) {
+          restoreSavedGame();
+          return;
+        }
+      }
+      
+      // skipGameStateCheckフラグをリセット
+      gameState.skipGameStateCheck = false;
+      
+      // ヒントをリセット
+      gameState.hintsRemaining = 3;
+      gameState.hasCheckedAnswer = false;
+      
+      // 難易度情報をより詳細に設定
+      const difficultyInfo = {
+        level: gameState.currentDifficulty,
+        beginnerClears: gameState.beginnerClears,
+        intermediateClears: gameState.intermediateClears,
+        advancedClears: gameState.advancedClears,
+        // 具体的なマス数の指定を追加
+        cellsToKeep: getDifficultyBasedCellCount(gameState.currentDifficulty),
+        // GAS側に明示的な指示を追加
+        forceCellsToKeep: true,
+        // 初級の場合は角の4ブロックを必ず埋める特別指示を追加
+        initialLayout: gameState.currentDifficulty === 1 ? "cornerBlocksMandatory" : "random",
+        cornerFillMode: gameState.currentDifficulty === 1 ? "fullMandatory" : "none",
+        cornerFillPriority: 100 // 優先度100%（必ず埋める）
+      };
+      
+      // パズル生成
+      google.script.run
+        .withSuccessHandler(function(data) {
+          gameState.puzzle = data.puzzle;
+          gameState.solution = data.solution;
+          gameState.userGrid = JSON.parse(JSON.stringify(data.puzzle)); // ディープコピー
+          
+          // UI更新
+          currentDifficultyEl.textContent = DIFFICULTY_NAMES[gameState.currentDifficulty];
+          hintsRemainingEl.textContent = gameState.hintsRemaining;
+          
+          // 現在のゲーム状態を保存
+          gameState.currentGameState = {
+            difficulty: gameState.currentDifficulty,
+            puzzle: gameState.puzzle,
+            solution: gameState.solution,
+            userGrid: gameState.userGrid,
+            hintsRemaining: gameState.hintsRemaining,
+            specialCells: gameState.specialCells,
+            hasCheckedAnswer: gameState.hasCheckedAnswer,
+            timestamp: new Date().getTime()
+          };
+          
+          // ローカルストレージに保存
+          localStorage.setItem('sudokuCurrentGame', JSON.stringify(gameState.currentGameState));
+          
+          // グリッド作成の前に古いグリッドをクリア
+          clearSudokuGrid();
+          
+          // グリッド作成
+          createSudokuGrid();
+          
+          // ゲーム画面表示
+          hideAllScreens();
+          gameScreen.classList.add('active-screen');
+          log("ゲーム開始: 難易度" + gameState.currentDifficulty);
+        })
+        .withFailureHandler(function(error) {
+          console.error("パズル生成エラー:", error);
+          alert("問題の生成中にエラーが発生しました。もう一度お試しください。");
+        })
+        .generateSudokuPuzzle(difficultyInfo);
+    }
+    
+    // 難易度に基づいたマス数を取得
+    function getDifficultyBasedCellCount(difficulty) {
+      switch(difficulty) {
+        case 1: // 初級
+          return Math.floor(Math.random() * 6) + 50; // 50-55個
+        case 2: // 中級
+          return Math.floor(Math.random() * 6) + 35; // 35-40個
+        case 3: // 上級
+          return Math.floor(Math.random() * 6) + 20; // 20-25個
+        default:
+          return 35; // デフォルト
+      }
+    }
+    
+    // グリッドのクリア（イベントリスナーのクリーンアップ含む）
+    function clearSudokuGrid() {
+      if (!sudokuGrid) return;
+      
+      // 各セルのリスナーを明示的に削除
+      for (let i = 0; i < sudokuGrid.children.length; i++) {
+        const cell = sudokuGrid.children[i];
+        if (cell.clickHandler) {
+          cell.removeEventListener('click', cell.clickHandler);
+          cell.clickHandler = null;
+        }
+      }
+      
+      // グリッドをクリア
+      sudokuGrid.innerHTML = '';
+    }
+    
+    // Create Sudoku Grid
+    function createSudokuGrid() {
+      // セル作成
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = row;
+          cell.dataset.col = col;
+          
+          // 特別なセルかどうかチェック
+          if (gameState.specialCells && gameState.specialCells.some(coords => coords[0] === row && coords[1] === col)) {
+            cell.classList.add('special-cells');
+          }
+          
+          const value = gameState.puzzle[row][col];
+          if (value !== 0) {
+            cell.textContent = value;
+            cell.classList.add('fixed');
+          } else {
+            // ユーザー入力用セルにクリックイベントを追加
+            cell.clickHandler = cellClickHandler;
+            cell.addEventListener('click', cell.clickHandler);
+          }
+          
+          // 答え合わせ済みの場合はセルを操作不可に
+          if (gameState.hasCheckedAnswer) {
+            cell.classList.add('disabled-cell');
+          }
+          
+          sudokuGrid.appendChild(cell);
+        }
+      }
+      
+      // 答え合わせ済みの場合はボタンを調整
+      if (gameState.hasCheckedAnswer) {
+        showRetryButton();
+      } else {
+        // 答え合わせボタンとヒントボタンを表示
+        checkAnswerBtn.style.display = 'block';
+        useHintBtn.style.display = 'block';
+        // やり直しボタンがあれば削除
+        const retryBtn = document.getElementById('retryBtn');
+        if (retryBtn) retryBtn.remove();
+      }
+      
+      log("グリッド作成完了");
+    }
+    
+    // セルクリックハンドラ
+    function cellClickHandler() {
+      // 答え合わせ済みの場合は何もしない
+      if (gameState.hasCheckedAnswer) return;
+      
+      // 前の選択を解除
+      if (gameState.selectedCell) {
+        gameState.selectedCell.classList.remove('selected');
+      }
+      
+      // 現在のセルを選択
+      this.classList.add('selected');
+      gameState.selectedCell = this;
+      
+      const row = parseInt(this.dataset.row);
+      const col = parseInt(this.dataset.col);
+      log("セル選択: " + row + "," + col);
+    }
+    
+    // Is Grid Complete
+    function isGridComplete() {
+      // 表示とデータを同期
+      syncDisplayToState();
+      
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (gameState.puzzle[row][col] === 0 && gameState.userGrid[row][col] === 0) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    
+    // Sync Display to State
+    function syncDisplayToState() {
+      // 表示状態を内部状態に反映
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          // 固定マスはスキップ
+          if (gameState.puzzle[row][col] !== 0) continue;
+          
+          const index = row * 9 + col;
+          const cell = sudokuGrid.children[index];
+          
+          // セルの表示内容を取得
+          const displayContent = cell.textContent.trim();
+          const displayValue = displayContent ? parseInt(displayContent) : 0;
+          
+          // 内部状態を更新（表示を優先）
+          gameState.userGrid[row][col] = displayValue;
+        }
+      }
+      
+      // 同期状態を保存
+      saveCurrentGameState();
+      log("表示と内部状態を同期");
+    }
+    
+    // Save Current Game State
+    function saveCurrentGameState() {
+      // 現在のゲーム状態がある場合のみ保存
+      if (gameState.puzzle && gameState.solution && gameState.userGrid) {
+        try {
+          // 保存用オブジェクトを作成
+          const stateToSave = {
+            difficulty: gameState.currentDifficulty,
+            puzzle: gameState.puzzle,
+            solution: gameState.solution,
+            userGrid: gameState.userGrid,
+            hintsRemaining: gameState.hintsRemaining,
+            specialCells: gameState.specialCells,
+            hasCheckedAnswer: gameState.hasCheckedAnswer,
+            timestamp: new Date().getTime()
+          };
+          
+          // 内部状態に保存
+          gameState.currentGameState = stateToSave;
+          
+          // ローカルストレージに保存
+          localStorage.setItem('sudokuCurrentGame', JSON.stringify(stateToSave));
+          log("ゲーム状態を保存");
+        } catch (e) {
+          console.error('ゲーム状態の保存に失敗:', e);
+        }
+      }
+    }
+    
+    // Save Game Progress
+    function saveGameProgress() {
+      log("進捗情報を保存");
+      
+      return new Promise((resolve) => {
+        google.script.run
+          .withSuccessHandler(function(code) {
+            gameState.recoveryCode = code;
+            localStorage.setItem('sudokuRecoveryCode', code);
+            if (currentRecoveryCodeEl) {
+              currentRecoveryCodeEl.textContent = code;
+            }
+            log("進捗保存完了: " + code);
+            resolve(code);
+          })
+          .withFailureHandler(function(error) {
+            console.error('進捗保存エラー:', error);
+            alert("進捗の保存中にエラーが発生しました。");
+            resolve(null);
+          })
+          .generateRecoveryCode(
+            gameState.beginnerClears,
+            gameState.intermediateClears,
+            gameState.advancedClears,
+            0, // チャレンジクリア数は0固定（廃止したため）
+            gameState.titleLevel
+          );
+      });
+    }
+    
+    // Check Answer - 修正済み：1回のみの答え合わせ
+    function checkAnswer() {
+      log("答え合わせを実行");
+      
+      // 既に答え合わせをしている場合は何もしない
+      if (gameState.hasCheckedAnswer) {
+        alert("既に答え合わせをしています。もう一度挑戦するにはやり直しボタンを押してください。");
+        return;
+      }
+      
+      let hasEmptyCells = false;
+      let emptyCellsCount = 0;
+      
+      // 表示状態と内部状態の同期を強制
+      syncDisplayToState();
+      
+      // 空セルのチェック
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (gameState.userGrid[row][col] === 0) {
+            hasEmptyCells = true;
+            emptyCellsCount++;
+          }
+        }
+      }
+      
+      // 空セルがある場合は通知
+      if (hasEmptyCells) {
+        alert(`まだ ${emptyCellsCount} マス埋まっていません。すべてのマスを埋めてください。`);
+        return;
+      }
+      
+      // 答え合わせフラグを立てる
+      gameState.hasCheckedAnswer = true;
+      
+      // Sudokuルールに基づいて解答を検証
+      let isValid = validateSudokuRules(gameState.userGrid);
+      
+      if (isValid) {
+        log("全問正解！ゲーム完了処理を実行");
+        completeGame();
+      } else {
+        // 誤りがある場合、ルール違反のセルをマーク
+        markInvalidCells();
+        
+        // 全てのセルを編集不可にする
+        disableAllCells();
+        
+        // やり直しボタンを表示
+        showRetryButton();
+        
+        // 状態を保存（答え合わせフラグ含む）
+        saveCurrentGameState();
+        
+        alert('間違いがあります。赤色のマスが間違っています。もう一度やり直してください。');
+      }
+    }
+    
+    // 全てのセルを編集不可にする関数
+    function disableAllCells() {
+      for (let i = 0; i < sudokuGrid.children.length; i++) {
+        const cell = sudokuGrid.children[i];
+        cell.classList.add('disabled-cell');
+        
+        // クリックイベントを無効化（イベントリスナーを削除）
+        if (cell.clickHandler) {
+          cell.removeEventListener('click', cell.clickHandler);
+        }
+      }
+    }
+    
+    // やり直しボタンを表示する関数
+    function showRetryButton() {
+      // 既存のボタンを非表示
+      checkAnswerBtn.style.display = 'none';
+      useHintBtn.style.display = 'none';
+      
+      // やり直しボタンを追加
+      if (!document.getElementById('retryBtn')) {
+        const retryBtn = document.createElement('button');
+        retryBtn.id = 'retryBtn';
+        retryBtn.className = 'retry-button';
+        retryBtn.textContent = 'もう一度挑戦する';
+        retryBtn.addEventListener('click', resetPuzzle);
+        
+        // ボタンを挿入
+        gameButtons.appendChild(retryBtn);
+      }
+    }
+    
+    // パズルをリセットする関数 - 修正：確認なしで新しいパズルを生成
+    function resetPuzzle() {
+      // 確認ダイアログをスキップするフラグを設定
+      gameState.skipGameStateCheck = true;
+      
+      // 現在のゲーム状態をクリア
+      gameState.currentGameState = null;
+      localStorage.removeItem('sudokuCurrentGame');
+      
+      // hasCheckedAnswerフラグをリセット
+      gameState.hasCheckedAnswer = false;
+      
+      // 新しいパズルを生成
+      startGameWithSelectedDifficulty();
+      log("新しいパズルを生成しました");
+    }
+    
+    // Sudokuのルールに基づいて解答を検証する関数
+    function validateSudokuRules(grid) {
+      // 行のチェック
+      for (let row = 0; row < 9; row++) {
+        if (!isValidSet(grid[row])) {
+          return false;
+        }
+      }
+      
+      // 列のチェック
+      for (let col = 0; col < 9; col++) {
+        const column = [];
+        for (let row = 0; row < 9; row++) {
+          column.push(grid[row][col]);
+        }
+        if (!isValidSet(column)) {
+          return false;
+        }
+      }
+      
+      // 3x3ボックスのチェック
+      for (let boxRow = 0; boxRow < 3; boxRow++) {
+        for (let boxCol = 0; boxCol < 3; boxCol++) {
+          const box = [];
+          for (let row = boxRow * 3; row < boxRow * 3 + 3; row++) {
+            for (let col = boxCol * 3; col < boxCol * 3 + 3; col++) {
+              box.push(grid[row][col]);
+            }
+          }
+          if (!isValidSet(box)) {
+            return false;
+          }
+        }
+      }
+      
+      return true;
+    }
+    
+    // 配列内の数字が1-9の範囲で重複がないかチェックする関数
+    function isValidSet(arr) {
+      const set = new Set();
+      for (const num of arr) {
+        // 0（空セル）があってはならない（既に別の場所でチェック済み）
+        if (num < 1 || num > 9 || set.has(num)) {
+          return false;
+        }
+        set.add(num);
+      }
+      return true;
+    }
+    
+    // ルール違反のセルをマークする関数
+    function markInvalidCells() {
+      // すべてのエラー表示をリセット
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          const index = row * 9 + col;
+          const cell = sudokuGrid.children[index];
+          cell.classList.remove('error');
+        }
+      }
+      
+      // 行のチェック
+      for (let row = 0; row < 9; row++) {
+        markDuplicatesInSet(row, 'row');
+      }
+      
+      // 列のチェック
+      for (let col = 0; col < 9; col++) {
+        markDuplicatesInSet(col, 'column');
+      }
+      
+      // 3x3ボックスのチェック
+      for (let boxRow = 0; boxRow < 3; boxRow++) {
+        for (let boxCol = 0; boxCol < 3; boxCol++) {
+          markDuplicatesInBox(boxRow, boxCol);
+        }
+      }
+    }
+    
+    // 集合内の重複する値を持つセルをマークするヘルパー関数
+    function markViolatingCells(values, cells) {
+      const counts = {};
+      
+      // 値ごとの出現回数をカウント
+      for (let i = 0; i < values.length; i++) {
+        const value = values[i];
+        if (!counts[value]) {
+          counts[value] = [];
+        }
+        counts[value].push(i);
+      }
+      
+      // 重複する値を持つセルをマーク
+      for (const value in counts) {
+        if (counts[value].length > 1) {
+          for (const index of counts[value]) {
+            const [row, col] = cells[index];
+            const cellIndex = row * 9 + col;
+            sudokuGrid.children[cellIndex].classList.add('error');
+          }
+        }
+      }
+    }
+    
+    // 行または列内の重複をマークする関数
+    function markDuplicatesInSet(index, type) {
+      const counts = {};
+      const positions = [];
+      
+      for (let i = 0; i < 9; i++) {
+        let value;
+        if (type === 'row') {
+          value = gameState.userGrid[index][i];
+          positions.push([index, i]);
+        } else { // column
+          value = gameState.userGrid[i][index];
+          positions.push([i, index]);
+        }
+        
+        if (value > 0) {
+          if (!counts[value]) {
+            counts[value] = [];
+          }
+          counts[value].push(positions.length - 1);
+        }
+      }
+      
+      // 重複をマーク
+      for (const num in counts) {
+        if (counts[num].length > 1) {
+          for (const pos of counts[num]) {
+            const row = positions[pos][0];
+            const col = positions[pos][1];
+            const cellIndex = row * 9 + col;
+            sudokuGrid.children[cellIndex].classList.add('error');
+          }
+        }
+      }
+    }
+    
+    // 3x3ボックス内の重複をマークする関数
+    function markDuplicatesInBox(boxRow, boxCol) {
+      const counts = {};
+      const positions = [];
+      
+      for (let row = boxRow * 3; row < boxRow * 3 + 3; row++) {
+        for (let col = boxCol * 3; col < boxCol * 3 + 3; col++) {
+          const value = gameState.userGrid[row][col];
+          positions.push([row, col]);
+          
+          if (value > 0) {
+            if (!counts[value]) {
+              counts[value] = [];
+            }
+            counts[value].push(positions.length - 1);
+          }
+        }
+      }
+      
+      // 重複をマーク
+      for (const num in counts) {
+        if (counts[num].length > 1) {
+          for (const pos of counts[num]) {
+            const row = positions[pos][0];
+            const col = positions[pos][1];
+            const cellIndex = row * 9 + col;
+            sudokuGrid.children[cellIndex].classList.add('error');
+          }
+        }
+      }
+    }
+    
+    // Use Hint
+    function useHint() {
+      // 答え合わせ済みの場合は何もしない
+      if (gameState.hasCheckedAnswer) {
+        alert("答え合わせ後はヒントを使えません。もう一度挑戦するにはやり直しボタンを押してください。");
+        return;
+      }
+      
+      if (gameState.hintsRemaining <= 0) {
+        alert('ヒントを使い切りました。');
+        return;
+      }
+      
+      if (!gameState.selectedCell) {
+        alert('ヒントを使うマスを選んでください。');
+        return;
+      }
+      
+      const row = parseInt(gameState.selectedCell.dataset.row);
+      const col = parseInt(gameState.selectedCell.dataset.col);
+      
+      // 固定マスのチェック
+      if (gameState.puzzle[row][col] !== 0) {
+        alert('このマスは既に埋まっています。');
+        return;
+      }
+      
+      if (gameState.userGrid[row][col] !== 0) {
+        // 既に入力済みの場合は確認
+        if (!confirm('このマスは既に数字が入力されています。上書きしますか？')) {
+          return;
+        }
+      }
+      
+      log("ヒントを使用: " + row + "," + col);
+      
+      // ヒント回数を減らす
+      gameState.hintsRemaining--;
+      hintsRemainingEl.textContent = gameState.hintsRemaining;
+      
+      // 正解を入力
+      const correctValue = gameState.solution[row][col];
+      gameState.userGrid[row][col] = correctValue;
+      gameState.selectedCell.textContent = correctValue;
+      gameState.selectedCell.classList.remove('error');
+      gameState.selectedCell.classList.add('hinted');
+      
+      // 状態を保存
+      saveCurrentGameState();
+    }
+    
+    // Complete Game - 調整版：称号獲得条件を再調整
+    function completeGame() {
+      // 前の称号レベルを保存
+      const previousTitle = gameState.titleLevel;
+      
+      // 難易度に応じてクリア回数を更新
+      switch (gameState.currentDifficulty) {
+        case 1: // 初級
+          gameState.beginnerClears++;
+          // 初級は5回クリアで1つだけの称号
+          if (gameState.beginnerClears === 5 && gameState.titleLevel < 1) {
+            gameState.titleLevel = 1; // なんぷれ初心者
+            log("称号獲得: なんぷれ初心者");
+          }
+          break;
+          
+        case 2: // 中級
+          gameState.intermediateClears++;
+          // 中級も5回クリアで1つだけの称号
+          if (gameState.intermediateClears === 5 && gameState.titleLevel < 2) {
+            gameState.titleLevel = 2; // なんぷれ名人
+            log("称号獲得: なんぷれ名人");
+          }
+          break;
+          
+        case 3: // 上級 - より細かく称号を獲得
+          gameState.advancedClears++;
+          // 上級はより細かく称号を獲得
+          if (gameState.advancedClears === 5 && gameState.titleLevel < 3) {
+            gameState.titleLevel = 3; // なんぷれ達人
+            log("称号獲得: なんぷれ達人");
+          }
+          else if (gameState.advancedClears === 10 && gameState.titleLevel < 4) {
+            gameState.titleLevel = 4; // なんぷれマスター
+            log("称号獲得: なんぷれマスター");
+          }
+          else if (gameState.advancedClears === 15 && gameState.titleLevel < 5) {
+            gameState.titleLevel = 5; // なんぷれ王
+            log("称号獲得: なんぷれ王");
+          }
+          else if (gameState.advancedClears === 20 && gameState.titleLevel < 6) {
+            gameState.titleLevel = 6; // なんぷれ仙人
+            log("称号獲得: なんぷれ仙人");
+          }
+          else if (gameState.advancedClears === 25 && gameState.titleLevel < 7) {
+            gameState.titleLevel = 7; // なんぷれ神
+            log("称号獲得: なんぷれ神");
+          }
+          else if (gameState.advancedClears === 30 && gameState.titleLevel < 8) {
+            gameState.titleLevel = 8; // なんぷれ大統領
+            log("称号獲得: なんぷれ大統領");
+          }
+          else if (gameState.advancedClears === 40 && gameState.titleLevel < 9) {
+            gameState.titleLevel = 9; // なんぷれ皇帝
+            log("称号獲得: なんぷれ皇帝");
+          }
+          else if (gameState.advancedClears === 50 && gameState.titleLevel < 10) {
+            gameState.titleLevel = 10; // なんぷれ宇宙人
+            log("称号獲得: なんぷれ宇宙人");
+            log("すべての称号をコンプリート！");
+          }
+          break;
+      }
+      
+      // 現在のゲーム状態をクリア
+      gameState.currentGameState = null;
+      localStorage.removeItem('sudokuCurrentGame');
+      
+      // 新しいリカバリーコードを生成
+      google.script.run
+        .withSuccessHandler(function(code) {
+          gameState.recoveryCode = code;
+          
+          // ローカルストレージに保存
+          localStorage.setItem('sudokuRecoveryCode', code);
+          
+          // UI更新
+          newRecoveryCodeEl.textContent = code;
+          const titleIcon = ICONS[gameState.titleLevel] || "🔰";
+          newPlayerTitleEl.innerHTML = `<span class="title-icon">${titleIcon}</span>${TITLES[gameState.titleLevel]}`;
+          
+          // 称号が上がった場合は特別な演出を表示
+          if (previousTitle !== gameState.titleLevel) {
+            showTitleUpgradeEffect(previousTitle, gameState.titleLevel);
+          }
+          
+          // 完了画面を表示
+          hideAllScreens();
+          gameCompleteScreen.classList.add('active-screen');
+          log("ゲーム完了画面を表示");
+        })
+        .withFailureHandler(function(error) {
+          console.error("コード生成エラー:", error);
+          alert("リカバリーコードの生成中にエラーが発生しました。");
+        })
+        .generateRecoveryCode(
+          gameState.beginnerClears,
+          gameState.intermediateClears,
+          gameState.advancedClears,
+          0, // チャレンジクリア数は0固定（廃止したため）
+          gameState.titleLevel
+        );
+    }
+    
+    // Quit Game
+    async function quitGame() {
+      if (confirm('ゲームを終了しますか？進捗は保存されます。')) {
+        log("ゲーム終了処理を開始");
+        
+        try {
+          // 表示と内部状態を同期
+          syncDisplayToState();
+          
+          // 進捗を保存して完了を待つ
+          await saveGameProgress();
+          
+          // 難易度選択画面に戻る
+          showDifficultyScreen();
+          log("ゲーム終了処理完了");
+        } catch (e) {
+          console.error("ゲーム終了処理中にエラー:", e);
+          alert("エラーが発生しましたが、進捗は保存されています。");
+          showDifficultyScreen();
+        }
+      }
+    }
+    
+    // 保存されたゲームを復元する
+    function restoreSavedGame() {
+      if (!gameState.currentGameState) {
+        log("復元するゲームデータがありません");
+        return;
+      }
+      
+      try {
+        log("保存されたゲームを復元: 難易度" + gameState.currentGameState.difficulty);
+        
+        // 保存状態から復元
+        gameState.puzzle = gameState.currentGameState.puzzle;
+        gameState.solution = gameState.currentGameState.solution;
+        gameState.userGrid = gameState.currentGameState.userGrid;
+        gameState.hintsRemaining = gameState.currentGameState.hintsRemaining;
+        gameState.currentDifficulty = gameState.currentGameState.difficulty;
+        gameState.specialCells = gameState.currentGameState.specialCells;
+        gameState.hasCheckedAnswer = gameState.currentGameState.hasCheckedAnswer || false;
+        
+        // UI更新
+        currentDifficultyEl.textContent = DIFFICULTY_NAMES[gameState.currentDifficulty];
+        hintsRemainingEl.textContent = gameState.hintsRemaining;
+        
+        // 古いグリッドをクリア
+        clearSudokuGrid();
+        
+        // グリッド作成
+        createSudokuGrid();
+        
+        // ゲーム画面表示
+        hideAllScreens();
+        gameScreen.classList.add('active-screen');
+        
+        // 入力済みデータの表示（少し遅らせて確実に実行）
+        setTimeout(() => {
+          updateGridFromUserData();
+          
+          // 答え合わせ済みの場合はボタンを調整
+          if (gameState.hasCheckedAnswer) {
+            showRetryButton();
+          }
+          
+          log("グリッドの表示を更新");
+        }, 100);
+      } catch (e) {
+        console.error("ゲーム復元中にエラー:", e);
+        alert("保存されたゲームの復元中にエラーが発生しました。新しいゲームを開始します。");
+        localStorage.removeItem('sudokuCurrentGame');
+        startGameWithSelectedDifficulty();
+      }
+    }
+    
+    // グリッドをユーザーデータで更新
+    function updateGridFromUserData() {
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          // 固定マスはスキップ
+          if (gameState.puzzle[row][col] !== 0) continue;
+          
+          const userValue = gameState.userGrid[row][col];
+          if (userValue === 0) continue; // 空マスはスキップ
+          
+          const index = row * 9 + col;
+          if (index >= sudokuGrid.children.length) {
+            console.error("グリッドインデックスエラー", index, sudokuGrid.children.length);
+            continue;
+          }
+          
+          const cell = sudokuGrid.children[index];
+          cell.textContent = userValue;
+          
+          // 正解かどうかでクラスを設定
+          if (userValue === gameState.solution[row][col]) {
+            cell.classList.add('hinted');
+          }
+          
+          // 答え合わせ済みの場合はセルを操作不可に
+          if (gameState.hasCheckedAnswer) {
+            cell.classList.add('disabled-cell');
+          }
+        }
+      }
+    }
+    
+    // Show Start Screen
+    function showStartScreen() {
+      hideAllScreens();
+      startScreen.classList.add('active-screen');
+      log("スタート画面を表示");
+    }
+    
+    // Hide All Screens
+    function hideAllScreens() {
+      startScreen.classList.remove('active-screen');
+      recoveryInputScreen.classList.remove('active-screen');
+      difficultyScreen.classList.remove('active-screen');
+      gameScreen.classList.remove('active-screen');
+      gameCompleteScreen.classList.remove('active-screen');
+    }
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', initialize);
+  </script>
+</body>
+</html>
