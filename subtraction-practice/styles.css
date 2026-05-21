@@ -1749,7 +1749,7 @@ button {
     background:
       linear-gradient(90deg, rgba(4, 10, 28, .62) 0%, rgba(4, 10, 28, .34) 46%, rgba(4, 10, 28, 0) 100%),
       linear-gradient(180deg, rgba(4, 10, 28, .58) 0%, rgba(4, 10, 28, .2) 34%, rgba(4, 10, 28, .05) 62%, rgba(4, 10, 28, .48) 100%),
-      url("./assets/home-bg.png") 64% top / cover no-repeat;
+      url("./assets/home-bg.png") 82% center / cover no-repeat;
   }
 
   .home-tool-btn {
@@ -1760,8 +1760,9 @@ button {
   .home-center {
     width: min(82%, 320px);
     min-height: 0;
-    align-self: center;
+    align-self: start;
     justify-items: start;
+    margin-top: clamp(118px, 23vh, 190px);
     padding: 10px 12px;
     background: linear-gradient(90deg, rgba(4, 10, 28, .52), rgba(4, 10, 28, .24) 82%, rgba(4, 10, 28, .04));
   }
@@ -2374,6 +2375,7 @@ button {
 
   .home-center {
     width: min(83%, 290px);
+    margin-top: clamp(92px, 21vh, 128px);
     padding: 9px 10px;
   }
 
