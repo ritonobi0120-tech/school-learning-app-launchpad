@@ -20,7 +20,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .brand{display:flex;justify-content:space-between;align-items:center;gap:8px;min-width:0;flex:1}
 h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
 .sub{margin:2px 0 0;color:var(--muted);font-size:12px;line-height:1.3}
-.titlebox{background:var(--card);border-radius:999px;padding:7px 12px;box-shadow:var(--shadow);display:flex;gap:8px;align-items:center;white-space:nowrap;max-width:100%}
+.titlebox{background:var(--card);border-radius:999px;padding:7px 12px;box-shadow:var(--shadow);display:flex;gap:8px;align-items:center;white-space:normal;max-width:100%;line-break:strict;word-break:keep-all;overflow-wrap:normal}
+.titlebox>div:last-child{min-width:0}
 .playing .top{display:none}
 .playing .sub{display:none}
 .playing .titlebox{display:none}
@@ -71,6 +72,7 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
 .homelogo::after{content:'';position:absolute;left:0;right:8px;bottom:5px;height:8px;border-radius:999px;background:linear-gradient(90deg,rgba(124,58,237,.22) 0%,rgba(168,85,247,.18) 38%,rgba(251,191,36,.42) 82%,rgba(255,255,255,0) 100%)}
 .homesave{background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.65);border-radius:999px;font-weight:900;box-shadow:0 4px 16px rgba(91,43,118,.08);color:#7c3aed;padding:8px 14px;font-size:14px}
 .homeheadline h2{margin:0;font-size:38px;line-height:1.08;letter-spacing:0;color:#5b2b76;font-family:'Yusei Magic','M PLUS Rounded 1c','Segoe UI Rounded','BIZ UDPGothic','Yu Gothic UI',sans-serif;text-shadow:none}
+.phrasepart{display:inline-block;white-space:nowrap}
 .homehero-text{display:none}
 .homefocus{display:grid;grid-template-rows:auto auto auto auto auto;align-content:start;gap:10px;min-height:0;padding:20px 18px 22px;border-radius:24px;background:linear-gradient(155deg,rgba(255,251,235,.82),rgba(255,255,255,.62) 58%,rgba(224,242,254,.42));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1.5px solid rgba(251,191,36,.28);box-shadow:0 16px 32px rgba(120,53,15,.10),inset 0 1px 0 rgba(255,255,255,.64),inset 0 -12px 28px rgba(255,237,213,.18)}
 .homefocus-title{font-size:16px;font-weight:800;line-height:1.15;color:#7b4b61;letter-spacing:.04em;text-transform:uppercase}
@@ -114,7 +116,8 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
 .hometitlelabel{font-size:15px;font-weight:900;color:#7b4b61;letter-spacing:.04em;text-transform:uppercase}
 .hometitlewrap{display:flex;gap:14px;align-items:center}
 .hometitlewrap .titleicon{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;font-size:32px;background:rgba(255,255,255,.78);box-shadow:0 8px 18px rgba(124,58,237,.1)}
-.hometitle{font-size:26px;font-weight:900;line-height:1.12;color:#5b2b76}
+.hometitle{font-size:26px;font-weight:900;line-height:1.12;color:#5b2b76;line-break:strict;word-break:keep-all;overflow-wrap:normal}
+.hometitle .titlepart,.titlebox b .titlepart,.wintitlepill b .titlepart{display:inline-block;white-space:nowrap}
 .homepointsrow{display:grid;gap:10px;padding:12px 14px;border-radius:20px;background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,239,220,.82));border:1px solid rgba(245,158,11,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.52)}
 .homepointsmeta{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
 .homepointslabel{font-size:15px;font-weight:900;color:#7b4b61}
@@ -331,7 +334,7 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
 .rulesgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:6px}
 .wintitlepill{display:grid;justify-items:center;gap:2px;margin:2px auto 0;padding:7px 16px;border-radius:15px;background:#ecfdf5;border:1px solid #bbf7d0;color:#166534;font-weight:900;box-shadow:0 8px 18px rgba(22,101,52,.08)}
 .wintitlepill span{font-size:10px;line-height:1;letter-spacing:.16em;color:#16a34a}
-.wintitlepill b{font-size:16px;line-height:1.18}
+.wintitlepill b{font-size:16px;line-height:1.18;line-break:strict;word-break:keep-all;overflow-wrap:normal}
 .wintext-main{margin:0;color:#475569;font-size:14px;line-height:1.35;font-weight:800}
 #ct,#assistbtn,.digitmini,.timerrow,.bestrow,#msg,.bestlist .bestitem:nth-child(-n+3),#winclose{display:none !important}
 @media (max-width:1180px){
@@ -341,7 +344,7 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
   .board{width:min(78vmin,560px)}
 }
 @media (max-width:980px){
-  .homebox::before{background-position:center right 34%}
+  .homebox::before{background-position:76% center}
   .homebox::after{background:linear-gradient(90deg,rgba(255,255,255,.78) 0%,rgba(255,255,255,.50) 46%,rgba(255,255,255,.10) 100%)}
   .homeinner{grid-template-columns:minmax(0,1fr);padding:22px}
   .homeheadline h2{font-size:58px}
@@ -356,10 +359,13 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
 @media (max-width:720px){
   body{overflow:hidden}
   .home-mode .app,.playing .app{height:100dvh;min-height:0}
-  .homebox::before{background-position:center right 30%;filter:saturate(1.04)}
+  .homebox::before{background-position:right center;filter:saturate(1.04)}
+  .homebox::after{background:linear-gradient(180deg,rgba(255,255,255,.74) 0%,rgba(255,255,255,.48) 23%,rgba(255,255,255,.08) 42%,rgba(255,255,255,.06) 56%,rgba(255,255,255,.50) 76%,rgba(255,255,255,.76) 100%)}
   .homeinner{padding:14px;gap:10px}
   .homeheadline,.homefocus{background:linear-gradient(155deg,rgba(255,251,235,.82),rgba(255,255,255,.62) 58%,rgba(224,242,254,.42))}
-  .homehero{grid-template-rows:auto auto;align-content:start;height:100%}
+  .homehero{grid-template-rows:auto 1fr auto;align-content:stretch;height:100%;gap:0}
+  .homeheadline{grid-row:1}
+  .homefocus{grid-row:3;align-self:end}
   .homeside{display:none}
   .brand,.homebrandrow{flex-direction:column;align-items:flex-start}
   .titlebox{border-radius:20px;white-space:normal}
@@ -378,9 +384,10 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
   .playing .playmenu{position:absolute;top:8px;right:8px;width:auto}
 }
 @media (max-height:640px){
-  .homebox::before{background-position:center right 31%}
+  .homebox::before{background-position:right center}
   .homeinner{padding:14px;gap:10px}
-  .homehero{grid-template-rows:auto auto;gap:10px}
+  .homehero{grid-template-rows:auto 1fr auto;gap:0}
+  .homefocus{grid-row:3;align-self:end}
   .homeheadline{padding:18px 20px;gap:10px}
   .homelogo{font-size:clamp(48px,4.2vw,58px);padding:0 12px 14px 0}
   .homelogo::before{font-size:16px;top:4px}
@@ -453,13 +460,13 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
                     <div id="homesave" class="homesave">前回の続きあり</div>
                   </div>
                   <div>
-                    <h2>星を集めて扉をひらこう</h2>
+                    <h2><span class="phrasepart">星を集めて</span><br><span class="phrasepart">扉をひらこう</span></h2>
                     <p id="homelead" class="homehero-text">クリアを重ねると、中級・上級へ進めます。</p>
                   </div>
                 </div>
                 <div class="homefocus">
                   <div class="homefocus-title">現在の目標</div>
-                  <div id="homefocustext" class="homefocus-text">初級を 5 回クリアして中級を解放</div>
+                  <div id="homefocustext" class="homefocus-text"><span class="phrasepart">初級を5回クリア</span><br><span class="phrasepart">中級を解放</span></div>
                   <div id="homefocussub" class="homefocus-sub">現在 0 / 5 ・ あと 5 回</div>
                   <div class="homegoalmeter">
                     <div class="homegoaltrack"><div id="homegoalfill" class="homegoalfill"></div></div>
@@ -718,6 +725,16 @@ function titleInfoForPoints(points){
   const lv=titleLevel(points),cur=TITLE_RANKS[lv],next=TITLE_RANKS[Math.min(lv+1,TITLE_RANKS.length-1)],max=lv===TITLE_RANKS.length-1;
   return{lv:lv,icon:cur.icon,title:cur.title,sub:max?'最高ランク到達！':'次の称号まで あと '+Math.max(0,next.need-points)+' ポイント',points:points,nextNeed:max?cur.need:next.need,remain:max?0:Math.max(0,next.need-points),max:max,nextTitle:max?cur.title:next.title}
 }
+function escHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function titleMarkup(title){
+  return String(title||'').trim().split(/\s+/).filter(Boolean).map(part=>{
+    const pieces=part==='スーパーレジェンド'?['スーパー','レジェンド']:[part];
+    return pieces.map(piece=>'<span class="titlepart">'+escHtml(piece)+'</span>').join('<wbr>');
+  }).join('<wbr> ');
+}
+function phraseMarkup(text){
+  return String(text||'').trim().split('|').filter(Boolean).map(part=>'<span class="phrasepart">'+escHtml(part)+'</span>').join('<br>');
+}
 function sane(x){
   if(!x||typeof x!=='object')return null;
   x=recoverTamperedProgress(x);
@@ -895,7 +912,7 @@ function showWin(data){
     if(data.allClear)el.wincomplete.innerHTML='<div class="wincompleteicon">👑</div><div><b>全クリ達成！</b><span>全ての称号を集めました。ナンプレ大冒険 完全クリアです。</span></div>';
     else if(data.emergency)el.wincomplete.innerHTML='<div class="wincompleteicon">🚨</div><div><b>鬼の門、出現！</b><span>上級5回クリアで緊急クエストが開きました。</span></div>';
   }
-  el.wintitle.textContent=data.title;
+  el.wintitle.innerHTML=titleMarkup(data.title);
   el.winprogresslabel.textContent=data.progress.label;
   el.winprogresstext.textContent=data.progress.value;
   el.winprogresssub.textContent=data.progress.sub;
@@ -1076,22 +1093,22 @@ function homeFocusSummary(k){
     const done=Math.min(clearsFor('easy'),5),goal=5,remain=Math.max(0,goal-done);
     return done>=goal
       ? {text:'中級に挑戦できます',sub:'次は中級を進めましょう。',ratio:1,caption:goal+' / '+goal+' クリア'}
-      : {text:'初級を 5 回クリアして中級を解放',sub:'現在 '+done+' / '+goal+' ・ あと '+remain+' 回',ratio:done/goal,caption:done+' / '+goal+' クリア'};
+      : {text:'初級を5回クリア|中級を解放',sub:'現在 '+done+' / '+goal+' ・ あと '+remain+' 回',ratio:done/goal,caption:done+' / '+goal+' クリア'};
   }
   if(k==='medium'){
     const done=Math.min(clearsFor('medium'),5),goal=5,remain=Math.max(0,goal-done);
     return done>=goal
       ? {text:'上級に挑戦できます',sub:'次は上級に挑戦しましょう。',ratio:1,caption:goal+' / '+goal+' クリア'}
-      : {text:'中級を 5 回クリアして上級を解放',sub:'現在 '+done+' / '+goal+' ・ あと '+remain+' 回',ratio:done/goal,caption:done+' / '+goal+' クリア'};
+      : {text:'中級を5回クリア|上級を解放',sub:'現在 '+done+' / '+goal+' ・ あと '+remain+' 回',ratio:done/goal,caption:done+' / '+goal+' クリア'};
   }
   if(k==='hard'){
     const done=Math.min(clearsFor('hard'),CFG.oni.u.n),goal=CFG.oni.u.n,remain=Math.max(0,goal-done);
     return unlocked('oni')
-      ? {text:'緊急クエスト「鬼」が出現中',sub:'ホームで鬼を選べます。旧上級レベルの本気問題です。',ratio:1,caption:'EMERGENCY'}
-      : {text:'上級を 5 回クリアして鬼を出現させよう',sub:'現在 '+done+' / '+goal+' ・ あと '+remain+' 回',ratio:done/goal,caption:done+' / '+goal+' クリア'};
+      ? {text:'緊急クエスト「鬼」|出現中',sub:'ホームで鬼を選べます。旧上級レベルの本気問題です。',ratio:1,caption:'EMERGENCY'}
+      : {text:'上級を5回クリア|鬼を出現させよう',sub:'現在 '+done+' / '+goal+' ・ あと '+remain+' 回',ratio:done/goal,caption:done+' / '+goal+' クリア'};
   }
   const ti=titleInfo();
-  return {text:'鬼で星ポイントを集めよう',sub:ti.max?'最高ランク到達！':'次の称号まで あと '+ti.remain+' ポイント',ratio:ti.max?1:Math.max(0,Math.min(1,totalStarPoints()/ti.nextNeed)),caption:ti.max?'COMPLETE':totalStarPoints()+' / '+ti.nextNeed};
+  return {text:'鬼で星ポイントを|集めよう',sub:ti.max?'最高ランク到達！':'次の称号まで あと '+ti.remain+' ポイント',ratio:ti.max?1:Math.max(0,Math.min(1,totalStarPoints()/ti.nextNeed)),caption:ti.max?'COMPLETE':totalStarPoints()+' / '+ti.nextNeed};
 }
 function homeRoadmapHtml(){
   const easyState=S.cur==='easy'?'current':(clearsFor('easy')>0||unlocked('medium')?'done':'current');
@@ -1229,10 +1246,10 @@ function resumeGame(){if(!hasResume()){toast('続きから遊べる問題はあ�
 function fitBoardArea(){const wrap=document.querySelector('.boardwrap');if(!wrap)return;const maxH=Math.max(320,Math.floor(wrap.clientHeight)-2);const stageW=Math.max(320,Math.floor(wrap.clientWidth)-(homeMode?0:164)-2);const boardSize=Math.max(380,Math.min(stageW,maxH,820));el.board.style.width=boardSize+'px';if(homeMode){const homeH=Math.max(340,Math.floor(window.innerHeight)-8);el.homebox.style.width=stageW+'px';el.homebox.style.height=homeH+'px';el.homebox.style.minHeight='0px'}else{el.homebox.style.height='';el.homebox.style.width=Math.min(boardSize,stageW)+'px';el.homebox.style.minHeight=Math.max(300,Math.min(maxH,Math.round(boardSize*.72)))+'px'}wrap.style.setProperty('--board-size',boardSize+'px')}
 function scheduleFit(){if(fitTimer)cancelAnimationFrame(fitTimer);fitTimer=requestAnimationFrame(()=>{fitTimer=null;fitBoardArea()})}
 function paintDigits(){const g=S.game;for(let n=1;n<=9;n++){let left='-';let cls='digit';if(g){const remain=g.solution.filter((v,i)=>v===n&&g.user[i]!==n).length;left=String(remain);if(remain===0)cls+=' done'}const d=digs[n-1];d.className=cls;d.innerHTML='<b>'+n+'</b><span>のこり '+left+'</span>'}}
-function paintTop(){el.se.textContent=S.stats.easy;el.sm.textContent=S.stats.medium;el.sh.textContent=S.stats.hard;if(el.so)el.so.textContent=S.stats.oni;el.be.textContent=fmt(S.best.easy);el.bm.textContent=fmt(S.best.medium);el.bh.textContent=fmt(S.best.hard);if(el.bo)el.bo.textContent=fmt(S.best.oni);el.starsum.textContent=totalStarPoints();el.streakbest.textContent=S.daily.bestStreak+'日';const ti=titleInfo(),tip=titleGuideText();el.ti.textContent=ti.icon;el.tt.innerHTML='<b>'+ti.title+'</b>';el.ts.textContent=ti.sub;el.pti.textContent=ti.icon;el.ptt.innerHTML='<b>'+ti.title+'</b>';el.pts.textContent=ti.sub;el.tt.title=tip;el.ts.title=tip;el.ptt.title=tip;el.pts.title=tip;const topTitle=el.tt.closest('.titlebox'),paneTitle=el.ptt.closest('.titlebox');if(topTitle)topTitle.title=tip;if(paneTitle)paneTitle.title=tip;el.cd.textContent=CFG[S.cur].l;el.cs.textContent=busy?'作成中…':'自動保存中';if(el.ct)el.ct.textContent=fmt(S.game?currentElapsed(S.game):0);const di=dailyInfo();el.dailylabel.textContent=di.done?'きょうのチャレンジ クリアずみ':'きょうのチャレンジ';el.dailystatus.textContent=CFG[di.difficulty].l+' / れんぞく '+S.daily.streak+' 日';el.dailybtn.textContent=di.done?'もう一回':'今日の1問';const currentDiff=!homeMode&&S.game?S.game.difficulty:S.cur,ui=unlockInfo(currentDiff);el.stagechip.textContent=progressChipText(currentDiff);el.unlocktitle.textContent=ui.title;el.unlocktext.textContent=ui.detail;el.unlockfill.style.width=Math.round(ui.ratio*100)+'%';if(!homeMode&&S.game){el.cg.textContent='初期数字 '+S.game.givens;el.ch.textContent='ヒント残り '+S.game.hints;el.hint.textContent='ヒント 残り'+S.game.hints;el.out.value=enc(S)}else{el.cg.textContent='初期数字 0';el.ch.textContent='ヒント上限 '+CFG[S.cur].h;el.hint.textContent='ヒント '+CFG[S.cur].h+'回';el.out.value=S.game?enc(S):''}paintBadges()}
+function paintTop(){el.se.textContent=S.stats.easy;el.sm.textContent=S.stats.medium;el.sh.textContent=S.stats.hard;if(el.so)el.so.textContent=S.stats.oni;el.be.textContent=fmt(S.best.easy);el.bm.textContent=fmt(S.best.medium);el.bh.textContent=fmt(S.best.hard);if(el.bo)el.bo.textContent=fmt(S.best.oni);el.starsum.textContent=totalStarPoints();el.streakbest.textContent=S.daily.bestStreak+'日';const ti=titleInfo(),tip=titleGuideText();el.ti.textContent=ti.icon;el.tt.innerHTML='<b>'+titleMarkup(ti.title)+'</b>';el.ts.textContent=ti.sub;el.pti.textContent=ti.icon;el.ptt.innerHTML='<b>'+titleMarkup(ti.title)+'</b>';el.pts.textContent=ti.sub;el.tt.title=tip;el.ts.title=tip;el.ptt.title=tip;el.pts.title=tip;const topTitle=el.tt.closest('.titlebox'),paneTitle=el.ptt.closest('.titlebox');if(topTitle)topTitle.title=tip;if(paneTitle)paneTitle.title=tip;el.cd.textContent=CFG[S.cur].l;el.cs.textContent=busy?'作成中…':'自動保存中';if(el.ct)el.ct.textContent=fmt(S.game?currentElapsed(S.game):0);const di=dailyInfo();el.dailylabel.textContent=di.done?'きょうのチャレンジ クリアずみ':'きょうのチャレンジ';el.dailystatus.textContent=CFG[di.difficulty].l+' / れんぞく '+S.daily.streak+' 日';el.dailybtn.textContent=di.done?'もう一回':'今日の1問';const currentDiff=!homeMode&&S.game?S.game.difficulty:S.cur,ui=unlockInfo(currentDiff);el.stagechip.textContent=progressChipText(currentDiff);el.unlocktitle.textContent=ui.title;el.unlocktext.textContent=ui.detail;el.unlockfill.style.width=Math.round(ui.ratio*100)+'%';if(!homeMode&&S.game){el.cg.textContent='初期数字 '+S.game.givens;el.ch.textContent='ヒント残り '+S.game.hints;el.hint.textContent='ヒント 残り'+S.game.hints;el.out.value=enc(S)}else{el.cg.textContent='初期数字 0';el.ch.textContent='ヒント上限 '+CFG[S.cur].h;el.hint.textContent='ヒント '+CFG[S.cur].h+'回';el.out.value=S.game?enc(S):''}paintBadges()}
 function paintTabs(){const cur=PANELS.includes(S.panel)?S.panel:'play';Array.from(el.tabs.querySelectorAll('[data-tab]')).forEach(b=>b.className='tab'+(b.dataset.tab===cur?' on':''));document.querySelectorAll('[data-pane]').forEach(p=>p.className='pane'+(p.dataset.pane===cur?' on':''))}
 function paintDiff(){el.diffs.innerHTML='';ORD.forEach(k=>{const c=CFG[k],b=document.createElement('button');b.type='button';b.className='diff'+(S.cur===k?' on':'')+(!unlocked(k)?' lock':'');b.dataset.k=k;b.innerHTML='<b>'+c.l+'</b><s>'+c.d+'</s>';b.disabled=busy;el.diffs.appendChild(b)});el.unlock.textContent=progressRoadmap()}
-function paintHome(){const resume=hasResume(),ti=titleInfo(),focus=homeFocusSummary(S.cur);document.body.classList.toggle('playing',!homeMode);document.body.classList.toggle('home-mode',homeMode);el.homebox.className='homebox'+(unlocked('oni')?' oni-ready':'')+(homeMode?'':' hide');el.board.className='board'+(homeMode?' hide':'');el.infobar.classList.add('hide');if(el.leftdock)el.leftdock.classList.toggle('hide',homeMode);if(el.rightdock)el.rightdock.classList.toggle('hide',homeMode);if(el.playmenu){el.playmenu.classList.toggle('hide',homeMode);if(homeMode)el.playmenu.open=false}el.homepath.innerHTML=homeRoadmapHtml();el.homelead.textContent=resume?'前回の続きから、すぐ再開できます。':unlocked('oni')?'緊急クエスト「鬼」が出現しました。':'クリアを重ねると、中級・上級へ進めます。';const homeHeading=el.homebox.querySelector('.homeheadline h2');if(homeHeading)homeHeading.textContent=unlocked('oni')?'鬼の門がひらいた':'星を集めて扉をひらこう';if(el.homesave){el.homesave.className='homesave'+(resume?'':' hide');el.homesave.textContent='前回の続きあり'}if(el.homefocustext)el.homefocustext.textContent=focus.text;if(el.homefocussub)el.homefocussub.textContent=focus.sub;if(el.homegoalfill)el.homegoalfill.style.width=Math.round((focus.ratio||0)*100)+'%';if(el.homestart)el.homestart.textContent=S.cur==='oni'?'鬼に挑戦':'この級に挑戦';el.homecontinue.className='soft homecontinue'+(resume?'':' hide');el.homecontinue.textContent='続きから再開';el.homecontinueinfo.className='homehelper'+(resume?'':' hide');el.homecontinueinfo.textContent='続きからは前回の問題、新しく始めると今の級で遊べます。';if($('hometitle'))$('hometitle').textContent=ti.title;if($('hometitleicon'))$('hometitleicon').textContent=ti.icon;if($('homepointsum'))$('homepointsum').textContent=totalStarPoints();if(el.homepointshelpbody)el.homepointshelpbody.innerHTML=starPointGuideHtml();el.homegoaltext.textContent=ti.max?'最高ランクに到達しました':'レベルアップまで あと '+ti.remain+' ポイント';if(el.homenexttitle)el.homenexttitle.textContent='？？？？';scheduleFit()}
+function paintHome(){const resume=hasResume(),ti=titleInfo(),focus=homeFocusSummary(S.cur);document.body.classList.toggle('playing',!homeMode);document.body.classList.toggle('home-mode',homeMode);el.homebox.className='homebox'+(unlocked('oni')?' oni-ready':'')+(homeMode?'':' hide');el.board.className='board'+(homeMode?' hide':'');el.infobar.classList.add('hide');if(el.leftdock)el.leftdock.classList.toggle('hide',homeMode);if(el.rightdock)el.rightdock.classList.toggle('hide',homeMode);if(el.playmenu){el.playmenu.classList.toggle('hide',homeMode);if(homeMode)el.playmenu.open=false}el.homepath.innerHTML=homeRoadmapHtml();el.homelead.textContent=resume?'前回の続きから、すぐ再開できます。':unlocked('oni')?'緊急クエスト「鬼」が出現しました。':'クリアを重ねると、中級・上級へ進めます。';const homeHeading=el.homebox.querySelector('.homeheadline h2');if(homeHeading)homeHeading.innerHTML=phraseMarkup(unlocked('oni')?'鬼の門が|ひらいた':'星を集めて|扉をひらこう');if(el.homesave){el.homesave.className='homesave'+(resume?'':' hide');el.homesave.textContent='前回の続きあり'}if(el.homefocustext)el.homefocustext.innerHTML=phraseMarkup(focus.text);if(el.homefocussub)el.homefocussub.textContent=focus.sub;if(el.homegoalfill)el.homegoalfill.style.width=Math.round((focus.ratio||0)*100)+'%';if(el.homestart)el.homestart.textContent=S.cur==='oni'?'鬼に挑戦':'この級に挑戦';el.homecontinue.className='soft homecontinue'+(resume?'':' hide');el.homecontinue.textContent='続きから再開';el.homecontinueinfo.className='homehelper'+(resume?'':' hide');el.homecontinueinfo.textContent='続きからは前回の問題、新しく始めると今の級で遊べます。';if($('hometitle'))$('hometitle').innerHTML=titleMarkup(ti.title);if($('hometitleicon'))$('hometitleicon').textContent=ti.icon;if($('homepointsum'))$('homepointsum').textContent=totalStarPoints();if(el.homepointshelpbody)el.homepointshelpbody.innerHTML=starPointGuideHtml();el.homegoaltext.textContent=ti.max?'最高ランクに到達しました':'レベルアップまで あと '+ti.remain+' ポイント';if(el.homenexttitle)el.homenexttitle.textContent='？？？？';scheduleFit()}
 function paintBoard(){const g=S.game;for(let i=0;i<81;i++){const b=cells[i];b.className='cell';if(i%9===2||i%9===5)b.className+=' r';if(Math.floor(i/9)===2||Math.floor(i/9)===5)b.className+=(b.className.indexOf('r')>-1?'b':' b');if(!g){b.querySelector('.cell-main').textContent='';b.querySelector('.cell-notes').innerHTML='';continue}const fx=g.puzzle[i],v=g.user[i],mask=(g.notes&&g.notes[i])||0,hinted=!!(g.hinted&&g.hinted[i]);b.querySelector('.cell-main').textContent=v||'';if(fx)b.className+=' fixed';else if(hinted)b.className+=' hinted';else if(v)b.className+=' userfill';if(sel===i)b.className+=' sel';if(g.badMarks&&g.badMarks[i])b.className+=' bad';if(g.status==='won'&&v)b.className+=' win';const notes=b.querySelector('.cell-notes');if(!v&&mask){let html='';for(let n=1;n<=9;n++){const on=(mask&(1<<(n-1)))!==0;html+='<span>'+(on?n:'')+'</span>'}notes.innerHTML=html}else notes.innerHTML='';const kind=fx?'最初からの数字':hinted?'ヒントで開いた数字':v?'自分で入れた数字':'空';b.setAttribute('aria-label',(Math.floor(i/9)+1)+'行'+(i%9+1)+'列 '+kind+(v?' '+v:''))}}
 function paintInfo(){const g=S.game;if(homeMode){el.sel.textContent=hasResume()?'続きから再開するか、新しい問題を始めてください。':'級を選んでスタートしてください。';el.cand.textContent='プレイ中は Ctrl + 数字でメモできます。';return}if(!g){el.sel.textContent='問題を作成するとここに表示されます。';el.cand.textContent='-';return}if(sel==null){el.sel.textContent='マスを選ぶとここに表示されます。';el.cand.textContent=g.status==='checked'?'採点済みです。マスを押すと正解と見直す場所が分かります。':'数字入力 / Ctrl+数字でメモ / 全て埋めたら採点';return}const r=Math.floor(sel/9)+1,c=sel%9+1,f=g.puzzle[sel]!==0,v=g.user[sel],hinted=!!(g.hinted&&g.hinted[sel]),notes=noteNums((g.notes&&g.notes[sel])||0);el.sel.textContent=f?r+'行'+c+'列（最初の数字）':hinted?r+'行'+c+'列（ヒントの数字）':r+'行'+c+'列'+(v?' / 入力: '+v:'');el.cand.textContent=f?'この数字は変更できません。':hinted?'ヒントで開いた数字です。':g.status==='checked'?'採点済みです。マスを押すと正解と見直す場所が分かります。':notes.length?'メモ: '+notes.join(' ・ ')+' / Ctrl+数字で更新':'数字入力 / Ctrl+数字でメモ / 全て埋めたら採点'}
 function paintKeys(){const g=S.game,sv=g&&sel!=null?g.user[sel]:0,editable=!!(g&&sel!=null&&!isLockedCell(g,sel)&&g.status==='playing'),cs=editable?new Set(cand(g.user,sel)):new Set();D.forEach(n=>{const b=kbtn[n];b.disabled=!editable||busy;let cls='key';if(sv===n)cls+=' cur';if(cs.has(n))cls+=' cand';if(cs.size&&!cs.has(n)&&sv!==n)cls+=' off';b.className=cls});kbtn.x.disabled=!editable||busy}
