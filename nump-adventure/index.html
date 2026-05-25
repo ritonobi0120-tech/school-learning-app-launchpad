@@ -399,6 +399,7 @@ body.help-open .homepointshelpbody{display:block}
   .playing .cell-notes{inset:3px;font-size:11px;font-weight:900}
   .playing .key{min-height:40px;border-radius:13px;font-size:20px;padding:0;display:grid;place-items:center;align-content:center;gap:0;line-height:1}
   .playing .key[data-n]:not([data-n="x"])::after{content:'長押しメモ';display:block;margin-top:2px;font-size:8px;line-height:1;color:#475569;font-weight:900}
+  .playing .key[data-n="x"]::after{content:'長押し全メモ';display:block;margin-top:2px;font-size:8px;line-height:1;color:#475569;font-weight:900}
   .playing .key.cur::after,.playing .key.notemode::after{color:rgba(255,255,255,.9)}
   .playing .mobileaction{min-height:38px;font-size:14px;padding:0 4px}
   .playing .board{width:min(100%,var(--board-size,360px));height:auto}
@@ -1299,8 +1300,21 @@ function paintKeys(){const g=S.game,sv=g&&sel!=null?g.user[sel]:0,editable=!!(g&
 function paintCtl(){const g=S.game,playing=!!(!homeMode&&g&&g.status==='playing'),won=!!(g&&g.status==='won'),checked=!!(g&&g.status==='checked'),ht=playing?hintTarget(g):-1;el.new.disabled=busy;el.homestart.disabled=busy;el.homecontinue.disabled=busy||!hasResume();el.dailybtn.disabled=busy;el.homebtn.disabled=homeMode||busy;el.hint.textContent=!g?'ヒント':playing?'ヒント 残り'+g.hints:won?'結果':'採点済み';el.grade.textContent=!g?'採点':playing?'採点':g.mode==='daily'?'ホームへ':'つぎの問題へ';el.hint.disabled=homeMode||!g||busy||(playing?(g.hints<=0||ht<0):(won?!lastWin:true));el.grade.disabled=homeMode||!g||busy;el.undo.disabled=homeMode||!g||!g.history.length||busy||g.status!=='playing';el.redo.disabled=homeMode||!g||!g.future.length||busy||g.status!=='playing';el.load.disabled=busy;el.copy.disabled=!g;el.fresh.disabled=!g;if(mobile.home)mobile.home.disabled=homeMode||busy;if(mobile.hint){mobile.hint.textContent=el.hint.textContent;mobile.hint.disabled=el.hint.disabled}if(mobile.grade){mobile.grade.textContent=el.grade.textContent;mobile.grade.disabled=el.grade.disabled}paintInputMode()}
 function paint(){paintTop();paintTabs();paintDiff();paintHome();paintDigits();paintBoard();paintInfo();paintKeys();paintCtl();scheduleFit()}
 function clearKeyHold(){if(keyHoldTimer){clearTimeout(keyHoldTimer);keyHoldTimer=null}}
-function keyValueAction(raw,forceMemo){if(raw==='x'){put(0);return}const n=+raw;if(!n)return;(forceMemo||inputMode==='note')?toggleMemoDigit(n):put(n)}
-function startKeyHold(btn,e){clearKeyHold();keyLongPressed=false;if(!btn||btn.dataset.n==='x'||btn.disabled)return;try{if(e&&btn.setPointerCapture)btn.setPointerCapture(e.pointerId)}catch(_e){}keyHoldTimer=setTimeout(()=>{keyHoldTimer=null;keyLongPressed=true;keyValueAction(btn.dataset.n,true)},360)}
+function clearAllNotes(){
+  const g=S.game;
+  if(!g||busy||g.status!=='playing')return;
+  const count=(g.notes||[]).filter(Boolean).length;
+  if(!count){toast('消すメモはありません。','warn',1800);return}
+  pushHist(g);
+  clearBadMarks(g);
+  g.notes=emptyNotes();
+  save();
+  paint();
+  msg('盤面のメモをすべて消しました。');
+  toast('メモをすべて消しました。','ok',2200);
+}
+function keyValueAction(raw,forceMemo){if(raw==='x'){forceMemo?clearAllNotes():put(0);return}const n=+raw;if(!n)return;(forceMemo||inputMode==='note')?toggleMemoDigit(n):put(n)}
+function startKeyHold(btn,e){clearKeyHold();keyLongPressed=false;if(!btn||btn.disabled)return;try{if(e&&btn.setPointerCapture)btn.setPointerCapture(e.pointerId)}catch(_e){}keyHoldTimer=setTimeout(()=>{keyHoldTimer=null;keyLongPressed=true;keyValueAction(btn.dataset.n,true)},360)}
 function newGameState(k,g,mode,key){return{difficulty:k,puzzle:g.puzzle,solution:g.solution,user:g.puzzle.slice(),notes:emptyNotes(),hinted:emptyHints(),badMarks:emptyHints(),hints:CFG[k].h,status:'playing',givens:g.givens,score:g.score,made:nowMs(),startedAt:nowMs(),finishedMs:null,history:[],future:[],mode:mode||'normal',stageNo:stageNoFor(k),dailyKey:key||'',usedMemo:false,attemptId:newAttemptId()}}
 function puzzleKey(g){return serializeBoard(g.puzzle)+'|'+serializeBoard(g.solution)}
 async function start(k,opt){if(!unlocked(k)){const u=CFG[k].u;toast(CFG[u.k].l+'を '+u.n+' 回クリアすると開放されます。','warn');return}hideWin(true);S.cur=k;S.panel='play';homeMode=false;if(el.playmenu)el.playmenu.open=false;onbusy(CFG[k].l+'の問題を作っています…','論理で解ける一意解の問題を選んでいます。');msg(CFG[k].l+'の問題を用意しています。');try{const g=await gen(k);S.game=newGameState(k,g,'normal','');syncSel();save();paint();msg(CFG[k].l+'の問題を用意しました。');toast(CFG[k].l+'の新しい問題を作りました。','ok')}catch(e){homeMode=true;msg('問題の作成に失敗しました。');toast('問題の作成に失敗しました。','err')}offbusy()}
