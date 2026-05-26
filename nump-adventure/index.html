@@ -93,6 +93,7 @@ h1{margin:0;font-size:clamp(22px,2.3vw,30px)}
 .homehelper{margin:0;font-size:13px;line-height:1.28;color:#7d5b85}
 .homeside{display:grid;grid-template-rows:auto auto;gap:10px;min-width:0;grid-column:2;align-self:start}
 .homepathwrap,.hometitlecard{display:grid;gap:8px;padding:14px;border-radius:24px;border:1.5px solid rgba(251,191,36,.30);box-shadow:0 14px 28px rgba(120,53,15,.10),inset 0 1px 0 rgba(255,255,255,.56),inset 0 -10px 24px rgba(255,237,213,.16)}
+.homebox:not(.has-progress) .homepathwrap{display:none}
 .homepathwrap{background:linear-gradient(155deg,rgba(255,251,235,.76),rgba(255,255,255,.54) 65%,rgba(219,234,254,.32));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .hometitlecard{gap:10px;padding:18px 16px;border-radius:26px;background:linear-gradient(160deg,rgba(255,251,235,.82) 0%,rgba(255,247,237,.82) 58%,rgba(255,255,255,.58) 100%);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-self:start}
 .homepathlabel{font-size:14px;font-weight:800;color:#7b4b61;letter-spacing:.04em;text-transform:uppercase}
@@ -137,7 +138,7 @@ body.help-open .homepointshelpbody{display:block}
 .homepointshelpbody li+li{margin-top:4px}
 .homepointshelpbody b{color:#8b5cf6}
 .homegoaltext{font-size:14px;line-height:1.32;color:#6e3b57;font-weight:900}
-.homenexttitle{font-size:14px;line-height:1.32;color:#9a4f00;font-weight:900}
+.homenexttitle{display:none}
 .playdock{display:none}
 .playing .playdock{display:grid;gap:10px;position:absolute;width:172px;padding:10px;background:rgba(255,255,255,.98);border:2px solid #cbd5e1;box-shadow:var(--shadow);z-index:6;border-radius:20px;box-sizing:border-box}
 .playing .playdock.left{display:none}
@@ -501,7 +502,7 @@ body.help-open .homepointshelpbody{display:block}
               </div>
               <div class="homeside">
                 <div class="homepathwrap">
-                  <div class="homepathlabel">級の進みぐあい</div>
+                  <div class="homepathlabel">級</div>
                   <div id="homepath" class="homepath">
                     <div class="homepathitem current"><b>初級</b><span>挑戦中</span></div>
                     <div class="homepathitem lock"><b>中級</b><span>あと 5 回で解放</span></div>
@@ -510,7 +511,7 @@ body.help-open .homepointshelpbody{display:block}
                   </div>
                 </div>
                 <div class="hometitlecard">
-                  <div class="hometitlelabel">現在の称号</div>
+                  <div class="hometitlelabel">称号</div>
                   <div class="hometitlewrap">
                     <div id="hometitleicon" class="titleicon">🌱</div>
                     <div id="hometitle" class="hometitle">ナンプレ はじめてさん</div>
@@ -656,7 +657,7 @@ body.help-open .homepointshelpbody{display:block}
 
 <script>
 (function(){
-const K='nanpureCodex.state.v6',KB='nanpureCodex.state.v6.backup',KV='nanpureCodex.state.v5',KO='nanpureCodex.state.v4',LG='sudokuCurrentGame',LC='sudokuRecoveryCode',PX='NPCX4',PX_OLD='NPCX3',AL='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const K='nanpureCodex.state.v6',KB='nanpureCodex.state.v6.backup',KV='nanpureCodex.state.v5',KO='nanpureCodex.state.v4',KM='nanpureCodex.memoTipSeen.v1',LG='sudokuCurrentGame',LC='sudokuRecoveryCode',PX='NPCX4',PX_OLD='NPCX3',AL='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const TITLE_RANKS=[
   {need:0,title:'ナンプレ はじめてさん',icon:'🌱'},
   {need:3,title:'ナンプレ みならい',icon:'🧩'},
@@ -863,6 +864,9 @@ function save(){if(!S)return;S.ui=captureUiState();const json=JSON.stringify(sta
 function load(){for(const key of [K,KB,KV,KO,'nanpureCodex.state.v3']){try{const r=localStorage.getItem(key);if(r){const parsed=sane(JSON.parse(r));if(parsed)return parsed}}catch(e){console.warn('saved state ignored',key,e)}}return null}
 function msg(m){el.msg.textContent=m}
 function toast(m,t,d){el.toast.textContent=m;el.toast.className='toast '+(t||'');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.toast.className='toast hide',d||3200)}
+function memoTipSeen(){try{return localStorage.getItem(KM)==='1'}catch(e){return true}}
+function markMemoTipSeen(){try{localStorage.setItem(KM,'1')}catch(e){}}
+function showMemoTipOnce(){if(!memoTipSeen())toast('数字を長押しでメモ。⌫長押しで全メモ消去。','ok',5600)}
 function onbusy(t,m){busy=true;el.ovt.textContent=t;el.ovm.textContent=m;el.ov.className='ov';paintCtl()}
 function offbusy(){busy=false;el.ov.className='ov hide';paintCtl()}
 function clearWinTimers(){while(winAnimTimers.length)clearTimeout(winAnimTimers.pop())}
@@ -1281,7 +1285,7 @@ function starPointGuideHtml(){
 }
 function hasResume(){return !!(S&&S.game&&S.game.status==='playing')}
 function syncSel(){if(!S||!S.game){sel=null;return}sel=S.game.user.findIndex((v,i)=>S.game.puzzle[i]===0&&v===0);if(sel<0)sel=S.game.puzzle.findIndex(v=>v===0);if(sel<0)sel=0}
-function resumeGame(){if(!hasResume()){toast('続きから遊べる問題はありません。','warn');return}hideWin(true);homeMode=false;S.panel='play';if(el.playmenu)el.playmenu.open=false;syncSel();save();paint();msg('前回の続きから再開しました。');toast('続きから再開しました。','ok',2200)}
+function resumeGame(){if(!hasResume()){toast('続きから遊べる問題はありません。','warn');return}hideWin(true);homeMode=false;S.panel='play';if(el.playmenu)el.playmenu.open=false;syncSel();save();paint();msg('前回の続きから再開しました。');toast('続きから再開しました。','ok',2200);setTimeout(showMemoTipOnce,900)}
 
 
 function fitBoardArea(){const wrap=document.querySelector('.boardwrap');if(!wrap)return;const narrow=window.matchMedia&&window.matchMedia('(max-width:720px)').matches;const maxH=Math.max(narrow?260:320,Math.floor(wrap.clientHeight)-2);const dockSpace=!homeMode&&!narrow?164:0;const stageW=Math.max(narrow?280:320,Math.floor(wrap.clientWidth)-dockSpace-2);const boardSize=Math.max(narrow?280:380,Math.min(stageW,maxH,820));el.board.style.width=boardSize+'px';if(homeMode){const homeH=Math.max(340,Math.floor(window.innerHeight)-8);el.homebox.style.width=stageW+'px';el.homebox.style.height=homeH+'px';el.homebox.style.minHeight='0px'}else{el.homebox.style.height='';el.homebox.style.width=Math.min(boardSize,stageW)+'px';el.homebox.style.minHeight=Math.max(narrow?260:300,Math.min(maxH,Math.round(boardSize*.72)))+'px'}wrap.style.setProperty('--board-size',boardSize+'px')}
@@ -1291,7 +1295,7 @@ function paintTop(){el.se.textContent=S.stats.easy;el.sm.textContent=S.stats.med
 function paintOniProgressVisibility(){const show=unlocked('oni');[el.so,el.bo].forEach(x=>{const row=x&&x.closest('.stat,.bestitem');if(row)row.style.display=show?'':'none'})}
 function paintTabs(){const cur=PANELS.includes(S.panel)?S.panel:'play';Array.from(el.tabs.querySelectorAll('[data-tab]')).forEach(b=>b.className='tab'+(b.dataset.tab===cur?' on':''));document.querySelectorAll('[data-pane]').forEach(p=>p.className='pane'+(p.dataset.pane===cur?' on':''))}
 function paintDiff(){el.diffs.innerHTML='';ORD.filter(k=>k!=='oni'||unlocked('oni')).forEach(k=>{const c=CFG[k],b=document.createElement('button');b.type='button';b.className='diff'+(S.cur===k?' on':'')+(!unlocked(k)?' lock':'');b.dataset.k=k;b.innerHTML='<b>'+c.l+'</b><s>'+c.d+'</s>';b.disabled=busy;el.diffs.appendChild(b)});el.unlock.textContent=progressRoadmap()}
-function paintHome(){const resume=hasResume(),ti=titleInfo(),focus=homeFocusSummary(S.cur);document.body.classList.toggle('playing',!homeMode);document.body.classList.toggle('home-mode',homeMode);el.homebox.className='homebox'+(unlocked('oni')?' oni-ready':'')+(homeMode?'':' hide');el.board.className='board'+(homeMode?' hide':'');el.infobar.classList.add('hide');if(el.leftdock)el.leftdock.classList.toggle('hide',homeMode);if(el.rightdock)el.rightdock.classList.toggle('hide',homeMode);if(el.playmenu){el.playmenu.classList.toggle('hide',homeMode);if(homeMode)el.playmenu.open=false}el.homepath.innerHTML=homeRoadmapHtml();el.homelead.textContent=resume?'前回の続きから、すぐ再開できます。':unlocked('oni')?'緊急クエスト「鬼」が出現しました。':'クリアを重ねると、中級・上級へ進めます。';const homeHeading=el.homebox.querySelector('.homeheadline h2');if(homeHeading)homeHeading.innerHTML=phraseMarkup(unlocked('oni')?'鬼の門が|ひらいた':'星を集めて|扉をひらこう');if(el.homesave){el.homesave.className='homesave'+(resume?'':' hide');el.homesave.textContent='前回の続きあり'}if(el.homefocustext)el.homefocustext.innerHTML=phraseMarkup(focus.text);if(el.homefocussub)el.homefocussub.textContent=focus.sub;if(el.homegoalfill)el.homegoalfill.style.width=Math.round((focus.ratio||0)*100)+'%';if(el.homestart)el.homestart.textContent=S.cur==='oni'?'鬼に挑戦':'この級に挑戦';el.homecontinue.className='soft homecontinue'+(resume?'':' hide');el.homecontinue.textContent='続きから再開';el.homecontinueinfo.className='homehelper'+(resume?'':' hide');el.homecontinueinfo.textContent='続きからは前回の問題、新しく始めると今の級で遊べます。';if($('hometitle'))$('hometitle').innerHTML=titleMarkup(ti.title);if($('hometitleicon'))$('hometitleicon').textContent=ti.icon;if($('homepointsum'))$('homepointsum').textContent=totalStarPoints();if(el.homepointshelpbody)el.homepointshelpbody.innerHTML=starPointGuideHtml();el.homegoaltext.textContent=ti.max?'最高ランクに到達しました':'レベルアップまで あと '+ti.remain+' ポイント';if(el.homenexttitle)el.homenexttitle.textContent='？？？？';scheduleFit()}
+function paintHome(){const resume=hasResume(),ti=titleInfo(),focus=homeFocusSummary(S.cur),hasProgress=resume||totalStarPoints()>0||S.stats.easy>0||S.stats.medium>0||S.stats.hard>0||S.stats.oni>0||unlocked('medium')||unlocked('hard')||unlocked('oni');document.body.classList.toggle('playing',!homeMode);document.body.classList.toggle('home-mode',homeMode);el.homebox.className='homebox'+(unlocked('oni')?' oni-ready':'')+(hasProgress?' has-progress':'')+(homeMode?'':' hide');el.board.className='board'+(homeMode?' hide':'');el.infobar.classList.add('hide');if(el.leftdock)el.leftdock.classList.toggle('hide',homeMode);if(el.rightdock)el.rightdock.classList.toggle('hide',homeMode);if(el.playmenu){el.playmenu.classList.toggle('hide',homeMode);if(homeMode)el.playmenu.open=false}el.homepath.innerHTML=homeRoadmapHtml();el.homelead.textContent=resume?'前回の続きから、すぐ再開できます。':unlocked('oni')?'緊急クエスト「鬼」が出現しました。':'クリアを重ねると、中級・上級へ進めます。';const homeHeading=el.homebox.querySelector('.homeheadline h2');if(homeHeading)homeHeading.innerHTML=phraseMarkup(unlocked('oni')?'鬼の門が|ひらいた':'星を集めて|扉をひらこう');if(el.homesave){el.homesave.className='homesave'+(resume?'':' hide');el.homesave.textContent='前回の続きあり'}if(el.homefocustext)el.homefocustext.innerHTML=phraseMarkup(focus.text);if(el.homefocussub)el.homefocussub.textContent=focus.sub;if(el.homegoalfill)el.homegoalfill.style.width=Math.round((focus.ratio||0)*100)+'%';if(el.homestart)el.homestart.textContent=S.cur==='oni'?'鬼に挑戦':'この級に挑戦';el.homecontinue.className='soft homecontinue'+(resume?'':' hide');el.homecontinue.textContent='続きから再開';el.homecontinueinfo.className='homehelper'+(resume?'':' hide');el.homecontinueinfo.textContent='続きからは前回の問題、新しく始めると今の級で遊べます。';if($('hometitle'))$('hometitle').innerHTML=titleMarkup(ti.title);if($('hometitleicon'))$('hometitleicon').textContent=ti.icon;if($('homepointsum'))$('homepointsum').textContent=totalStarPoints();if(el.homepointshelpbody)el.homepointshelpbody.innerHTML=starPointGuideHtml();el.homegoaltext.textContent=ti.max?'最高ランクに到達しました':'レベルアップまで あと '+ti.remain+' ポイント';if(el.homenexttitle)el.homenexttitle.textContent='';scheduleFit()}
 function paintBoard(){const g=S.game;for(let i=0;i<81;i++){const b=cells[i];b.className='cell';if(i%9===2||i%9===5)b.className+=' r';if(Math.floor(i/9)===2||Math.floor(i/9)===5)b.className+=(b.className.indexOf('r')>-1?'b':' b');if(!g){b.querySelector('.cell-main').textContent='';b.querySelector('.cell-notes').innerHTML='';continue}const fx=g.puzzle[i],v=g.user[i],mask=(g.notes&&g.notes[i])||0,hinted=!!(g.hinted&&g.hinted[i]);b.querySelector('.cell-main').textContent=v||'';if(fx)b.className+=' fixed';else if(hinted)b.className+=' hinted';else if(v)b.className+=' userfill';if(sel===i)b.className+=' sel';if(g.badMarks&&g.badMarks[i])b.className+=' bad';if(g.status==='won'&&v)b.className+=' win';const notes=b.querySelector('.cell-notes');if(!v&&mask){let html='';for(let n=1;n<=9;n++){const on=(mask&(1<<(n-1)))!==0;html+='<span>'+(on?n:'')+'</span>'}notes.innerHTML=html}else notes.innerHTML='';const kind=fx?'最初からの数字':hinted?'ヒントで開いた数字':v?'自分で入れた数字':'空';b.setAttribute('aria-label',(Math.floor(i/9)+1)+'行'+(i%9+1)+'列 '+kind+(v?' '+v:''))}}
 function paintInfo(){const g=S.game;if(homeMode){el.sel.textContent=hasResume()?'続きから再開するか、新しい問題を始めてください。':'級を選んでスタートしてください。';el.cand.textContent='プレイ中は Ctrl + 数字でメモできます。';return}if(!g){el.sel.textContent='問題を作成するとここに表示されます。';el.cand.textContent='-';return}if(sel==null){el.sel.textContent='マスを選ぶとここに表示されます。';el.cand.textContent=g.status==='checked'?'採点済みです。マスを押すと正解と見直す場所が分かります。':'数字入力 / Ctrl+数字でメモ / 全て埋めたら採点';return}const r=Math.floor(sel/9)+1,c=sel%9+1,f=g.puzzle[sel]!==0,v=g.user[sel],hinted=!!(g.hinted&&g.hinted[sel]),notes=noteNums((g.notes&&g.notes[sel])||0);el.sel.textContent=f?r+'行'+c+'列（最初の数字）':hinted?r+'行'+c+'列（ヒントの数字）':r+'行'+c+'列'+(v?' / 入力: '+v:'');el.cand.textContent=f?'この数字は変更できません。':hinted?'ヒントで開いた数字です。':g.status==='checked'?'採点済みです。マスを押すと正解と見直す場所が分かります。':notes.length?'メモ: '+notes.join(' ・ ')+' / Ctrl+数字で更新':'数字入力 / Ctrl+数字でメモ / 全て埋めたら採点'}
 function paintInputMode(){document.body.classList.remove('note-mode');inputMode='answer'}
@@ -1308,6 +1312,7 @@ function clearAllNotes(){
   pushHist(g);
   clearBadMarks(g);
   g.notes=emptyNotes();
+  markMemoTipSeen();
   save();
   paint();
   msg('盤面のメモをすべて消しました。');
@@ -1317,10 +1322,10 @@ function keyValueAction(raw,forceMemo){if(raw==='x'){forceMemo?clearAllNotes():p
 function startKeyHold(btn,e){clearKeyHold();keyLongPressed=false;if(!btn||btn.disabled)return;try{if(e&&btn.setPointerCapture)btn.setPointerCapture(e.pointerId)}catch(_e){}keyHoldTimer=setTimeout(()=>{keyHoldTimer=null;keyLongPressed=true;keyValueAction(btn.dataset.n,true)},360)}
 function newGameState(k,g,mode,key){return{difficulty:k,puzzle:g.puzzle,solution:g.solution,user:g.puzzle.slice(),notes:emptyNotes(),hinted:emptyHints(),badMarks:emptyHints(),hints:CFG[k].h,status:'playing',givens:g.givens,score:g.score,made:nowMs(),startedAt:nowMs(),finishedMs:null,history:[],future:[],mode:mode||'normal',stageNo:stageNoFor(k),dailyKey:key||'',usedMemo:false,attemptId:newAttemptId()}}
 function puzzleKey(g){return serializeBoard(g.puzzle)+'|'+serializeBoard(g.solution)}
-async function start(k,opt){if(!unlocked(k)){const u=CFG[k].u;toast(CFG[u.k].l+'を '+u.n+' 回クリアすると開放されます。','warn');return}hideWin(true);S.cur=k;S.panel='play';homeMode=false;if(el.playmenu)el.playmenu.open=false;onbusy(CFG[k].l+'の問題を作っています…','論理で解ける一意解の問題を選んでいます。');msg(CFG[k].l+'の問題を用意しています。');try{const g=await gen(k);S.game=newGameState(k,g,'normal','');syncSel();save();paint();msg(CFG[k].l+'の問題を用意しました。');toast(CFG[k].l+'の新しい問題を作りました。','ok')}catch(e){homeMode=true;msg('問題の作成に失敗しました。');toast('問題の作成に失敗しました。','err')}offbusy()}
-async function startDaily(){const di=dailyInfo();hideWin(true);S.cur=di.difficulty;S.panel='play';homeMode=false;if(el.playmenu)el.playmenu.open=false;onbusy('今日の1問を作っています…','毎日かわる1問を準備しています。');msg('今日の1問を用意しています。');try{await pause();const g=dailyGame(di);S.game=newGameState(di.difficulty,g,'daily',di.key);syncSel();save();paint();msg('今日の1問を用意しました。');toast(di.done?'今日の1問をもう一度始めます。':'今日の1問に挑戦！','ok',2600)}catch(e){homeMode=true;msg('今日の1問の作成に失敗しました。');toast('今日の1問の作成に失敗しました。','err')}offbusy()}
+async function start(k,opt){if(!unlocked(k)){const u=CFG[k].u;toast(CFG[u.k].l+'を '+u.n+' 回クリアすると開放されます。','warn');return}hideWin(true);S.cur=k;S.panel='play';homeMode=false;if(el.playmenu)el.playmenu.open=false;onbusy(CFG[k].l+'の問題を作っています…','論理で解ける一意解の問題を選んでいます。');msg(CFG[k].l+'の問題を用意しています。');try{const g=await gen(k);S.game=newGameState(k,g,'normal','');syncSel();save();paint();msg(CFG[k].l+'の問題を用意しました。');toast(CFG[k].l+'の新しい問題を作りました。','ok');setTimeout(showMemoTipOnce,900)}catch(e){homeMode=true;msg('問題の作成に失敗しました。');toast('問題の作成に失敗しました。','err')}offbusy()}
+async function startDaily(){const di=dailyInfo();hideWin(true);S.cur=di.difficulty;S.panel='play';homeMode=false;if(el.playmenu)el.playmenu.open=false;onbusy('今日の1問を作っています…','毎日かわる1問を準備しています。');msg('今日の1問を用意しています。');try{await pause();const g=dailyGame(di);S.game=newGameState(di.difficulty,g,'daily',di.key);syncSel();save();paint();msg('今日の1問を用意しました。');toast(di.done?'今日の1問をもう一度始めます。':'今日の1問に挑戦！','ok',2600);setTimeout(showMemoTipOnce,900)}catch(e){homeMode=true;msg('今日の1問の作成に失敗しました。');toast('今日の1問の作成に失敗しました。','err')}offbusy()}
 function clearSelected(){const g=S.game;if(!g||sel==null||busy||g.status!=='playing')return;if(isLockedCell(g,sel)){toast(g.hinted&&g.hinted[sel]?'そのマスはヒントで開いた数字です。':'そのマスは最初から入っている数字です。','warn');return}if(!g.user[sel]&&!((g.notes&&g.notes[sel])||0))return;pushHist(g);clearBadMarks(g);if(g.user[sel]){g.user[sel]=0;msg('入力した数字を消しました。');toast('入力した数字を消しました。','ok',1800)}else{g.notes[sel]=0;msg('このマスのメモを消しました。');toast('このマスのメモを消しました。','ok',1800)}save();paint()}
-function toggleMemoDigit(v){const g=S.game;if(!g||sel==null||busy||g.status!=='playing'||!v)return;if(isLockedCell(g,sel)){toast(g.hinted&&g.hinted[sel]?'そのマスはヒントで開いた数字です。':'そのマスは最初から入っている数字です。','warn');return}if(g.user[sel]!==0){toast('入力を消すとメモできます。','warn',2200);return}pushHist(g);clearBadMarks(g);g.notes[sel]^=(1<<(v-1));g.usedMemo=true;save();paint();msg((g.notes[sel]&(1<<(v-1)))?'メモに '+v+' を追加しました。':'メモの '+v+' を消しました。')}
+function toggleMemoDigit(v){const g=S.game;if(!g||sel==null||busy||g.status!=='playing'||!v)return;if(isLockedCell(g,sel)){toast(g.hinted&&g.hinted[sel]?'そのマスはヒントで開いた数字です。':'そのマスは最初から入っている数字です。','warn');return}if(g.user[sel]!==0){toast('入力を消すとメモできます。','warn',2200);return}pushHist(g);clearBadMarks(g);g.notes[sel]^=(1<<(v-1));g.usedMemo=true;markMemoTipSeen();save();paint();msg((g.notes[sel]&(1<<(v-1)))?'メモに '+v+' を追加しました。':'メモの '+v+' を消しました。')}
 function put(v){const g=S.game;if(!g||sel==null||busy||g.status!=='playing')return;if(isLockedCell(g,sel)){toast(g.hinted&&g.hinted[sel]?'そのマスはヒントで開いた数字です。':'そのマスは最初から入っている数字です。','warn');return}if(v===0){clearSelected();return}pushHist(g);clearBadMarks(g);g.user[sel]=v;g.notes[sel]=0;clearPeerNotes(g,sel,v);playInputSound();save();paint()}
 function undo(){const g=S.game;if(!g||!g.history.length||busy||g.status!=='playing')return;g.future.push(snap(g));applySnap(g,g.history.pop());save();paint();msg('1手もどしました。')}
 function redo(){const g=S.game;if(!g||!g.future.length||busy||g.status!=='playing')return;g.history.push(snap(g));applySnap(g,g.future.pop());save();paint();msg('やりなおしました。')}
