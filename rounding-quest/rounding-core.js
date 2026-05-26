@@ -17,13 +17,17 @@
       order: 1,
       title: '何の位で四捨五入',
       shortTitle: '位で四捨五入',
-      copy: '指定された位の数字を見る。ここが一番かんたん。',
+      copy: '指定された位の数字を見る。',
       artifact: '光の鍵',
+      artifactUnit: '本',
+      destination: '門',
+      collectVerb: '見つけました',
+      completeVerb: 'そろいました',
       goalLabel: '門まであと',
       closedTitle: '門はまだ閉じています',
       closedCopy: '答えを入れて、光の鍵を手に入れよう。',
       successTitle: '光の鍵を手に入れた！',
-      successCopy: '門がひらきました。次の問題へ進めます。',
+      successCopy: '門がひらきました。',
       badge: 'assets/rpg/badge-stage1.png',
       image: 'assets/rpg/stage1-gate.png',
     },
@@ -32,13 +36,17 @@
       order: 2,
       title: '何の位までのがい数',
       shortTitle: '位までのがい数',
-      copy: '残す位を決めて、すぐ右の数字を見る。',
+      copy: '残す位を決めて、すぐ右を見る。',
       artifact: '塔の光',
+      artifactUnit: '灯',
+      destination: '塔の頂上',
+      collectVerb: 'ともしました',
+      completeVerb: 'ともりました',
       goalLabel: '塔の頂上まであと',
       closedTitle: '塔の光がまだ眠っています',
       closedCopy: '答えを入れて、塔に光をともそう。',
       successTitle: '塔の光がともった！',
-      successCopy: '光の階段がのびました。次の問題へ進めます。',
+      successCopy: '光の階段がのびました。',
       badge: 'assets/rpg/badge-stage2.png',
       image: 'assets/rpg/stage2-tower.png',
     },
@@ -49,11 +57,15 @@
       shortTitle: '上から何けた',
       copy: '左から何けた残すかを見つける。',
       artifact: '星のしるし',
+      artifactUnit: '枚',
+      destination: '天空儀',
+      collectVerb: '見つけました',
+      completeVerb: 'そろいました',
       goalLabel: '天空儀まであと',
       closedTitle: '天空儀はまだ眠っています',
       closedCopy: '答えを入れて、星のしるしを集めよう。',
       successTitle: '星のしるしを見つけた！',
-      successCopy: '天空儀が光りました。次の問題へ進めます。',
+      successCopy: '天空儀が光りました。',
       badge: 'assets/rpg/badge-stage3.png',
       image: 'assets/rpg/stage3-observatory.png',
     },
@@ -62,13 +74,17 @@
       order: 4,
       title: 'まとめバトル',
       shortTitle: 'まとめ',
-      copy: '3つの型がまざって出る、最後のダンジョン。',
+      copy: '3つの型を見分ける、最後の章。',
       artifact: '王冠の光',
+      artifactUnit: '粒',
+      destination: '王城',
+      collectVerb: '集めました',
+      completeVerb: '集まりました',
       goalLabel: '王城クリアまであと',
       closedTitle: '王城の扉が待っています',
       closedCopy: '問題のことばを見分けて、最後の光を集めよう。',
       successTitle: '王冠の光を手に入れた！',
-      successCopy: '3つの型を見分けて、王城へ近づきました。',
+      successCopy: '王城へ近づきました。',
       badge: 'assets/rpg/badge-stage4.png',
       image: 'assets/rpg/final-castle.png',
     },
@@ -79,11 +95,16 @@
   const STAGE_GOAL = 30;
   const DEFAULT_PROGRESS = { sessions: 0, best: 0, bestStreak: 0, materials: 0, mistakes: {}, stageWins: {} };
   const TRANSFER_PREFIX = 'RQ1-';
+  const TYPE_LABELS = {
+    'round-digit': '何の位で四捨五入',
+    'round-place': '何の位までのがい数',
+    significant: '上から何けた',
+  };
 
   function withLevels(plans) {
     return plans.map((plan, index) => ({
       ...plan,
-      level: index < 10 ? 'はじめ' : index < 20 ? 'ちゅうい' : 'チャレンジ',
+      level: index < 10 ? 'はじめ' : index < 20 ? 'たしかめ' : 'チャレンジ',
     }));
   }
 
@@ -375,6 +396,29 @@
     return question;
   }
 
+  function finalMixPrompt(question, plan, index) {
+    const contexts = {
+      'round-digit': [
+        (q, p) => `体育館に${formatNumber(q.value)}人います。${PLACE_BY_KEY[p.place].label}で四捨五入した人数を答えましょう。`,
+        (q, p) => `本棚に${formatNumber(q.value)}冊あります。${PLACE_BY_KEY[p.place].label}で四捨五入した冊数を答えましょう。`,
+        (q, p) => `代金は${formatNumber(q.value)}円です。${PLACE_BY_KEY[p.place].label}で四捨五入した金額を答えましょう。`,
+      ],
+      'round-place': [
+        (q, p) => `町の人口は${formatNumber(q.value)}人です。${PLACE_BY_KEY[p.place].label}までのがい数で表しましょう。`,
+        (q, p) => `図書館の本は${formatNumber(q.value)}冊です。${PLACE_BY_KEY[p.place].label}までのがい数で表しましょう。`,
+        (q, p) => `売上は${formatNumber(q.value)}円です。${PLACE_BY_KEY[p.place].label}までのがい数で表しましょう。`,
+      ],
+      significant: [
+        (q, p) => `来場者は${formatNumber(q.value)}人です。上から${p.digits}けたのがい数で表しましょう。`,
+        (q, p) => `走ったきょりは${formatNumber(q.value)}mです。上から${p.digits}けたのがい数で表しましょう。`,
+        (q, p) => `集めた点数は${formatNumber(q.value)}点です。上から${p.digits}けたのがい数で表しましょう。`,
+      ],
+    };
+    const options = contexts[question.type] || [];
+    const makePrompt = options[index % Math.max(1, options.length)];
+    return makePrompt ? makePrompt(question, plan) : question.prompt;
+  }
+
   function createStageQuestion(stageId, index) {
     const plans = STAGE_PLANS[stageId] || [];
     const basePlan = plans[index % Math.max(1, plans.length)];
@@ -395,9 +439,13 @@
     }
     if (plan && stageId === 'final-mix') {
       const question = createMixedPlannedQuestion(plan, checkDigit);
+      const typeOccurrence = Array.from({ length: index + 1 }, (_, itemIndex) => plans[itemIndex % plans.length])
+        .filter((item) => item && item.type === plan.type).length - 1;
       question.stageId = 'final-mix';
       question.id = `final-mix-${question.id}`;
-      question.label = `まとめ: ${question.label}`;
+      question.prompt = finalMixPrompt(question, plan, typeOccurrence);
+      question.label = `まとめ: ${TYPE_LABELS[question.type] || question.label}`;
+      question.support = `${TYPE_LABELS[question.type] || '問題のことば'}を見分けます。${question.support}`;
       return decorateQuestion(question, plan);
     }
     if (stageId === 'round-digit') {
