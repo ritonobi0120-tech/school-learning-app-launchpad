@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 113;
+  const APP_VERSION = 114;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -121,7 +121,7 @@
     const messages = {
       'round-digit': '光の鍵で門が開きました。',
       'round-place': '塔の頂上まで光が届きました。',
-      significant: '天空儀が星のしるしで動き出しました。',
+      significant: '天空儀が星のメダルで動き出しました。',
       'final-mix': '王城に到着しました。',
     };
     return messages[stage.id] || `${stage.destination || '目的地'}に到着しました。`;
@@ -396,13 +396,13 @@
     els.visualBoard.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
     els.visualBoard.innerHTML = `
       <div class="focus-board">
-        <p>位を確認</p>
+        <p>ここを見る</p>
         <div class="focus-number" aria-label="${v.value}の${v.checkLabel}">
           ${digits.map((digit, index) => `<span class="${index === focusIndex ? 'focus' : ''}">${digit}</span>`).join('')}
         </div>
+        <strong class="focus-summary">見直し ${v.checkLabel}: ${v.checkDigit}</strong>
         <div class="review-steps" aria-label="見直しの手順">
-          <span><b>1</b>${v.checkLabel}: ${v.checkDigit}</span>
-          <span><b>2</b>${action}</span>
+          <span><b>1</b>${action}</span>
           ${answerStep}
         </div>
       </div>
@@ -822,7 +822,10 @@
   }
 
   function sessionPathMarks() {
-    if (!session || session.reviewOnly) return {};
+    if (!session) return {};
+    if (session.reviewOnly) {
+      return { baseCount: getStageKeyCount(session.stageId) };
+    }
     return {
       baseCount: session.startKeys,
       correct: session.pathCorrectMarks,
@@ -968,7 +971,9 @@
     els.sessionMap.style.setProperty('--session-road-art', `url("${img(stage.image)}")`);
     const count = Math.min(STAGE_GOAL, Math.max(0, keyCount));
     const path = Math.min(STAGE_GOAL, Math.max(0, pathCount));
-    const heroStep = Math.min(STAGE_GOAL, Math.max(1, path + 1));
+    const heroStep = path > 0 && path % SESSION_LENGTH === 0
+      ? path
+      : Math.min(STAGE_GOAL, Math.max(1, path + 1));
     const rest = Math.max(0, STAGE_GOAL - count);
     const baseCount = Math.min(STAGE_GOAL, Math.max(0, Number(markState.baseCount) || 0));
     const correctMarks = new Set((markState.correct || []).map(Number));

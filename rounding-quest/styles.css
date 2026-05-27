@@ -1900,9 +1900,9 @@ input:focus {
   display: none;
 }
 .session-mode .work-area.review-mode .question-card {
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 390px);
-  gap: 18px;
-  padding: clamp(16px, 3vw, 30px);
+  grid-template-columns: minmax(0, 1.08fr) minmax(260px, 330px);
+  gap: 12px;
+  padding: clamp(14px, 2.4vw, 24px);
 }
 .session-mode .work-area.review-mode .problem-side {
   width: 100%;
@@ -1920,18 +1920,18 @@ input:focus {
 }
 .session-mode .work-area.review-mode .question-card h3 {
   margin-top: 2px;
-  font-size: clamp(30px, 4.1vw, 44px);
+  font-size: clamp(28px, 3.8vw, 42px);
 }
 .session-mode .work-area.review-mode input,
 .session-mode .work-area.review-mode .answer-row .primary {
-  height: 58px;
+  height: 54px;
 }
 .session-mode .work-area.review-mode .tenkey {
   gap: 7px;
 }
 .session-mode .work-area.review-mode .tenkey button {
-  min-height: 43px;
-  font-size: 20px;
+  min-height: 39px;
+  font-size: 19px;
 }
 .session-mode .work-area.review-mode .tenkey button[data-key="消す"],
 .session-mode .work-area.review-mode .tenkey button[data-key="1つ消す"],
@@ -1999,19 +1999,19 @@ input:focus {
   padding: 22px 14px 18px;
   border-radius: 8px;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,248,223,.78)),
-    repeating-linear-gradient(135deg, rgba(255,138,154,.08) 0 9px, transparent 9px 18px);
-  border: 1px solid #e1aaa6;
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(239,250,245,.82)),
+    repeating-linear-gradient(135deg, rgba(17,130,111,.07) 0 9px, transparent 9px 18px);
+  border: 1px solid #bddbd0;
   text-align: center;
   box-shadow: inset 0 0 0 3px rgba(255,255,255,.55);
 }
 .session-mode .work-area.review-mode .focus-board {
   gap: 10px;
-  padding: 16px 12px 14px;
+  padding: 14px 12px 12px;
 }
 .session-mode .work-area.review-mode .focus-number {
-  padding-top: 58px;
-  font-size: clamp(38px, 5vw, 60px);
+  padding-top: 52px;
+  font-size: clamp(34px, 4.4vw, 54px);
 }
 .session-mode .work-area.review-mode .focus-number span.focus::before {
   top: -34px;
@@ -2025,7 +2025,7 @@ input:focus {
   font-size: 13px;
 }
 .focus-board p {
-  color: var(--red);
+  color: var(--green-dark);
   font-size: 18px;
   font-weight: 900;
 }
@@ -2051,9 +2051,9 @@ input:focus {
 }
 .focus-number span.focus {
   color: white;
-  background: linear-gradient(180deg, #ff8a9a, var(--red));
-  border-color: #a92c29;
-  box-shadow: 0 6px 0 #a92c29, 0 0 0 8px rgba(213,77,71,.16);
+  background: linear-gradient(180deg, #34d399, var(--green-dark));
+  border-color: #07594d;
+  box-shadow: 0 6px 0 #07594d, 0 0 0 8px rgba(17,130,111,.16);
 }
 .focus-number span.focus::before {
   content: "";
@@ -2082,6 +2082,21 @@ input:focus {
   line-height: 1;
   white-space: nowrap;
 }
+.focus-summary {
+  display: inline-grid;
+  place-items: center;
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff8df, #fff1bd);
+  border: 1px solid rgba(242,189,62,.58);
+  color: #4b3300;
+  font-size: 16px;
+  line-height: 1.1;
+  font-weight: 900;
+  text-align: center;
+  box-shadow: 0 5px 12px rgba(73,89,113,.08);
+}
 .focus-board small {
   color: var(--muted);
   font-size: 16px;
@@ -2089,7 +2104,7 @@ input:focus {
 }
 .review-steps {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 8px;
   width: 100%;
 }
@@ -2114,10 +2129,10 @@ input:focus {
   flex: 0 0 24px;
   height: 24px;
   border-radius: 999px;
-  background: linear-gradient(180deg, #ff8a9a, var(--red));
+  background: linear-gradient(180deg, #34d399, var(--green-dark));
   color: white;
   font-size: 13px;
-  box-shadow: 0 3px 0 #a92c29;
+  box-shadow: 0 3px 0 #07594d;
 }
 
 .feedback { padding: 16px 18px; font-size: 18px; line-height: 1.65; font-weight: 800; display: grid; gap: 4px; box-shadow: none; }
@@ -2340,6 +2355,13 @@ input:focus {
 }
 .result-mode .reward-scene > img {
   max-height: 118px;
+}
+.result-view.must-review .reward-scene > img {
+  width: 100%;
+  height: clamp(178px, 32vh, 248px);
+  max-height: none;
+  object-fit: cover;
+  object-position: center;
 }
 .result-view.clean-result .reward-scene > img {
   width: 100%;
@@ -2880,7 +2902,8 @@ input:focus {
   .focus-board small {
     font-size: 13px;
   }
-  .review-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+  .review-steps { grid-template-columns: 1fr; gap: 5px; }
+  .focus-summary { min-height: 28px; padding: 5px 9px; font-size: 12px; }
   .review-steps span { min-height: 30px; padding: 5px 6px; font-size: 10.5px; }
   .review-steps b { flex-basis: 18px; height: 18px; font-size: 10px; }
   .result-main,

@@ -21,8 +21,8 @@
 
 - Chapter 1: `光の鍵`
 - Chapter 2: `塔の光`
-- Chapter 3: `星のしるし`
-- Chapter 4: `王冠の光`
+- Chapter 3: `星のメダル`
+- Chapter 4: `王冠の宝石`
 
 Chapter 4 mixes the three previous problem types instead of teaching a new single pattern.
 
