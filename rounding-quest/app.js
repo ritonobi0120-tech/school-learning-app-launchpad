@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 115;
+  const APP_VERSION = 116;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -1036,7 +1036,7 @@
         ? '見直し後に開く'
         : unlocked
         ? artifactProgressText(stage, best)
-        : '前の章クリアで開く';
+        : (stage.unlockHint || '前の章を終えると進めます');
       return `
         <button class="stage-card ${active} ${stateClass}" type="button" data-stage="${stage.id}" data-state-label="${stateLabel}" ${unlocked && !blockedByReview ? '' : 'disabled'}>
           <img class="stage-bg" src="${img(stage.image)}" alt="">
