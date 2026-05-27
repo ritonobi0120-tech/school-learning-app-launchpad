@@ -367,10 +367,10 @@ body.help-open .homepointshelpbody{display:block}
 @media (max-width:720px){
   body{overflow:hidden}
   .home-mode .app,.playing .app{height:100dvh;min-height:0}
-  .homebox::before{background-position:right center;filter:saturate(1.04)}
-  .homebox::after{background:linear-gradient(180deg,rgba(255,255,255,.74) 0%,rgba(255,255,255,.48) 23%,rgba(255,255,255,.08) 42%,rgba(255,255,255,.06) 56%,rgba(255,255,255,.50) 76%,rgba(255,255,255,.76) 100%)}
-  .homeinner{padding:14px;gap:10px}
-  .homeheadline,.homefocus{background:linear-gradient(155deg,rgba(255,251,235,.82),rgba(255,255,255,.62) 58%,rgba(224,242,254,.42))}
+  .homebox::before{background-position:68% center;filter:saturate(1.08);transform:scale(1)}
+  .homebox::after{background:linear-gradient(180deg,rgba(255,255,255,.64) 0%,rgba(255,255,255,.36) 20%,rgba(255,255,255,.02) 40%,rgba(255,255,255,0) 58%,rgba(255,255,255,.30) 78%,rgba(255,255,255,.64) 100%)}
+  .homeinner{padding:12px;gap:8px}
+  .homeheadline,.homefocus{background:linear-gradient(155deg,rgba(255,251,235,.72),rgba(255,255,255,.48) 58%,rgba(224,242,254,.30))}
   .homehero{grid-template-rows:auto 1fr auto;align-content:stretch;height:100%;gap:0}
   .homeheadline{grid-row:1}
   .homefocus{grid-row:3;align-self:end}
@@ -379,15 +379,19 @@ body.help-open .homepointshelpbody{display:block}
   .titlebox{border-radius:20px;white-space:normal}
   .diffs{grid-template-columns:1fr}
   .homesave{font-size:15px}
-  .homelogo{font-size:38px;padding:0 12px 14px 0}
-  .homeheadline{padding:22px 24px;gap:10px}
-  .homeheadline h2{font-size:32px;line-height:1.14}
+  .homelogo{font-size:34px;padding:0 10px 12px 0}
+  .homeheadline{width:max-content;max-width:min(86vw,330px);padding:14px 16px;gap:7px;border-radius:20px}
+  .homeheadline h2{font-size:27px;line-height:1.12}
   .homehero-text{display:none}
-  .homefocus{padding:18px 18px 20px}
-  .homefocus-text{font-size:22px}
-  .homefocus-sub{font-size:14px}
-  .homeactions .homecta{min-height:68px;font-size:27px}
-  .homeactions .homecontinue{min-height:48px;font-size:18px}
+  .homefocus{padding:14px 14px 16px;gap:8px;border-radius:20px}
+  .homefocus-title{font-size:13px}
+  .homefocus-text{font-size:19px;line-height:1.22}
+  .homefocus-sub{font-size:12px;line-height:1.24}
+  .homegoalmeter{padding:8px 10px;gap:6px}
+  .homegoaltrack{height:13px}
+  .homeactions{gap:8px}
+  .homeactions .homecta{min-height:58px;font-size:24px;border-radius:20px}
+  .homeactions .homecontinue{min-height:44px;font-size:16px}
   .playing .playdock{display:none}
   .playing .playmenu{position:absolute;top:8px;right:8px;width:auto}
   .playing .layout{height:100%;min-height:0;display:block}
@@ -402,14 +406,14 @@ body.help-open .homepointshelpbody{display:block}
   .playing .key.cand{background:#f8fafc;border-color:transparent}
   .playing .key.off{opacity:1}
   .playing .key[data-n]:not([data-n="x"])::after{content:'長押しメモ';display:block;margin-top:2px;font-size:8px;line-height:1;color:#475569;font-weight:900}
-  .playing .key[data-n="x"]::after{content:'長押し全メモ';display:block;margin-top:2px;font-size:8px;line-height:1;color:#475569;font-weight:900}
+  .playing .key[data-n="x"]::after{content:'1マス削除';display:block;margin-top:2px;font-size:8px;line-height:1;color:#475569;font-weight:900}
   .playing .key.cur::after,.playing .key.notemode::after{color:rgba(255,255,255,.9)}
   .playing .mobileaction{min-height:42px;font-size:15px;padding:0 4px}
   .playing .board{width:min(100%,var(--board-size,360px));height:auto}
   .toast{top:calc(env(safe-area-inset-top,0px) + 10px);bottom:auto;left:10px;right:10px;max-width:none;width:auto;padding:10px 12px;border-radius:14px;font-size:13px;line-height:1.34;text-align:center;box-shadow:0 10px 30px rgba(15,23,42,.22)}
 }
 @media (max-height:640px){
-  .homebox::before{background-position:right center}
+  .homebox::before{background-position:68% center}
   .homeinner{padding:14px;gap:10px}
   .homehero{grid-template-rows:auto 1fr auto;gap:0}
   .homefocus{grid-row:3;align-self:end}
@@ -869,7 +873,7 @@ function msg(m){el.msg.textContent=m}
 function toast(m,t,d){el.toast.textContent=m;el.toast.className='toast '+(t||'');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.toast.className='toast hide',d||3200)}
 function memoTipSeen(){try{return localStorage.getItem(KM)==='1'}catch(e){return true}}
 function markMemoTipSeen(){try{localStorage.setItem(KM,'1')}catch(e){}}
-function showMemoTipOnce(){if(!memoTipSeen())toast('数字を長押しでメモ。⌫長押しで全メモ消去。','ok',5600)}
+function showMemoTipOnce(){if(!memoTipSeen())toast('数字を長押しでメモ。⌫で選択マスを消去。','ok',5200)}
 function onbusy(t,m){busy=true;el.ovt.textContent=t;el.ovm.textContent=m;el.ov.className='ov';paintCtl()}
 function offbusy(){busy=false;el.ov.className='ov hide';paintCtl()}
 function clearWinTimers(){while(winAnimTimers.length)clearTimeout(winAnimTimers.pop())}
@@ -1308,21 +1312,7 @@ function paintKeys(){const g=S.game,sv=g&&sel!=null?g.user[sel]:0,editable=!!(g&
 function paintCtl(){const g=S.game,playing=!!(!homeMode&&g&&g.status==='playing'),won=!!(g&&g.status==='won'),checked=!!(g&&g.status==='checked');el.new.disabled=busy;el.homestart.disabled=busy;el.homecontinue.disabled=busy||!hasResume();el.dailybtn.disabled=busy;el.homebtn.disabled=homeMode||busy;el.hint.textContent=!g?'ヒント':playing?'ヒント 残り'+g.hints:won?'結果':'採点済み';el.grade.textContent=!g?'採点':playing?'採点':g.mode==='daily'?'ホームへ':'つぎの問題へ';el.hint.disabled=homeMode||!g||busy||(playing?(g.hints<=0):(won?!lastWin:true));el.grade.disabled=homeMode||!g||busy;el.undo.disabled=homeMode||!g||!g.history.length||busy||g.status!=='playing';el.redo.disabled=homeMode||!g||!g.future.length||busy||g.status!=='playing';el.load.disabled=busy;el.copy.disabled=!g;el.fresh.disabled=!g;if(mobile.home)mobile.home.disabled=homeMode||busy;if(mobile.hint){mobile.hint.textContent=el.hint.textContent;mobile.hint.disabled=el.hint.disabled}if(mobile.grade){mobile.grade.textContent=el.grade.textContent;mobile.grade.disabled=el.grade.disabled}paintInputMode()}
 function paint(){paintTop();paintTabs();paintDiff();paintHome();paintDigits();paintBoard();paintInfo();paintKeys();paintCtl();scheduleFit()}
 function clearKeyHold(){if(keyHoldTimer){clearTimeout(keyHoldTimer);keyHoldTimer=null}}
-function clearAllNotes(){
-  const g=S.game;
-  if(!g||busy||g.status!=='playing')return;
-  const count=(g.notes||[]).filter(Boolean).length;
-  if(!count){toast('消すメモはありません。','warn',1800);return}
-  pushHist(g);
-  clearBadMarks(g);
-  g.notes=emptyNotes();
-  markMemoTipSeen();
-  save();
-  paint();
-  msg('盤面のメモをすべて消しました。');
-  toast('メモをすべて消しました。','ok',2200);
-}
-function keyValueAction(raw,forceMemo){if(raw==='x'){forceMemo?clearAllNotes():put(0);return}const n=+raw;if(!n)return;(forceMemo||inputMode==='note')?toggleMemoDigit(n):put(n)}
+function keyValueAction(raw,forceMemo){if(raw==='x'){put(0);return}const n=+raw;if(!n)return;(forceMemo||inputMode==='note')?toggleMemoDigit(n):put(n)}
 function startKeyHold(btn,e){clearKeyHold();keyLongPressed=false;if(!btn||btn.disabled)return;try{if(e&&btn.setPointerCapture)btn.setPointerCapture(e.pointerId)}catch(_e){}keyHoldTimer=setTimeout(()=>{keyHoldTimer=null;keyLongPressed=true;keyValueAction(btn.dataset.n,true)},360)}
 function newGameState(k,g,mode,key){return{difficulty:k,puzzle:g.puzzle,solution:g.solution,user:g.puzzle.slice(),notes:emptyNotes(),hinted:emptyHints(),badMarks:emptyHints(),hints:CFG[k].h,status:'playing',givens:g.givens,score:g.score,made:nowMs(),startedAt:nowMs(),finishedMs:null,history:[],future:[],mode:mode||'normal',stageNo:stageNoFor(k),dailyKey:key||'',usedMemo:false,attemptId:newAttemptId()}}
 function puzzleKey(g){return serializeBoard(g.puzzle)+'|'+serializeBoard(g.solution)}
