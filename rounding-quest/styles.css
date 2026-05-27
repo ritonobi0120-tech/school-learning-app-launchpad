@@ -3009,6 +3009,9 @@ input:focus {
   .result-main .result-actions .primary {
     grid-column: 1 / -1;
   }
+  .result-view.final-clear #homeButton {
+    display: none;
+  }
   .result-main .result-actions button {
     width: 100%;
     min-width: 0;
@@ -3086,6 +3089,53 @@ input:focus {
   .session-mode .feedback { font-size: 14px; max-height: 32vh; }
   .session-mode .feedback.correct { grid-template-columns: auto minmax(0, 1fr); }
   .session-mode .feedback img { width: 54px; height: 40px; }
+}
+
+@media (max-width: 360px) and (max-height: 620px) {
+  .result-mode .result-view {
+    grid-template-rows: minmax(0, 1fr) minmax(0, 214px);
+  }
+
+  .result-mode .result-view.must-review {
+    grid-template-rows: minmax(0, 1fr) minmax(0, 170px);
+  }
+
+  .result-mode .result-main {
+    align-content: start;
+    padding: 10px 12px;
+  }
+
+  .result-mode .result-main .eyebrow {
+    padding: 5px 9px;
+    font-size: 11px;
+  }
+
+  .result-mode .result-main h2,
+  .result-view.must-review .result-main h2,
+  .result-view.final-clear .result-main h2 {
+    font-size: 28px;
+    line-height: 1.04;
+  }
+
+  .result-mode .result-main p:not(.eyebrow) {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  .result-view.must-review .reward-scene > img {
+    height: 118px;
+  }
+
+  .result-mode .result-view.final-clear .reward-scene > img {
+    height: 112px;
+    aspect-ratio: auto;
+    object-fit: cover;
+  }
+
+  .result-view.final-clear .mistake-list {
+    padding: 10px;
+  }
 }
 
 @media (min-width: 721px) {
