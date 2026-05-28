@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 118;
+  const APP_VERSION = 119;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
