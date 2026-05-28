@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 117;
+  const APP_VERSION = 118;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -1011,11 +1011,22 @@
       : '';
     els.sessionMap.innerHTML = `
       <div class="key-rail" aria-label="${artifactProgressText(stage, count)}">
-        <b>${artifactProgressText(stage, count)}</b>
-        <div class="mini-map-track">
-          <div class="mini-steps">${cells}</div>
-          ${plus}
-          <span class="mini-gate"><img src="${artifactIcon(stage.id)}" alt=""></span>
+        <div class="session-hud">
+          <div class="session-plaque">
+            <small>第${stage.order}章</small>
+            <strong>${stage.artifact}</strong>
+            <span>${artifactProgressText(stage, count)}</span>
+          </div>
+          <div class="mini-map-track">
+            <div class="mini-steps">${cells}</div>
+            ${plus}
+            <span class="mini-gate"><img src="${artifactIcon(stage.id)}" alt=""></span>
+          </div>
+          <div class="session-item-card">
+            <img src="${artifactIcon(stage.id)}" alt="">
+            <span>${stage.artifact}</span>
+            <strong>× ${count}</strong>
+          </div>
         </div>
       </div>
     `;
