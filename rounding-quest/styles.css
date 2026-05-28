@@ -1761,8 +1761,8 @@ button:disabled:hover { transform: none; filter: none; }
 }
 .question-card h3 { font-size: clamp(30px, 4.8vw, 50px); line-height: 1.25; }
 .session-mode .question-card h3 {
-  margin-top: clamp(4px, 2.6vh, 28px);
-  font-size: clamp(32px, 4.8vw, 56px);
+  margin-top: clamp(2px, 1.2vh, 10px);
+  font-size: clamp(32px, 4.4vw, 52px);
   line-height: 1.26;
   text-shadow: 0 3px 0 rgba(255,255,255,.82);
 }
@@ -1799,6 +1799,41 @@ button:disabled:hover { transform: none; filter: none; }
 .session-mode .question-card.prompt-long .tenkey button[data-key="1つ消す"],
 .session-mode .question-card.prompt-long .tenkey button[data-key="クリア"] {
   font-size: 15px;
+}
+.coach-strip {
+  display: grid;
+  grid-template-columns: 40px auto 1fr;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 2px solid rgba(17,130,111,.56);
+  background: linear-gradient(180deg, rgba(255,253,247,.96), rgba(255,248,223,.88));
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.62), 0 8px 16px rgba(73,89,113,.1);
+}
+.coach-strip span {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 37% 38%, #07594d 0 3px, transparent 4px),
+    radial-gradient(circle at 62% 38%, #07594d 0 3px, transparent 4px),
+    radial-gradient(ellipse at 50% 64%, transparent 0 8px, #07594d 9px 11px, transparent 12px),
+    linear-gradient(180deg, #b8ef72, #43b764);
+  border: 3px solid rgba(17,130,111,.32);
+  box-shadow: 0 6px 12px rgba(17,130,111,.18);
+}
+.coach-strip strong {
+  color: var(--green-dark);
+  font-size: 20px;
+  line-height: 1;
+}
+.coach-strip em {
+  color: #34230b;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 900;
 }
 .prompt-chunk {
   display: inline-block;
@@ -1919,7 +1954,7 @@ input:focus {
 .tenkey button {
   position: relative;
   overflow: hidden;
-  min-height: 58px;
+  min-height: 50px;
   border-radius: 13px;
   background:
     linear-gradient(180deg, rgba(255,255,255,.5) 0 18%, transparent 18%),
@@ -3131,6 +3166,24 @@ input:focus {
     line-height: 1.18;
   }
   .session-mode .support { font-size: 15px; line-height: 1.45; }
+  .coach-strip {
+    grid-template-columns: 30px auto 1fr;
+    min-height: 38px;
+    padding: 4px 8px;
+    gap: 6px;
+    border-width: 1px;
+  }
+  .coach-strip span {
+    width: 26px;
+    height: 26px;
+    border-width: 2px;
+  }
+  .coach-strip strong {
+    font-size: 15px;
+  }
+  .coach-strip em {
+    font-size: 12px;
+  }
   .session-mode input { height: 56px; font-size: 28px; padding-inline: 12px; }
   .session-mode input:not(:placeholder-shown) { font-size: 40px; }
   .session-mode .primary { min-height: 48px; }

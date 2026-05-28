@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 120;
+  const APP_VERSION = 121;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -38,6 +38,7 @@
     answerInput: document.getElementById('answerInput'),
     submitButton: document.getElementById('submitButton'),
     tenkey: document.getElementById('tenkey'),
+    coachStrip: document.getElementById('coachStrip'),
     typeBadges: document.getElementById('typeBadges'),
     feedbackBox: document.getElementById('feedbackBox'),
     visualBoard: document.getElementById('visualBoard'),
@@ -287,6 +288,9 @@
     els.questionLabel.textContent = session.reviewOnly ? '見直し' : (q.level || stage.shortTitle);
     els.questionText.classList.toggle('prompt-long', promptLong);
     els.questionText.innerHTML = renderQuestionPrompt(q.prompt);
+    els.coachStrip.innerHTML = session.reviewOnly
+      ? '<span></span><strong>ここを見ればできる！</strong><em>落ち着いて直そう。</em>'
+      : '<span></span><strong>いいね！</strong><em>その調子！</em>';
     renderSupportText(q);
     els.answerInput.value = '';
     els.answerInput.disabled = false;
