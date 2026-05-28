@@ -295,6 +295,37 @@ h1::after {
   box-shadow: 0 5px 12px rgba(73,89,113,.1);
 }
 
+.home-progress {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 8px;
+}
+.home-progress div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  padding: 7px 9px;
+  border-radius: 8px;
+  color: #34230b;
+  background: linear-gradient(180deg, rgba(255,253,247,.96), rgba(255,241,189,.9));
+  border: 1px solid rgba(199,126,24,.34);
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.48), 0 6px 14px rgba(73,89,113,.1);
+}
+.home-progress span {
+  color: var(--green-dark);
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.05;
+}
+.home-progress strong {
+  font-size: 18px;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
 .hero-copy p:not(.eyebrow) {
   position: relative;
   z-index: 1;
@@ -1570,6 +1601,12 @@ button:disabled:hover { transform: none; filter: none; }
   align-items: start;
   align-content: center;
   overflow: hidden;
+  border: 2px solid rgba(199,126,24,.3);
+  background:
+    radial-gradient(circle at 92% 8%, rgba(123,183,255,.14) 0 74px, transparent 75px),
+    radial-gradient(circle at 6% 92%, rgba(17,130,111,.08) 0 94px, transparent 95px),
+    linear-gradient(180deg, rgba(255,253,247,.98), rgba(255,248,223,.96));
+  box-shadow: inset 0 0 0 5px rgba(255,255,255,.54), 0 12px 30px rgba(73,89,113,.13);
 }
 .question-card.fx-correct {
   animation: correctBoardPulse .38s cubic-bezier(.22,1,.36,1);
@@ -2878,7 +2915,10 @@ input:focus {
     align-content: start;
   }
   .guide-row img { width: 48px; height: 48px; }
-  .hero { aspect-ratio: 1672 / 941; }
+  .hero {
+    aspect-ratio: auto;
+    height: min(320px, 55dvh);
+  }
   .hero-copy {
     left: 10px;
     top: 10px;
@@ -2886,7 +2926,7 @@ input:focus {
     padding: 10px 12px 12px;
   }
   .hero-copy h1 {
-    font-size: 30px;
+    font-size: 28px;
   }
   .hero-copy .guide-row img {
     width: 34px;
@@ -2896,7 +2936,20 @@ input:focus {
     font-size: 10px;
   }
   .hero-copy > p:not(.eyebrow):not(.save-note) {
-    font-size: 12px;
+    font-size: 11px;
+  }
+  .home-progress {
+    gap: 5px;
+    margin-top: 6px;
+  }
+  .home-progress div {
+    padding: 5px 7px;
+  }
+  .home-progress span {
+    font-size: 9px;
+  }
+  .home-progress strong {
+    font-size: 14px;
   }
   .hero-copy .start-cta {
     min-height: 40px;

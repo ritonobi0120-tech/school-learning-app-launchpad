@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 119;
+  const APP_VERSION = 120;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -17,6 +17,8 @@
     resultView: document.getElementById('resultView'),
     stageSelect: document.getElementById('stageSelect'),
     homeMapOverlay: document.getElementById('homeMapOverlay'),
+    homeProgressCurrent: document.getElementById('homeProgressCurrent'),
+    homeProgressRemain: document.getElementById('homeProgressRemain'),
     sessionMap: document.getElementById('sessionMap'),
     stageBanner: document.getElementById('stageBanner'),
     questionCard: document.querySelector('#sessionView .question-card'),
@@ -863,6 +865,10 @@
     const selectedStage = core.getStage(selectedStageId);
     const selectedMistakes = ((progress.mistakes || {})[selectedStageId] || []).length;
     const hasMistakes = selectedMistakes > 0;
+    const totalKeys = core.STAGES.reduce((sum, stage) => sum + getStageKeyCount(stage.id), 0);
+    const remainingKeys = Math.max(0, core.STAGES.length * STAGE_GOAL - totalKeys);
+    els.homeProgressCurrent.textContent = `${totalKeys} / ${core.STAGES.length * STAGE_GOAL}問`;
+    els.homeProgressRemain.textContent = remainingKeys > 0 ? `あと${remainingKeys}問` : '全クリ済み';
     els.startButton.textContent = hasMistakes
       ? `第${selectedStage.order}章の見直しクエスト`
       : isStageCleared(selectedStageId)
