@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 121;
+  const APP_VERSION = 360;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -16,7 +16,9 @@
     sessionView: document.getElementById('sessionView'),
     resultView: document.getElementById('resultView'),
     stageSelect: document.getElementById('stageSelect'),
+    homeDock: document.querySelector('.home-dock'),
     homeMapOverlay: document.getElementById('homeMapOverlay'),
+    homeProgress: document.querySelector('.home-progress'),
     homeProgressCurrent: document.getElementById('homeProgressCurrent'),
     homeProgressRemain: document.getElementById('homeProgressRemain'),
     sessionMap: document.getElementById('sessionMap'),
@@ -24,6 +26,7 @@
     questionCard: document.querySelector('#sessionView .question-card'),
     startButton: document.getElementById('startButton'),
     reviewButton: document.getElementById('reviewButton'),
+    sessionHomeButton: document.getElementById('sessionHomeButton'),
     againButton: document.getElementById('againButton'),
     resultReviewButton: document.getElementById('resultReviewButton'),
     homeButton: document.getElementById('homeButton'),
@@ -55,7 +58,10 @@
     treasure: 'assets/rpg/treasure-chest.png',
     castle: 'assets/rpg/ending-castle.png',
     finalReward: 'assets/rpg/final-reward.png',
+    worldMap: 'assets/rpg/world-map.png',
     heroIcon: 'assets/generated/hero-walker.png',
+    resultClear: 'assets/generated/result-clear-celebration.png',
+    finalClear: 'assets/generated/final-clear-celebration.png',
   };
 
   const STAGE_CARD_IMAGE_PATHS = {
@@ -90,8 +96,35 @@
     if (blockedByReview) return '見直し後';
     if (cleared) return 'クリア済み';
     if (!unlocked) return '未開放';
-    if (stage.id === selectedStageId) return '挑戦中';
+    if (stage.id === selectedStageId) return 'チャレンジ中';
     return '開放中';
+  }
+
+  function stageCardTitle(stage) {
+    const titles = {
+      'round-digit': '何の位で<br>四捨五入',
+      'round-place': '何の位までの<br>がい数',
+      significant: '上から何けたの<br>がい数',
+      'final-mix': 'まとめバトル',
+    };
+    return titles[stage.id] || stage.title;
+  }
+
+  function questionActionLabel(stageId, reviewOnly) {
+    if (reviewOnly) return '見直ししよう';
+    if (stageId === 'significant') return 'がい数にしよう';
+    if (stageId === 'final-mix') return 'まとめてとこう';
+    return '四捨五入しよう';
+  }
+
+  function stageCardQuestName(stage) {
+    const names = {
+      'round-digit': '光の鍵',
+      'round-place': '塔の光',
+      significant: '星のメダル',
+      'final-mix': '王冠の宝石',
+    };
+    return names[stage.id] || stage.artifact || stage.title;
   }
 
   function artifactIcon(stageId) {
@@ -103,16 +136,15 @@
   }
 
   function artifactAmount(stage, count) {
-    return `${count}${artifactUnit(stage)}`;
+    return `${count}`;
   }
 
   function artifactProgressText(stage, count) {
-    return `${stage.artifact} ${count}/${STAGE_GOAL}${artifactUnit(stage)}`;
+    return `${stage.artifact} ${count}/${STAGE_GOAL}`;
   }
 
   function artifactCollectText(stage, count) {
-    const verb = stage.collectVerb || '集めました';
-    return `${stage.artifact}を${artifactAmount(stage, count)}${verb}`;
+    return `${stage.artifact} +${count}`;
   }
 
   function artifactCompleteText(stage) {
@@ -271,11 +303,19 @@
     session.answered = false;
     document.body.classList.remove('screen-miss-flash');
     els.questionCard.classList.remove('fx-correct', 'fx-incorrect');
-    els.questionCard.querySelectorAll('.problem-celebration-overlay').forEach((node) => node.remove());
+    document.querySelectorAll('.problem-celebration-overlay').forEach((node) => node.remove());
     els.sessionView.classList.toggle('review-mode', session.reviewOnly);
+    els.sessionView.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
     els.stageBanner.innerHTML = `<img src="${miniStageBadge(stage.id)}" alt=""><span>第${stage.order}章</span><strong>${stage.title}</strong>`;
-    els.modeLabel.textContent = session.reviewOnly ? '見直しクエスト' : stage.shortTitle;
-    els.questionCounter.textContent = `${session.index + 1} / ${session.questions.length}`;
+    els.modeLabel.textContent = session.reviewOnly ? '見直しクエスト' : stage.artifact;
+    const currentMark = getCurrentPathMark(q.stageId);
+    const windowStart = Math.floor(Math.max(0, currentMark - 1) / SESSION_LENGTH) * SESSION_LENGTH + 1;
+    const windowEnd = Math.min(STAGE_GOAL, windowStart + SESSION_LENGTH - 1);
+    if (session.reviewOnly) {
+      els.questionCounter.textContent = `見直し ${session.index + 1} / ${session.questions.length}`;
+    } else {
+      els.questionCounter.innerHTML = `${windowStart}〜${windowEnd}問目<span class="counter-test-text">${session.index + 1} / ${session.questions.length}</span>`;
+    }
     els.scoreText.textContent = `${session.correct}正解`;
     els.scoreBar.style.width = `${(session.correct / session.questions.length) * 100}%`;
     const stageKeys = getProjectedStageKeyCount(session.stageId);
@@ -283,18 +323,20 @@
     els.comboChip.textContent = `あと${Math.max(0, STAGE_GOAL - stageKeys)}問`;
     els.comboChip.classList.toggle('hot', session.streak >= 3);
     renderSessionMap(q.stageId, stageKeys, pathCount, false, false, sessionPathMarks());
-    const promptLong = q.prompt.length > 18;
+    const promptLayout = getQuestionPromptLayout(q);
+    const promptLong = !promptLayout && q.prompt.length > 18;
     els.questionCard.classList.toggle('prompt-long', promptLong);
-    els.questionLabel.textContent = session.reviewOnly ? '見直し' : (q.level || stage.shortTitle);
+    els.questionLabel.textContent = questionActionLabel(q.stageId, session.reviewOnly);
     els.questionText.classList.toggle('prompt-long', promptLong);
-    els.questionText.innerHTML = renderQuestionPrompt(q.prompt);
+    els.questionText.innerHTML = renderQuestionPrompt(q, promptLayout);
     els.coachStrip.innerHTML = session.reviewOnly
       ? '<span></span><strong>ここを見ればできる！</strong><em>落ち着いて直そう。</em>'
       : '<span></span><strong>いいね！</strong><em>その調子！</em>';
     renderSupportText(q);
     els.answerInput.value = '';
     els.answerInput.disabled = false;
-    els.submitButton.textContent = '答える';
+    els.submitButton.textContent = 'こたえる';
+    els.submitButton.setAttribute('aria-label', 'こたえあわせ');
     els.feedbackBox.className = 'feedback hidden';
     if (session.reviewOnly) {
       renderFocusVisual(q, null);
@@ -345,12 +387,95 @@
     return [text];
   }
 
-  function renderQuestionPrompt(prompt) {
-    return String(prompt || '')
+  function getQuestionPromptLayout(q) {
+    if (!q || typeof q !== 'object') return null;
+    const prompt = String(q.prompt || '');
+    if (q.stageId === 'final-mix') {
+      const storyMatch = prompt.match(/^(.+?)([0-9][0-9,]*(?:人|冊|円|m|点)?)([^。]*。)(.+)$/);
+      if (storyMatch) {
+        return {
+          lead: storyMatch[1],
+          number: storyMatch[2],
+          tail: storyMatch[3],
+          task: storyMatch[4],
+          original: prompt,
+          story: true,
+        };
+      }
+    }
+    if (q.type === 'round-digit' && q.visual) {
+      return {
+        lead: 'つぎの数を',
+        number: core.formatNumber(q.value),
+        task: childFriendlyTask(`${q.visual.checkLabel}で四捨五入しましょう。`),
+        original: prompt,
+      };
+    }
+    if (q.type === 'round-place' && q.visual) {
+      return {
+        lead: 'つぎの数を',
+        number: core.formatNumber(q.value),
+        task: childFriendlyTask(`${q.visual.targetLabel}までのがい数にしましょう。`),
+        original: prompt,
+      };
+    }
+    if (q.type === 'significant' && q.digits) {
+      return {
+        lead: 'つぎの数を',
+        number: core.formatNumber(q.value),
+        task: `上から${q.digits}けたのがい数にしましょう。`,
+        original: prompt,
+      };
+    }
+    return null;
+  }
+
+  function childFriendlyTask(text) {
+    return String(text || '')
+      .replace(/位/g, 'くらい')
+      .replace(/答えましょう/g, 'こたえましょう')
+      .replace(/で四捨五入/g, 'で\n四捨五入')
+      .replace(/までのがい数/g, 'までの\nがい数')
+      .replace(/けたのがい数/g, 'けたの\nがい数');
+  }
+
+  function renderQuestionPrompt(q, promptLayout) {
+    const layout = promptLayout || getQuestionPromptLayout(q);
+    if (layout) {
+      const tail = layout.tail ? `<span class="prompt-tail">${escapeHtml(layout.tail)}</span>` : '';
+      const arrow = layout.story ? '' : '<span class="prompt-down-arrow" aria-hidden="true"></span>';
+      return `
+        <span class="prompt-layout${layout.story ? ' story' : ''}" aria-label="${escapeHtml(layout.original || '')}">
+          <span class="prompt-lead">${escapeHtml(layout.lead)}</span>
+          <strong class="prompt-main-number">${escapeHtml(layout.number)}</strong>
+          ${arrow}
+          ${tail}
+          <span class="prompt-task">${escapeHtml(childFriendlyTask(layout.task))}</span>
+        </span>
+      `;
+    }
+    return String(q && typeof q === 'object' ? q.prompt : q || '')
       .match(/[^。]+。?/g)
       .flatMap(promptChunks)
-      .map((chunk) => `<span class="prompt-chunk">${escapeHtml(chunk)}</span>`)
+      .map(renderPromptChunk)
       .join('');
+  }
+
+  function renderPromptChunk(chunk) {
+    const text = String(chunk || '');
+    const numberPattern = /[0-9][0-9,]{1,}(?:人|冊|円|m|点)?/g;
+    let cursor = 0;
+    let hasNumber = false;
+    let html = '';
+    text.replace(numberPattern, (match, offset) => {
+      hasNumber = true;
+      html += escapeHtml(text.slice(cursor, offset));
+      html += `<strong class="prompt-number">${escapeHtml(match)}</strong>`;
+      cursor = offset + match.length;
+      return match;
+    });
+    html += escapeHtml(text.slice(cursor));
+    return `<span class="prompt-chunk${hasNumber ? ' has-prompt-number' : ''}">${html}</span>`;
   }
 
   function renderVisual(q, result) {
@@ -450,14 +575,14 @@
       session.bestStreak = Math.max(session.bestStreak, session.streak);
       if (!session.reviewOnly) session.pathCorrectMarks.push(getCurrentPathMark(q.stageId));
       if (session.reviewOnly) removeSessionMistake(q);
-      els.submitButton.textContent = '正解';
+      els.submitButton.textContent = 'つぎへ';
       els.feedbackBox.className = 'feedback hidden';
       els.feedbackBox.innerHTML = '';
       renderProgressChrome(q.stageId, result);
       mapRendered = true;
       playSound('correct');
-      celebrate();
-      scheduleAutoAdvance(820);
+      celebrate(q, result, `<img src="${artifactIcon(q.stageId)}" alt=""><strong>+1</strong>`);
+      scheduleAutoAdvance(1080);
     } else {
       session.streak = 0;
       if (!session.reviewOnly) session.pathMissMarks.push(getCurrentPathMark(q.stageId));
@@ -498,23 +623,34 @@
     renderSessionMap(stageId, stageKeys, pathCount, result.correct, !result.correct, marks);
   }
 
-  function celebrate(progressHtml = '') {
+  function celebrate(q, result, progressHtml = '') {
     els.questionCard.classList.remove('fx-correct', 'fx-incorrect');
-    els.questionCard.querySelectorAll('.problem-celebration-overlay').forEach((node) => node.remove());
+    document.querySelectorAll('.problem-celebration-overlay').forEach((node) => node.remove());
     void els.questionCard.offsetWidth;
     els.questionCard.classList.add('fx-correct');
-    els.questionCard.insertAdjacentHTML('beforeend', `
-      <div class="problem-celebration-overlay" aria-hidden="true">
+    const answerText = result && result.correct ? core.formatNumber(q.answer) : '';
+    const stage = core.getStage(q.stageId);
+    document.body.insertAdjacentHTML('beforeend', `
+      <div class="problem-celebration-overlay" style="--celebration-art:url('${img(stage.image)}')" aria-hidden="true">
         <svg class="problem-celebration-ring" viewBox="0 0 240 255">
           <circle cx="120" cy="127.5" r="88" transform="rotate(90 120 127.5)"></circle>
         </svg>
+        <strong class="problem-celebration-text">せいかい！</strong>
+        <div class="instant-answer-card">
+          <span>こたえは</span>
+          <strong>${answerText}</strong>
+        </div>
+        <div class="instant-hero-card">
+          <img src="${img(RPG_ASSETS.heroIcon)}" alt="">
+          <p><strong>よくできたね！</strong><span>つぎに いこう！</span></p>
+        </div>
         ${progressHtml ? `<div class="progress-toast">${progressHtml}</div>` : ''}
       </div>
     `);
     window.setTimeout(() => {
       els.questionCard.classList.remove('fx-correct', 'fx-incorrect');
-      els.questionCard.querySelectorAll('.problem-celebration-overlay').forEach((node) => node.remove());
-    }, 720);
+      document.querySelectorAll('.problem-celebration-overlay').forEach((node) => node.remove());
+    }, 1000);
   }
 
   function launchArtifactFly(stageId) {
@@ -547,7 +683,7 @@
     void document.body.offsetWidth;
     document.body.classList.add('screen-miss-flash');
     els.questionCard.classList.remove('fx-correct', 'fx-incorrect');
-    els.questionCard.querySelectorAll('.problem-celebration-overlay').forEach((node) => node.remove());
+    document.querySelectorAll('.problem-celebration-overlay').forEach((node) => node.remove());
     void els.questionCard.offsetWidth;
     els.questionCard.classList.add('fx-incorrect');
     window.setTimeout(() => {
@@ -637,31 +773,75 @@
     els.resultView.classList.toggle('final-clear', finalClear);
     els.resultView.classList.toggle('must-review', mustReview);
     els.resultView.classList.toggle('clean-result', cleanResult);
-    const resultArt = finalClear ? 'assets/rpg/final-castle.png' : stage.image;
+    els.resultView.classList.toggle('review-result', session.reviewOnly && !mustReview && !finalClear);
+    const resultArt = finalClear ? RPG_ASSETS.finalClear : (cleanResult ? RPG_ASSETS.resultClear : stage.image);
     els.resultView.style.setProperty('--result-art', `url("${img(resultArt)}")`);
     if (finalClear) playSound('finalClear');
     else if (stageCleared && !mustReview) playSound('stageClear');
     else if (mustReview) playSound('notice');
     els.resultTitle.textContent = mustReview
-      ? '見直しクエストへ'
+      ? '道をひらこう！'
       : finalClear
       ? '完全クリア！'
       : session.reviewOnly
       ? '見直しクリア！'
       : stageCleared
         ? `第${stage.order}章クリア！`
-        : `${total}問ぜんぶ正解！`;
+        : '5問クリア！';
     els.resultCopy.textContent = mustReview
-      ? 'もう一度とくと、続きの道が開きます。'
+      ? '見直しクエストで、続きの道がひらきます。'
       : finalClear
       ? '王城に到着しました。'
       : stageCleared
         ? stageClearCopy(stage)
-        : '次の5問へ進もう。';
-    els.againButton.textContent = mustReview ? '見直しクエストへ' : (finalClear ? 'もう一度まとめバトル' : (stageCleared && nextStage ? `第${nextStage.order}章へ` : `第${stage.order}章を続ける`));
+        : `${total}問すべて正解！`;
+    const nextActionLabel = stageCleared && nextStage ? `第${nextStage.order}章へ` : `第${stage.order}章を続ける`;
+    els.againButton.textContent = mustReview ? '見直しクエストへ' : (finalClear ? 'もう一度まとめバトル' : 'つぎへ ＞');
+    els.againButton.setAttribute('aria-label', mustReview ? '見直しクエストへ' : (finalClear ? 'もう一度まとめバトル' : nextActionLabel));
     els.homeButton.classList.toggle('hidden', mustReview);
+    const victoryOverlay = !mustReview && !session.reviewOnly && !finalClear
+      ? `
+        <div class="result-item-pop" aria-hidden="true">
+          <img src="${artifactIcon(stage.id)}" alt="">
+          <strong>+${Math.max(1, stageKeys - (session.startKeys || 0))}</strong>
+        </div>
+      `
+      : '';
+    const lastQuestion = session.questions[Math.max(0, total - 1)];
+    const answerShowcase = cleanResult && !session.reviewOnly && lastQuestion
+      ? `
+        <div class="result-answer-showcase" aria-label="最後の答え">
+          <span>こたえ</span>
+          <strong>${core.formatNumber(lastQuestion.answer)}</strong>
+          <b>✓</b>
+        </div>
+      `
+      : '';
+    const resultStatusCard = cleanResult && !session.reviewOnly
+      ? `
+        <div class="result-reward-status" aria-label="今回の正解とアイテム">
+          <strong>${stageKeys}/${STAGE_GOAL}</strong>
+          <span>${stage.artifact}</span>
+          <img src="${artifactIcon(stage.id)}" alt="">
+          <b>+${Math.max(1, stageKeys - (session.startKeys || 0))}</b>
+        </div>
+      `
+      : '';
+    const finalCollection = finalClear
+      ? `
+        <div class="final-collection-pill" aria-label="コレクション完全達成">
+          <img src="${stageCardBadge('final-mix')}" alt="">
+          <span>コレクション</span>
+          <strong>${core.STAGES.length * STAGE_GOAL}/${core.STAGES.length * STAGE_GOAL}</strong>
+        </div>
+      `
+      : '';
     els.rewardScene.innerHTML = `
-      <img src="${img(finalClear ? RPG_ASSETS.finalReward : stage.image)}" alt="">
+      <img src="${img(finalClear ? RPG_ASSETS.finalClear : (cleanResult ? RPG_ASSETS.resultClear : stage.image))}" alt="">
+      ${answerShowcase}
+      ${resultStatusCard}
+      ${finalCollection}
+      ${victoryOverlay}
       ${renderResultProgressSummary(stage, stageKeys, remaining, stageCleared, finalClear, mustReview)}
     `;
     const mistakes = session.mistakes.length ? session.mistakes : (progress.mistakes[session.stageId] || []).slice(-5);
@@ -671,13 +851,13 @@
       return;
     }
     els.mistakeList.innerHTML = mustReview
-      ? '<h3>もう一度とく問題</h3>'
+      ? '<h3>この問題を直そう</h3>'
       : '<h3>あとで見直せる問題</h3>';
     if (!mistakes.length) {
       els.mistakeList.insertAdjacentHTML('beforeend', '<p>今は見直す問題がありません。</p>');
       return;
     }
-    const visibleMistakes = mistakes.slice(0, mustReview ? 2 : 3);
+    const visibleMistakes = mistakes.slice(0, mustReview ? 1 : 3);
     visibleMistakes.forEach((mistake) => {
       const item = document.createElement('div');
       item.className = 'mistake-item';
@@ -685,7 +865,7 @@
       item.innerHTML = `
         <strong>${mistake.question.prompt}</strong>
         ${input ? `<span class="mistake-input">あなた: ${input}</span>` : ''}
-        <small>${mustReview ? 'もう一回チャレンジ' : `答え: ${core.formatNumber(mistake.question.answer)}`}</small>
+        ${mustReview ? '<small>この問題から見直します</small>' : `<small>答え: ${core.formatNumber(mistake.question.answer)}</small>`}
       `;
       els.mistakeList.appendChild(item);
     });
@@ -728,7 +908,7 @@
 
   function getCorrectProgressHtml(q, projectedKeys) {
     if (session.reviewOnly) {
-      return `<img src="${artifactIcon(q.stageId)}" alt=""><strong>OK</strong>`;
+      return `<img src="${artifactIcon(q.stageId)}" alt=""><strong>直せた</strong>`;
     }
     const stage = core.getStage(q.stageId);
     if (projectedKeys >= STAGE_GOAL) {
@@ -740,23 +920,50 @@
   function renderResultProgressSummary(stage, stageKeys, remaining, stageCleared, finalClear, mustReview = false) {
     const gained = session.reviewOnly ? 0 : Math.max(0, stageKeys - (session.startKeys || 0));
     if (mustReview) {
-      return `<div class="result-progress-summary"><strong>今回 ${artifactCollectText(stage, gained)}</strong><span>まちがえた問題が残っています。</span></div>`;
+      return `<div class="result-progress-summary"><strong>今回 ${artifactCollectText(stage, gained)}</strong></div>`;
     }
     if (session.reviewOnly) {
-      return `<div class="result-progress-summary"><strong>見直しクエスト ${session.correct}問クリア</strong><span>できる問題が増えています。</span></div>`;
+      return `
+        <div class="result-progress-summary review-clear-card">
+          <b>見直しクリア</b>
+          <img class="review-clear-hero" src="${img(RPG_ASSETS.heroIcon)}" alt="">
+          <strong>道がひらいた！</strong>
+          <span>つづきを進めよう</span>
+        </div>
+      `;
     }
     if (finalClear) {
       const totalQuestions = core.STAGES.length * STAGE_GOAL;
       return `<div class="result-progress-summary complete final"><strong>全${totalQuestions}問を走り切りました</strong><span>これで「がい数マスター」です。</span></div>`;
     }
     if (stageCleared) {
-      return `<div class="result-progress-summary complete"><strong>第${stage.order}章クリア！</strong><span>${artifactCompleteText(stage)}。</span></div>`;
+      return `
+        <div class="result-progress-summary complete joy-result">
+          <img src="${artifactIcon(stage.id)}" alt="">
+          <strong>第${stage.order}章クリア！</strong>
+          <span class="result-stage-progress">${stage.artifact} ${stageKeys}/${STAGE_GOAL}</span>
+        </div>
+      `;
     }
     const nextMilestone = getNextMilestone(stageKeys);
     const milestoneText = stageKeys % SESSION_LENGTH === 0
       ? `${stageKeys}問目の目印に到着。`
       : `${nextMilestone}問目の目印まであと${nextMilestone - stageKeys}問。`;
-    return `<div class="result-progress-summary"><strong>今回 ${artifactCollectText(stage, gained)}</strong><span>第${stage.order}章 ${stageKeys}/${STAGE_GOAL}問。${milestoneText}</span></div>`;
+    return `
+        <div class="result-progress-summary joy-result target-clear-card">
+          <div class="result-session-ribbon">${session.questions.length}問クリア</div>
+          <div class="result-item-score">
+            <img src="${artifactIcon(stage.id)}" alt="">
+            <span>${stage.artifact}を手に入れた！</span>
+            <strong>${stage.artifact}</strong>
+            <b class="result-stage-progress">${stageKeys}/${STAGE_GOAL}</b>
+          </div>
+          <div class="result-hero-message">
+            <img src="${img(RPG_ASSETS.heroIcon)}" alt="">
+            <p><strong>よくできたね！</strong><span>つぎに いこう！</span></p>
+          </div>
+        </div>
+    `;
   }
 
   function renderRewardBadges() {
@@ -769,7 +976,7 @@
             <span class="${state}">
               <img src="${miniStageBadge(stage.id)}" alt="">
               <b>${stage.artifact}</b>
-              <em>${artifactAmount(stage, count)}</em>
+              <em>${count}/${STAGE_GOAL}</em>
             </span>
           `;
         }).join('')}
@@ -789,8 +996,9 @@
         <div class="final-practice-grid" aria-label="練習する章">
           ${core.STAGES.map((stage) => `
             <button type="button" data-practice-stage="${stage.id}">
+              <img src="${stageCardBadge(stage.id)}" alt="">
               <span>第${stage.order}章</span>
-              <strong>${stage.title}</strong>
+              <strong>${stage.shortTitle || stage.title}</strong>
             </button>
           `).join('')}
         </div>
@@ -870,14 +1078,16 @@
     const selectedMistakes = ((progress.mistakes || {})[selectedStageId] || []).length;
     const hasMistakes = selectedMistakes > 0;
     const totalKeys = core.STAGES.reduce((sum, stage) => sum + getStageKeyCount(stage.id), 0);
-    const remainingKeys = Math.max(0, core.STAGES.length * STAGE_GOAL - totalKeys);
-    els.homeProgressCurrent.textContent = `${totalKeys} / ${core.STAGES.length * STAGE_GOAL}問`;
+    const totalGoal = core.STAGES.length * STAGE_GOAL;
+    const remainingKeys = Math.max(0, totalGoal - totalKeys);
+    els.homeProgress.style.setProperty('--home-progress-rate', `${Math.min(100, Math.round((totalKeys / totalGoal) * 100))}%`);
+    els.homeProgressCurrent.textContent = `${totalKeys} / ${totalGoal}問`;
     els.homeProgressRemain.textContent = remainingKeys > 0 ? `あと${remainingKeys}問` : '全クリ済み';
     els.startButton.textContent = hasMistakes
-      ? `第${selectedStage.order}章の見直しクエスト`
+      ? '見直しクエストへ'
       : isStageCleared(selectedStageId)
-        ? `第${selectedStage.order}章をもう一度`
-        : `第${selectedStage.order}章を始める`;
+        ? 'もう一度とく'
+        : 'はじめる';
     els.reviewButton.disabled = true;
     els.reviewButton.classList.add('hidden');
     els.reviewButton.textContent = '';
@@ -962,7 +1172,7 @@
       ${heroHtml}
       <div class="map-caption">
         <strong>第${selected.order}章 ${selected.title}</strong>
-        <span>${zone}・${artifactAmount(selected, best)}</span>
+        <span>${zone}・${selected.artifact} ${best}/${STAGE_GOAL}</span>
         <em>${caption}</em>
         <div class="map-progress-marks">${progressMarks}</div>
       </div>
@@ -978,7 +1188,7 @@
 
   function renderSessionMap(stageId, keyCount, pathCount, pulse, missPulse, markState = {}) {
     const stage = core.getStage(stageId);
-    els.sessionMap.style.setProperty('--session-road-art', `url("${img(stage.image)}")`);
+    els.sessionMap.style.setProperty('--session-road-art', `url("${img(RPG_ASSETS.worldMap)}")`);
     const count = Math.min(STAGE_GOAL, Math.max(0, keyCount));
     const path = Math.min(STAGE_GOAL, Math.max(0, pathCount));
     const heroStep = path > 0 && path % SESSION_LENGTH === 0
@@ -993,6 +1203,7 @@
     const windowStart = Math.floor(Math.max(0, heroStep - 1) / SESSION_LENGTH) * SESSION_LENGTH + 1;
     const windowEnd = Math.min(STAGE_GOAL, windowStart + SESSION_LENGTH - 1);
     const zone = `${windowStart}〜${windowEnd}問目`;
+    const currentInSession = Math.min(SESSION_LENGTH, Math.max(1, heroStep - windowStart + 1));
     const cells = Array.from({ length: windowEnd - windowStart + 1 }, (_, index) => {
       const mark = windowStart + index;
       const isCurrentCell = mark === heroStep;
@@ -1010,7 +1221,7 @@
         isMissPulse ? 'miss-pulse' : '',
         mark % SESSION_LENGTH === 0 ? 'checkpoint' : '',
       ].filter(Boolean).join(' ');
-      const label = isMissed ? '×' : (!isHeroStep ? mark : '');
+      const label = isMissed ? '×' : mark;
       const hero = isCurrentCell
         ? `<span class="mini-hero ${pulse ? 'pop' : ''} ${missPulse ? 'miss' : ''}" aria-hidden="true"><img src="${img(RPG_ASSETS.heroIcon)}" alt="勇者"><b>勇</b></span>`
         : '';
@@ -1019,13 +1230,17 @@
     const plus = pulse
       ? `<span class="map-plus" aria-hidden="true"><img src="${artifactIcon(stageId)}" alt=""><b>+1</b></span>`
       : '';
+    const reviewCount = session && session.stageId === stageId ? session.mistakes.length : 0;
+    const reviewChip = reviewCount
+      ? `<em class="session-review-chip" aria-label="見直しが${reviewCount}問あります">見直し ${reviewCount}問</em>`
+      : '';
     els.sessionMap.innerHTML = `
       <div class="key-rail" aria-label="${artifactProgressText(stage, count)}">
         <div class="session-hud">
           <div class="session-plaque">
             <small>第${stage.order}章</small>
             <strong>${stage.artifact}</strong>
-            <span>${artifactProgressText(stage, count)}</span>
+            <span>${zone}・${artifactProgressText(stage, count)}</span>
           </div>
           <div class="mini-map-track">
             <div class="mini-steps">${cells}</div>
@@ -1034,8 +1249,8 @@
           </div>
           <div class="session-item-card">
             <img src="${artifactIcon(stage.id)}" alt="">
-            <span>${stage.artifact}</span>
-            <strong>× ${count}</strong>
+            <strong>${count}/${STAGE_GOAL}</strong>
+            ${reviewChip}
           </div>
         </div>
       </div>
@@ -1058,22 +1273,34 @@
         : unlocked
         ? artifactProgressText(stage, best)
         : (stage.unlockHint || '前の章を終えると進めます');
+      const progressPct = `${Math.round((Math.min(STAGE_GOAL, best) / STAGE_GOAL) * 100)}%`;
       return `
         <button class="stage-card ${active} ${stateClass}" type="button" data-stage="${stage.id}" data-state-label="${stateLabel}" ${unlocked && !blockedByReview ? '' : 'disabled'}>
+          <b class="stage-order" aria-hidden="true">${stage.order}</b>
           <img class="stage-bg" src="${img(stage.image)}" alt="">
           <img class="stage-badge" src="${stageCardBadge(stage.id)}" alt="">
           <span>第${stage.order}章</span>
-          <strong>${stage.title}</strong>
-          <small>${stage.copy}</small>
+          <strong>${stageCardQuestName(stage)}</strong>
+          <small>${stageCardTitle(stage)}</small>
+          <span class="stage-count-pill"><img src="${artifactIcon(stage.id)}" alt=""><b>${best}/${STAGE_GOAL}</b></span>
+          <i class="stage-progress" style="--pct:${progressPct}" aria-hidden="true"></i>
           <em>${status}</em>
         </button>
       `;
     }).join('');
     els.stageSelect.querySelectorAll('[data-stage]').forEach((button) => {
       button.addEventListener('click', () => {
-        selectedStageId = button.dataset.stage;
+        const stageId = button.dataset.stage;
+        const pendingStageId = getPendingReviewStageId();
+        const canStart = selectedStageId === stageId && isStageUnlocked(stageId) && !pendingStageId;
+        selectedStageId = stageId;
         renderStageSelect();
         renderHomeStats();
+        if (canStart) {
+          unlockAudio();
+          playSound('tap');
+          startSession(false);
+        }
       });
     });
   }
@@ -1088,6 +1315,29 @@
     playSound('tap');
     startSession(true);
   });
+  els.sessionHomeButton.addEventListener('click', () => {
+    unlockAudio();
+    playSound('tap');
+    renderHomeStats();
+    show(els.homeView);
+  });
+  if (els.homeDock) {
+    els.homeDock.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-home-action]');
+      if (!button) return;
+      unlockAudio();
+      playSound('tap');
+      const action = button.dataset.homeAction;
+      if (action === 'start') {
+        startSession(false);
+      } else if (action === 'review') {
+        startSession(true);
+      } else if (action === 'sound') {
+        button.classList.add('sound-pop');
+        window.setTimeout(() => button.classList.remove('sound-pop'), 360);
+      }
+    });
+  }
   els.againButton.addEventListener('click', () => {
     unlockAudio();
     playSound('tap');
@@ -1157,6 +1407,8 @@
     RPG_ASSETS.heroIcon,
     RPG_ASSETS.castle,
     RPG_ASSETS.finalReward,
+    RPG_ASSETS.resultClear,
+    RPG_ASSETS.finalClear,
     ...core.STAGES.map((stage) => stage.image),
   ]);
   renderTenkey();

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>四捨五入ダンジョン</title>
-  <link rel="stylesheet" href="./styles.css">
+  <title>四捨五入クエスト</title>
+  <link rel="stylesheet" href="./styles.css?cb=360">
 </head>
 <body>
   <div class="spark-layer" id="sparkLayer" aria-hidden="true"></div>
@@ -12,13 +12,16 @@
     <section class="hero" id="homeView">
       <div class="hero-copy">
         <div class="guide-row">
-          <img src="./assets/generated/hero-walker.png" alt="">
-          <p class="eyebrow">小学4年 算数・がい数RPG</p>
+          <img src="./assets/generated/stage-card-final-mix.png" alt="">
+          <p class="eyebrow">数のたび</p>
         </div>
-        <h1><span>四捨五入</span><span>ダンジョン</span></h1>
+        <h1>
+          <img class="home-title-logo" src="./assets/generated/home-title-logo.png" alt="四捨五入クエスト">
+          <span>四捨五入</span><span>クエスト</span>
+        </h1>
         <div class="home-progress" aria-label="全体の進み具合">
           <div>
-            <span>進み具合</span>
+            <span>進み具合・保存中</span>
             <strong id="homeProgressCurrent">0 / 120問</strong>
           </div>
           <div>
@@ -26,9 +29,9 @@
             <strong id="homeProgressRemain">あと120問</strong>
           </div>
         </div>
-        <p>5問ずつ進み、30問で章クリア。</p>
+        <p>四捨五入をマスターしよう！</p>
         <div class="hero-actions">
-          <button class="primary start-cta" id="startButton">クエスト開始</button>
+          <button class="primary start-cta" id="startButton">はじめる</button>
           <button class="secondary" id="reviewButton">見直しクエスト</button>
         </div>
         <p class="save-note">進み具合はこのブラウザに自動保存されます。</p>
@@ -37,13 +40,21 @@
         <div class="quest-image">
           <img src="./assets/rpg/world-map.png" alt="">
           <div class="map-overlay" id="homeMapOverlay" aria-hidden="true"></div>
+          <img class="home-hero-character" src="./assets/generated/hero-walker.png" alt="">
         </div>
       </div>
+      <nav class="home-dock" aria-label="ホームメニュー">
+        <button type="button" class="active" data-home-action="home"><span><img src="./assets/generated/stage-card-final-mix.png" alt=""></span><b>ホーム</b></button>
+        <button type="button" data-home-action="start"><span><img src="./assets/generated/hero-walker.png" alt=""></span><b>ぼうけん</b></button>
+        <button type="button" data-home-action="review"><span><img src="./assets/generated/stage-card-round-place.png" alt=""></span><b>見直し</b></button>
+        <button type="button" data-home-action="sound"><span class="sound-icon" aria-hidden="true"></span><b>音</b></button>
+      </nav>
     </section>
 
     <section class="stage-select" id="stageSelect" aria-label="出題の4つの章"></section>
 
     <section class="work-area hidden" id="sessionView">
+      <button type="button" class="session-home-button" id="sessionHomeButton" aria-label="ホームへ戻る"></button>
       <header class="session-top">
         <div>
           <p class="eyebrow" id="modeLabel">れんしゅう</p>
@@ -64,8 +75,9 @@
           <h3 id="questionText"></h3>
           <p class="support hidden" id="supportText"></p>
           <div class="answer-row">
-            <input id="answerInput" inputmode="numeric" autocomplete="off" maxlength="9" placeholder="数字で答える">
-            <button class="primary" id="submitButton">答える</button>
+            <span class="answer-caption" aria-hidden="true">こたえ</span>
+            <input id="answerInput" inputmode="none" autocomplete="off" maxlength="9" aria-label="答え" placeholder="？">
+            <button class="primary" id="submitButton" aria-label="こたえあわせ">こたえる</button>
           </div>
           <div class="tenkey" id="tenkey" aria-label="数字入力"></div>
           <div class="coach-strip" id="coachStrip" aria-live="polite"></div>
@@ -93,6 +105,6 @@
   </main>
 
   <script src="./rounding-core.js"></script>
-  <script src="./app.js?cb=121"></script>
+  <script src="./app.js?cb=360"></script>
 </body>
 </html>
