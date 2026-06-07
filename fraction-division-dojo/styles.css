@@ -7044,6 +7044,82 @@ body {
   background: linear-gradient(180deg, rgba(33, 139, 232, 0.94), rgba(20, 91, 172, 0.94));
 }
 
+/* Release input polish: arrow focus, aligned whole numbers, and hand-drawn correct mark. */
+.problem-line {
+  align-items: center;
+}
+
+.problem-line .whole-number,
+.problem-line .op,
+.practice-view.retry-practice .problem-line .whole-number,
+.practice-view.retry-practice .problem-line .op {
+  display: inline-grid;
+  place-items: center;
+  height: 1.08em;
+  line-height: 1;
+  transform: none;
+}
+
+.problem-line .frac {
+  align-self: center;
+}
+
+.fraction-answer {
+  overflow: visible;
+}
+
+.fraction-answer.fx-correct::after,
+.answer-feedback.fx-correct {
+  content: none;
+  display: none;
+}
+
+.answer-maru {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 50%;
+  width: min(220px, 120%);
+  height: min(186px, 130%);
+  overflow: visible;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-7deg);
+  opacity: 0;
+}
+
+.answer-maru path {
+  fill: none;
+  stroke: #16a34a;
+  stroke-width: 15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 650;
+  stroke-dashoffset: 650;
+  filter: drop-shadow(0 5px 0 rgba(255,255,255,.9)) drop-shadow(0 12px 16px rgba(34, 197, 94, 0.18));
+}
+
+.fraction-answer.fx-correct .answer-maru {
+  animation: hand-maru-hold 1.02s cubic-bezier(.19,1,.22,1) both;
+}
+
+.fraction-answer.fx-correct .answer-maru path {
+  animation: hand-maru-draw 1.02s cubic-bezier(.19,1,.22,1) both;
+}
+
+@keyframes hand-maru-draw {
+  0% { stroke-dashoffset: 650; }
+  58% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes hand-maru-hold {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(-14deg) scale(.94); }
+  8% { opacity: 1; }
+  58% { opacity: 1; transform: translate(-50%, -50%) rotate(-7deg) scale(1.02); }
+  78% { opacity: 1; transform: translate(-50%, -50%) rotate(-7deg) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(-7deg) scale(1); }
+}
+
 @media (max-width: 900px), (max-height: 700px) {
   .result-view.final-clear {
     grid-template-rows: 62px minmax(0, 1fr) 58px;

@@ -946,6 +946,17 @@
     updateSubmitButtonLabel();
   }
 
+  function moveAnswerPart(part) {
+    const q = session?.questions?.[session.index];
+    if (q?.answer?.d === 1) {
+      activePart = "n";
+      renderAnswer();
+      return;
+    }
+    activePart = part === "d" ? "d" : "n";
+    renderAnswer();
+  }
+
   function inputDigit(digit) {
     const normalized = normalizeDigit(digit);
     if (normalized === "") return;
@@ -1027,6 +1038,7 @@
       saveProgress();
       if (isRetry) els.questionProgress.style.width = `${((session.index + 1) / session.questions.length) * 100}%`;
       setTimeout(() => {
+        if (!session) return;
         session.index += 1;
         session.hintMode = session.mode === "review" || session.mode === "retry";
         showPracticeQuestion();
@@ -1048,6 +1060,7 @@
         clearAnswer();
       } else {
         setTimeout(() => {
+          if (!session) return;
           session.index += 1;
           showPracticeQuestion();
         }, 520);
@@ -1563,6 +1576,10 @@
       if (event.key === "Enter") {
         event.preventDefault();
         handleEnterKey();
+      }
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        event.preventDefault();
+        moveAnswerPart(event.key === "ArrowUp" ? "n" : "d");
       }
       if (event.key === "Tab") {
         event.preventDefault();
