@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "start": "npx http-server . -p 4237 -c-1",
+    "audit": "node tests/audit-dojo.cjs",
+    "audit:device": "node tests/device-audit.cjs",
+    "audit:full": "node tests/full-playthrough.cjs",
+    "audit:production": "node tests/production-audit.cjs",
+    "audit:static": "node tests/static-release-audit.cjs",
+    "test": "npm run audit:static && npm run audit && npm run audit:device && npm run audit:full && npm run audit:production"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "http-server": "^14.1.1"
+  }
+}

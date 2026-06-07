@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>天空庭園と分数のしずく</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="dojo-shell">
+    <section class="view home-view" id="homeView">
+      <header class="home-header">
+        <h1 class="wood-sign">
+          <span class="title-line">天空庭園と</span>
+          <span class="title-line">分数のしずく</span>
+        </h1>
+        <div class="home-tools" aria-label="ホーム操作">
+          <button class="icon-card" id="settingsButton" type="button" aria-label="設定を開く">
+            <span aria-hidden="true">⚙</span>
+            <b>設定</b>
+          </button>
+          <button class="scenery-button" id="sceneryButton" type="button" aria-pressed="false">
+            <span aria-hidden="true">◱</span>
+            <b>景色を見る</b>
+          </button>
+        </div>
+      </header>
+
+      <div class="dojo-room">
+        <aside class="left-nook" aria-hidden="true">
+          <div class="hanging-note">考える力が<br>未来をつくる</div>
+          <div class="bonsai"></div>
+        </aside>
+
+        <section class="chalkboard" aria-label="今日のミッション">
+          <div class="board-title-row">
+            <h2 id="homeMissionTitle">しずくを集めて、庭園をひらこう</h2>
+            <div class="stamp" id="homeStamp">はじまり</div>
+          </div>
+          <div class="main-progress">
+            <div class="star-medal" aria-hidden="true">★</div>
+            <div>
+              <small class="progress-caption">今のしずく</small>
+              <strong id="homeProgressCount">0 / 20しずく</strong>
+              <span class="bar"><i id="homeProgressBar"></i></span>
+            </div>
+          </div>
+          <div class="board-stats">
+            <div><span class="ok-dot"></span><b id="homeCorrect">0問</b><small>正解</small></div>
+            <div><span class="ng-dot"></span><b id="homeMistakes">0問</b><small>まちがえた</small></div>
+            <div><span class="clock-dot"></span><b id="homeAverage">--秒</b><small>平均時間</small></div>
+          </div>
+        </section>
+
+        <aside class="right-notes" aria-hidden="true">
+          <div class="paper-problem">1/2 ÷ 3</div>
+          <div class="paper-problem blue">3/5 ÷ 2</div>
+          <div class="paper-problem green">2/3 ÷ 4/5</div>
+        </aside>
+      </div>
+
+      <div class="home-actions">
+        <button class="big-action yellow" id="startButton" type="button">
+          <span class="round-icon">✎</span>
+          <b>分数のしずくを集める</b>
+        </button>
+      </div>
+
+      <nav class="belt-rail" id="rankRail" aria-label="庭園の回復"></nav>
+
+    </section>
+
+    <section class="view practice-view hidden" id="practiceView">
+      <header class="practice-top">
+        <button class="top-button" id="backHomeButton" type="button" aria-label="ホームへ戻る">←</button>
+        <div class="app-title"><span aria-hidden="true">💧</span>分数のしずく</div>
+        <div class="rank-pill">
+          <span class="mini-belt" id="sessionBelt"></span>
+          <b id="sessionRankName">芽吹きの庭</b>
+        </div>
+        <div class="top-meter">
+          <small id="questionNumberLabel">もんだい</small>
+          <b id="questionNumber">1/10</b>
+          <span><i id="questionProgress"></i></span>
+        </div>
+        <div class="focus-meter">
+          <small>正解数</small>
+          <div id="focusBlocks"></div>
+        </div>
+      </header>
+
+      <div class="practice-room">
+        <aside class="slogan-panel">あきらめない</aside>
+
+        <article class="problem-card" id="problemCard">
+          <div class="lesson-chip" id="lessonChip">1問目</div>
+          <div class="problem-line" id="problemLine" aria-label="問題"></div>
+          <div class="answer-panel" id="answerPanel">
+            <label>こたえ</label>
+            <div class="fraction-answer" id="fractionAnswer">
+              <button class="answer-box active" id="numeratorBox" type="button" aria-label="分子の入力欄"></button>
+              <span class="fraction-rule"></span>
+              <button class="answer-box" id="denominatorBox" type="button" aria-label="分母の入力欄"></button>
+            </div>
+            <div class="answer-feedback idle" id="answerFeedback" aria-live="polite"></div>
+          </div>
+        </article>
+
+        <aside class="hint-panel" id="hintPanel">
+          <div class="keypad" id="keypad" aria-label="数字キー"></div>
+          <button class="hint-toggle" id="hintButton" type="button">💡 ヒント</button>
+          <div class="hint-body" id="hintBody">
+            <h3>ヒント（図で見る）</h3>
+            <div id="visualHint"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view review-view hidden" id="reviewView">
+      <header class="review-header">
+        <div class="brand-small"><span class="brand-icon" aria-hidden="true">💧</span><strong>分数のしずく</strong></div>
+        <div class="review-profile">
+          <span class="avatar small">六</span>
+          <b id="reviewPlayerName">研究生</b>
+          <small id="reviewRankLabel">今の庭 芽吹きの庭</small>
+        </div>
+      </header>
+      <div class="review-title-row">
+        <button class="plain-back" id="reviewBackButton" type="button">←</button>
+        <h2 id="reviewTitle">まちがい直し</h2>
+        <p id="reviewIntro">間違えた問題をもう一度確認して、考え方をしっかり身につけよう!</p>
+        <button class="hint-small" id="reviewHintButton" type="button">💡 ヒントを見る</button>
+      </div>
+      <div class="review-compare">
+        <section>
+          <b>もんだい</b>
+          <div id="reviewProblem"></div>
+        </section>
+        <section class="student-answer">
+          <b>あなたの答え</b>
+          <div id="studentAnswer"></div>
+          <small>もう一度確認</small>
+        </section>
+        <section class="correct-answer">
+          <b>正しい答え</b>
+          <div id="correctAnswer"></div>
+          <small>この形で入れる</small>
+        </section>
+      </div>
+      <section class="worked-area">
+        <h3 id="workedQuestion">考え方を見てみよう!</h3>
+        <div class="worked-steps" id="workedSteps"></div>
+      </section>
+      <div class="review-actions">
+        <button class="secondary-action" id="reviewListButton" type="button">まちがえた問題をふり返る</button>
+        <button class="secondary-action" id="retryButton" type="button">↻ もう一度</button>
+        <button class="primary-action" id="reviewNextButton" type="button">次へ →</button>
+      </div>
+    </section>
+
+    <section class="view result-view hidden" id="resultView">
+      <header class="result-bar">
+        <div class="brand-small"><span class="brand-icon" aria-hidden="true">💧</span><strong>分数のしずく</strong></div>
+        <div>6年生の分数のわり算 練習（10問）</div>
+        <div class="coin-pill">💧 <b id="coinTotal">0</b></div>
+      </header>
+      <div class="result-stage">
+        <section class="rank-up-card">
+          <div class="clear-medal" aria-hidden="true"><span>100</span><small>しずく</small></div>
+          <h2 id="resultHeadline">しずく集め完了!</h2>
+          <div class="ribbon" id="rankRibbon">庭園がひろがった!</div>
+          <div class="result-progress-panel">
+            <span>100しずくまで</span>
+            <b id="resultProgressCount">0 / 20しずく</b>
+            <i><em id="resultProgressBar"></em></i>
+            <div class="result-progress-dots" id="resultProgressDots" aria-hidden="true"></div>
+          </div>
+          <div class="belt-up legacy-result-detail" aria-hidden="true">
+            <div>
+              <span class="belt-icon previous" id="previousBelt"></span>
+              <b id="previousRank">芽吹きの庭</b>
+            </div>
+            <span class="arrow">→</span>
+            <div>
+              <span class="belt-icon current" id="currentBelt"></span>
+              <b id="currentRank">芽吹きの庭</b>
+            </div>
+          </div>
+          <p id="resultMessage">よくがんばったね!</p>
+        </section>
+        <section class="result-summary">
+          <h3 id="resultSummaryTitle">今回の結果</h3>
+          <div><span>正解</span><b id="resultCorrect">0/10</b></div>
+          <div><span>まちがい直し</span><b id="resultMistake">0問</b></div>
+          <div class="next-skill"><span>つぎに学べること</span><b id="nextSkill">分数 ÷ 整数</b></div>
+        </section>
+      </div>
+      <div class="result-buttons">
+        <button class="primary-action" id="nextTrainingButton" type="button">→ つぎの10問</button>
+        <button class="blue-action" id="resultHomeButton" type="button">⌂ ホーム</button>
+      </div>
+      <nav class="result-rail" id="resultRail" aria-label="庭園の回復"></nav>
+    </section>
+  </main>
+
+  <dialog id="modal">
+    <div class="modal-card">
+      <h2 id="modalTitle">設定</h2>
+      <div id="modalBody"></div>
+      <div class="modal-actions">
+        <button id="modalCloseButton" type="button">とじる</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
