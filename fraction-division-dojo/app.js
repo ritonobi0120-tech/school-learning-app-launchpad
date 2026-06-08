@@ -872,6 +872,7 @@
     els.questionNumber.textContent = questionText;
     const progressIndex = session.mode === "retry" ? session.index : session.index + 1;
     els.practiceView.style.setProperty("--question-total", String(Math.max(1, session.questions.length)));
+    els.questionProgress.parentElement?.style.setProperty("--question-total", String(Math.max(1, session.questions.length)));
     els.questionProgress.style.width = `${(progressIndex / session.questions.length) * 100}%`;
     els.lessonChip.innerHTML = "";
     els.problemLine.innerHTML = problemHtml(q);
@@ -1191,10 +1192,14 @@
   function playAnswerFx(kind) {
     clearAnswerFx();
     const fxClass = kind === "correct" ? "fx-correct" : "fx-incorrect";
-    if (els.problemCard) void els.problemCard.offsetWidth;
-    els.problemCard?.classList.add(fxClass);
-    els.answerPanel?.classList.add(fxClass);
-    els.fractionAnswer?.classList.add(fxClass);
+    if (els.fractionAnswer) void els.fractionAnswer.offsetWidth;
+    if (kind === "correct") {
+      els.fractionAnswer?.classList.add(fxClass);
+    } else {
+      els.problemCard?.classList.add(fxClass);
+      els.answerPanel?.classList.add(fxClass);
+      els.fractionAnswer?.classList.add(fxClass);
+    }
     if (els.answerFeedback) {
       els.answerFeedback.textContent = kind === "correct" ? "" : "おしい！";
       els.answerFeedback.className = kind === "correct"
@@ -1370,8 +1375,7 @@
     if (els.resultProgressCount) els.resultProgressCount.textContent = `${currentGarden.current} / ${currentGarden.goal}しずく`;
     if (els.resultProgressBar) els.resultProgressBar.style.width = `${currentGarden.percent}%`;
     if (els.resultProgressDots) {
-      const filledDots = currentGarden.current > 0 ? Math.max(1, Math.round(currentGarden.percent / 10)) : 0;
-      els.resultProgressDots.innerHTML = Array.from({ length: 10 }, (_, index) => `<span class="${index < filledDots ? "on" : ""}"></span>`).join("");
+      els.resultProgressDots.innerHTML = "";
     }
     els.previousRank.textContent = gardenChanged ? gardenResultLabel(previousGarden) : RANKS[prevRank].name;
     els.currentRank.textContent = gardenChanged ? gardenResultLabel(currentGarden) : RANKS[nowRank].name;
