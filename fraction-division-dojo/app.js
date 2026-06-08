@@ -191,7 +191,8 @@
     if (reduce) {
       const candidates = [
         [4, 5, 2], [6, 7, 3], [8, 9, 4], [9, 10, 3], [10, 11, 5],
-        [12, 13, 4], [6, 5, 3], [8, 7, 2],
+        [12, 13, 4], [6, 5, 3], [8, 7, 2], [14, 15, 7], [15, 16, 5],
+        [16, 17, 4], [18, 19, 6], [20, 21, 5], [21, 22, 7],
       ];
       const [n, d, k] = candidates[serial % candidates.length];
       left = fraction(n, d);
@@ -520,19 +521,34 @@
   }
 
   function encodeProgress() {
-    const nums = [
-      progress.rankStep || 0,
-      progress.totalCorrect || 0,
-      progress.totalAnswered || 0,
-      progress.sessions || 0,
-      progress.coins || 0,
-      progress.sound !== false ? 1 : 0,
-    ].map((value) => Math.max(0, Number(value || 0)).toString(36));
-    return `FS3-${nums.join(".")}.${toBase64Url(progress.playerName || "")}`;
+    const pending = compactPendingRetry(progress.pendingRetry);
+    if (!pending) {
+      const nums = [
+        progress.rankStep || 0,
+        progress.totalCorrect || 0,
+        progress.totalAnswered || 0,
+        progress.sessions || 0,
+        progress.coins || 0,
+        progress.sound !== false ? 1 : 0,
+      ].map((value) => Math.max(0, Number(value || 0)).toString(36));
+      return `FS3-${nums.join(".")}.${toBase64Url(progress.playerName || "")}`;
+    }
+    const payload = {
+      n: progress.playerName || "",
+      r: progress.rankStep || 0,
+      tc: progress.totalCorrect || 0,
+      ta: progress.totalAnswered || 0,
+      ss: progress.sessions || 0,
+      co: progress.coins || 0,
+      so: progress.sound !== false,
+      pr: pending,
+    };
+    return `FS4-${toBase64Url(JSON.stringify(payload))}`;
   }
 
   function decodeProgress(code) {
     const trimmed = code.trim();
+    if (trimmed.startsWith("FS4-")) return expandCompactProgress(JSON.parse(fromBase64Url(trimmed.slice(4))));
     if (trimmed.startsWith("FS3-")) return expandShortProgress(trimmed.slice(4));
     if (trimmed.startsWith("FS2-")) return expandCompactProgress(JSON.parse(fromBase64Url(trimmed.slice(4))));
     return normalizeProgress(JSON.parse(decodeURIComponent(escape(atob(trimmed)))));
@@ -557,6 +573,20 @@
 
   function compactMistake(item) {
     return [compactQuestion(item.question), compactFraction(item.studentAnswer)];
+  }
+
+  function compactPendingRetry(value) {
+    const pending = normalizePendingRetry(value);
+    if (!pending) return null;
+    return {
+      r: pending.rankIndex,
+      c: pending.correct,
+      m: pending.mistakes,
+      ps: pending.previousRankStep,
+      pc: pending.previousCorrect,
+      t: pending.createdAt,
+      i: pending.items.map(compactMistake),
+    };
   }
 
   function restoreCompactQuestion(item, index = 0) {
@@ -595,8 +625,12 @@
       sound: data.so !== false,
       mistakes: (data.m || []).map(expandCompactMistake),
       pendingRetry: data.pr ? {
+        rankIndex: data.pr.r || 0,
         correct: data.pr.c || 0,
         mistakes: data.pr.m || 0,
+        previousRankStep: data.pr.ps || 0,
+        previousCorrect: data.pr.pc || 0,
+        createdAt: data.pr.t || Date.now(),
         items: (data.pr.i || []).map(expandCompactMistake),
       } : null,
     });
@@ -731,9 +765,10 @@
   function makeSessionQuestions(rankIndex) {
     const list = [];
     const seen = new Set();
-    let serial = 0;
-    while (list.length < SESSION_LENGTH && serial < 120) {
-      const q = makeQuestion(rankIndex, serial + Math.floor(Math.random() * 40));
+    const offset = Math.floor(Math.random() * 200);
+    let serial = offset;
+    while (list.length < SESSION_LENGTH && serial < offset + 600) {
+      const q = makeQuestion(rankIndex, serial);
       serial += 1;
       const key = `${formatFraction(q.left)}-${formatFraction(q.right)}-${q.word || ""}`;
       if (seen.has(key)) continue;
@@ -741,7 +776,7 @@
       list.push(q);
     }
     while (list.length < SESSION_LENGTH) {
-      const q = makeQuestion(rankIndex, serial + Math.floor(Math.random() * 40));
+      const q = makeQuestion(rankIndex, serial);
       serial += 1;
       list.push(q);
     }
@@ -756,6 +791,7 @@
   let toastTimer = null;
   let answerFxTimer = null;
   let audioContext = null;
+  let answerLocked = false;
 
   function hasActiveSession() {
     return Boolean(session && Array.isArray(session.questions) && session.index < session.questions.length);
@@ -820,6 +856,7 @@
   }
 
   function showPracticeQuestion() {
+    setAnswerLocked(false);
     const q = session.questions[session.index];
     if (!q) return finishSession();
     activePart = q.answer.d === 1 ? "n" : "d";
@@ -947,7 +984,18 @@
     updateSubmitButtonLabel();
   }
 
+  function setAnswerLocked(locked) {
+    answerLocked = Boolean(locked);
+    els.practiceView?.classList.toggle("answer-locked", answerLocked);
+    els.keypad?.querySelectorAll("button").forEach((button) => {
+      button.disabled = answerLocked;
+    });
+    if (els.numeratorBox) els.numeratorBox.disabled = answerLocked;
+    if (els.denominatorBox) els.denominatorBox.disabled = answerLocked;
+  }
+
   function moveAnswerPart(part) {
+    if (answerLocked) return;
     const q = session?.questions?.[session.index];
     if (q?.answer?.d === 1) {
       activePart = "n";
@@ -959,6 +1007,7 @@
   }
 
   function inputDigit(digit) {
+    if (answerLocked) return;
     const normalized = normalizeDigit(digit);
     if (normalized === "") return;
     if (activePart === "n") {
@@ -1021,12 +1070,14 @@
   }
 
   function deleteDigit() {
+    if (answerLocked) return;
     if (activePart === "n") answerN = answerN.slice(0, -1);
     else answerD = answerD.slice(0, -1);
     renderAnswer();
   }
 
   function clearAnswer() {
+    if (answerLocked) return;
     answerN = "";
     answerD = "";
     renderAnswer();
@@ -1054,7 +1105,7 @@
   }
 
   function submitAnswer() {
-    if (!session) return;
+    if (!session || answerLocked) return;
     const q = session.questions[session.index];
     if (q.answer.d !== 1 && activePart === "d") {
       activePart = "n";
@@ -1069,6 +1120,7 @@
     }
     const correct = value.n === q.answer.n && value.d === q.answer.d;
     const isRetry = session.mode === "retry";
+    setAnswerLocked(true);
     if (!isRetry) {
       progress.totalAnswered += 1;
       progress.todayAnswered += 1;
@@ -1081,7 +1133,6 @@
         session.correct += 1;
         progress.totalCorrect += 1;
         progress.todayCorrect += 1;
-        progress.coins += 5;
         persistActiveSession(session.index + 1);
       }
       if (session.mode === "review" || isRetry) removeMistake(q.id);
@@ -1089,6 +1140,7 @@
       saveProgress();
       if (isRetry) els.questionProgress.style.width = `${((session.index + 1) / session.questions.length) * 100}%`;
       setTimeout(() => {
+        setAnswerLocked(false);
         if (!session) return;
         session.index += 1;
         session.hintMode = session.mode === "review" || session.mode === "retry";
@@ -1109,9 +1161,11 @@
       if (isRetry) {
         updatePendingRetryAnswer(q.id, value);
         activePart = q.answer.d === 1 ? "n" : "d";
+        setAnswerLocked(false);
         clearAnswer();
       } else {
         setTimeout(() => {
+          setAnswerLocked(false);
           if (!session) return;
           session.index += 1;
           showPracticeQuestion();
@@ -1243,7 +1297,6 @@
     const canRankUp = (session.mode === "practice" || session.mode === "retry") && session.correct >= 8 && progress.rankStep < MAX_RANK_STEP;
     if (canRankUp) progress.rankStep += 1;
     progress.sessions += 1;
-    progress.coins += session.correct * 10;
     progress.activeSession = null;
     if (session.mode === "retry") progress.pendingRetry = null;
     saveProgress();
@@ -1403,7 +1456,7 @@
           <article><small>直す問題</small><b>${progress.mistakes.length}</b><span>問</span></article>
         </div>
         <div class="record-note">
-          <b>しずく</b><span>${progress.coins}こ</span>
+          <b>しずく</b><span>${Math.min(WATER_GOAL, progress.totalCorrect || 0)}こ</span>
           <b>次の景色まで</b><span>${garden.goal - garden.current}しずく</span>
         </div>
         <div class="record-mistakes">
@@ -1617,6 +1670,10 @@
     els.modalCloseButton.addEventListener("click", closeModal);
     window.addEventListener("keydown", (event) => {
       if (!session || els.practiceView.classList.contains("hidden")) return;
+      if (answerLocked) {
+        event.preventDefault();
+        return;
+      }
       const digit = normalizeDigit(event.key);
       if (/^\d$/.test(digit)) {
         event.preventDefault();
