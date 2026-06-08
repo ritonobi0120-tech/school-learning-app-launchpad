@@ -750,7 +750,7 @@
 
   let progress = loadProgress();
   let session = normalizeActiveSession(progress.activeSession);
-  let activePart = "n";
+  let activePart = "d";
   let answerN = "";
   let answerD = "";
   let toastTimer = null;
@@ -821,7 +821,7 @@
   function showPracticeQuestion() {
     const q = session.questions[session.index];
     if (!q) return finishSession();
-    activePart = "n";
+    activePart = q.answer.d === 1 ? "n" : "d";
     answerN = "";
     answerD = "";
     window.__dojoCurrentAnswer = { ...q.answer };
@@ -994,21 +994,22 @@
     const button = els.keypad.querySelector("[data-action='submit']");
     if (!button) return;
     const q = session?.questions?.[session.index];
-    button.textContent = q?.answer?.d === 1 || activePart === "d" ? "答え合わせ！" : "分母へ";
+    button.textContent = q?.answer?.d === 1 || activePart === "n" ? "答え合わせ！" : "分子へ";
   }
 
   function enteredAnswer() {
+    const q = session?.questions?.[session.index];
     const n = Number(answerN);
-    const d = answerD === "" ? 1 : Number(answerD);
-    if (!answerN || !Number.isInteger(n) || !Number.isInteger(d) || d <= 0) return null;
+    const d = q?.answer?.d === 1 ? 1 : Number(answerD);
+    if (!answerN || (q?.answer?.d !== 1 && !answerD) || !Number.isInteger(n) || !Number.isInteger(d) || d <= 0) return null;
     return fraction(n, d);
   }
 
   function submitAnswer() {
     if (!session) return;
     const q = session.questions[session.index];
-    if (q.answer.d !== 1 && activePart === "n") {
-      activePart = "d";
+    if (q.answer.d !== 1 && activePart === "d") {
+      activePart = "n";
       renderAnswer();
       return;
     }
@@ -1056,7 +1057,7 @@
       saveProgress();
       if (isRetry) {
         updatePendingRetryAnswer(q.id, value);
-        activePart = "n";
+        activePart = q.answer.d === 1 ? "n" : "d";
         clearAnswer();
       } else {
         setTimeout(() => {
@@ -1530,8 +1531,8 @@
       submitAnswer();
       return;
     }
-    if (activePart === "n") {
-      activePart = "d";
+    if (activePart === "d") {
+      activePart = "n";
       renderAnswer();
       return;
     }

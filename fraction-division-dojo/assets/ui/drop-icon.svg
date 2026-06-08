@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="しずく">
+  <defs>
+    <radialGradient id="glow" cx="38%" cy="22%" r="72%">
+      <stop offset="0" stop-color="#f7ffff"/>
+      <stop offset=".26" stop-color="#9af3ff"/>
+      <stop offset=".58" stop-color="#27bde6"/>
+      <stop offset="1" stop-color="#0879c5"/>
+    </radialGradient>
+    <linearGradient id="edge" x1="25" y1="12" x2="100" y2="116" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e8ffff"/>
+      <stop offset=".45" stop-color="#4bd9ff"/>
+      <stop offset="1" stop-color="#0567b1"/>
+    </linearGradient>
+    <filter id="softShadow" x="-25%" y="-25%" width="150%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#02659f" flood-opacity=".3"/>
+    </filter>
+  </defs>
+  <path d="M64 8C50 31 29 53 29 78c0 25 16 42 35 42s35-17 35-42C99 53 78 31 64 8Z" fill="url(#glow)" stroke="url(#edge)" stroke-width="5" filter="url(#softShadow)"/>
+  <path d="M50 31c-9 11-15 23-16 34-.9 9 2 16 7 20" fill="none" stroke="#eaffff" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+  <ellipse cx="55" cy="45" rx="10" ry="15" fill="#fff" opacity=".42" transform="rotate(22 55 45)"/>
+  <path d="M97 18l4 9 9 4-9 4-4 9-4-9-9-4 9-4 4-9Z" fill="#f8fbff"/>
+  <path d="M27 21l3 6 6 3-6 3-3 6-3-6-6-3 6-3 3-6Z" fill="#dffbff"/>
+  <path d="M105 78l2.5 5 5 2.5-5 2.5-2.5 5-2.5-5-5-2.5 5-2.5 2.5-5Z" fill="#fff4a8"/>
+  <circle cx="82" cy="34" r="4" fill="#ffffff" opacity=".8"/>
+  <circle cx="43" cy="96" r="3" fill="#bdf8ff" opacity=".8"/>
+</svg>
