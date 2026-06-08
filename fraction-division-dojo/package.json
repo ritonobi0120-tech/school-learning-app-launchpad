@@ -5,8 +5,9 @@
     "audit:device": "node tests/device-audit.cjs",
     "audit:full": "node tests/full-playthrough.cjs",
     "audit:production": "node tests/production-audit.cjs",
+    "audit:regression": "node tests/reviewfix-regression.cjs",
     "audit:static": "node tests/static-release-audit.cjs",
-    "test": "npm run audit:static && npm run audit && npm run audit:device && npm run audit:full && npm run audit:production"
+    "test": "npm run audit:static && npm run audit:regression && npm run audit && npm run audit:device && npm run audit:full && npm run audit:production"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",

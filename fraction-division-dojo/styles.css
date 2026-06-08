@@ -7301,6 +7301,22 @@ body {
   transform: none;
 }
 
+.practice-view.answer-locked .answer-panel::before {
+  content: "まるつけ中";
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  z-index: 4;
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: #075f3a;
+  background: rgba(220, 255, 233, 0.92);
+  border: 2px solid rgba(34, 197, 94, 0.42);
+  font-size: 14px;
+  font-weight: 1000;
+  box-shadow: 0 4px 10px rgba(16, 110, 65, 0.12);
+}
+
 .fraction-answer .answer-box,
 .fraction-answer .fraction-rule {
   position: relative;
@@ -7381,9 +7397,14 @@ body {
   }
 
   .practice-view.retry-practice .problem-card {
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: 128px 118px;
     min-height: 0;
-    padding: 10px;
+    padding: 18px 10px 10px;
+  }
+
+  .practice-view.retry-practice .problem-card::before {
+    content: none;
+    display: none;
   }
 
   .practice-view.retry-practice .lesson-chip {
@@ -7397,12 +7418,14 @@ body {
   }
 
   .practice-view.retry-practice .problem-line {
-    min-height: 92px;
-    font-size: clamp(42px, 15vw, 62px);
+    min-height: 0;
+    font-size: clamp(30px, 11.5vw, 44px);
   }
 
   .practice-view.retry-practice .answer-panel {
-    min-height: 86px;
+    min-height: 0;
+    height: 118px;
+    align-self: end;
     padding: 8px 10px;
   }
 
@@ -7410,6 +7433,13 @@ body {
     right: 10px;
     top: 8px;
     font-size: 12px;
+  }
+
+  .practice-view.answer-locked .answer-panel::before {
+    right: 8px;
+    bottom: 7px;
+    padding: 3px 8px;
+    font-size: 11px;
   }
 
   .practice-view.retry-practice .hint-panel.review-mode {
@@ -7491,8 +7521,9 @@ body {
   }
 
   .result-view.final-clear {
-    background-size: contain;
+    background-size: 190% auto;
     background-repeat: no-repeat;
+    background-position: center 42%;
     background-color: #dff8ff;
   }
 }

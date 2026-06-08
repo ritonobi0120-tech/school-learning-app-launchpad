@@ -1472,8 +1472,8 @@
       <button class="inline-button" id="recordFromSettingsButton" type="button">記録を見る</button>
       <p>音: ${progress.sound ? "オン" : "オフ"}</p>
       <button class="inline-button" id="toggleSoundButton" type="button">音を${progress.sound ? "オフ" : "オン"}にする</button>
-      <p>バックアップコードを使うと、このブラウザの進み具合を別の端末へ移せます。</p>
-      <button class="inline-button" id="backupButton" type="button">バックアップコードを作る</button>
+      <p>保存コードを使うと、このブラウザの進み具合を別の端末へ移せます。</p>
+      <button class="inline-button" id="backupButton" type="button">保存コードを作る</button>
       <button class="inline-button" id="restoreButton" type="button">コードを読み込む</button>
       <p>進み具合はこのブラウザだけに保存されます。学校の名簿や外部サービスには送りません。</p>
     `);
@@ -1489,7 +1489,7 @@
   }
 
   function showBackupCode() {
-    showModal("バックアップコード", `
+    showModal("保存コード", `
       <p>このコードには進み具合が入っています。自分用に保存してください。</p>
       <textarea class="code-box" id="backupCodeBox" readonly>${encodeProgress()}</textarea>
       <button class="inline-button" id="selectBackupButton" type="button">コードを選択</button>
@@ -1503,7 +1503,7 @@
 
   function showRestoreCode() {
     showModal("コードを読み込む", `
-      <p>バックアップコードを貼り付けると、このブラウザの進み具合に上書きします。</p>
+      <p>保存コードを貼り付けると、このブラウザの進み具合に上書きします。</p>
       <textarea class="code-box" id="restoreCodeBox" placeholder="ここにコードを貼り付け"></textarea>
       <button class="inline-button" id="applyRestoreButton" type="button">読み込む</button>
     `);
