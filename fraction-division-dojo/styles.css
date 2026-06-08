@@ -5841,9 +5841,9 @@ body {
 
 @media (min-width: 901px) {
   .practice-view.retry-practice .practice-room {
-    grid-template-columns: minmax(460px, 0.82fr) minmax(430px, 480px);
-    gap: 28px;
-    padding-inline: 30px;
+    grid-template-columns: minmax(420px, 0.82fr) minmax(560px, 1fr);
+    gap: 24px;
+    padding-inline: 24px;
   }
 
   .practice-view.retry-practice .problem-card {
@@ -5873,9 +5873,9 @@ body {
   }
 
   .practice-view.retry-practice .hint-panel.review-mode {
-    grid-template-rows: minmax(0, 1fr) 102px;
-    gap: 12px;
-    padding: 16px;
+    grid-template-rows: minmax(0, 1fr) 250px;
+    gap: 14px;
+    padding: 18px;
   }
 
   .practice-view.retry-practice .hint-panel.review-mode .hint-body {
@@ -5915,32 +5915,33 @@ body {
   }
 
   .practice-view.retry-practice .hint-panel.review-mode .keypad {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    grid-template-rows: repeat(3, minmax(0, 1fr));
-    padding: 9px;
-    gap: 7px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(5, minmax(0, 1fr));
+    padding: 12px;
+    gap: 8px;
   }
 
   .practice-view.retry-practice .hint-panel.review-mode .keypad button {
-    font-size: 18px;
-    line-height: .82;
-    border-radius: 10px;
+    min-height: 0;
+    font-size: 24px;
+    line-height: 1;
+    border-radius: 14px;
   }
 
   .practice-view.retry-practice .hint-panel.review-mode .keypad button.clear-all,
   .practice-view.retry-practice .hint-panel.review-mode .keypad button.delete-one {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .practice-view.retry-practice .hint-panel.review-mode .keypad button.submit {
-    grid-column: 3 / 6;
-    font-size: 18px;
+    grid-column: 1 / -1;
+    font-size: 24px;
   }
 }
 
 @media (min-width: 901px) and (max-width: 1100px) {
   .practice-view.retry-practice .practice-room {
-    grid-template-columns: minmax(390px, 1fr) minmax(360px, 420px);
+    grid-template-columns: minmax(340px, 0.78fr) minmax(470px, 1fr);
     gap: 14px;
     padding: 14px;
   }
@@ -5961,7 +5962,7 @@ body {
   }
 
   .practice-view.retry-practice .hint-panel.review-mode {
-    grid-template-rows: minmax(0, 1fr) 96px;
+    grid-template-rows: minmax(0, 1fr) 220px;
     gap: 8px;
     padding: 10px;
   }
@@ -7224,7 +7225,7 @@ body {
   height: 22px;
   border: 3px solid rgba(4, 34, 66, 0.42);
   background:
-    repeating-linear-gradient(90deg, rgba(4, 34, 66, 0.16) 0 2px, transparent 2px 10%),
+    linear-gradient(90deg, transparent calc(100% - 3px), rgba(4, 34, 66, 0.28) 0) left / calc(100% / var(--question-total, 10)) 100% repeat-x,
     linear-gradient(180deg, #f0f7ff, #c8d9e8);
   box-shadow: inset 0 2px 5px rgba(4, 34, 66, 0.22), 0 3px 0 rgba(255,255,255,.65);
 }
@@ -7239,6 +7240,13 @@ body {
 .practice-view.retry-practice .top-meter {
   border-color: #9a4b00;
   background: linear-gradient(180deg, #fff7d6, #ffd890);
+}
+
+.practice-view.retry-practice .top-meter span {
+  border-color: rgba(126, 42, 0, 0.42);
+  background:
+    linear-gradient(90deg, transparent calc(100% - 4px), rgba(126, 42, 0, 0.34) 0) left / calc(100% / var(--question-total, 10)) 100% repeat-x,
+    linear-gradient(180deg, #fffaf0, #f7d7a1);
 }
 
 .practice-view.retry-practice .top-meter i {
@@ -7359,13 +7367,8 @@ body {
 }
 
 .practice-view.retry-practice .answer-panel::after {
-  content: "正解したら次へ進めます";
-  position: absolute;
-  right: 18px;
-  top: 14px;
-  color: #8b3d00;
-  font-size: 16px;
-  font-weight: 900;
+  content: none;
+  display: none;
 }
 
 .modal-card {
