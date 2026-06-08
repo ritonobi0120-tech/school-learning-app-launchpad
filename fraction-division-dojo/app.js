@@ -9,10 +9,10 @@
   const RANKS = [
     { level: "レベル1", name: "芽吹きの庭", color: "#80d861", skill: "分数 ÷ 整数", lesson: "分ける意味をつかむ" },
     { level: "レベル2", name: "水路の庭", color: "#32b7cf", skill: "分数 ÷ 整数", lesson: "約分までていねいに" },
-    { level: "レベル3", name: "雲橋の庭", color: "#67a4ff", skill: "整数 ÷ 分数", lesson: "いくつ分あるか" },
-    { level: "レベル4", name: "花めぐりの庭", color: "#f58bc1", skill: "分数 ÷ 分数", lesson: "逆数をかける" },
-    { level: "レベル5", name: "結晶の庭", color: "#a885ff", skill: "帯分数・仮分数", lesson: "形を直して考える" },
-    { level: "レベル6", name: "天空大庭園", color: "#f5b733", skill: "文章題 総合", lesson: "場面から式を作る" },
+    { level: "レベル3", name: "雲橋の庭", color: "#67a4ff", skill: "整数 ÷ 分数", lesson: "いくつ分かを考える" },
+    { level: "レベル4", name: "花めぐりの庭", color: "#f58bc1", skill: "分数 ÷ 分数", lesson: "逆数に直してかける" },
+    { level: "レベル5", name: "結晶の庭", color: "#a885ff", skill: "帯分数・仮分数", lesson: "帯分数を仮分数に直す" },
+    { level: "レベル6", name: "天空大庭園", color: "#f5b733", skill: "文章題の総合", lesson: "場面から式を作る" },
   ];
 
   const WATER_STAGES = [
@@ -41,7 +41,7 @@
       key: "splash",
       badge: "",
       resultLabel: "天空庭園完成",
-      title: "天空大庭園が完成!",
+      title: "天空大庭園が完成！",
       nextAt: 100,
     },
   ];
@@ -223,12 +223,12 @@
       left,
       right,
       answer,
-      lesson: reduce ? "約分までていねいに" : "計算をしましょう",
+      lesson: reduce ? "約分まで丁寧に" : "分数を整数で割る",
       prompt: `${formatFraction(left)} を ${right.n} 等分します。`,
       core: `分数を整数でわると、分母に ${right.n} をかけます。`,
       steps: [
-        `まず ${formatFraction(left)} ÷ ${right.n} と見る`,
-        `分母に ${right.n} をかけて ${left.n}/${left.d * right.n}`,
+        `まず ${formatFraction(left)} ÷ ${right.n} と考える`,
+        `分母に ${right.n} をかけて ${left.n}/${left.d * right.n} にする`,
         `約分して ${formatFraction(answer)}`,
       ],
     });
@@ -250,12 +250,12 @@
       left: fraction(whole, 1),
       right,
       answer,
-      lesson: "いくつ分あるかを考えよう",
-      prompt: `${whole} の中に ${formatFraction(right)} はいくつありますか。`,
-      core: "わり算は「同じ大きさがいくつ分あるか」と考えることができます。",
+      lesson: "いくつ分かを考えよう",
+      prompt: `${whole} の中に ${formatFraction(right)} はいくつ分ありますか。`,
+      core: "割り算は「同じ大きさがいくつ分あるか」と考えることができます。",
       steps: [
         `${whole} を ${formatFraction(right)} の大きさにそろえる`,
-        `${formatFraction(right)} を1つずつ数える`,
+        `${formatFraction(right)} が何個分あるかを考える`,
         `${whole} ÷ ${formatFraction(right)} = ${formatFraction(answer)}`,
       ],
     });
@@ -278,11 +278,11 @@
       left,
       right,
       answer,
-      lesson: "逆数をかけよう",
+      lesson: "逆数に直してかけよう",
       prompt: `${formatFraction(left)} の中に ${formatFraction(right)} はいくつ分ありますか。`,
-      core: `わる数 ${formatFraction(right)} を逆数 ${right.d}/${right.n} にしてかけます。`,
+      core: `割る数 ${formatFraction(right)} を逆数 ${right.d}/${right.n} に直してかけます。`,
       steps: [
-        `${formatFraction(right)} の逆数は ${right.d}/${right.n}`,
+        `${formatFraction(right)} を逆数 ${right.d}/${right.n} に直す`,
         `${formatFraction(left)} × ${right.d}/${right.n} を計算`,
         `約分して ${formatFraction(answer)}`,
       ],
@@ -322,7 +322,7 @@
     const stagedProblems = [
       [
       {
-        word: "3/4Lの水を、1/8Lずつコップに入れます。何杯分できますか。",
+      word: "3/4Lの水を、1/8Lずつコップに入れます。何杯分ありますか。",
         left: fraction(3, 4),
         right: fraction(1, 8),
         unit: "杯分",
@@ -338,7 +338,7 @@
         focus: "何個分",
       },
       {
-        word: "4mのテープを、2/3mずつ使います。何本分ありますか。",
+        word: "4mのテープを、2/3mずつ使います。何本分とれますか。",
         left: fraction(4, 1),
         right: fraction(2, 3),
         unit: "本分",
@@ -348,7 +348,7 @@
       ],
       [
       {
-        word: "2と1/2kgの粉を、3/4kgずつ使います。何回分使えますか。",
+        word: "2と1/2kgの粉を、3/4kgずつ使います。何回分ありますか。",
         left: fraction(5, 2),
         right: fraction(3, 4),
         unit: "回分",
@@ -356,7 +356,7 @@
         focus: "帯分数",
       },
       {
-        word: "4mのテープを、2/3mずつ使います。何本分ありますか。",
+        word: "4mのテープを、2/3mずつ使います。何本分とれますか。",
         left: fraction(4, 1),
         right: fraction(2, 3),
         unit: "本分",
@@ -364,25 +364,25 @@
         focus: "整数÷分数",
       },
       {
-        word: "5/6Lの絵の具を、1/4Lずつ小びんに分けます。何びん分できますか。",
+        word: "5/6Lの絵の具を、1/4Lずつ小びんに分けます。何本分できますか。",
         left: fraction(5, 6),
         right: fraction(1, 4),
-        unit: "びん分",
+        unit: "本分",
         prompt: "全体量 ÷ 1びん分 で考えます。",
         focus: "何個分",
       },
       {
-        word: "3mのひもを、2/5mずつ使って飾りを作ります。何こ分作れますか。",
+        word: "3mのひもを、2/5mずつ使って飾りを作ります。何個分作れますか。",
         left: fraction(3, 1),
         right: fraction(2, 5),
-        unit: "こ分",
+        unit: "個分",
         prompt: "3mの中に2/5mがいくつ分あるかを考えます。",
         focus: "整数÷分数",
       },
       ],
       [
       {
-        word: "1と1/2dLのシロップを、3/10dLずつ使います。何杯分できますか。",
+        word: "1と1/2dLのシロップを、3/10dLずつ使います。何杯分ありますか。",
         left: fraction(3, 2),
         right: fraction(3, 10),
         unit: "杯分",
@@ -398,11 +398,11 @@
         focus: "帯分数",
       },
       {
-        word: "花だんの2/3に水をまいたら、4/5L使いました。花だん全体では何L使いますか。",
+        word: "花だんの2/3に水をまいたら、4/5L使いました。花だん全体にまくには何L必要ですか。",
         left: fraction(4, 5),
         right: fraction(2, 3),
         unit: "L",
-        prompt: "部分の量 ÷ 部分の割合 で、全体の量を求めます。",
+        prompt: "部分の量 ÷ 部分の割合で、全体の量を求めます。",
         focus: "全体量",
       },
       {
@@ -424,11 +424,11 @@
       ],
       [
       {
-        word: "18/25Lの薬品を、6/35Lずつ分けます。何本分できますか。",
+        word: "18/25Lの絵の具を、6/35Lずつ分けます。何本分できますか。",
         left: fraction(18, 25),
         right: fraction(6, 35),
         unit: "本分",
-        prompt: "大きな数を長い線でまとめて、2か所を約分します。",
+        prompt: "大きな数を長い線にまとめて、2か所を約分します。",
         focus: "何個分",
       },
       {
@@ -440,7 +440,7 @@
         focus: "何個分",
       },
       {
-        word: "36/55kgの材料を、9/22kgずつ使います。何回分使えますか。",
+        word: "36/55kgの材料を、9/22kgずつ使います。何回分ありますか。",
         left: fraction(36, 55),
         right: fraction(9, 22),
         unit: "回分",
@@ -463,8 +463,8 @@
       prompt: base.prompt,
       core: `${formatFraction(base.left)} ÷ ${formatFraction(base.right)} を計算します。`,
       steps: [
-        `求めたいものは「${base.unit}」です`,
-        `${formatFraction(base.left)} ÷ ${formatFraction(base.right)} の式にする`,
+        `求めたいものは「${base.unit}」です。`,
+        `${formatFraction(base.left)} ÷ ${formatFraction(base.right)} という式にする`,
         `答えは ${formatFraction(answer)}${base.unit}`,
       ],
     });
@@ -662,9 +662,9 @@
       answer: fraction(answer?.[0] || 0, answer?.[1] || 1),
       word: word || "",
       lesson: "考え方を確認",
-      prompt: word || "もう一度、分数のわり算を確認しよう。",
-      core: "わる数を逆数にして、かけ算に直します。",
-      steps: ["わる数を逆数にする", "長い線でまとめて約分する", "答えの形にする"],
+      prompt: word || "もう一度、分数の割り算を確認しよう。",
+      core: "割る数を逆数に直して、かけ算にします。",
+      steps: ["割る数を逆数に直す", "長い線にまとめて約分する", "答えの形に整える"],
     });
     return restored;
   }
@@ -781,11 +781,11 @@
       button.type = "button";
       button.dataset.rank = String(index);
       button.disabled = index > unlockedRank;
-      const railLabel = index > unlockedRank ? "前のレベルをクリア" : (index < unlockedRank ? "10問クリア" : "10問中8問で次へ");
+      const railLabel = index > unlockedRank ? "前のレベルをクリアすると開きます" : (index < unlockedRank ? "10問クリア" : "10問中8問正解で次へ");
       button.innerHTML = `<span class="belt-graphic"><span></span></span><b><em>${rank.level}</em>${rank.name}</b><small>${compact ? rank.skill : railLabel}</small>`;
       button.querySelector(".belt-graphic").style.setProperty("--belt", rank.color);
       button.addEventListener("click", () => {
-        showToast(index === unlockedRank ? `${rank.name}の10問を始められます` : `${rank.name}を選びました`);
+        showToast(index === unlockedRank ? `${rank.name}の10問を始められます。` : `${rank.name}を選びました。`);
         if (index <= unlockedRank && target === els.rankRail) startSession("practice", index);
       });
       target.appendChild(button);
@@ -894,7 +894,7 @@
     const rankIndex = typeof forcedRankIndex === "number" ? forcedRankIndex : currentRankIndex();
     const reviewItems = progress.mistakes.slice(0, SESSION_LENGTH);
     if (mode === "review" && reviewItems.length === 0) {
-      showToast("まちがい直しの問題はまだありません");
+      showToast("間違い直しの問題はまだありません。");
       return;
     }
     session = {
@@ -933,7 +933,7 @@
     setBelt(els.sessionBelt, session.rankIndex);
     els.sessionRankName.textContent = `今の庭：${rank.name}`;
     const questionText = `${session.index + 1}/${session.questions.length}`;
-    els.questionNumberLabel.textContent = session.mode === "retry" ? "やり直し" : "もんだい";
+    els.questionNumberLabel.textContent = session.mode === "retry" ? "やり直し" : "問題";
     els.questionNumber.textContent = questionText;
     const progressIndex = session.mode === "retry" ? session.index : session.index + 1;
     els.practiceView.style.setProperty("--question-total", String(Math.max(1, session.questions.length)));
@@ -1015,24 +1015,24 @@
     return `
       <div class="hint-steps">
         <article class="hint-step">
-          <b><span>1</span>わる数を逆数にする</b>
+          <b><span>1</span>割る数を逆数に直す</b>
           <div class="hint-formula">${fractionHtml(q.left)}<span class="op">×</span>${fractionHtml({ n: q.right.d, d: q.right.n })}</div>
         </article>
         <article class="hint-step reduce-step">
-          <b><span>2</span>長い線でまとめて約分</b>
+          <b><span>2</span>長い線にまとめて約分</b>
           <div class="long-fraction">
             <div class="long-top">${cancelFactorHtml(cancel.top[0], "top")}<small>×</small>${cancelFactorHtml(cancel.top[1], "top")}</div>
             <div class="long-rule"></div>
             <div class="long-bottom">${cancelFactorHtml(cancel.bottom[0], "bottom")}<small>×</small>${cancelFactorHtml(cancel.bottom[1], "bottom")}</div>
           </div>
-          <p>${canReduce ? `斜め線で消して、割った後の数を書きます。` : "ここで、もう約分できない形か確認します。"}</p>
+          <p>${canReduce ? `斜め線で元の数を消し、割ったあとの数を書きます。` : "ここで、もう約分できない形か確認します。"}</p>
         </article>
         <article class="hint-step answer-step">
-          <b><span>3</span>答えの形にする</b>
+          <b><span>3</span>答えの形に整える</b>
           ${options.concealedAnswer
             ? `<button class="hint-answer reveal-answer" type="button" aria-label="答えを見る" aria-expanded="false"><span class="answer-value">${fractionHtml(raw)}</span></button>`
             : `<div class="hint-answer">${fractionHtml(raw)}</div>`}
-          <p>${canReduce ? `${rawN}/${rawD} は ${formatFraction(raw)}。` : `${formatFraction(raw)} が答えです。`}</p>
+          <p>${canReduce ? `${rawN}/${rawD} を約分すると ${formatFraction(raw)} になります。` : `${formatFraction(raw)} が答えです。`}</p>
         </article>
       </div>
     `;
@@ -1184,7 +1184,7 @@
     }
     const value = enteredAnswer();
     if (!value) {
-      showToast("数字を入れてください");
+      showToast("数字を入れてください。");
       return;
     }
     const correct = value.n === q.answer.n && value.d === q.answer.d;
@@ -1312,13 +1312,13 @@
     showView("review");
     const rank = RANKS[currentRankIndex()];
     els.reviewPlayerName.textContent = playerName() || "研究生";
-    els.reviewRankLabel.textContent = `今の庭 ${rank.name}`;
-    els.reviewTitle.textContent = reason === "browse" ? "考え方の確認" : "まちがい直し";
+    els.reviewRankLabel.textContent = `今の庭：${rank.name}`;
+    els.reviewTitle.textContent = reason === "browse" ? "考え方の確認" : "間違い直し";
     els.reviewIntro.textContent = q.prompt;
     els.reviewProblem.innerHTML = problemHtml(q);
     els.studentAnswer.innerHTML = fractionHtml(studentAnswer || { n: 0, d: 1 });
     els.correctAnswer.innerHTML = fractionHtml(q.answer);
-    els.workedQuestion.textContent = `考え方を見てみよう!`;
+    els.workedQuestion.textContent = "考え方を見てみよう！";
     els.workedSteps.innerHTML = q.steps.map((step, index) => {
       const model = index === 1 ? hintHtml(q) : `<p>${q.core}</p>`;
       return `<article class="step-card"><h4><span>${index + 1}</span>${step}</h4>${model}</article>`;
@@ -1455,31 +1455,31 @@
     els.resultMistake.textContent = `${session.mistakes}問`;
     els.nextSkill.textContent = RANKS[nowRank].skill;
     if (els.resultSummaryTitle) els.resultSummaryTitle.textContent = isFinalClear ? "完成記録" : "今回の結果";
-    if (els.nextTrainingButton) els.nextTrainingButton.textContent = isFinalClear ? "もう一度" : "→ つぎの10問";
+    if (els.nextTrainingButton) els.nextTrainingButton.textContent = isFinalClear ? "もう一度" : "→ 次の10問";
     if (isFinalClear) {
-      els.resultHeadline.textContent = "天空庭園 完成!";
+      els.resultHeadline.textContent = "天空庭園 完成！";
       els.rankRibbon.textContent = "100しずく達成";
-      els.resultMessage.textContent = "分数のわり算、最後までやりきりました。";
+      els.resultMessage.textContent = "分数の割り算を、最後までやり切りました。";
     } else if (session.mode === "retry") {
-      els.resultHeadline.textContent = "やり直し完了!";
+      els.resultHeadline.textContent = "やり直し完了！";
       els.rankRibbon.textContent = "100しずくまで";
-      els.resultMessage.textContent = "復習分は増やさず、次へ進みます。";
+      els.resultMessage.textContent = "やり直しではしずくを増やさず、次へ進みます。";
     } else if (gardenChanged) {
-      els.resultHeadline.textContent = "景色がひらいた!";
+      els.resultHeadline.textContent = "景色が変わりました！";
       els.rankRibbon.textContent = "新しい景色へ";
-      els.resultMessage.textContent = `${earnedThisSession}こ分で、庭園が大きく変わりました。`;
+      els.resultMessage.textContent = `しずくが${earnedThisSession}個増えて、庭園の景色が変わりました。`;
     } else if (rankedUp) {
-      els.resultHeadline.textContent = "練習完了!";
+      els.resultHeadline.textContent = "練習完了！";
       els.rankRibbon.textContent = "100しずくまで";
-      els.resultMessage.textContent = `${earnedThisSession}こ分、進みました。`;
+      els.resultMessage.textContent = `しずくが${earnedThisSession}個増えました。`;
     } else if (session.correct === SESSION_LENGTH) {
-      els.resultHeadline.textContent = "全問正解!";
+      els.resultHeadline.textContent = "全問正解！";
       els.rankRibbon.textContent = "100しずくまで";
-      els.resultMessage.textContent = `${earnedThisSession}こ分、進みました。`;
+      els.resultMessage.textContent = `しずくが${earnedThisSession}個増えました。`;
     } else {
-      els.resultHeadline.textContent = "練習完了!";
+      els.resultHeadline.textContent = "練習完了！";
       els.rankRibbon.textContent = "100しずくまで";
-      els.resultMessage.textContent = `${earnedThisSession}こ分、進みました。`;
+      els.resultMessage.textContent = `しずくが${earnedThisSession}個増えました。`;
     }
     if (els.resultReviewButton) els.resultReviewButton.disabled = progress.mistakes.length === 0;
   }
@@ -1526,14 +1526,14 @@
           <article><small>練習</small><b>${progress.sessions}</b><span>回</span></article>
           <article><small>正解</small><b>${progress.totalCorrect}</b><span>${progress.totalAnswered}問中</span></article>
           <article><small>正答率</small><b>${rate}</b><span>%</span></article>
-          <article><small>直す問題</small><b>${progress.mistakes.length}</b><span>問</span></article>
+          <article><small>見直す問題</small><b>${progress.mistakes.length}</b><span>問</span></article>
         </div>
         <div class="record-note">
-          <b>しずく</b><span>${Math.min(WATER_GOAL, progress.totalCorrect || 0)}こ</span>
+          <b>しずく</b><span>${Math.min(WATER_GOAL, progress.totalCorrect || 0)}個</span>
           <b>次の景色まで</b><span>${garden.goal - garden.current}しずく</span>
         </div>
         <div class="record-mistakes">
-          <h3>最近のまちがい</h3>
+          <h3>最近の間違い</h3>
           ${mistakeRows ? `<ul>${mistakeRows}</ul>` : `<p>今はありません。</p>`}
         </div>
       </section>
@@ -1543,7 +1543,7 @@
   function showSettings() {
     showModal("設定", `
       <button class="inline-button" id="recordFromSettingsButton" type="button">記録を見る</button>
-      <p>音: ${progress.sound ? "オン" : "オフ"}</p>
+      <p>音：${progress.sound ? "オン" : "オフ"}</p>
       <button class="inline-button" id="toggleSoundButton" type="button">音を${progress.sound ? "オフ" : "オン"}にする</button>
       <p>保存コードを使うと、このブラウザの進み具合を別の端末へ移せます。</p>
       <button class="inline-button" id="backupButton" type="button">保存コードを作る</button>
@@ -1587,15 +1587,15 @@
         saveProgress();
         renderHome();
         closeModal();
-        showToast("進み具合を読み込みました");
+        showToast("進み具合を読み込みました。");
       } catch {
-        showToast("コードを読み込めませんでした");
+        showToast("コードを読み込めませんでした。");
       }
     });
   }
 
   function showNameSetup(required) {
-    showModal(required ? "名前をえらぶ" : "名前を変える", `
+    showModal(required ? "名前を選ぶ" : "名前を変える", `
       <p>この端末に保存する名前です。学校の名簿には送りません。</p>
       <label class="name-entry-label" for="playerNameInput">名前</label>
       <input id="playerNameInput" class="name-entry-input" maxlength="12" autocomplete="off" value="${playerName()}">
@@ -1610,14 +1610,14 @@
     const save = () => {
       const name = input.value.trim().slice(0, 12);
       if (!name) {
-        showToast("名前を入れてください");
+        showToast("名前を入れてください。");
         return;
       }
       progress.playerName = name;
       saveProgress();
       renderHome();
       closeModal();
-      showToast(`${name}で始めます`);
+      showToast(`${name}で始めます。`);
     };
     document.querySelectorAll("[data-name]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -1634,19 +1634,19 @@
 
   function showReviewList() {
     if (!progress.mistakes.length) {
-      showToast("まちがい直しの問題はありません");
+      showToast("間違い直しの問題はありません。");
       return;
     }
     const items = progress.mistakes.slice(0, 8).map((item, i) =>
       `<li>${i + 1}. ${item.question.word || `${formatFraction(item.question.left)} ÷ ${formatFraction(item.question.right)}`} / 正解 ${formatFraction(item.question.answer)}</li>`
     ).join("");
-    showModal("まちがえた問題", `<ul>${items}</ul>`);
+    showModal("間違えた問題", `<ul>${items}</ul>`);
   }
 
   function showMenu() {
     showModal("メニュー", `
       <p>今の10問をどうしますか。</p>
-      <button class="inline-button" id="resumeButton" type="button">10問にもどる</button>
+      <button class="inline-button" id="resumeButton" type="button">10問に戻る</button>
       <button class="inline-button" id="menuHomeButton" type="button">ホームへ</button>
     `);
     document.getElementById("resumeButton").addEventListener("click", closeModal);
@@ -1740,7 +1740,7 @@
       button.setAttribute("aria-expanded", "true");
       button.disabled = true;
     });
-    els.reviewHintButton.addEventListener("click", () => showToast("下の3ステップで考え方を確認できます"));
+    els.reviewHintButton.addEventListener("click", () => showToast("下の3ステップで考え方を確認できます。"));
     els.reviewListButton.addEventListener("click", showReviewList);
     els.retryButton.addEventListener("click", retryCurrentQuestion);
     els.reviewNextButton.addEventListener("click", continueAfterReview);
