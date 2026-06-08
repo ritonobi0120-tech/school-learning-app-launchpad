@@ -1679,6 +1679,9 @@
     if (els.resultReviewButton) els.resultReviewButton.addEventListener("click", () => startSession("review"));
     els.resultHomeButton.addEventListener("click", showHome);
     els.modalCloseButton.addEventListener("click", closeModal);
+    document.addEventListener("dragstart", (event) => {
+      if (event.target instanceof HTMLImageElement) event.preventDefault();
+    });
     window.addEventListener("keydown", (event) => {
       if (!session || els.practiceView.classList.contains("hidden")) return;
       if (answerLocked) {
