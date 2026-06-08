@@ -7761,6 +7761,10 @@ body {
   );
 }
 
+.practice-view.retry-practice .top-meter i {
+  min-width: 0;
+}
+
 .result-progress-dots {
   display: none !important;
 }

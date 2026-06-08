@@ -1372,7 +1372,7 @@
     els.resultView.classList.toggle("final-clear", isFinalClear);
     els.resultView.classList.toggle("garden-changed", gardenChanged && !isFinalClear);
     els.coinTotal.textContent = `${currentGarden.current}/${currentGarden.goal}`;
-    if (els.resultProgressCount) els.resultProgressCount.textContent = `${currentGarden.current} / ${currentGarden.goal}しずく`;
+    if (els.resultProgressCount) els.resultProgressCount.textContent = `${currentGarden.current} / ${currentGarden.goal}`;
     if (els.resultProgressBar) els.resultProgressBar.style.width = `${currentGarden.percent}%`;
     if (els.resultProgressDots) {
       els.resultProgressDots.innerHTML = "";
@@ -1396,25 +1396,25 @@
       els.rankRibbon.textContent = "100しずく達成";
       els.resultMessage.textContent = "分数のわり算、最後までやりきりました。";
     } else if (session.mode === "retry") {
-      els.resultHeadline.textContent = "しずく集め完了!";
+      els.resultHeadline.textContent = "やり直し完了!";
       els.rankRibbon.textContent = "100しずくまで";
-      els.resultMessage.textContent = "やり直し分はしずくに足さず、次へ進みます。";
+      els.resultMessage.textContent = "復習分は増やさず、次へ進みます。";
     } else if (gardenChanged) {
       els.resultHeadline.textContent = "景色がひらいた!";
       els.rankRibbon.textContent = "新しい景色へ";
-      els.resultMessage.textContent = `${earnedThisSession}しずくで、庭園が大きく変わりました。`;
+      els.resultMessage.textContent = `${earnedThisSession}こ分で、庭園が大きく変わりました。`;
     } else if (rankedUp) {
-      els.resultHeadline.textContent = "しずく集め完了!";
+      els.resultHeadline.textContent = "練習完了!";
       els.rankRibbon.textContent = "100しずくまで";
-      els.resultMessage.textContent = `${earnedThisSession}しずく分、進みました。`;
+      els.resultMessage.textContent = `${earnedThisSession}こ分、進みました。`;
     } else if (session.correct === SESSION_LENGTH) {
       els.resultHeadline.textContent = "全問正解!";
       els.rankRibbon.textContent = "100しずくまで";
-      els.resultMessage.textContent = `${earnedThisSession}しずく分、進みました。`;
+      els.resultMessage.textContent = `${earnedThisSession}こ分、進みました。`;
     } else {
-      els.resultHeadline.textContent = "しずく集め完了!";
+      els.resultHeadline.textContent = "練習完了!";
       els.rankRibbon.textContent = "100しずくまで";
-      els.resultMessage.textContent = `${earnedThisSession}しずく分、進みました。`;
+      els.resultMessage.textContent = `${earnedThisSession}こ分、進みました。`;
     }
     if (els.resultReviewButton) els.resultReviewButton.disabled = progress.mistakes.length === 0;
   }
