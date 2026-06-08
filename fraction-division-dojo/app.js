@@ -755,6 +755,7 @@
   let answerD = "";
   let toastTimer = null;
   let answerFxTimer = null;
+  let audioContext = null;
 
   function hasActiveSession() {
     return Boolean(session && Array.isArray(session.questions) && session.index < session.questions.length);
@@ -968,6 +969,53 @@
     renderAnswer();
   }
 
+  function playToneSequence(tones) {
+    if (!progress.sound || !tones?.length) return;
+    try {
+      const AudioCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtor) return;
+      audioContext = audioContext || new AudioCtor();
+      if (audioContext.state === "suspended") audioContext.resume();
+      const startAt = audioContext.currentTime + 0.01;
+      tones.forEach((tone) => {
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.type = tone.type || "sine";
+        oscillator.frequency.setValueAtTime(tone.frequency, startAt + tone.at);
+        gain.gain.setValueAtTime(0.0001, startAt + tone.at);
+        gain.gain.exponentialRampToValueAtTime(tone.volume || 0.075, startAt + tone.at + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + tone.at + tone.duration);
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start(startAt + tone.at);
+        oscillator.stop(startAt + tone.at + tone.duration + 0.03);
+      });
+    } catch (error) {
+      console.warn("sound effect skipped", error);
+    }
+  }
+
+  function playSoundEffect(kind) {
+    if (kind === "correct") {
+      playToneSequence([
+        { frequency: 660, at: 0, duration: 0.09, volume: 0.065, type: "triangle" },
+        { frequency: 880, at: 0.08, duration: 0.12, volume: 0.075, type: "triangle" },
+        { frequency: 1175, at: 0.18, duration: 0.16, volume: 0.065, type: "sine" },
+      ]);
+      return;
+    }
+    if (kind === "incorrect") {
+      playToneSequence([
+        { frequency: 220, at: 0, duration: 0.13, volume: 0.075, type: "sawtooth" },
+        { frequency: 165, at: 0.11, duration: 0.16, volume: 0.06, type: "triangle" },
+      ]);
+      return;
+    }
+    if (kind === "move") {
+      playToneSequence([{ frequency: 520, at: 0, duration: 0.06, volume: 0.04, type: "sine" }]);
+    }
+  }
+
   function normalizeDigit(value) {
     return String(value || "").replace(/[０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 0xFEE0)).replace(/[^\d]/g, "");
   }
@@ -1011,6 +1059,7 @@
     if (q.answer.d !== 1 && activePart === "d") {
       activePart = "n";
       renderAnswer();
+      playSoundEffect("move");
       return;
     }
     const value = enteredAnswer();
@@ -1027,6 +1076,7 @@
     }
     if (correct) {
       playAnswerFx("correct");
+      playSoundEffect("correct");
       if (session.mode === "practice") {
         session.correct += 1;
         progress.totalCorrect += 1;
@@ -1046,6 +1096,7 @@
       }, 520);
     } else {
       playAnswerFx("incorrect");
+      playSoundEffect("incorrect");
       if (!isRetry) {
         session.mistakes += 1;
         progress.todayMistakes += 1;
@@ -1377,6 +1428,7 @@
     document.getElementById("toggleSoundButton").addEventListener("click", () => {
       progress.sound = !progress.sound;
       saveProgress();
+      if (progress.sound) playSoundEffect("correct");
       showSettings();
     });
     document.getElementById("backupButton").addEventListener("click", showBackupCode);
@@ -1625,6 +1677,7 @@
           unit: q.unit || "",
         };
       }),
+      testSound: (kind = "correct") => playSoundEffect(kind),
       forceMistake: () => {
         const q = makeIntegerDivFraction(1);
         storeMistake(q, fraction(1, 1));
