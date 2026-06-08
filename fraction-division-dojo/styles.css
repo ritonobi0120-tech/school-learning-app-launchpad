@@ -7767,8 +7767,15 @@ body {
 
 .home-view .main-progress .bar #homeProgressBar {
   display: block;
-  width: var(--home-progress-width, 0%) !important;
+  width: 100% !important;
   min-width: 0;
+  background: transparent;
+}
+
+.home-view .main-progress .bar {
+  background:
+    linear-gradient(90deg, #6ee7ff, #9cff90 55%, #ffe066) left / var(--home-progress-width, 0%) 100% no-repeat,
+    rgba(255, 255, 255, 0.28);
 }
 
 .home-view.scenery-mode.garden-dry,
