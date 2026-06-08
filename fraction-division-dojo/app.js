@@ -881,7 +881,7 @@
     els.hintPanel.classList.toggle("review-mode", showHint);
     els.hintButton.hidden = !showHint;
     els.hintBody.hidden = !showHint;
-    els.visualHint.innerHTML = hintHtml(q);
+    els.visualHint.innerHTML = hintHtml(q, { concealedAnswer: session.mode === "retry" });
     clearAnswerFx();
     updateFocusBlocks();
     renderAnswer();
@@ -939,7 +939,7 @@
     `;
   }
 
-  function hintHtml(q) {
+  function hintHtml(q, options = {}) {
     const rawN = q.left.n * q.right.d;
     const rawD = q.left.d * q.right.n;
     const common = gcd(Math.abs(rawN), Math.abs(rawD));
@@ -963,7 +963,9 @@
         </article>
         <article class="hint-step answer-step">
           <b><span>3</span>答えの形にする</b>
-          <div class="hint-answer">${fractionHtml(raw)}</div>
+          ${options.concealedAnswer
+            ? `<button class="hint-answer reveal-answer" type="button" aria-label="答えを見る" aria-expanded="false"><span class="answer-value">${fractionHtml(raw)}</span></button>`
+            : `<div class="hint-answer">${fractionHtml(raw)}</div>`}
           <p>${canReduce ? `${rawN}/${rawD} は ${formatFraction(raw)}。` : `${formatFraction(raw)} が答えです。`}</p>
         </article>
       </div>
@@ -1356,13 +1358,14 @@
     const currentGarden = gardenStateForDrops(progress.totalCorrect);
     const gardenChanged = previousGarden.key !== currentGarden.key;
     showView("result");
-    els.resultView.classList.remove("garden-dry", "garden-returning", "garden-restored", "garden-splash", "final-clear");
+    els.resultView.classList.remove("garden-dry", "garden-returning", "garden-restored", "garden-splash", "final-clear", "garden-changed");
     els.resultView.classList.add(`garden-${currentGarden.key}`);
     renderRail(els.resultRail, true);
     const totalDrops = Math.min(WATER_GOAL, Math.max(0, Number(progress.totalCorrect || 0)));
     const earnedThisSession = session.mode === "retry" ? 0 : session.correct;
     const isFinalClear = totalDrops >= WATER_GOAL;
     els.resultView.classList.toggle("final-clear", isFinalClear);
+    els.resultView.classList.toggle("garden-changed", gardenChanged && !isFinalClear);
     els.coinTotal.textContent = `${currentGarden.current}/${currentGarden.goal}`;
     if (els.resultProgressCount) els.resultProgressCount.textContent = `${currentGarden.current} / ${currentGarden.goal}しずく`;
     if (els.resultProgressBar) els.resultProgressBar.style.width = `${currentGarden.percent}%`;
@@ -1393,9 +1396,9 @@
       els.rankRibbon.textContent = "100しずくまで";
       els.resultMessage.textContent = "やり直し分はしずくに足さず、次へ進みます。";
     } else if (gardenChanged) {
-      els.resultHeadline.textContent = "しずく集め完了!";
-      els.rankRibbon.textContent = "100しずくまで";
-      els.resultMessage.textContent = `${earnedThisSession}しずく分、進みました。`;
+      els.resultHeadline.textContent = "景色がひらいた!";
+      els.rankRibbon.textContent = "新しい景色へ";
+      els.resultMessage.textContent = `${earnedThisSession}しずくで、庭園が大きく変わりました。`;
     } else if (rankedUp) {
       els.resultHeadline.textContent = "しずく集め完了!";
       els.rankRibbon.textContent = "100しずくまで";
@@ -1660,6 +1663,13 @@
     if (els.wholeNumberButton) els.wholeNumberButton.addEventListener("click", setIntegerAnswer);
     els.hintButton.addEventListener("click", () => {
       els.hintBody.hidden = !els.hintBody.hidden;
+    });
+    els.visualHint.addEventListener("click", (event) => {
+      const button = event.target.closest(".reveal-answer");
+      if (!button) return;
+      button.classList.add("revealed");
+      button.setAttribute("aria-expanded", "true");
+      button.disabled = true;
     });
     els.reviewHintButton.addEventListener("click", () => showToast("下の3ステップで考え方を確認できます"));
     els.reviewListButton.addEventListener("click", showReviewList);

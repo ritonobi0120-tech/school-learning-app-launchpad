@@ -5873,7 +5873,7 @@ body {
   }
 
   .practice-view.retry-practice .hint-panel.review-mode {
-    grid-template-rows: minmax(0, 1fr) 250px;
+    grid-template-rows: minmax(0, 1fr) 210px;
     gap: 14px;
     padding: 18px;
   }
@@ -5884,7 +5884,7 @@ body {
   }
 
   .practice-view.retry-practice .hint-steps {
-    grid-template-rows: 0.78fr 1.34fr 0.76fr;
+    grid-template-rows: 0.72fr 1.12fr 0.98fr;
     gap: 9px;
   }
 
@@ -5962,7 +5962,7 @@ body {
   }
 
   .practice-view.retry-practice .hint-panel.review-mode {
-    grid-template-rows: minmax(0, 1fr) 220px;
+    grid-template-rows: minmax(0, 1fr) 190px;
     gap: 8px;
     padding: 10px;
   }
@@ -5972,7 +5972,7 @@ body {
   }
 
   .practice-view.retry-practice .hint-steps {
-    grid-template-rows: 0.76fr 1.3fr 0.72fr;
+    grid-template-rows: 0.72fr 1.1fr 0.96fr;
     gap: 6px;
   }
 
@@ -7369,6 +7369,190 @@ body {
 .practice-view.retry-practice .answer-panel::after {
   content: none;
   display: none;
+}
+
+.hint-answer.reveal-answer {
+  cursor: pointer;
+  border: 0;
+  color: #10213a;
+}
+
+.hint-answer.reveal-answer .answer-value {
+  visibility: hidden;
+}
+
+.hint-answer.reveal-answer.revealed {
+  cursor: default;
+  animation: answer-reveal-pop 0.42s cubic-bezier(.19,1,.22,1) both;
+}
+
+.hint-answer.reveal-answer.revealed .answer-value {
+  visibility: visible;
+}
+
+@keyframes answer-reveal-pop {
+  0% { transform: scale(0.96); box-shadow: inset 0 0 0 3px rgba(47, 127, 105, 0.22); }
+  60% { transform: scale(1.04); box-shadow: inset 0 0 0 4px rgba(28, 185, 103, 0.36), 0 8px 18px rgba(22, 126, 86, 0.16); }
+  100% { transform: scale(1); box-shadow: inset 0 0 0 3px rgba(47, 127, 105, 0.22); }
+}
+
+.result-view.garden-changed {
+  background-size: cover;
+  background-position: center center;
+}
+
+.result-view.garden-changed::before,
+.result-view.garden-changed::after {
+  content: "";
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+.result-view.garden-changed::before {
+  inset: 100px 0 86px;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 50% 58%, rgba(125, 235, 255, 0.42) 0 11%, transparent 30%),
+    radial-gradient(circle at 26% 34%, rgba(95, 220, 255, 0.54) 0 8px, transparent 9px),
+    radial-gradient(circle at 72% 28%, rgba(130, 246, 210, 0.5) 0 7px, transparent 8px),
+    radial-gradient(circle at 82% 68%, rgba(95, 220, 255, 0.44) 0 9px, transparent 10px),
+    linear-gradient(115deg, transparent 0 44%, rgba(255,255,255,0.46) 45% 47%, transparent 48% 100%);
+  animation: garden-open-flash 1.1s cubic-bezier(.19,1,.22,1) both;
+}
+
+.result-view.garden-changed::after {
+  left: 50%;
+  bottom: 92px;
+  z-index: 0;
+  width: min(780px, 72vw);
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(94, 224, 255, 0.58), rgba(94, 224, 255, 0.18) 48%, transparent 72%);
+  filter: blur(2px);
+  transform: translateX(-50%);
+  animation: water-ring-open 1.15s cubic-bezier(.19,1,.22,1) both;
+}
+
+.result-view.garden-changed .result-stage,
+.result-view.garden-changed .result-bar,
+.result-view.garden-changed .result-buttons {
+  position: relative;
+  z-index: 1;
+}
+
+.result-view.garden-changed .rank-up-card {
+  border-color: rgba(71, 207, 232, 0.94);
+  background: linear-gradient(180deg, rgba(238, 253, 255, 0.96), rgba(255,255,255,0.9));
+  box-shadow: 0 24px 56px rgba(4, 78, 112, 0.26), inset 0 0 0 4px rgba(255,255,255,0.72);
+  animation: result-card-rise 0.82s cubic-bezier(.19,1,.22,1) both;
+}
+
+.result-view.garden-changed .rank-up-card h2 {
+  color: #026e9a;
+  font-size: clamp(58px, 5.8vw, 78px);
+  text-shadow: 0 4px 0 #fff, 0 12px 26px rgba(2, 89, 137, 0.2);
+}
+
+.result-view.garden-changed .ribbon {
+  width: min(460px, 92%);
+  margin-inline: auto;
+  padding: 12px 26px;
+  display: block;
+  border-radius: 999px;
+  color: #063a52;
+  background: linear-gradient(180deg, #d9fbff, #63dcef);
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,0.72), 0 12px 24px rgba(4, 96, 130, 0.18);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 1000;
+}
+
+.result-view.garden-changed .rank-up-card p {
+  display: block;
+  color: #063a52;
+  background: rgba(232, 252, 255, 0.9);
+  box-shadow: inset 0 0 0 2px rgba(7, 153, 187, 0.18);
+}
+
+.result-view:not(.final-clear) .rank-up-card h2 {
+  font-size: clamp(54px, 5.1vw, 72px);
+}
+
+.result-view.final-clear::before,
+.result-view.final-clear::after {
+  content: "";
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+.result-view.final-clear::before {
+  inset: 86px 0 76px;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 13% 24%, rgba(138, 236, 255, 0.88) 0 5px, transparent 7px),
+    radial-gradient(circle at 24% 70%, rgba(255,255,255,0.86) 0 5px, transparent 7px),
+    radial-gradient(circle at 71% 22%, rgba(138, 236, 255, 0.82) 0 6px, transparent 8px),
+    radial-gradient(circle at 86% 68%, rgba(255,255,255,0.82) 0 5px, transparent 7px),
+    linear-gradient(115deg, transparent 0 45%, rgba(255,255,255,0.28) 46% 48%, transparent 49% 100%);
+  opacity: 0.86;
+  animation: final-sparkle 1.45s ease-out both;
+}
+
+.result-view.final-clear::after {
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: min(920px, 76vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 4px solid rgba(154, 239, 255, 0.58);
+  box-shadow: 0 0 42px rgba(77, 211, 255, 0.32), inset 0 0 42px rgba(255,255,255,0.28);
+  transform: translate(-50%, -50%);
+  animation: final-ring 1.18s cubic-bezier(.19,1,.22,1) both;
+}
+
+.result-view.final-clear .result-buttons {
+  z-index: 3;
+  width: min(700px, calc(100vw - 48px));
+  height: 64px;
+}
+
+.result-view.final-clear .result-buttons .primary-action,
+.result-view.final-clear .result-buttons .blue-action {
+  min-height: 64px;
+  border-radius: 18px;
+  box-shadow: inset 0 -5px 0 rgba(2, 58, 116, 0.2), 0 14px 28px rgba(3, 55, 105, 0.28);
+  font-size: 24px;
+}
+
+@keyframes garden-open-flash {
+  0% { opacity: 0; transform: scale(0.94); }
+  30% { opacity: 1; transform: scale(1.02); }
+  100% { opacity: 0.88; transform: scale(1); }
+}
+
+@keyframes water-ring-open {
+  0% { opacity: 0; transform: translateX(-50%) scaleX(0.45); }
+  42% { opacity: 1; }
+  100% { opacity: 0.82; transform: translateX(-50%) scaleX(1); }
+}
+
+@keyframes result-card-rise {
+  0% { opacity: 0; transform: translateY(28px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes final-sparkle {
+  0% { opacity: 0; transform: scale(0.96); }
+  100% { opacity: 0.86; transform: scale(1); }
+}
+
+@keyframes final-ring {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.72); }
+  70% { opacity: 0.9; }
+  100% { opacity: 0.56; transform: translate(-50%, -50%) scale(1); }
 }
 
 .modal-card {
