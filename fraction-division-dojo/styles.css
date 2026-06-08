@@ -32,6 +32,15 @@ body {
     linear-gradient(180deg, #b86c24, #d9923c 44%, #a85b21 100%);
 }
 
+.preload-final-art {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  object-fit: cover;
+}
+
 button {
   font: inherit;
   color: inherit;
