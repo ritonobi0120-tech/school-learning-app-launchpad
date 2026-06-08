@@ -737,6 +737,7 @@
     els.homeStamp.textContent = garden.badge;
     els.homeProgressCount.textContent = `${garden.current} / ${garden.goal}しずく`;
     els.homeProgressBar.style.width = `${garden.percent}%`;
+    els.homeProgressBar.style.setProperty("--home-progress-width", `${garden.percent}%`);
     els.homeCorrect.textContent = `${progress.todayCorrect || 0}問`;
     els.homeMistakes.textContent = `${progress.todayMistakes || 0}問`;
     const avg = progress.totalAnswered ? Math.round(progress.totalSeconds / progress.totalAnswered) : null;

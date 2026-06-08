@@ -3053,7 +3053,7 @@ body {
 .result-view.garden-splash {
   background-image:
     linear-gradient(180deg, rgba(255,255,255,0.64), rgba(255,255,255,0.50)),
-    url("./assets/sky-garden/garden-stage-3-splash.png");
+    url("./assets/sky-garden/garden-stage-3-splash.jpg");
 }
 
 .rank-up-card {
@@ -3251,7 +3251,7 @@ body {
 .home-view.garden-splash {
   background-image:
     linear-gradient(180deg, rgba(8, 24, 45, 0.22) 0%, rgba(8, 24, 45, 0.02) 30%, rgba(8, 24, 45, 0.05) 56%, rgba(8, 24, 45, 0.60) 100%),
-    url("./assets/sky-garden/garden-stage-3-splash.png");
+    url("./assets/sky-garden/garden-stage-3-splash.jpg");
 }
 
 .home-view.garden-restored .stamp,
@@ -4433,7 +4433,7 @@ body {
 .home-view.garden-splash {
   background-image:
     linear-gradient(180deg, rgba(8, 24, 45, 0.30) 0%, rgba(8, 24, 45, 0.04) 19%, rgba(8, 24, 45, 0.00) 48%, rgba(8, 24, 45, 0.16) 72%, rgba(8, 24, 45, 0.66) 100%),
-    url("./assets/sky-garden/garden-stage-3-splash.png");
+    url("./assets/sky-garden/garden-stage-3-splash.jpg");
 }
 
 .home-header {
@@ -4646,7 +4646,7 @@ body {
 
 .home-view.scenery-mode.garden-splash {
   --scenery-gradient: linear-gradient(180deg, rgba(8, 24, 45, 0.08) 0%, rgba(8, 24, 45, 0.00) 42%, rgba(8, 24, 45, 0.05) 100%);
-  --scenery-image: url("./assets/sky-garden/garden-stage-3-splash.png");
+  --scenery-image: url("./assets/sky-garden/garden-stage-3-splash.jpg");
 }
 
 .home-view.scenery-mode .home-header,
@@ -6484,7 +6484,7 @@ body {
   grid-template-rows: 94px minmax(0, 1fr) 86px;
   background-image:
     linear-gradient(180deg, rgba(8, 72, 92, 0.16), rgba(255, 248, 214, 0.36)),
-    url("./assets/sky-garden/garden-stage-3-splash.png");
+    url("./assets/sky-garden/garden-stage-3-splash.jpg");
   background-position: center 45%;
 }
 
@@ -7763,6 +7763,22 @@ body {
 
 .practice-view.retry-practice .top-meter i {
   min-width: 0;
+}
+
+.home-view .main-progress .bar #homeProgressBar {
+  display: block;
+  width: var(--home-progress-width, 0%) !important;
+  min-width: 0;
+}
+
+.home-view.scenery-mode.garden-dry,
+.home-view.scenery-mode.garden-returning,
+.home-view.scenery-mode.garden-restored,
+.home-view.scenery-mode.garden-splash {
+  background-size: 100% 100%, contain;
+  background-position: center center, center center;
+  background-repeat: no-repeat, no-repeat;
+  background-color: #dff7ff;
 }
 
 .result-progress-dots {
