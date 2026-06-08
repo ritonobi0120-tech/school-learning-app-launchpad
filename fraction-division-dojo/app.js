@@ -176,25 +176,37 @@
     return list[Math.floor(Math.random() * list.length)];
   }
 
-  function makeQuestion(rankIndex, serial) {
-    if (rankIndex === 0) return makeFractionDivInteger(false, serial);
-    if (rankIndex === 1) return makeFractionDivInteger(true, serial);
-    if (rankIndex === 2) return makeIntegerDivFraction(serial);
-    if (rankIndex === 3) return makeFractionDivFraction(serial);
-    if (rankIndex === 4) return makeMixedQuestion(serial);
-    return makeWordQuestion(serial);
+  function pick(list, serial) {
+    return list[Math.abs(serial) % list.length];
   }
 
-  function makeFractionDivInteger(reduce, serial) {
+  function stageForQuestion(questionIndex) {
+    if (questionIndex >= 8) return 3;
+    if (questionIndex >= 5) return 2;
+    if (questionIndex >= 3) return 1;
+    return 0;
+  }
+
+  function makeQuestion(rankIndex, serial, questionIndex = serial % SESSION_LENGTH) {
+    if (rankIndex === 0) return makeFractionDivInteger(false, serial, questionIndex);
+    if (rankIndex === 1) return makeFractionDivInteger(true, serial, questionIndex);
+    if (rankIndex === 2) return makeIntegerDivFraction(serial, questionIndex);
+    if (rankIndex === 3) return makeFractionDivFraction(serial, questionIndex);
+    if (rankIndex === 4) return makeMixedQuestion(serial, questionIndex);
+    return makeWordQuestion(serial, questionIndex);
+  }
+
+  function makeFractionDivInteger(reduce, serial, questionIndex = 0) {
     let left;
     let right;
     if (reduce) {
-      const candidates = [
-        [4, 5, 2], [6, 7, 3], [8, 9, 4], [9, 10, 3], [10, 11, 5],
-        [12, 13, 4], [6, 5, 3], [8, 7, 2], [14, 15, 7], [15, 16, 5],
-        [16, 17, 4], [18, 19, 6], [20, 21, 5], [21, 22, 7],
+      const staged = [
+        [[4, 5, 2], [6, 7, 3], [8, 9, 4], [10, 11, 5]],
+        [[12, 13, 4], [14, 15, 7], [15, 16, 5], [18, 19, 6]],
+        [[20, 21, 5], [21, 22, 7], [24, 25, 8], [27, 28, 9]],
+        [[32, 35, 8], [36, 37, 9], [40, 41, 10], [48, 49, 12]],
       ];
-      const [n, d, k] = candidates[serial % candidates.length];
+      const [n, d, k] = pick(staged[stageForQuestion(questionIndex)], serial);
       left = fraction(n, d);
       right = fraction(k, 1);
     } else {
@@ -222,9 +234,15 @@
     });
   }
 
-  function makeIntegerDivFraction(serial) {
-    const whole = rand([2, 3, 4, 5, 6]);
-    const right = rand([fraction(1, 2), fraction(1, 3), fraction(2, 3), fraction(3, 4), fraction(2, 5)]);
+  function makeIntegerDivFraction(serial, questionIndex = 0) {
+    const staged = [
+      [[2, 1, 2], [3, 1, 3], [4, 1, 2], [5, 2, 5], [6, 3, 4]],
+      [[6, 2, 3], [8, 4, 5], [9, 3, 5], [10, 2, 5], [12, 3, 7]],
+      [[12, 4, 5], [15, 5, 7], [16, 8, 9], [18, 6, 7], [20, 4, 9]],
+      [[24, 8, 11], [28, 7, 9], [30, 6, 11], [36, 9, 10], [42, 7, 13]],
+    ];
+    const [whole, rn, rd] = pick(staged[stageForQuestion(questionIndex)], serial);
+    const right = fraction(rn, rd);
     const answer = divide(fraction(whole, 1), right);
     return enrich({
       id: `idf-${serial}-${whole}-${right.n}-${right.d}`,
@@ -243,9 +261,16 @@
     });
   }
 
-  function makeFractionDivFraction(serial) {
-    const left = rand([fraction(2, 3), fraction(3, 4), fraction(4, 5), fraction(5, 6), fraction(3, 5), fraction(5, 8)]);
-    const right = rand([fraction(1, 2), fraction(2, 3), fraction(3, 5), fraction(4, 7), fraction(5, 6)]);
+  function makeFractionDivFraction(serial, questionIndex = 0) {
+    const staged = [
+      [[2, 3, 1, 2], [3, 4, 2, 3], [4, 5, 3, 5], [5, 6, 5, 6], [5, 8, 1, 2]],
+      [[9, 10, 3, 4], [8, 15, 4, 5], [12, 25, 3, 5], [14, 27, 7, 9], [16, 21, 4, 7]],
+      [[24, 35, 6, 7], [21, 22, 7, 6], [28, 45, 7, 9], [30, 49, 6, 7], [32, 55, 8, 11]],
+      [[36, 55, 9, 11], [40, 63, 8, 9], [45, 77, 9, 11], [48, 65, 12, 13], [56, 81, 7, 9]],
+    ];
+    const [ln, ld, rn, rd] = pick(staged[stageForQuestion(questionIndex)], serial);
+    const left = fraction(ln, ld);
+    const right = fraction(rn, rd);
     const answer = divide(left, right);
     return enrich({
       id: `fdf-${serial}-${left.n}-${left.d}-${right.n}-${right.d}`,
@@ -264,11 +289,17 @@
     });
   }
 
-  function makeMixedQuestion(serial) {
-    const whole = rand([1, 2, 3]);
-    const part = rand([fraction(1, 2), fraction(1, 3), fraction(2, 3), fraction(3, 4)]);
+  function makeMixedQuestion(serial, questionIndex = 0) {
+    const staged = [
+      [[1, 1, 2, 1, 2], [1, 1, 3, 2, 3], [2, 1, 3, 3, 4], [2, 3, 4, 4, 5]],
+      [[2, 1, 3, 7, 9], [2, 1, 2, 5, 6], [3, 1, 4, 13, 16], [1, 2, 3, 5, 9]],
+      [[3, 3, 5, 6, 25], [2, 5, 7, 19, 21], [3, 1, 2, 7, 15], [4, 2, 3, 14, 27]],
+      [[4, 4, 5, 12, 25], [5, 3, 7, 19, 28], [3, 5, 8, 29, 32], [4, 5, 6, 29, 36]],
+    ];
+    const [whole, pn, pd, rn, rd] = pick(staged[stageForQuestion(questionIndex)], serial);
+    const part = fraction(pn, pd);
     const left = add(fraction(whole, 1), part);
-    const right = rand([fraction(1, 2), fraction(2, 3), fraction(3, 4), fraction(4, 5)]);
+    const right = fraction(rn, rd);
     const answer = divide(left, right);
     return enrich({
       id: `mix-${serial}-${left.n}-${left.d}-${right.n}-${right.d}`,
@@ -287,8 +318,9 @@
     });
   }
 
-  function makeWordQuestion(serial) {
-    const problems = [
+  function makeWordQuestion(serial, questionIndex = 0) {
+    const stagedProblems = [
+      [
       {
         word: "3/4Lの水を、1/8Lずつコップに入れます。何杯分できますか。",
         left: fraction(3, 4),
@@ -305,6 +337,16 @@
         prompt: "同じ長さがいくつ分あるかを求めます。",
         focus: "何個分",
       },
+      {
+        word: "4mのテープを、2/3mずつ使います。何本分ありますか。",
+        left: fraction(4, 1),
+        right: fraction(2, 3),
+        unit: "本分",
+        prompt: "整数の中に分数がいくつ入るかを求めます。",
+        focus: "整数÷分数",
+      },
+      ],
+      [
       {
         word: "2と1/2kgの粉を、3/4kgずつ使います。何回分使えますか。",
         left: fraction(5, 2),
@@ -337,6 +379,8 @@
         prompt: "3mの中に2/5mがいくつ分あるかを考えます。",
         focus: "整数÷分数",
       },
+      ],
+      [
       {
         word: "1と1/2dLのシロップを、3/10dLずつ使います。何杯分できますか。",
         left: fraction(3, 2),
@@ -377,16 +421,35 @@
         prompt: "半分の時間で進む道のりから、1時間あたりを求めます。",
         focus: "単位量",
       },
+      ],
+      [
       {
-        word: "2/3時間で4/5ページ読めます。同じ速さで1時間では何ページ読めますか。",
-        left: fraction(4, 5),
-        right: fraction(2, 3),
-        unit: "ページ",
-        prompt: "2/3時間あたりの量から、1時間あたりの量を求めます。",
-        focus: "単位量",
+        word: "18/25Lの薬品を、6/35Lずつ分けます。何本分できますか。",
+        left: fraction(18, 25),
+        right: fraction(6, 35),
+        unit: "本分",
+        prompt: "大きな数を長い線でまとめて、2か所を約分します。",
+        focus: "何個分",
       },
+      {
+        word: "24/35mのリボンを、8/21mずつ切ります。何本分できますか。",
+        left: fraction(24, 35),
+        right: fraction(8, 21),
+        unit: "本分",
+        prompt: "上下の数字をよく見て、何で割れるか探します。",
+        focus: "何個分",
+      },
+      {
+        word: "36/55kgの材料を、9/22kgずつ使います。何回分使えますか。",
+        left: fraction(36, 55),
+        right: fraction(9, 22),
+        unit: "回分",
+        prompt: "長い線の上と下で、同時に約分できるところを見つけます。",
+        focus: "何個分",
+      },
+      ],
     ];
-    const base = problems[serial % problems.length];
+    const base = pick(stagedProblems[stageForQuestion(questionIndex)], serial);
     const answer = divide(base.left, base.right);
     return enrich({
       id: `word-${serial}-${base.left.n}-${base.left.d}-${base.right.n}-${base.right.d}`,
@@ -770,7 +833,7 @@
     const offset = Math.floor(Math.random() * 200);
     let serial = offset;
     while (list.length < SESSION_LENGTH && serial < offset + 600) {
-      const q = makeQuestion(rankIndex, serial);
+      const q = makeQuestion(rankIndex, serial, list.length);
       serial += 1;
       const key = `${formatFraction(q.left)}-${formatFraction(q.right)}-${q.word || ""}`;
       if (seen.has(key)) continue;
@@ -778,7 +841,7 @@
       list.push(q);
     }
     while (list.length < SESSION_LENGTH) {
-      const q = makeQuestion(rankIndex, serial);
+      const q = makeQuestion(rankIndex, serial, list.length);
       serial += 1;
       list.push(q);
     }
@@ -1743,7 +1806,7 @@
       },
       answerCurrent: () => window.__dojoCurrentAnswer,
       sampleQuestions: (rankIndex, count = 12) => Array.from({ length: count }, (_, i) => {
-        const q = makeQuestion(rankIndex, i);
+        const q = makeQuestion(rankIndex, i, i % SESSION_LENGTH);
         return {
           type: q.type,
           left: formatFraction(q.left),
@@ -1754,6 +1817,7 @@
           unit: q.unit || "",
         };
       }),
+      sampleQuestionsRaw: (rankIndex, count = 12) => Array.from({ length: count }, (_, i) => makeQuestion(rankIndex, i, i % SESSION_LENGTH)),
       testSound: (kind = "correct") => playSoundEffect(kind),
       forceMistake: () => {
         const q = makeIntegerDivFraction(1);
