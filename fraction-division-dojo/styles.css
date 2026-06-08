@@ -7587,15 +7587,15 @@ body {
 @media (max-width: 700px) {
   .practice-view.retry-practice .practice-room {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(190px, 0.82fr) minmax(0, 1fr);
+    grid-template-rows: 218px minmax(0, 1fr);
     gap: 8px;
     padding: 8px;
   }
 
   .practice-view.retry-practice .problem-card {
-    grid-template-rows: 128px 118px;
+    grid-template-rows: 90px 70px;
     min-height: 0;
-    padding: 18px 10px 10px;
+    padding: 28px 10px 8px;
   }
 
   .practice-view.retry-practice .problem-card::before {
@@ -7615,14 +7615,32 @@ body {
 
   .practice-view.retry-practice .problem-line {
     min-height: 0;
-    font-size: clamp(30px, 11.5vw, 44px);
+    font-size: clamp(28px, 10.4vw, 40px);
   }
 
   .practice-view.retry-practice .answer-panel {
     min-height: 0;
-    height: 118px;
+    height: 70px;
     align-self: end;
-    padding: 8px 10px;
+    grid-template-columns: 72px minmax(96px, 1fr) 8px;
+    padding: 5px 8px;
+  }
+
+  .practice-view.retry-practice .answer-panel label {
+    white-space: nowrap;
+    font-size: 18px;
+  }
+
+  .practice-view.retry-practice .fraction-answer {
+    width: min(112px, 100%);
+  }
+
+  .practice-view.retry-practice .answer-box {
+    min-height: 28px;
+  }
+
+  .practice-view.retry-practice .fraction-rule {
+    height: 4px;
   }
 
   .practice-view.retry-practice .answer-panel::after {
@@ -7639,25 +7657,34 @@ body {
   }
 
   .practice-view.retry-practice .hint-panel.review-mode {
-    grid-template-rows: 34px minmax(118px, 0.74fr) minmax(148px, 0.8fr);
+    grid-template-rows: minmax(0, 1fr) 132px;
     min-height: 0;
+    padding: 7px;
   }
 
   .practice-view.retry-practice .hint-panel.review-mode .hint-body {
-    padding: 7px;
+    padding: 6px;
     overflow: auto;
   }
 
   .practice-view.retry-practice .hint-steps {
+    height: 100%;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
     gap: 6px;
   }
 
   .practice-view.retry-practice .hint-step {
-    padding: 7px;
+    min-height: 0;
+    padding: 5px 6px;
   }
 
   .practice-view.retry-practice .hint-step b {
     font-size: 12px;
+  }
+
+  .practice-view.retry-practice .hint-formula,
+  .practice-view.retry-practice .hint-formula .op {
+    font-size: 16px;
   }
 
   .practice-view.retry-practice .hint-step p {
@@ -7665,22 +7692,30 @@ body {
   }
 
   .practice-view.retry-practice .long-fraction {
-    transform: scale(0.86);
+    transform: scale(0.78);
     transform-origin: center;
   }
 
+  .practice-view.retry-practice .hint-answer {
+    min-height: 26px;
+    height: 26px;
+    font-size: 14px;
+    line-height: 1;
+  }
+
   .hint-panel.review-mode .keypad {
-    gap: 5px;
-    padding: 6px;
+    gap: 4px;
+    padding: 5px;
   }
 
   .hint-panel.review-mode .keypad button {
-    min-height: 30px;
-    font-size: 16px;
+    min-height: 20px;
+    font-size: 14px;
   }
 
   .hint-panel.review-mode .keypad button.submit {
-    font-size: 18px;
+    min-height: 28px;
+    font-size: 16px;
   }
 
   .modal-card {
@@ -8018,5 +8053,232 @@ body {
   .result-view.final-clear .result-buttons .primary-action,
   .result-view.final-clear .result-buttons .blue-action {
     min-height: 46px;
+  }
+}
+
+/* Product Design pass: lighter controls, denser practice focus, and cleaner completion actions. */
+.lesson-chip:empty {
+  display: none;
+}
+
+.practice-view:not(.retry-practice) .problem-card {
+  grid-template-rows: minmax(250px, 1fr) 166px;
+  padding: 24px 28px 22px;
+}
+
+.practice-view:not(.retry-practice) .problem-line {
+  align-self: end;
+  padding-bottom: clamp(6px, 2.2vh, 22px);
+  font-size: clamp(76px, 6.8vw, 112px);
+}
+
+.practice-view:not(.retry-practice) .answer-panel {
+  width: min(760px, calc(100% - 28px));
+  justify-self: center;
+  min-height: 138px;
+  grid-template-columns: 120px minmax(170px, 1fr) 120px;
+  border-width: 3px;
+  background: rgba(246, 255, 246, 0.88);
+}
+
+.answer-panel label {
+  font-size: clamp(22px, 2.1vw, 29px);
+}
+
+.fraction-answer {
+  width: min(180px, 100%);
+}
+
+.answer-box {
+  min-height: 50px;
+  border-width: 3px;
+  border-radius: 10px;
+}
+
+.answer-box.active {
+  box-shadow: 0 0 0 7px rgba(38, 220, 95, 0.14), inset 0 0 0 2px rgba(255,255,255,.72);
+}
+
+.fraction-rule {
+  height: 5px;
+  border-radius: 999px;
+}
+
+.keypad button,
+.hint-panel .keypad button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 0;
+  border-width: 2px;
+  border-radius: 13px;
+  background: linear-gradient(180deg, #ffffff, #f7fbfc);
+  box-shadow: 0 2px 0 rgba(56, 93, 104, 0.16);
+}
+
+.hint-panel:not(.review-mode) {
+  align-content: center;
+}
+
+.hint-panel:not(.review-mode) .keypad {
+  height: auto;
+  align-self: center;
+  grid-template-rows: repeat(4, minmax(72px, 90px)) minmax(88px, 104px);
+  gap: 10px;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(238, 249, 251, 0.86);
+  box-shadow: inset 0 0 0 2px rgba(70, 137, 151, 0.12);
+}
+
+.hint-panel:not(.review-mode) .keypad button {
+  font-size: 31px;
+}
+
+.hint-panel:not(.review-mode) .keypad button.clear-all,
+.hint-panel:not(.review-mode) .keypad button.delete-one {
+  font-size: 17px;
+}
+
+.hint-panel:not(.review-mode) .keypad button.submit {
+  min-height: 92px;
+  font-size: 30px;
+}
+
+.keypad button.submit,
+.keypad button.check,
+.hint-panel .keypad button.submit,
+.hint-panel .keypad button.check {
+  color: #fff;
+  border-color: #0d9b3c;
+  background: linear-gradient(180deg, #35c84b, #129a31);
+  box-shadow: inset 0 -3px 0 rgba(0, 82, 31, 0.28), 0 4px 10px rgba(18, 124, 43, 0.18);
+  text-shadow: 0 1px 0 rgba(0, 72, 28, 0.28);
+}
+
+.keypad button.utility,
+.keypad button.clear-all,
+.keypad button.delete-one,
+.hint-panel .keypad button.utility,
+.hint-panel .keypad button.clear-all,
+.hint-panel .keypad button.delete-one {
+  color: #9a3f00;
+  border-color: #edc987;
+  background: linear-gradient(180deg, #fff9ed, #ffe4ad);
+  text-shadow: none;
+}
+
+.practice-view.retry-practice .hint-panel.review-mode .keypad {
+  grid-template-rows: repeat(4, minmax(24px, 1fr)) minmax(34px, 1.15fr);
+}
+
+.practice-view.retry-practice .hint-panel.review-mode .keypad button {
+  min-height: 0;
+  line-height: 1;
+}
+
+.practice-view.retry-practice .hint-panel.review-mode .keypad button.submit {
+  min-height: 38px;
+  padding-bottom: 1px;
+  font-size: clamp(19px, 2.1vw, 24px);
+}
+
+.result-view.final-clear .result-buttons .primary-action,
+.result-view.final-clear .result-buttons .blue-action {
+  white-space: nowrap;
+  line-height: 1;
+}
+
+@media (max-width: 700px) {
+  .practice-view:not(.retry-practice) .practice-room {
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 8px 18px 10px;
+  }
+
+  .practice-view:not(.retry-practice) .problem-card {
+    min-height: 0;
+    grid-template-rows: minmax(146px, 1fr) 116px;
+    padding: 16px 18px 10px;
+  }
+
+  .practice-view:not(.retry-practice) .problem-line {
+    align-self: center;
+    padding-bottom: 0;
+    font-size: clamp(34px, 11.5vw, 48px);
+  }
+
+  .practice-view:not(.retry-practice) .answer-panel {
+    width: 100%;
+    min-height: 108px;
+    grid-template-columns: 88px minmax(112px, 1fr) 20px;
+    padding: 8px 12px;
+  }
+
+  .answer-panel label {
+    font-size: 20px;
+  }
+
+  .fraction-answer {
+    width: min(128px, 100%);
+  }
+
+  .answer-box {
+    min-height: 42px;
+    border-radius: 9px;
+  }
+
+  .hint-panel:not(.review-mode) .keypad {
+    grid-template-rows: repeat(4, 36px) 42px;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .hint-panel:not(.review-mode) .keypad button {
+    font-size: 22px;
+  }
+
+  .hint-panel:not(.review-mode) .keypad button.clear-all,
+  .hint-panel:not(.review-mode) .keypad button.delete-one {
+    font-size: 13px;
+  }
+
+  .hint-panel:not(.review-mode) .keypad button.submit {
+    min-height: 42px;
+    font-size: 22px;
+  }
+
+  .result-view.final-clear .result-buttons .primary-action,
+  .result-view.final-clear .result-buttons .blue-action {
+    font-size: 20px;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .practice-view.retry-practice .hint-panel.review-mode {
+    grid-template-rows: minmax(0, 1fr) 118px;
+  }
+
+  .practice-view.retry-practice .answer-step {
+    display: none;
+  }
+
+  .practice-view.retry-practice .hint-panel.review-mode .keypad {
+    grid-template-rows: repeat(4, minmax(16px, 1fr)) minmax(22px, 1fr);
+    gap: 3px;
+    padding: 4px;
+  }
+
+  .practice-view.retry-practice .hint-panel.review-mode .keypad button {
+    min-height: 0;
+    font-size: 13px;
+    border-radius: 9px;
+  }
+
+  .practice-view.retry-practice .hint-panel.review-mode .keypad button.submit {
+    min-height: 24px;
+    font-size: 15px;
   }
 }

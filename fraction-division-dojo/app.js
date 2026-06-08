@@ -1392,7 +1392,7 @@
     els.resultMistake.textContent = `${session.mistakes}問`;
     els.nextSkill.textContent = RANKS[nowRank].skill;
     if (els.resultSummaryTitle) els.resultSummaryTitle.textContent = isFinalClear ? "完成記録" : "今回の結果";
-    if (els.nextTrainingButton) els.nextTrainingButton.textContent = isFinalClear ? "もう一度10問" : "→ つぎの10問";
+    if (els.nextTrainingButton) els.nextTrainingButton.textContent = isFinalClear ? "もう一度" : "→ つぎの10問";
     if (isFinalClear) {
       els.resultHeadline.textContent = "天空庭園 完成!";
       els.rankRibbon.textContent = "100しずく達成";
