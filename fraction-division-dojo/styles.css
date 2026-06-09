@@ -878,6 +878,8 @@ input:focus-visible {
   min-height: 115px;
   line-height: 1;
   font-family: Georgia, "Times New Roman", serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1, "tnum" 1;
   font-weight: 700;
   font-size: clamp(44px, 4.4vw, 64px);
 }
@@ -8350,6 +8352,8 @@ body {
   row-gap: 2px;
   line-height: 1;
   font-family: Georgia, "Times New Roman", serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1, "tnum" 1;
   font-size: 24px;
   font-weight: 1000;
 }
