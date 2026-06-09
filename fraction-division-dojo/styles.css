@@ -8401,6 +8401,11 @@ body {
   width: 58px;
 }
 
+.practice-view.retry-practice .long-top > .cancel-factor:last-child .cancel-result-slot,
+.practice-view.retry-practice .long-bottom > .cancel-factor:last-child .cancel-result-slot {
+  transform: translateX(-34px);
+}
+
 @media (min-width: 901px) and (min-height: 761px) {
   .practice-view.retry-practice .hint-panel.review-mode {
     grid-template-rows: minmax(0, 1fr) clamp(210px, 24vh, 236px);
@@ -8480,5 +8485,10 @@ body {
 
   .practice-view.retry-practice .cancel-result-slot {
     width: 48px;
+  }
+
+  .practice-view.retry-practice .long-top > .cancel-factor:last-child .cancel-result-slot,
+  .practice-view.retry-practice .long-bottom > .cancel-factor:last-child .cancel-result-slot {
+    transform: translateX(-24px);
   }
 }
