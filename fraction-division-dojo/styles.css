@@ -8372,6 +8372,48 @@ body {
   width: 58px;
 }
 
+@media (min-width: 901px) and (min-height: 761px) {
+  .practice-view.retry-practice .hint-panel.review-mode {
+    grid-template-rows: minmax(0, 1fr) clamp(210px, 24vh, 236px);
+    gap: 12px;
+  }
+
+  .practice-view.retry-practice .hint-panel.review-mode .hint-body {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .practice-view.retry-practice .hint-steps {
+    height: 100%;
+    min-height: 0;
+    align-self: stretch;
+    grid-template-rows: 0.82fr 1.18fr 1fr;
+    gap: clamp(9px, 1.2vh, 12px);
+  }
+
+  .practice-view.retry-practice .hint-step {
+    padding: clamp(9px, 1.25vh, 13px) 12px;
+  }
+
+  .practice-view.retry-practice .hint-step b {
+    font-size: clamp(14px, 1.25vw, 16px);
+  }
+
+  .practice-view.retry-practice .hint-answer {
+    min-height: clamp(56px, 7vh, 68px);
+  }
+
+  .practice-view.retry-practice .hint-panel.review-mode .keypad {
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .practice-view.retry-practice .hint-panel.review-mode .keypad button {
+    font-size: clamp(22px, 1.85vw, 26px);
+  }
+}
+
 @media (max-width: 700px) {
   .practice-view.retry-practice .aligned-formula {
     width: min(300px, 100%);
