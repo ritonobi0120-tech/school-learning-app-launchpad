@@ -1007,6 +1007,19 @@
     `;
   }
 
+  function alignedFormulaFactorHtml(value) {
+    return `
+      <span class="formula-factor">
+        <span class="formula-value">
+          <span>${value.n}</span>
+          <span class="formula-rule"></span>
+          <span>${value.d}</span>
+        </span>
+        <span class="formula-result-slot"></span>
+      </span>
+    `;
+  }
+
   function hintHtml(q, options = {}) {
     const rawN = q.left.n * q.right.d;
     const rawD = q.left.d * q.right.n;
@@ -1018,7 +1031,7 @@
       <div class="hint-steps">
         <article class="hint-step">
           <b><span>1</span>割る数を逆数に直す</b>
-          <div class="hint-formula">${fractionHtml(q.left)}<span class="op">×</span>${fractionHtml({ n: q.right.d, d: q.right.n })}</div>
+          <div class="hint-formula aligned-formula">${alignedFormulaFactorHtml(q.left)}<span class="op">×</span>${alignedFormulaFactorHtml({ n: q.right.d, d: q.right.n })}</div>
         </article>
         <article class="hint-step reduce-step">
           <b><span>2</span>長い線にまとめて約分</b>

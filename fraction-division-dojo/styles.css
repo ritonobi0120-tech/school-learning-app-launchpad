@@ -8296,6 +8296,57 @@ body {
 }
 
 /* Retry explanation alignment: keep the original factors on the same visual columns as step 1. */
+.practice-view.retry-practice .aligned-formula {
+  width: min(360px, 100%);
+  display: grid;
+  grid-template-columns: 132px 20px 132px;
+  justify-items: center;
+  align-items: center;
+  gap: 8px;
+  margin-inline: auto;
+}
+
+.practice-view.retry-practice .formula-factor {
+  width: 132px;
+  display: grid;
+  grid-template-columns: 52px 58px;
+  column-gap: 14px;
+  justify-content: center;
+  justify-items: center;
+  align-items: center;
+}
+
+.practice-view.retry-practice .formula-value {
+  width: 52px;
+  display: grid;
+  grid-template-rows: 23px 4px 23px;
+  justify-items: center;
+  align-items: center;
+  row-gap: 2px;
+  line-height: 1;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 1000;
+}
+
+.practice-view.retry-practice .formula-value > span:not(.formula-rule) {
+  display: grid;
+  place-items: center;
+  min-height: 23px;
+}
+
+.practice-view.retry-practice .formula-rule {
+  width: 38px;
+  height: 4px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.practice-view.retry-practice .formula-result-slot {
+  width: 58px;
+  min-height: 32px;
+}
+
 .practice-view.retry-practice .long-top,
 .practice-view.retry-practice .long-bottom {
   width: min(360px, 100%);
@@ -8321,38 +8372,27 @@ body {
   width: 58px;
 }
 
-/* Retry layout: keep the presented problem aligned with the worked-example board. */
-@media (min-width: 901px) {
-  .practice-view.retry-practice .problem-card {
-    grid-template-rows: minmax(0, 1fr) 132px;
-    align-content: stretch;
-    padding-top: 18px;
-  }
-
-  .practice-view.retry-practice .problem-line {
-    align-self: start;
-    min-height: clamp(168px, 29vh, 228px);
-    padding-top: clamp(38px, 5.8vh, 52px);
-    padding-bottom: 0;
-    box-sizing: border-box;
-    align-items: flex-start;
-  }
-
-  .practice-view.retry-practice .problem-line .word-problem,
-  .practice-view.retry-practice .word-problem {
-    display: block;
-    max-width: min(520px, 92%);
-    font-size: clamp(27px, 2.45vw, 36px);
-    line-height: 1.38;
-    margin-top: 0;
-  }
-
-  .practice-view.retry-practice .answer-panel {
-    align-self: end;
-  }
-}
-
 @media (max-width: 700px) {
+  .practice-view.retry-practice .aligned-formula {
+    width: min(300px, 100%);
+    grid-template-columns: 108px 18px 108px;
+    gap: 6px;
+  }
+
+  .practice-view.retry-practice .formula-factor {
+    width: 108px;
+    grid-template-columns: 44px 48px;
+    column-gap: 10px;
+  }
+
+  .practice-view.retry-practice .formula-value {
+    width: 44px;
+  }
+
+  .practice-view.retry-practice .formula-result-slot {
+    width: 48px;
+  }
+
   .practice-view.retry-practice .long-top,
   .practice-view.retry-practice .long-bottom {
     width: min(300px, 100%);
