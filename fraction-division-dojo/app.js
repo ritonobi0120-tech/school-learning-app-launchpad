@@ -1000,7 +1000,9 @@
     return `
       <span class="cancel-factor ${side} ${reduced ? "reduced" : ""}">
         <em>${part.value}</em>
-        ${reduced ? `<span class="cancel-result"><small>÷${part.by}</small><strong>${part.now}</strong></span>` : ""}
+        <span class="cancel-result-slot">
+          ${reduced ? `<span class="cancel-result"><small>÷${part.by}</small><strong>${part.now}</strong></span>` : ""}
+        </span>
       </span>
     `;
   }
