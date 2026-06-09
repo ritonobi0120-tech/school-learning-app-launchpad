@@ -167,8 +167,44 @@
     return `<span class="frac"><span>${value.n}</span><span class="rule"></span><span>${value.d}</span></span>`;
   }
 
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#39;",
+    }[char]));
+  }
+
+  function splitWordProblem(word) {
+    const text = String(word || "").replace(/\s+/g, "").trim();
+    if (!text) return [];
+    const questionMatch = text.match(/何[^。]*。?$/);
+    const question = questionMatch ? questionMatch[0] : "";
+    const before = question ? text.slice(0, questionMatch.index) : text;
+    const clauses = before.match(/[^、。]+[、。]?/g) || [];
+    const lines = [];
+    const maxChars = 18;
+    clauses.forEach((clause) => {
+      if (!clause) return;
+      const previous = lines[lines.length - 1] || "";
+      const canJoin = previous && (previous + clause).length <= maxChars && !previous.endsWith("、") && !previous.endsWith("。");
+      if (canJoin) lines[lines.length - 1] = previous + clause;
+      else lines.push(clause);
+    });
+    if (question) lines.push(question);
+    return lines.length ? lines : [text];
+  }
+
+  function wordProblemHtml(word) {
+    const lines = splitWordProblem(word);
+    const body = lines.map((line) => `<span class="word-line">${escapeHtml(line)}</span>`).join("");
+    return `<span class="word-problem" data-lines="${lines.length}">${body}</span>`;
+  }
+
   function problemHtml(q) {
-    if (q.word) return `<span class="word-problem">${q.word}</span>`;
+    if (q.word) return wordProblemHtml(q.word);
     return `${fractionHtml(q.left)}<span class="op">÷</span>${fractionHtml(q.right)}`;
   }
 
