@@ -8492,3 +8492,53 @@ body {
     transform: translateX(-24px);
   }
 }
+
+@media (min-width: 701px) and (max-height: 720px) {
+  .practice-view:not(.retry-practice) .practice-room {
+    padding-block: 14px 18px;
+    gap: 18px;
+  }
+
+  .practice-view:not(.retry-practice) .problem-card {
+    grid-template-rows: minmax(190px, 1fr) 132px;
+    padding: 18px 24px 16px;
+  }
+
+  .practice-view:not(.retry-practice) .problem-line {
+    min-height: 172px;
+    font-size: clamp(68px, 5.8vw, 96px);
+  }
+
+  .practice-view:not(.retry-practice) .answer-panel {
+    min-height: 126px;
+    grid-template-columns: 110px minmax(160px, 1fr) 110px;
+  }
+
+  .hint-panel:not(.review-mode) {
+    padding: 12px;
+  }
+
+  .hint-panel:not(.review-mode) .keypad {
+    height: 100%;
+    align-self: stretch;
+    grid-template-rows: repeat(4, minmax(38px, 1fr)) minmax(48px, 1.12fr);
+    gap: 7px;
+    padding: 8px;
+  }
+
+  .hint-panel:not(.review-mode) .keypad button {
+    min-height: 0;
+    font-size: clamp(24px, 2.1vw, 28px);
+    border-radius: 11px;
+  }
+
+  .hint-panel:not(.review-mode) .keypad button.clear-all,
+  .hint-panel:not(.review-mode) .keypad button.delete-one {
+    font-size: 15px;
+  }
+
+  .hint-panel:not(.review-mode) .keypad button.submit {
+    min-height: 0;
+    font-size: clamp(24px, 2.1vw, 28px);
+  }
+}
