@@ -8104,6 +8104,10 @@ body {
   font-size: clamp(76px, 6.8vw, 112px);
 }
 
+.practice-view:not(.retry-practice) .problem-line > .whole-number {
+  transform: translateY(-0.075em);
+}
+
 .practice-view:not(.retry-practice) .answer-panel {
   width: min(760px, calc(100% - 28px));
   justify-self: center;
