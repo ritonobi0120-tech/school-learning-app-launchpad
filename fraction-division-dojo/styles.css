@@ -8321,6 +8321,37 @@ body {
   width: 58px;
 }
 
+/* Retry layout: keep the presented problem aligned with the worked-example board. */
+@media (min-width: 901px) {
+  .practice-view.retry-practice .problem-card {
+    grid-template-rows: minmax(0, 1fr) 132px;
+    align-content: stretch;
+    padding-top: 18px;
+  }
+
+  .practice-view.retry-practice .problem-line {
+    align-self: start;
+    min-height: clamp(168px, 29vh, 228px);
+    padding-top: clamp(38px, 5.8vh, 52px);
+    padding-bottom: 0;
+    box-sizing: border-box;
+    align-items: flex-start;
+  }
+
+  .practice-view.retry-practice .problem-line .word-problem,
+  .practice-view.retry-practice .word-problem {
+    display: block;
+    max-width: min(520px, 92%);
+    font-size: clamp(27px, 2.45vw, 36px);
+    line-height: 1.38;
+    margin-top: 0;
+  }
+
+  .practice-view.retry-practice .answer-panel {
+    align-self: end;
+  }
+}
+
 @media (max-width: 700px) {
   .practice-view.retry-practice .long-top,
   .practice-view.retry-practice .long-bottom {
