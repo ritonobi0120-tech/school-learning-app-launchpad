@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 368;
+  const APP_VERSION = 376;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -263,7 +263,8 @@
       renderStageSelect();
       renderHomeStats();
     }
-    const reviewQuestions = ((progress.mistakes || {})[selectedStageId] || []).slice(-10).map((mistake) => mistake.question);
+    const reviewMistakes = ((progress.mistakes || {})[selectedStageId] || []).slice(-10);
+    const reviewQuestions = reviewMistakes.map((mistake) => mistake.question);
     if (reviewOnly && !reviewQuestions.length) {
       renderHomeStats();
       return;
@@ -282,6 +283,7 @@
       streak: 0,
       bestStreak: 0,
       mistakes: [],
+      reviewMistakes,
       pathCorrectMarks: [],
       pathMissMarks: [],
       answered: false,
@@ -514,35 +516,55 @@
     `;
   }
 
-  function renderFocusVisual(q, result) {
+  function getReviewMistakeForQuestion(q) {
+    if (!session) return null;
+    const current = (session.mistakes || []).find((mistake) => isSameQuestion(mistake.question, q));
+    if (current) return current;
+    return (session.reviewMistakes || []).find((mistake) => isSameQuestion(mistake.question, q)) || null;
+  }
+
+  function reviewChangeText(q) {
+    const v = q.visual;
+    if (!v) return `${core.formatNumber(q.value)} → ${core.formatNumber(q.answer)}`;
+    return `${core.formatNumber(v.value)} → ${core.formatNumber(v.answer)}`;
+  }
+
+  function renderFocusVisual(q, result, latestInput = '') {
     const v = q.visual;
     const stage = core.getStage(q.stageId);
     const digits = String(v.value).split('');
     const checkPower = Math.max(0, Math.round(Math.log10(v.checkUnit || 1)));
     const focusIndex = Math.max(0, Math.min(digits.length - 1, digits.length - 1 - checkPower));
-    const action = v.checkDigit >= 5 ? '5以上 → 1上げる' : '4以下 → そのまま';
-    const verdict = result
-      ? `<div class="answer-gate ${result.correct ? 'open' : 'repair'}">
-          <img src="${result.correct ? artifactIcon(q.stageId) : img(RPG_ASSETS.repair)}" alt="">
-          <span>${result.correct ? stage.successTitle : 'もう一度'}</span>
-          <strong>${core.formatNumber(q.answer)}</strong>
-        </div>`
-      : '';
-    const answerStep = result && result.correct ? `<span><b>答え</b>${core.formatNumber(q.answer)}</span>` : '';
+    const action = v.checkDigit >= 5 ? '5以上なので、残すくらいを1上げる' : '4以下なので、残すくらいはそのまま';
+    const mistake = getReviewMistakeForQuestion(q);
+    const previousInput = core.normalizeAnswerText(String(latestInput || (mistake && mistake.input) || ''));
+    const inputLine = previousInput
+      ? `<li><b>前の答え</b><span class="review-prev-answer">${escapeHtml(previousInput)}</span></li>`
+      : '<li><b>前の答え</b><span>まだありません</span></li>';
+    const resultLine = result
+      ? (result.correct
+        ? '<p class="review-status ok">正解。この考え方で進めます。</p>'
+        : '<p class="review-status ng">今の答えは違います。右の順番をもう一度見よう。</p>')
+      : '<p class="review-status">右の順番を見て、もう一度こたえよう。</p>';
     els.visualBoard.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
     els.visualBoard.innerHTML = `
       <div class="focus-board">
-        <p>ここを見る</p>
+        <p>やり直しの考え方</p>
+        <strong class="review-question">${escapeHtml(q.prompt)}</strong>
         <div class="focus-number" aria-label="${v.value}の${v.checkLabel}">
           ${digits.map((digit, index) => `<span class="${index === focusIndex ? 'focus' : ''}">${digit}</span>`).join('')}
         </div>
-        <strong class="focus-summary">見直し ${v.checkLabel}: ${v.checkDigit}</strong>
-        <div class="review-steps" aria-label="見直しの手順">
-          <span><b>1</b>${action}</span>
-          ${answerStep}
-        </div>
+        ${resultLine}
+        <ul class="review-steps" aria-label="見直しの手順">
+          ${inputLine}
+          <li><b>残すくらい</b><span>${escapeHtml(v.targetLabel)}</span></li>
+          <li><b>見るくらい</b><span>${escapeHtml(v.checkLabel)}</span></li>
+          <li><b>見る数字</b><span>${escapeHtml(String(v.checkDigit))}</span></li>
+          <li><b>判断</b><span>${escapeHtml(action)}</span></li>
+          <li><b>答えまで</b><span>${escapeHtml(reviewChangeText(q))}</span></li>
+          <li><b>正しい答え</b><span>${core.formatNumber(q.answer)}</span></li>
+        </ul>
       </div>
-      ${verdict}
     `;
   }
 
@@ -570,7 +592,8 @@
       return;
     }
     const q = session.questions[session.index];
-    const result = core.checkAnswer(q, els.answerInput.value);
+    const submittedInput = els.answerInput.value;
+    const result = core.checkAnswer(q, submittedInput);
     session.answered = true;
     els.answerInput.disabled = true;
     let mapRendered = false;
@@ -585,6 +608,7 @@
       els.feedbackBox.innerHTML = '';
       renderProgressChrome(q.stageId, result);
       mapRendered = true;
+      if (session.reviewOnly) renderFocusVisual(q, result, submittedInput);
       playSound('correct');
       celebrate(q, result, `<img src="${artifactIcon(q.stageId)}" alt=""><strong>+1</strong>`);
       scheduleAutoAdvance(1080);
@@ -601,12 +625,12 @@
         els.submitButton.textContent = 'もう一回';
         els.feedbackBox.className = 'feedback hidden';
         els.feedbackBox.innerHTML = '';
-        renderFocusVisual(q, null);
+        renderFocusVisual(q, result, submittedInput);
         window.setTimeout(() => els.answerInput.focus(), 0);
       } else {
         els.submitButton.textContent = session.index + 1 >= session.questions.length ? '結果へ' : '次へ';
         els.feedbackBox.className = 'feedback wrong compact-wrong-feedback';
-        els.feedbackBox.innerHTML = '<strong>おしい！</strong><span>見直しクエストで取り返そう。</span>';
+        els.feedbackBox.innerHTML = '<strong>おしい！</strong><span>あとでこの問題をやり直します。</span>';
         scheduleAutoAdvance(1080);
       }
     }
