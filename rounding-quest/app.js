@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 362;
+  const APP_VERSION = 366;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -19,6 +19,7 @@
     homeDock: document.querySelector('.home-dock'),
     homeMapOverlay: document.getElementById('homeMapOverlay'),
     homeProgress: document.querySelector('.home-progress'),
+    homeGoal: document.querySelector('.hero-copy > p:not(.eyebrow):not(.save-note)'),
     homeProgressCurrent: document.getElementById('homeProgressCurrent'),
     homeProgressRemain: document.getElementById('homeProgressRemain'),
     sessionMap: document.getElementById('sessionMap'),
@@ -263,6 +264,10 @@
       renderHomeStats();
     }
     const reviewQuestions = ((progress.mistakes || {})[selectedStageId] || []).slice(-10).map((mistake) => mistake.question);
+    if (reviewOnly && !reviewQuestions.length) {
+      renderHomeStats();
+      return;
+    }
     const startIndex = Math.min(STAGE_GOAL, getStageKeyCount(selectedStageId));
     const questions = reviewOnly && reviewQuestions.length
       ? reviewQuestions
@@ -1075,22 +1080,39 @@
   function renderHomeStats() {
     ensureSelectedStageUnlocked();
     const selectedStage = core.getStage(selectedStageId);
-    const selectedMistakes = ((progress.mistakes || {})[selectedStageId] || []).length;
-    const hasMistakes = selectedMistakes > 0;
+    const pendingReviewStageId = getPendingReviewStageId();
+    const hasMistakes = Boolean(pendingReviewStageId);
     const totalKeys = core.STAGES.reduce((sum, stage) => sum + getStageKeyCount(stage.id), 0);
     const totalGoal = core.STAGES.length * STAGE_GOAL;
     const remainingKeys = Math.max(0, totalGoal - totalKeys);
+    const stageKeys = getStageKeyCount(selectedStageId);
+    const stageRemaining = Math.max(0, STAGE_GOAL - stageKeys);
     els.homeProgress.style.setProperty('--home-progress-rate', `${Math.min(100, Math.round((totalKeys / totalGoal) * 100))}%`);
     els.homeProgressCurrent.textContent = `${totalKeys} / ${totalGoal}問`;
     els.homeProgressRemain.textContent = remainingKeys > 0 ? `あと${remainingKeys}問` : '全クリ済み';
+    if (els.homeGoal) {
+      els.homeGoal.textContent = hasMistakes
+        ? '今の目的：見直しで続きの道をひらこう'
+        : remainingKeys === 0
+          ? '全120問クリア！がい数マスターです'
+          : `今の目的：${selectedStage.artifact}をあと${stageRemaining}こ集めよう`;
+    }
     els.startButton.textContent = hasMistakes
       ? '見直しクエストへ'
       : isStageCleared(selectedStageId)
         ? 'もう一度とく'
         : 'はじめる';
-    els.reviewButton.disabled = true;
-    els.reviewButton.classList.add('hidden');
-    els.reviewButton.textContent = '';
+    els.reviewButton.disabled = !hasMistakes;
+    els.reviewButton.classList.toggle('hidden', !hasMistakes);
+    els.reviewButton.textContent = hasMistakes ? '見直しクエスト' : '';
+    if (els.homeDock) {
+      const reviewDockButton = els.homeDock.querySelector('[data-home-action="review"]');
+      if (reviewDockButton) {
+        reviewDockButton.disabled = !hasMistakes;
+        reviewDockButton.classList.toggle('disabled', !hasMistakes);
+        reviewDockButton.setAttribute('aria-disabled', String(!hasMistakes));
+      }
+    }
     renderHomeMap();
   }
 
@@ -1331,6 +1353,10 @@
       if (action === 'start') {
         startSession(false);
       } else if (action === 'review') {
+        if (!getPendingReviewStageId()) {
+          renderHomeStats();
+          return;
+        }
         startSession(true);
       } else if (action === 'sound') {
         button.classList.add('sound-pop');
