@@ -1069,14 +1069,14 @@
           <b><span>1</span>割る数を逆数に直す</b>
           <div class="hint-formula aligned-formula">${alignedFormulaFactorHtml(q.left)}<span class="op">×</span>${alignedFormulaFactorHtml({ n: q.right.d, d: q.right.n })}</div>
         </article>
-        <article class="hint-step reduce-step">
-          <b><span>2</span>長い線にまとめて約分</b>
+        <article class="hint-step reduce-step ${canReduce ? "has-reduction" : "no-reduction"}">
+          <b><span>2</span>${canReduce ? "長い線にまとめて約分" : "長い線で計算を確認"}</b>
           <div class="long-fraction">
             <div class="long-top">${cancelFactorHtml(cancel.top[0], "top")}<small>×</small>${cancelFactorHtml(cancel.top[1], "top")}</div>
             <div class="long-rule"></div>
             <div class="long-bottom">${cancelFactorHtml(cancel.bottom[0], "bottom")}<small>×</small>${cancelFactorHtml(cancel.bottom[1], "bottom")}</div>
           </div>
-          <p>${canReduce ? `斜め線で元の数を消し、割ったあとの数を書きます。` : "ここで、もう約分できない形か確認します。"}</p>
+          <p>${canReduce ? `斜め線で元の数を消し、割ったあとの数を書きます。` : "上と下に、同じ数で割れる組み合わせがないか見ます。"}</p>
         </article>
         <article class="hint-step answer-step">
           <b><span>3</span>答えの形に整える</b>
@@ -1504,6 +1504,9 @@
     }
     els.resultCorrect.textContent = `${session.correct}/${SESSION_LENGTH}`;
     els.resultMistake.textContent = `${session.mistakes}問`;
+    if (els.resultMistake.previousElementSibling) {
+      els.resultMistake.previousElementSibling.textContent = session.mode === "retry" ? "やり直し" : "間違い直し";
+    }
     els.nextSkill.textContent = RANKS[nowRank].skill;
     if (els.resultSummaryTitle) els.resultSummaryTitle.textContent = isFinalClear ? "完成記録" : "今回の結果";
     if (els.nextTrainingButton) els.nextTrainingButton.textContent = isFinalClear ? "もう一度" : "→ 次の10問";
