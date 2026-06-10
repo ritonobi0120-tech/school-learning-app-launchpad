@@ -22509,3 +22509,52 @@ body:not(.session-mode):not(.result-mode) .home-dock button.disabled {
     box-sizing: border-box !important;
   }
 }
+
+/* v377-final: keep retired PC top-left labels hidden after every override. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top > div:first-child,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top > div:first-child *,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top p#modeLabel,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top h2#questionCounter,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top .meter,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top .meter *,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top #scoreText {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    transform: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map {
+    position: fixed !important;
+    left: 27vw !important;
+    top: 2.1vh !important;
+    width: 31.5vw !important;
+    height: 74px !important;
+    display: grid !important;
+    place-items: center !important;
+    z-index: 92 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#comboChip.combo-chip {
+    position: fixed !important;
+    right: 3.2vw !important;
+    top: 2.1vh !important;
+    width: 140px !important;
+    height: 74px !important;
+    display: grid !important;
+    place-items: center !important;
+    z-index: 92 !important;
+  }
+}
