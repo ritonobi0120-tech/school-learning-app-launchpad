@@ -1723,15 +1723,15 @@
 
   function buildKeypad() {
     const keys = [
-      { label: "7", action: "digit" },
-      { label: "8", action: "digit" },
-      { label: "9", action: "digit" },
-      { label: "4", action: "digit" },
-      { label: "5", action: "digit" },
-      { label: "6", action: "digit" },
       { label: "1", action: "digit" },
       { label: "2", action: "digit" },
       { label: "3", action: "digit" },
+      { label: "4", action: "digit" },
+      { label: "5", action: "digit" },
+      { label: "6", action: "digit" },
+      { label: "7", action: "digit" },
+      { label: "8", action: "digit" },
+      { label: "9", action: "digit" },
       { label: "全部消す", action: "clear", className: "utility clear-all" },
       { label: "0", action: "digit" },
       { label: "1つ消す", action: "delete", className: "utility delete-one" },

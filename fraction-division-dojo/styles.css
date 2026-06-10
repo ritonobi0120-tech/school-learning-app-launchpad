@@ -8668,3 +8668,43 @@ body {
     font-size: 20px;
   }
 }
+
+.problem-line .frac > span:not(.rule),
+.formula-value > span:not(.formula-rule),
+.cancel-factor em,
+.cancel-result strong,
+.hint-answer .frac > span:not(.rule),
+.answer-value .frac > span:not(.rule),
+.review-compare .frac > span:not(.rule),
+.answer-box {
+  font-family: Arial, "Yu Gothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1, "tnum" 1;
+  letter-spacing: 0;
+  font-synthesis: none;
+}
+
+.problem-line .frac > span:not(.rule),
+.formula-value > span:not(.formula-rule),
+.cancel-factor em,
+.cancel-result strong {
+  line-height: 1;
+  text-align: center;
+}
+
+.cancel-factor em {
+  width: 42px;
+  min-width: 42px;
+}
+
+.practice-view.retry-practice .cancel-factor em {
+  width: 52px;
+  min-width: 52px;
+}
+
+@media (max-width: 700px) {
+  .practice-view.retry-practice .cancel-factor em {
+    width: 44px;
+    min-width: 44px;
+  }
+}
