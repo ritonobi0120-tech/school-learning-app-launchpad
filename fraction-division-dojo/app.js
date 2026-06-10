@@ -134,6 +134,16 @@
     return { n: sign * n / g, d: Math.abs(d) / g };
   }
 
+  function enteredFraction(n, d) {
+    if (!Number.isFinite(n) || !Number.isFinite(d) || d === 0) return { n: 0, d: 1 };
+    const sign = d < 0 ? -1 : 1;
+    return { n: sign * n, d: Math.abs(d) };
+  }
+
+  function isExactReducedAnswer(value, answer) {
+    return Boolean(value && answer && value.n === answer.n && value.d === answer.d);
+  }
+
   function gcd(a, b) {
     while (b) {
       const t = b;
@@ -529,6 +539,7 @@
       pendingRetry: null,
       activeSession: null,
       sound: false,
+      introSeen: false,
       lastDay: new Date().toDateString(),
     };
   }
@@ -536,6 +547,7 @@
   function loadProgress() {
     try {
       const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      if (parsed && typeof parsed.introSeen !== "boolean") parsed.introSeen = true;
       return normalizeProgress({ ...defaultProgress(), ...(parsed || {}) });
     } catch {
       return defaultProgress();
@@ -556,6 +568,7 @@
     value.pendingRetry = normalizePendingRetry(value.pendingRetry);
     value.activeSession = normalizeActiveSession(value.activeSession);
     value.rankStep = Math.max(0, Math.min(MAX_RANK_STEP, Number(value.rankStep || 0)));
+    value.introSeen = value.introSeen === true;
     return value;
   }
 
@@ -1221,7 +1234,7 @@
     const n = Number(answerN);
     const d = q?.answer?.d === 1 ? 1 : Number(answerD);
     if (!answerN || (q?.answer?.d !== 1 && !answerD) || !Number.isInteger(n) || !Number.isInteger(d) || d <= 0) return null;
-    return fraction(n, d);
+    return enteredFraction(n, d);
   }
 
   function submitAnswer() {
@@ -1238,7 +1251,7 @@
       showToast("数字を入れてください。");
       return;
     }
-    const correct = value.n === q.answer.n && value.d === q.answer.d;
+    const correct = isExactReducedAnswer(value, q.answer);
     const isRetry = session.mode === "retry";
     setAnswerLocked(true);
     if (!isRetry) {
@@ -1596,6 +1609,7 @@
 
   function showSettings() {
     showModal("設定", `
+      <button class="inline-button" id="introFromSettingsButton" type="button">はじめての説明</button>
       <button class="inline-button" id="recordFromSettingsButton" type="button">記録を見る</button>
       <p>音：${progress.sound ? "オン" : "オフ"}</p>
       <button class="inline-button" id="toggleSoundButton" type="button">音を${progress.sound ? "オフ" : "オン"}にする</button>
@@ -1604,6 +1618,7 @@
       <button class="inline-button" id="restoreButton" type="button">コードを読み込む</button>
       <p>進み具合はこのブラウザだけに保存されます。学校の名簿や外部サービスには送りません。</p>
     `);
+    document.getElementById("introFromSettingsButton").addEventListener("click", () => showIntroModal(false));
     document.getElementById("recordFromSettingsButton").addEventListener("click", showRecords);
     document.getElementById("toggleSoundButton").addEventListener("click", () => {
       progress.sound = !progress.sound;
@@ -1686,6 +1701,41 @@
     setTimeout(() => input.focus(), 0);
   }
 
+  function markIntroSeen() {
+    if (progress.introSeen) return;
+    progress.introSeen = true;
+    saveProgress();
+  }
+
+  function showIntroModal(firstTime = false) {
+    showModal("天空庭園のしずく集め", `
+      <section class="intro-guide">
+        <div class="intro-hero" aria-hidden="true"></div>
+        <div class="intro-copy">
+          <b>空に浮かぶ庭から<br>水が消えてしまいました。</b>
+          <p>分数の割り算で、しずくを集めよう。<br>正解するほど、庭に水と緑が戻ります。</p>
+        </div>
+        <ol class="intro-steps">
+          <li><span>1</span><div><b>10問ずつ<br>進む</b><small>分母→分子で入力</small></div></li>
+          <li><span>2</span><div><b>約分まで<br>仕上げる</b><small>未約分は完成前</small></div></li>
+          <li><span>3</span><div><b>まちがいを<br>直す</b><small>10問後にやり直し</small></div></li>
+        </ol>
+        <button class="intro-start-button" id="introStartButton" type="button">しずくを集めに行く</button>
+      </section>
+    `);
+    els.modal.dataset.intro = firstTime ? "first" : "manual";
+    els.modalCloseButton.textContent = firstTime ? "庭園へ入る" : "閉じる";
+    document.getElementById("introStartButton").addEventListener("click", () => {
+      if (firstTime) markIntroSeen();
+      closeModal();
+    });
+  }
+
+  function maybeShowIntro() {
+    if (progress.introSeen || hasPendingRetry() || hasActiveSession()) return;
+    setTimeout(() => showIntroModal(true), 80);
+  }
+
   function showReviewList() {
     if (!progress.mistakes.length) {
       showToast("間違い直しの問題はありません。");
@@ -1708,6 +1758,8 @@
   }
 
   function showModal(title, body) {
+    delete els.modal.dataset.intro;
+    els.modalCloseButton.textContent = "閉じる";
     els.modalTitle.textContent = title;
     els.modalBody.innerHTML = body;
     if (!els.modal.open) els.modal.showModal();
@@ -1715,6 +1767,12 @@
 
   function closeModal() {
     if (els.modal.open) els.modal.close();
+  }
+
+  function handleModalClosed() {
+    if (els.modal.dataset.intro === "first") markIntroSeen();
+    delete els.modal.dataset.intro;
+    els.modalCloseButton.textContent = "閉じる";
   }
 
   function showToast(message) {
@@ -1802,6 +1860,7 @@
     if (els.resultReviewButton) els.resultReviewButton.addEventListener("click", () => startSession("review"));
     els.resultHomeButton.addEventListener("click", showHome);
     els.modalCloseButton.addEventListener("click", closeModal);
+    els.modal.addEventListener("close", handleModalClosed);
     document.addEventListener("dragstart", (event) => {
       if (event.target instanceof HTMLImageElement) event.preventDefault();
     });
@@ -1842,6 +1901,7 @@
       getProgress: () => progress,
       clear: () => {
         progress = defaultProgress();
+        progress.introSeen = true;
         session = null;
         saveProgress();
         renderHome();
@@ -1872,6 +1932,7 @@
         };
       }),
       sampleQuestionsRaw: (rankIndex, count = 12) => Array.from({ length: count }, (_, i) => makeQuestion(rankIndex, i, i % SESSION_LENGTH)),
+      isExactReducedAnswer,
       testSound: (kind = "correct") => playSoundEffect(kind),
       forceMistake: () => {
         const q = makeIntegerDivFraction(1);
@@ -1928,4 +1989,5 @@
   exposeTestApi();
   renderHome();
   showView("home");
+  maybeShowIntro();
 })();

@@ -1,13 +1,16 @@
 {
   "scripts": {
     "start": "npx http-server . -p 4237 -c-1",
+    "build:gas-school": "node scripts/build-gas-school.cjs",
     "audit": "node tests/audit-dojo.cjs",
     "audit:device": "node tests/device-audit.cjs",
     "audit:full": "node tests/full-playthrough.cjs",
     "audit:production": "node tests/production-audit.cjs",
     "audit:regression": "node tests/reviewfix-regression.cjs",
+    "audit:unreduced": "node tests/unreduced-answer-regression.cjs",
+    "audit:intro": "node tests/intro-onboarding.cjs",
     "audit:static": "node tests/static-release-audit.cjs",
-    "test": "npm run audit:static && npm run audit:regression && npm run audit && npm run audit:device && npm run audit:full && npm run audit:production"
+    "test": "npm run audit:static && npm run audit:regression && npm run audit:unreduced && npm run audit:intro && npm run audit && npm run audit:device && npm run audit:full && npm run audit:production"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
