@@ -8680,6 +8680,7 @@ body {
   font-family: Arial, "Yu Gothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
   font-variant-numeric: lining-nums tabular-nums;
   font-feature-settings: "lnum" 1, "tnum" 1;
+  font-weight: 900;
   letter-spacing: 0;
   font-synthesis: none;
 }
