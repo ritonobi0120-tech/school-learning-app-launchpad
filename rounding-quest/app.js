@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 386;
+  const APP_VERSION = 389;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -173,7 +173,7 @@
   let progress = core.loadProgress(localStorage);
   let selectedStageId = 'round-digit';
   let session = null;
-  const TENKEYS = ['7', '8', '9', '4', '5', '6', '1', '2', '3', 'クリア', '0', '1つ消す'];
+  const TENKEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '全部消す', '0', '1つ消す'];
   const SESSION_LENGTH = core.SESSION_LENGTH || 10;
   const STAGE_GOAL = core.STAGE_GOAL || 30;
   const IS_LOCAL_DEV = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
@@ -857,7 +857,7 @@
       els.answerInput.value = nextValue;
     } else if (key === '消す' || key === '1つ消す') {
       els.answerInput.value = els.answerInput.value.slice(0, -1);
-    } else if (key === 'クリア') {
+    } else if (key === 'クリア' || key === '全部消す') {
       els.answerInput.value = '';
     }
     els.answerInput.focus();
