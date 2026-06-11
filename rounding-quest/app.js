@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 377;
+  const APP_VERSION = 386;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -351,7 +351,86 @@
       renderClosedGate(q);
     }
     renderTypeBadges(q);
+    applyPcV4Layout(q);
     els.answerInput.focus();
+  }
+
+  function setImportantStyle(el, styles) {
+    if (!el) return;
+    Object.entries(styles).forEach(([key, value]) => {
+      el.style.setProperty(key, value, 'important');
+    });
+  }
+
+  function applyPcV4Layout(q) {
+    if (!window.matchMedia('(min-width: 1000px)').matches) return;
+    const reviewMode = Boolean(session && session.reviewOnly);
+    const prompt = reviewMode
+      ? els.questionText.querySelector('.review-problem-layout')
+      : els.questionText.querySelector('.prompt-layout');
+    const titleTop = reviewMode ? '18.2vh' : '18.8vh';
+    const titleHeight = reviewMode ? '31vh' : '30vh';
+    setImportantStyle(els.questionText, {
+      position: 'fixed',
+      left: '6.8vw',
+      top: titleTop,
+      width: '50.2vw',
+      height: titleHeight,
+      'min-height': '0',
+      'max-height': 'none',
+      display: 'grid',
+      'place-items': 'center',
+      padding: '0',
+      margin: '0',
+      overflow: 'visible',
+      transform: 'none',
+      'z-index': '78',
+    });
+    setImportantStyle(prompt, {
+      transform: 'none',
+      position: 'static',
+      width: '100%',
+      height: 'auto',
+      display: 'grid',
+      'place-items': 'center',
+      overflow: 'visible',
+    });
+    setImportantStyle(els.questionLabel, {
+      position: 'fixed',
+      left: '10.7vw',
+      top: '16.3vh',
+      'z-index': '80',
+    });
+    setImportantStyle(els.answerInput, {
+      height: '76px',
+      'min-height': '76px',
+      'max-height': '76px',
+      width: '100%',
+    });
+    const answerRow = els.answerInput.closest('.answer-row');
+    setImportantStyle(answerRow, {
+      position: 'fixed',
+      left: '7.2vw',
+      top: '52.8vh',
+      width: '49.4vw',
+      height: '76px',
+      display: 'grid',
+      'grid-template-columns': '150px minmax(0, 1fr)',
+      'grid-template-rows': '76px',
+      gap: '12px',
+      'z-index': '81',
+    });
+    setImportantStyle(els.tenkey, {
+      position: 'fixed',
+      left: '12.2vw',
+      top: '63.4vh',
+      width: '41.7vw',
+      display: 'grid',
+      'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
+      'grid-template-rows': 'repeat(4, minmax(54px, 7.2vh))',
+      gap: '10px 18px',
+      'z-index': '80',
+    });
   }
 
   function renderClosedGate(q) {
@@ -447,6 +526,9 @@
   }
 
   function renderQuestionPrompt(q, promptLayout) {
+    if (session && session.reviewOnly && q && q.visual) {
+      return renderReviewQuestionPrompt(q);
+    }
     const layout = promptLayout || getQuestionPromptLayout(q);
     if (layout) {
       const tail = layout.tail ? `<span class="prompt-tail">${escapeHtml(layout.tail)}</span>` : '';
@@ -466,6 +548,29 @@
       .flatMap(promptChunks)
       .map(renderPromptChunk)
       .join('');
+  }
+
+  function renderReviewQuestionPrompt(q) {
+    const v = q.visual;
+    const digits = String(v.value).split('');
+    const checkPower = Math.max(0, Math.round(Math.log10(v.checkUnit || 1)));
+    const focusIndex = Math.max(0, Math.min(digits.length - 1, digits.length - 1 - checkPower));
+    const targetPower = Math.max(0, Math.round(Math.log10(v.targetUnit || 1)));
+    const targetIndex = Math.max(0, Math.min(digits.length - 1, digits.length - 1 - targetPower));
+    return `
+      <span class="review-problem-layout" aria-label="${escapeHtml(q.prompt)}">
+        <span class="review-problem-title">${core.formatNumber(v.value)}を ${escapeHtml(v.checkLabel)}で 四捨五入</span>
+        <span class="review-digit-row">
+          ${digits.map((digit, index) => `
+            <span class="review-digit ${index === focusIndex ? 'is-focus' : ''} ${index === targetIndex ? 'is-target' : ''}">
+              ${index === targetIndex ? '<em class="digit-tag keep">残す</em>' : ''}
+              ${index === focusIndex ? '<em class="digit-tag look">ここを見る</em>' : ''}
+              <b>${escapeHtml(digit)}</b>
+            </span>
+          `).join('')}
+        </span>
+      </span>
+    `;
   }
 
   function renderPromptChunk(chunk) {
@@ -535,35 +640,26 @@
     const digits = String(v.value).split('');
     const checkPower = Math.max(0, Math.round(Math.log10(v.checkUnit || 1)));
     const focusIndex = Math.max(0, Math.min(digits.length - 1, digits.length - 1 - checkPower));
-    const action = v.checkDigit >= 5 ? '5以上なので、残すくらいを1上げる' : '4以下なので、残すくらいはそのまま';
-    const mistake = getReviewMistakeForQuestion(q);
-    const previousInput = core.normalizeAnswerText(String(latestInput || (mistake && mistake.input) || ''));
-    const inputLine = previousInput
-      ? `<li><b>前の答え</b><span class="review-prev-answer">${escapeHtml(previousInput)}</span></li>`
-      : '<li><b>前の答え</b><span>まだありません</span></li>';
+    const action = v.checkDigit >= 5 ? '5以上 → 1上げる' : '4以下 → そのまま';
     const resultLine = result
       ? (result.correct
-        ? '<p class="review-status ok">正解。この考え方で進めます。</p>'
-        : '<p class="review-status ng">今の答えは違います。右の順番をもう一度見よう。</p>')
-      : '<p class="review-status">右の順番を見て、もう一度こたえよう。</p>';
+        ? '<p class="review-status ok">正解。この見方でOK。</p>'
+        : '<p class="review-status ng">もう一回。2だけ見よう。</p>')
+      : '';
     els.visualBoard.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
     els.visualBoard.innerHTML = `
       <div class="focus-board">
-        <p>やり直しの考え方</p>
-        <strong class="review-question">${escapeHtml(q.prompt)}</strong>
+        <p>ここだけ見ればOK</p>
         <div class="focus-number" aria-label="${v.value}の${v.checkLabel}">
           ${digits.map((digit, index) => `<span class="${index === focusIndex ? 'focus' : ''}">${digit}</span>`).join('')}
         </div>
         ${resultLine}
         <ul class="review-steps" aria-label="見直しの手順">
-          ${inputLine}
-          <li><b>残すくらい</b><span>${escapeHtml(v.targetLabel)}</span></li>
-          <li><b>見るくらい</b><span>${escapeHtml(v.checkLabel)}</span></li>
-          <li><b>見る数字</b><span>${escapeHtml(String(v.checkDigit))}</span></li>
-          <li><b>判断</b><span>${escapeHtml(action)}</span></li>
-          <li><b>答えまで</b><span>${escapeHtml(reviewChangeText(q))}</span></li>
-          <li><b>正しい答え</b><span>${core.formatNumber(q.answer)}</span></li>
+          <li><b>1</b><span>見る数字は <strong>${escapeHtml(String(v.checkDigit))}</strong></span></li>
+          <li><b>2</b><span>${escapeHtml(action)}</span></li>
+          <li><b>3</b><span>${escapeHtml(reviewChangeText(q))}</span></li>
         </ul>
+        <div class="review-answer-big">答えは <strong>${core.formatNumber(q.answer)}</strong></div>
       </div>
     `;
   }
@@ -803,6 +899,7 @@
     els.resultView.classList.toggle('must-review', mustReview);
     els.resultView.classList.toggle('clean-result', cleanResult);
     els.resultView.classList.toggle('review-result', session.reviewOnly && !mustReview && !finalClear);
+    els.resultView.classList.toggle('simple-session-clear', cleanResult && !session.reviewOnly);
     const resultArt = finalClear ? RPG_ASSETS.finalClear : (cleanResult ? RPG_ASSETS.resultClear : stage.image);
     els.resultView.style.setProperty('--result-art', `url("${img(resultArt)}")`);
     if (finalClear) playSound('finalClear');
@@ -823,9 +920,9 @@
       ? '王城に到着しました。'
       : stageCleared
         ? stageClearCopy(stage)
-        : `${total}問すべて正解！`;
+        : `${stage.artifact}を ${Math.max(0, stageKeys - (session.startKeys || 0))}こ あつめたよ`;
     const nextActionLabel = stageCleared && nextStage ? `第${nextStage.order}章へ` : `第${stage.order}章を続ける`;
-    els.againButton.textContent = mustReview ? '見直しクエストへ' : (finalClear ? 'もう一度まとめバトル' : 'つぎへ ＞');
+    els.againButton.textContent = mustReview ? '見直しクエストへ' : (finalClear ? 'もう一度まとめバトル' : 'つづける');
     els.againButton.setAttribute('aria-label', mustReview ? '見直しクエストへ' : (finalClear ? 'もう一度まとめバトル' : nextActionLabel));
     els.homeButton.classList.toggle('hidden', mustReview);
     const victoryOverlay = !mustReview && !session.reviewOnly && !finalClear
@@ -865,16 +962,20 @@
         </div>
       `
       : '';
-    els.rewardScene.innerHTML = `
-      <img src="${img(finalClear ? RPG_ASSETS.finalClear : (cleanResult ? RPG_ASSETS.resultClear : stage.image))}" alt="">
-      ${answerShowcase}
-      ${resultStatusCard}
-      ${finalCollection}
-      ${victoryOverlay}
-      ${renderResultProgressSummary(stage, stageKeys, remaining, stageCleared, finalClear, mustReview)}
-    `;
+    els.rewardScene.innerHTML = cleanResult && !session.reviewOnly
+      ? renderSimpleSessionClear(stage, stageKeys)
+      : `
+        <img src="${img(finalClear ? RPG_ASSETS.finalClear : (cleanResult ? RPG_ASSETS.resultClear : stage.image))}" alt="">
+        ${answerShowcase}
+        ${resultStatusCard}
+        ${finalCollection}
+        ${victoryOverlay}
+        ${renderResultProgressSummary(stage, stageKeys, remaining, stageCleared, finalClear, mustReview)}
+      `;
     const mistakes = session.mistakes.length ? session.mistakes : (progress.mistakes[session.stageId] || []).slice(-5);
-    els.resultReviewButton.classList.toggle('hidden', mustReview || !mistakes.length);
+    els.resultReviewButton.classList.toggle('hidden', mustReview || finalClear || session.reviewOnly);
+    els.resultReviewButton.disabled = !mistakes.length;
+    els.resultReviewButton.textContent = '見直し';
     if (finalClear) {
       els.mistakeList.innerHTML = renderFinalClearCertificate(mistakes.length);
       return;
@@ -904,6 +1005,30 @@
         `<p class="mistake-more">ほか${mistakes.length - visibleMistakes.length}問も、見直しクエストで順番に出ます。</p>`,
       );
     }
+  }
+
+  function renderSimpleSessionClear(stage, stageKeys) {
+    const gained = Math.max(0, stageKeys - (session.startKeys || 0));
+    const progressPct = Math.min(100, Math.round((stageKeys / STAGE_GOAL) * 100));
+    return `
+      <div class="simple-clear-panel">
+        <div class="simple-stat-list" aria-label="今回の結果">
+          <span><b>✓</b><strong>正解</strong><em>${session.correct}問</em></span>
+          <span><b>♕</b><strong>ベスト</strong><em>${Math.max(progress.best || 0, session.correct)}問</em></span>
+          <span><b>●</b><strong>れんぞく</strong><em>${session.bestStreak}</em></span>
+        </div>
+        <div class="simple-clear-center">
+          <img src="${artifactIcon(stage.id)}" alt="">
+          <strong>${stage.artifact} ${stageKeys}/${STAGE_GOAL}</strong>
+          <div class="simple-progress" style="--pct:${progressPct}%"><i></i></div>
+        </div>
+        <div class="simple-clear-next">
+          <b>この章をつづけよう</b>
+          <span>${stage.artifact}を もっと集めよう</span>
+          <small>${STAGE_GOAL}こ集めると 次の章へ進めるよ</small>
+        </div>
+      </div>
+    `;
   }
 
   function getNextStage(stageId) {
