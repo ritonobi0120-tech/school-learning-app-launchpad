@@ -23833,3 +23833,57 @@ html body main.app-shell section#homeView.hero.hidden {
   opacity: 0 !important;
   pointer-events: none !important;
 }
+
+/* v390: improve text contrast on PC screens after the lighter color pass. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row .answer-caption {
+    border: 3px solid #d9962e !important;
+    background: linear-gradient(180deg, #fff8dc, #ffe2a3) !important;
+    color: #5a310b !important;
+    -webkit-text-fill-color: #5a310b !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .9) !important;
+    box-shadow: 0 4px 0 rgba(104, 64, 17, .18), inset 0 1px 0 rgba(255,255,255,.9) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput {
+    color: #251b12 !important;
+    -webkit-text-fill-color: #251b12 !important;
+    background: rgba(255, 255, 255, .98) !important;
+    text-shadow: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput::placeholder {
+    color: #6f665f !important;
+    -webkit-text-fill-color: #6f665f !important;
+    opacity: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.problem-side p#questionLabel.question-label {
+    top: 13.1vh !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card h3#questionText .review-problem-layout {
+    transform: translateY(-118px) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear .simple-clear-next span {
+    color: #42615e !important;
+    -webkit-text-fill-color: #42615e !important;
+    background: #e6f2ef !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear .simple-clear-next small,
+  html body.result-mode main.app-shell section#resultView.result-view .mistake-list,
+  html body.result-mode main.app-shell section#resultView.result-view .mistake-list * {
+    color: #2c2117 !important;
+    -webkit-text-fill-color: #2c2117 !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear .result-actions #resultReviewButton:disabled {
+    background: linear-gradient(180deg, #ffd98a, #eda238) !important;
+    color: #6b3300 !important;
+    -webkit-text-fill-color: #6b3300 !important;
+    opacity: 1 !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,.7) !important;
+  }
+}
