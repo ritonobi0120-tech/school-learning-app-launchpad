@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 390;
+  const APP_VERSION = 391;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -411,7 +411,7 @@
     setImportantStyle(answerRow, {
       position: 'fixed',
       left: '7.2vw',
-      top: '52.8vh',
+      top: '51vh',
       width: '49.4vw',
       height: '76px',
       display: 'grid',
@@ -423,12 +423,16 @@
     setImportantStyle(els.tenkey, {
       position: 'fixed',
       left: '12.2vw',
-      top: '63.4vh',
+      top: '61.4vh',
       width: '41.7vw',
+      height: '31.8vh',
       display: 'grid',
       'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
-      'grid-template-rows': 'repeat(4, minmax(54px, 7.2vh))',
-      gap: '10px 18px',
+      'grid-template-rows': 'repeat(4, minmax(0, 1fr))',
+      gap: '8px 16px',
+      padding: '10px',
+      overflow: 'hidden',
+      'align-items': 'stretch',
       'z-index': '80',
     });
   }

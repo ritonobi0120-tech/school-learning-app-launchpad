@@ -23887,3 +23887,126 @@ html body main.app-shell section#homeView.hero.hidden {
     text-shadow: 0 1px 0 rgba(255,255,255,.7) !important;
   }
 }
+
+/* v391: keep the PC keypad inside its frame and simplify review colors. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey {
+    box-sizing: border-box !important;
+    grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px 16px !important;
+    padding: 10px !important;
+    overflow: hidden !important;
+    align-items: stretch !important;
+    background: rgba(235, 248, 248, .92) !important;
+    border: 2px solid rgba(15, 118, 110, .16) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button {
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    border-color: #d8e7e8 !important;
+    color: #09233c !important;
+    -webkit-text-fill-color: #09233c !important;
+    font-size: clamp(28px, 2.6vw, 38px) !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="1つ消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="1つ消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    border-color: #e4c47e !important;
+    background: linear-gradient(180deg, #fff8e5, #ffe7ad) !important;
+    color: #854100 !important;
+    -webkit-text-fill-color: #854100 !important;
+    font-size: clamp(18px, 2.1vw, 30px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit.is-target b {
+    border-color: #0f766e !important;
+    background: #f7fffc !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit.is-focus b {
+    background: #fff3c8 !important;
+    border-color: #d78317 !important;
+    color: #2c1a0d !important;
+    -webkit-text-fill-color: #2c1a0d !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag {
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+    text-shadow: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag.keep {
+    background: #0f766e !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag.look {
+    background: #c66a00 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag.keep::after {
+    color: #0f766e !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag.look::after {
+    color: #c66a00 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) div#visualBoard.visual-side {
+    border-color: #e4c47e !important;
+    box-shadow: 0 10px 0 rgba(122, 77, 17, .12), 0 20px 36px rgba(17, 74, 87, .16) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board > p {
+    background: #0f766e !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps li {
+    border-color: #e4c47e !important;
+    background: rgba(255, 251, 240, .98) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps b {
+    background: #0f766e !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+    box-shadow: 0 3px 0 rgba(5, 66, 60, .18) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps span strong,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-answer-big strong {
+    color: #9b4f00 !important;
+    -webkit-text-fill-color: #9b4f00 !important;
+  }
+}
+
+/* v391b: add breathing room below the keypad so it no longer reads as clipped. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row {
+    top: 51vh !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey {
+    top: 61.4vh !important;
+    height: min(31.8vh, 244px) !important;
+    grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
