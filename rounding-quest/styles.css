@@ -24097,3 +24097,147 @@ html body main.app-shell section#homeView.hero.hidden {
     min-width: 82px !important;
   }
 }
+
+/* v393: center PC answer controls, remove redundant label, and tighten hint emphasis. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row {
+    left: 10.4vw !important;
+    top: 50.6vh !important;
+    width: 47.4vw !important;
+    height: 76px !important;
+    grid-template-columns: minmax(0, 1fr) 168px !important;
+    grid-template-rows: 76px !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row .answer-caption,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row .answer-caption,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row .answer-caption {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row input#answerInput,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row input#answerInput {
+    grid-column: 1 !important;
+    height: 76px !important;
+    min-height: 76px !important;
+    max-height: 76px !important;
+    border: 4px solid #1373a9 !important;
+    background: #ffffff !important;
+    color: #1d160f !important;
+    -webkit-text-fill-color: #1d160f !important;
+    box-shadow: 0 0 0 5px rgba(48, 141, 190, .18), inset 0 2px 0 rgba(255, 255, 255, .96) !important;
+    text-align: center !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput::placeholder {
+    color: #4f6470 !important;
+    -webkit-text-fill-color: #4f6470 !important;
+    opacity: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row button#submitButton,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row button#submitButton,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row button#submitButton {
+    position: static !important;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    align-self: stretch !important;
+    justify-self: stretch !important;
+    width: 168px !important;
+    height: 76px !important;
+    min-height: 76px !important;
+    max-height: 76px !important;
+    border-radius: 16px !important;
+    border: 4px solid #07583d !important;
+    background: linear-gradient(180deg, #22a86f, #08724f) !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    font-size: clamp(26px, 2.4vw, 36px) !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-shadow: 0 2px 0 rgba(0, 62, 42, .42) !important;
+    box-shadow: 0 7px 0 #06412f, 0 13px 22px rgba(5, 65, 47, .22) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey {
+    left: 11.2vw !important;
+    top: 61.6vh !important;
+    width: 45.7vw !important;
+    height: 31.8vh !important;
+    border: 3px solid #3d969d !important;
+    background: #eefafa !important;
+    box-shadow: 0 7px 0 rgba(18, 102, 108, .2), 0 15px 28px rgba(31, 91, 96, .18) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button {
+    border: 3px solid #95cfd2 !important;
+    background: linear-gradient(180deg, #ffffff, #edf7f8) !important;
+    color: #082235 !important;
+    -webkit-text-fill-color: #082235 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="1つ消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="1つ消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    border-color: #c88424 !important;
+    background: linear-gradient(180deg, #fff8df, #f7d78a) !important;
+    color: #5f3000 !important;
+    -webkit-text-fill-color: #5f3000 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit.is-target b {
+    border-color: #d2bb75 !important;
+    background: #fffdf4 !important;
+    box-shadow: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag.keep {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit.is-focus b {
+    border-color: #b85f00 !important;
+    background: #fff0bf !important;
+    color: #23160c !important;
+    -webkit-text-fill-color: #23160c !important;
+    box-shadow: 0 0 0 5px rgba(220, 130, 18, .18) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag.look {
+    background: #b85f00 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    min-width: 96px !important;
+    padding: 7px 12px !important;
+    font-size: 15px !important;
+    font-weight: 900 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag.look::after {
+    color: #b85f00 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board > p {
+    background: #116e73 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    box-shadow: 0 5px 0 rgba(6, 67, 70, .22) !important;
+  }
+}

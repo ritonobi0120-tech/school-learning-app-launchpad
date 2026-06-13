@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 392;
+  const APP_VERSION = 393;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -418,21 +418,41 @@
     const answerRow = els.answerInput.closest('.answer-row');
     setImportantStyle(answerRow, {
       position: 'fixed',
-      left: '7.2vw',
-      top: '51vh',
-      width: '49.4vw',
+      left: '10.4vw',
+      top: '50.6vh',
+      width: '47.4vw',
       height: '76px',
       display: 'grid',
-      'grid-template-columns': '150px minmax(0, 1fr)',
+      'grid-template-columns': 'minmax(0, 1fr) 168px',
       'grid-template-rows': '76px',
       gap: '12px',
       'z-index': '81',
     });
+    setImportantStyle(els.submitButton, {
+      position: 'static',
+      left: 'auto',
+      right: 'auto',
+      top: 'auto',
+      bottom: 'auto',
+      'grid-column': '2',
+      'grid-row': '1',
+      'align-self': 'stretch',
+      'justify-self': 'stretch',
+      width: '168px',
+      height: '76px',
+      'min-height': '76px',
+      'max-height': '76px',
+      display: 'grid',
+      'place-items': 'center',
+      'font-size': 'clamp(26px, 2.4vw, 36px)',
+      'line-height': '1',
+      'z-index': '82',
+    });
     setImportantStyle(els.tenkey, {
       position: 'fixed',
-      left: '12.2vw',
-      top: '61.4vh',
-      width: '41.7vw',
+      left: '11.2vw',
+      top: '61.6vh',
+      width: '45.7vw',
       height: '31.8vh',
       display: 'grid',
       'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
@@ -575,7 +595,6 @@
         <span class="review-digit-row">
           ${digits.map((digit, index) => `
             <span class="review-digit ${index === focusIndex ? 'is-focus' : ''} ${index === targetIndex ? 'is-target' : ''}">
-              ${index === targetIndex ? '<em class="digit-tag keep">残す</em>' : ''}
               ${index === focusIndex ? '<em class="digit-tag look">ここを見る</em>' : ''}
               <b>${escapeHtml(digit)}</b>
             </span>
@@ -613,7 +632,7 @@
     els.visualBoard.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
     els.visualBoard.innerHTML = `
       <div class="place-lens ${statusClass}">
-        <div><span>残す</span><strong>${v.targetLabel}</strong></div>
+        <div><span>位</span><strong>${v.targetLabel}</strong></div>
         <div><span>見る</span><strong>${v.checkLabel}</strong></div>
         <div><span>数字</span><strong>${v.checkDigit}</strong></div>
       </div>
@@ -656,7 +675,7 @@
     const resultLine = result
       ? (result.correct
         ? '<p class="review-status ok">正解。この見方でOK。</p>'
-        : '<p class="review-status ng">もう一回。2だけ見よう。</p>')
+        : '<p class="review-status ng">もう一回。ここだけ見よう。</p>')
       : '';
     els.visualBoard.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
     els.visualBoard.innerHTML = `
@@ -873,6 +892,54 @@
       els.answerInput.value = '';
     }
     els.answerInput.focus();
+  }
+
+  function handlePhysicalKeyboard(event) {
+    if (!session || !document.body.classList.contains('session-mode')) return;
+    if (event.altKey || event.ctrlKey || event.metaKey || event.isComposing) return;
+
+    const activeTag = document.activeElement ? document.activeElement.tagName : '';
+    const isTextEditingTarget = activeTag === 'TEXTAREA' || document.activeElement?.isContentEditable;
+    if (isTextEditingTarget) return;
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
+      unlockAudio();
+      if (session.answered) {
+        nextQuestion();
+      } else {
+        submitAnswer();
+      }
+      return;
+    }
+
+    if (session.answered || els.answerInput.disabled) return;
+
+    const numpadDigit = /^Numpad\d$/.test(event.code || '') ? event.code.slice(-1) : '';
+    const digit = /^\d$/.test(event.key || '') ? event.key : numpadDigit;
+    if (digit) {
+      event.preventDefault();
+      event.stopPropagation();
+      unlockAudio();
+      pressTenkey(digit);
+      return;
+    }
+
+    if (event.key === 'Backspace') {
+      event.preventDefault();
+      event.stopPropagation();
+      unlockAudio();
+      pressTenkey('1つ消す');
+      return;
+    }
+
+    if (event.key === 'Delete' || event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      unlockAudio();
+      pressTenkey('全部消す');
+    }
   }
 
   function finishSession() {
@@ -1579,13 +1646,7 @@
     const normalized = core.normalizeAnswerText(els.answerInput.value);
     if (els.answerInput.value !== normalized) els.answerInput.value = normalized;
   });
-  els.answerInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      unlockAudio();
-      if (session && session.answered && session.reviewOnly) nextQuestion();
-      else submitAnswer();
-    }
-  });
+  window.addEventListener('keydown', handlePhysicalKeyboard);
   window.addEventListener('resize', () => {
     if (!els.homeView.classList.contains('hidden')) renderHomeMap();
   });
