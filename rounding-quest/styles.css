@@ -24254,3 +24254,90 @@ html body main.app-shell section#homeView.hero.hidden {
     display: none !important;
   }
 }
+
+/* v395: full-width cream practice board and click-to-reveal review answer. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) {
+    background: linear-gradient(180deg, #fff8df, #f5eccc) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode)::before,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode)::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card {
+    left: 4vw !important;
+    top: 11.5vh !important;
+    width: 92vw !important;
+    height: 84vh !important;
+    border: 4px solid #edbd55 !important;
+    border-radius: 24px !important;
+    background: rgba(255, 252, 239, .98) !important;
+    box-shadow: 0 10px 0 rgba(120, 78, 25, .15), 0 18px 32px rgba(78, 64, 38, .14) !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.problem-side {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) div#visualBoard.visual-side {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText {
+    left: 14vw !important;
+    top: 16.9vh !important;
+    width: 72vw !important;
+    height: 29vh !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row {
+    left: 22.8vw !important;
+    top: 50.8vh !important;
+    width: 54.4vw !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey {
+    left: 24vw !important;
+    top: 61.8vh !important;
+    width: 52vw !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-answer-step button {
+    appearance: none !important;
+    border: 3px solid #0b6d70 !important;
+    border-radius: 14px !important;
+    background: linear-gradient(180deg, #15949a, #0d7477) !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    font-size: clamp(22px, 1.8vw, 30px) !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    padding: 12px 18px !important;
+    box-shadow: 0 5px 0 rgba(5, 70, 72, .28) !important;
+    cursor: pointer !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-answer-reveal {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board.answer-open .review-answer-reveal {
+    display: inline !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board.answer-open .review-answer-step button {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board.answer-open .review-answer-big.review-answer-reveal {
+    display: block !important;
+  }
+}

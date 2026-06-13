@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 394;
+  const APP_VERSION = 395;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -368,13 +368,56 @@
     const prompt = reviewMode
       ? els.questionText.querySelector('.review-problem-layout')
       : els.questionText.querySelector('.prompt-layout');
-    const titleTop = reviewMode ? '18.2vh' : '18.8vh';
-    const titleHeight = reviewMode ? '31vh' : '30vh';
+    const titleLeft = reviewMode ? '6.8vw' : '14vw';
+    const titleTop = reviewMode ? '18.2vh' : '16.9vh';
+    const titleWidth = reviewMode ? '50.2vw' : '72vw';
+    const titleHeight = reviewMode ? '31vh' : '29vh';
+    setImportantStyle(els.sessionView, {
+      background: reviewMode
+        ? 'linear-gradient(180deg, rgba(255, 249, 225, .92), rgba(246, 238, 210, .96))'
+        : 'linear-gradient(180deg, #fff8df, #f5eccc)',
+    });
+    setImportantStyle(els.questionCard, reviewMode ? {
+      position: 'fixed',
+      left: '3.8vw',
+      top: '12.4vh',
+      width: '56.2vw',
+      height: '83.5vh',
+      display: 'block',
+      background: 'rgba(255, 252, 239, .96)',
+    } : {
+      position: 'fixed',
+      left: '4vw',
+      top: '11.5vh',
+      width: '92vw',
+      height: '84vh',
+      display: 'block',
+      background: 'rgba(255, 252, 239, .98)',
+      border: '4px solid #edbd55',
+      'border-radius': '24px',
+      'box-shadow': '0 10px 0 rgba(120, 78, 25, .15), 0 18px 32px rgba(78, 64, 38, .14)',
+    });
+    const problemSide = els.questionCard.querySelector('.problem-side');
+    setImportantStyle(problemSide, {
+      position: 'static',
+      width: '100%',
+      height: '100%',
+      display: 'block',
+    });
+    setImportantStyle(els.visualBoard, reviewMode ? {
+      display: 'block',
+      visibility: 'visible',
+      'pointer-events': 'auto',
+    } : {
+      display: 'none',
+      visibility: 'hidden',
+      'pointer-events': 'none',
+    });
     setImportantStyle(els.questionText, {
       position: 'fixed',
-      left: '6.8vw',
+      left: titleLeft,
       top: titleTop,
-      width: '50.2vw',
+      width: titleWidth,
       height: titleHeight,
       'min-height': '0',
       'max-height': 'none',
@@ -397,8 +440,8 @@
     });
     setImportantStyle(els.questionLabel, {
       position: 'fixed',
-      left: '10.7vw',
-      top: '16.3vh',
+      left: reviewMode ? '10.7vw' : '13.5vw',
+      top: reviewMode ? '16.3vh' : '15.2vh',
       height: '48px',
       'min-height': '48px',
       display: 'flex',
@@ -418,9 +461,9 @@
     const answerRow = els.answerInput.closest('.answer-row');
     setImportantStyle(answerRow, {
       position: 'fixed',
-      left: '10.4vw',
-      top: '50.6vh',
-      width: '47.4vw',
+      left: reviewMode ? '10.4vw' : '22.8vw',
+      top: reviewMode ? '50.6vh' : '50.8vh',
+      width: reviewMode ? '47.4vw' : '54.4vw',
       height: '76px',
       display: 'grid',
       'grid-template-columns': 'minmax(0, 1fr) 168px',
@@ -450,9 +493,9 @@
     });
     setImportantStyle(els.tenkey, {
       position: 'fixed',
-      left: '11.2vw',
-      top: '61.6vh',
-      width: '45.7vw',
+      left: reviewMode ? '11.2vw' : '24vw',
+      top: reviewMode ? '61.6vh' : '61.8vh',
+      width: reviewMode ? '45.7vw' : '52vw',
       height: '31.8vh',
       display: 'grid',
       'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
@@ -678,6 +721,7 @@
         : '<p class="review-status ng">もう一回。ここだけ見よう。</p>')
       : '';
     els.visualBoard.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
+    const changeText = reviewChangeText(q);
     els.visualBoard.innerHTML = `
       <div class="focus-board">
         <p>ここだけ見ればOK</p>
@@ -688,11 +732,19 @@
         <ul class="review-steps" aria-label="見直しの手順">
           <li><b>1</b><span>見る数字は <strong>${escapeHtml(String(v.checkDigit))}</strong></span></li>
           <li><b>2</b><span>${escapeHtml(action)}</span></li>
-          <li><b>3</b><span>${escapeHtml(reviewChangeText(q))}</span></li>
+          <li class="review-answer-step"><b>3</b><span><button type="button" data-review-answer-reveal>答えを見る</button><strong class="review-answer-reveal">${escapeHtml(changeText)}</strong></span></li>
         </ul>
-        <div class="review-answer-big">答えは <strong>${core.formatNumber(q.answer)}</strong></div>
+        <div class="review-answer-big review-answer-reveal">答えは <strong>${core.formatNumber(q.answer)}</strong></div>
       </div>
     `;
+  }
+
+  function revealReviewAnswer(button) {
+    const board = button.closest('.focus-board');
+    if (!board) return;
+    board.classList.add('answer-open');
+    button.textContent = '答えを表示中';
+    button.setAttribute('aria-expanded', 'true');
   }
 
   function renderTypeBadges(q) {
@@ -1641,6 +1693,13 @@
     if (!button) return;
     unlockAudio();
     pressTenkey(button.dataset.key);
+  });
+  els.visualBoard.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-review-answer-reveal]');
+    if (!button) return;
+    unlockAudio();
+    playSound('tap');
+    revealReviewAnswer(button);
   });
   els.answerInput.addEventListener('input', () => {
     const normalized = core.normalizeAnswerText(els.answerInput.value);
