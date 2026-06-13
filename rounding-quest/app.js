@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 395;
+  const APP_VERSION = 396;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -461,9 +461,9 @@
     const answerRow = els.answerInput.closest('.answer-row');
     setImportantStyle(answerRow, {
       position: 'fixed',
-      left: reviewMode ? '10.4vw' : '22.8vw',
+      left: reviewMode ? '10.4vw' : '23vw',
       top: reviewMode ? '50.6vh' : '50.8vh',
-      width: reviewMode ? '47.4vw' : '54.4vw',
+      width: reviewMode ? '47.4vw' : '54vw',
       height: '76px',
       display: 'grid',
       'grid-template-columns': 'minmax(0, 1fr) 168px',
@@ -493,9 +493,9 @@
     });
     setImportantStyle(els.tenkey, {
       position: 'fixed',
-      left: reviewMode ? '11.2vw' : '24vw',
+      left: reviewMode ? '10.4vw' : '23vw',
       top: reviewMode ? '61.6vh' : '61.8vh',
-      width: reviewMode ? '45.7vw' : '52vw',
+      width: reviewMode ? '47.4vw' : '54vw',
       height: '31.8vh',
       display: 'grid',
       'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
@@ -600,6 +600,26 @@
       .replace(/けたのがい数/g, 'けたの\nがい数');
   }
 
+  function problemFocusText(q) {
+    if (!q || typeof q !== 'object') return '';
+    if (q.type === 'round-digit' && q.visual) return q.visual.checkLabel;
+    if (q.type === 'round-place' && q.visual) return q.visual.targetLabel;
+    if (q.type === 'significant' && q.digits) return `上から${q.digits}けた`;
+    return '';
+  }
+
+  function renderHighlightedTask(q, task) {
+    const friendly = childFriendlyTask(task);
+    const focus = childFriendlyTask(problemFocusText(q));
+    if (!focus) return escapeHtml(friendly);
+    const escaped = escapeHtml(friendly);
+    const escapedFocus = escapeHtml(focus);
+    return escaped.replace(
+      escapedFocus,
+      `<span class="prompt-focus-underline">${escapedFocus}</span>`,
+    );
+  }
+
   function renderQuestionPrompt(q, promptLayout) {
     if (session && session.reviewOnly && q && q.visual) {
       return renderReviewQuestionPrompt(q);
@@ -614,7 +634,7 @@
           <strong class="prompt-main-number">${escapeHtml(layout.number)}</strong>
           ${arrow}
           ${tail}
-          <span class="prompt-task">${escapeHtml(childFriendlyTask(layout.task))}</span>
+          <span class="prompt-task">${renderHighlightedTask(q, layout.task)}</span>
         </span>
       `;
     }
@@ -634,7 +654,7 @@
     const targetIndex = Math.max(0, Math.min(digits.length - 1, digits.length - 1 - targetPower));
     return `
       <span class="review-problem-layout" aria-label="${escapeHtml(q.prompt)}">
-        <span class="review-problem-title">${core.formatNumber(v.value)}を ${escapeHtml(v.checkLabel)}で 四捨五入</span>
+        <span class="review-problem-title">${core.formatNumber(v.value)}を <span class="prompt-focus-underline">${escapeHtml(v.checkLabel)}</span>で 四捨五入</span>
         <span class="review-digit-row">
           ${digits.map((digit, index) => `
             <span class="review-digit ${index === focusIndex ? 'is-focus' : ''} ${index === targetIndex ? 'is-target' : ''}">

@@ -24299,15 +24299,15 @@ html body main.app-shell section#homeView.hero.hidden {
   }
 
   html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row {
-    left: 22.8vw !important;
+    left: 23vw !important;
     top: 50.8vh !important;
-    width: 54.4vw !important;
+    width: 54vw !important;
   }
 
   html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey {
-    left: 24vw !important;
+    left: 23vw !important;
     top: 61.8vh !important;
-    width: 52vw !important;
+    width: 54vw !important;
   }
 
   html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-answer-step button {
@@ -24339,5 +24339,19 @@ html body main.app-shell section#homeView.hero.hidden {
 
   html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board.answer-open .review-answer-big.review-answer-reveal {
     display: block !important;
+  }
+}
+
+/* v396: underline the place/digit cue in the same color as "ここを見る". */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card .prompt-focus-underline {
+    color: #b85f00 !important;
+    -webkit-text-fill-color: #b85f00 !important;
+    font-weight: 900 !important;
+    text-decoration-line: underline !important;
+    text-decoration-color: #b85f00 !important;
+    text-decoration-thickness: 5px !important;
+    text-underline-offset: 8px !important;
+    text-decoration-skip-ink: none !important;
   }
 }
