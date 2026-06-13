@@ -24010,3 +24010,90 @@ html body main.app-shell section#homeView.hero.hidden {
     grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
   }
 }
+
+/* v392: center text inside the label frames instead of letting labels float. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.problem-side p#questionLabel.question-label {
+    box-sizing: border-box !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 0 22px !important;
+    border-radius: 14px !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.problem-side p#questionLabel.question-label::before {
+    position: static !important;
+    flex: 0 0 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin: 0 !important;
+    transform: none !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row .answer-caption,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row .answer-caption,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row .answer-caption {
+    position: static !important;
+    inset: auto !important;
+    grid-column: 1 !important;
+    box-sizing: border-box !important;
+    width: 150px !important;
+    height: 76px !important;
+    min-height: 76px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    z-index: 2 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card h3#questionText .review-problem-layout {
+    padding-top: 24px !important;
+    gap: 18px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit-row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
+    width: min(660px, 98%) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit {
+    flex: 0 0 auto !important;
+    width: 84px !important;
+    min-height: 106px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit b {
+    width: 82px !important;
+    height: 78px !important;
+    font-size: clamp(48px, 4vw, 68px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag {
+    min-width: 70px !important;
+    padding: 6px 10px !important;
+    font-size: 14px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag.look {
+    min-width: 82px !important;
+  }
+}

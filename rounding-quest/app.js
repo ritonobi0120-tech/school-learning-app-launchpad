@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 391;
+  const APP_VERSION = 392;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -399,6 +399,14 @@
       position: 'fixed',
       left: '10.7vw',
       top: '16.3vh',
+      height: '48px',
+      'min-height': '48px',
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+      gap: '8px',
+      padding: '0 22px',
+      'line-height': '1',
       'z-index': '80',
     });
     setImportantStyle(els.answerInput, {
