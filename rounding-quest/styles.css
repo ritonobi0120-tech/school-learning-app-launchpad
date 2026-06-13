@@ -24241,3 +24241,16 @@ html body main.app-shell section#homeView.hero.hidden {
     box-shadow: 0 5px 0 rgba(6, 67, 70, .22) !important;
   }
 }
+
+/* v394: remove the old check decoration from the answer button/input area. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row button#submitButton::before,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row button#submitButton::after,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row button#submitButton::before,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row button#submitButton::after,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row button#submitButton::before,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row button#submitButton::after {
+    content: none !important;
+    display: none !important;
+  }
+}

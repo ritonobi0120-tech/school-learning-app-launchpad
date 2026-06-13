@@ -287,8 +287,8 @@
       lower,
       upper,
       percent,
-      action: checkDigit >= 5 ? '切り上げ' : 'そのまま',
-      actionShort: checkDigit >= 5 ? '上へ' : 'そのまま',
+      action: checkDigit >= 5 ? '切り上げ' : '切り捨て',
+      actionShort: checkDigit >= 5 ? '切り上げ' : '切り捨て',
     };
   }
 
@@ -312,7 +312,7 @@
       prompt: `${formatNumber(value)}を${checkPlace.label}で四捨五入しましょう。`,
       label: '指定された位を見る',
       support: `${checkPlace.label}の数字を見ます。5以上なら、ひとつ左の位を1上げます。`,
-      explanation: `${formatNumber(value)}の${checkPlace.label}は${checkDigit}です。${checkDigit}は${checkDigit >= 5 ? '5以上なので、ひとつ左の位を1上げます' : '4以下なので、そのままです'}。答えは${formatNumber(answer)}です。`,
+      explanation: `${formatNumber(value)}の${checkPlace.label}は${checkDigit}です。${checkDigit}は${checkDigit >= 5 ? '5以上なので、ひとつ左の位を1上げます' : '4以下なので、見た位から右を0にします'}。答えは${formatNumber(answer)}です。`,
     };
   }
 
@@ -332,7 +332,7 @@
       prompt: `${formatNumber(value)}を${place.label}までのがい数にしましょう。`,
       label: '残す位を決める',
       support: `${place.label}まで残すので、すぐ右の${describeUnit(checkUnit)}を見ます。5以上なら、残す位を1上げます。`,
-      explanation: `${formatNumber(value)}の${describeUnit(checkUnit)}は${checkDigit}です。${checkDigit}は${checkDigit >= 5 ? '5以上なので、残す位を1上げます' : '4以下なので、そのままです'}。答えは${formatNumber(answer)}です。`,
+      explanation: `${formatNumber(value)}の${describeUnit(checkUnit)}は${checkDigit}です。${checkDigit}は${checkDigit >= 5 ? '5以上なので、残す位を1上げます' : '4以下なので、見た位から右を0にします'}。答えは${formatNumber(answer)}です。`,
     };
   }
 
@@ -360,7 +360,7 @@
       prompt: `${formatNumber(value)}を上から${digits}けたのがい数にしましょう。`,
       label: '上から何けた残すか',
       support: `左から${digits}けた残します。次の${describeUnit(checkUnit)}を見ます。5以上なら、残す位を1上げます。`,
-      explanation: `${formatNumber(value)}は${describeUnit(targetUnit)}まで残します。次の${describeUnit(checkUnit)}は${checkDigit}です。${checkDigit}は${checkDigit >= 5 ? '5以上なので、残す位を1上げます' : '4以下なので、そのままです'}。答えは${formatNumber(answer)}です。`,
+      explanation: `${formatNumber(value)}は${describeUnit(targetUnit)}まで残します。次の${describeUnit(checkUnit)}は${checkDigit}です。${checkDigit}は${checkDigit >= 5 ? '5以上なので、残す位を1上げます' : '4以下なので、見た位から右を0にします'}。答えは${formatNumber(answer)}です。`,
     };
   }
 

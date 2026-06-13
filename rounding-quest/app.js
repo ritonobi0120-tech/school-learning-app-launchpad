@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 393;
+  const APP_VERSION = 394;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -671,7 +671,7 @@
     const digits = String(v.value).split('');
     const checkPower = Math.max(0, Math.round(Math.log10(v.checkUnit || 1)));
     const focusIndex = Math.max(0, Math.min(digits.length - 1, digits.length - 1 - checkPower));
-    const action = v.checkDigit >= 5 ? '5以上 → 1上げる' : '4以下 → そのまま';
+    const action = v.checkDigit >= 5 ? '5以上 → 切り上げる' : '4以下 → 切り捨てる';
     const resultLine = result
       ? (result.correct
         ? '<p class="review-status ok">正解。この見方でOK。</p>'
