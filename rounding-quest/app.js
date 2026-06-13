@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 396;
+  const APP_VERSION = 397;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -634,7 +634,7 @@
           <strong class="prompt-main-number">${escapeHtml(layout.number)}</strong>
           ${arrow}
           ${tail}
-          <span class="prompt-task">${renderHighlightedTask(q, layout.task)}</span>
+          <span class="prompt-task">${escapeHtml(childFriendlyTask(layout.task))}</span>
         </span>
       `;
     }

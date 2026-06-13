@@ -24342,9 +24342,9 @@ html body main.app-shell section#homeView.hero.hidden {
   }
 }
 
-/* v396: underline the place/digit cue in the same color as "ここを見る". */
+/* v397: underline the place/digit cue only in review mode. */
 @media (min-width: 1000px) {
-  html body.session-mode main.app-shell section#sessionView.work-area article.question-card .prompt-focus-underline {
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card .prompt-focus-underline {
     color: #b85f00 !important;
     -webkit-text-fill-color: #b85f00 !important;
     font-weight: 900 !important;
