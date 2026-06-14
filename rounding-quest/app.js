@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 397;
+  const APP_VERSION = 398;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -600,6 +600,10 @@
       .replace(/けたのがい数/g, 'けたの\nがい数');
   }
 
+  function oneLineFriendlyTask(text) {
+    return childFriendlyTask(text).replace(/\s*\n\s*/g, ' ');
+  }
+
   function problemFocusText(q) {
     if (!q || typeof q !== 'object') return '';
     if (q.type === 'round-digit' && q.visual) return q.visual.checkLabel;
@@ -626,15 +630,10 @@
     }
     const layout = promptLayout || getQuestionPromptLayout(q);
     if (layout) {
-      const tail = layout.tail ? `<span class="prompt-tail">${escapeHtml(layout.tail)}</span>` : '';
-      const arrow = layout.story ? '' : '<span class="prompt-down-arrow" aria-hidden="true"></span>';
       return `
-        <span class="prompt-layout${layout.story ? ' story' : ''}" aria-label="${escapeHtml(layout.original || '')}">
-          <span class="prompt-lead">${escapeHtml(layout.lead)}</span>
+        <span class="prompt-layout number-below${layout.story ? ' story' : ''}" aria-label="${escapeHtml(layout.original || '')}">
+          <span class="prompt-task prompt-task-first">${escapeHtml(oneLineFriendlyTask(layout.task))}</span>
           <strong class="prompt-main-number">${escapeHtml(layout.number)}</strong>
-          ${arrow}
-          ${tail}
-          <span class="prompt-task">${escapeHtml(childFriendlyTask(layout.task))}</span>
         </span>
       `;
     }

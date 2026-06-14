@@ -24355,3 +24355,42 @@ html body main.app-shell section#homeView.hero.hidden {
     text-decoration-skip-ink: none !important;
   }
 }
+
+/* v398: show the one-line instruction first, then the number to round below it. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout.number-below {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    justify-items: center !important;
+    align-items: center !important;
+    gap: 18px !important;
+    width: 100% !important;
+    transform: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout.number-below .prompt-task-first {
+    grid-row: 1 !important;
+    display: block !important;
+    max-width: 100% !important;
+    color: #3f2a17 !important;
+    -webkit-text-fill-color: #3f2a17 !important;
+    font-size: clamp(28px, 2.5vw, 38px) !important;
+    font-weight: 900 !important;
+    line-height: 1.18 !important;
+    letter-spacing: 0 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout.number-below .prompt-main-number {
+    grid-row: 2 !important;
+    min-width: min(520px, 78%) !important;
+    padding: 10px 30px 12px !important;
+    color: #1d160f !important;
+    -webkit-text-fill-color: #1d160f !important;
+    font-size: clamp(76px, 8vw, 118px) !important;
+    line-height: .95 !important;
+    text-align: center !important;
+  }
+}
