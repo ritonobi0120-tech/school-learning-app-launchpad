@@ -24575,3 +24575,120 @@ html body main.app-shell section#homeView.hero.hidden {
     display: none !important;
   }
 }
+
+/* v400: use the same simple pips progress style as the fraction division app. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) button#sessionHomeButton.session-home-button,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#comboChip.combo-chip {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map {
+    left: 50% !important;
+    top: 2.2vh !important;
+    width: min(620px, 45vw) !important;
+    height: 70px !important;
+    padding: 8px 16px !important;
+    border-radius: 18px !important;
+    border: 3px solid #e7b748 !important;
+    background: linear-gradient(180deg, #fffdf4, #fff0bd) !important;
+    box-shadow: 0 6px 0 rgba(108, 76, 28, .14), 0 13px 22px rgba(38, 52, 42, .12) !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .key-rail,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .session-hud {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .session-progress-label {
+    position: static !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: grid !important;
+    grid-template-columns: 138px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 18px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .question-step-label {
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    color: #12304a !important;
+    -webkit-text-fill-color: #12304a !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .question-step-label b {
+    display: inline !important;
+    width: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #12304a !important;
+    -webkit-text-fill-color: #12304a !important;
+    font-size: 34px !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .question-step-label small {
+    display: inline !important;
+    color: #12304a !important;
+    -webkit-text-fill-color: #12304a !important;
+    font-size: 17px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .question-pips {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .question-pips i {
+    display: block !important;
+    height: 16px !important;
+    border-radius: 999px !important;
+    background: #e6dcc5 !important;
+    box-shadow: inset 0 0 0 1px rgba(109, 80, 31, .1) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .question-pips i.done {
+    background: linear-gradient(180deg, #9ddb27, #57ad16) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .question-pips i.current {
+    height: 22px !important;
+    background: linear-gradient(180deg, #28c76f, #128a39) !important;
+    box-shadow: 0 0 0 4px rgba(40, 199, 111, .15) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .mini-map-track,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .session-plaque,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .session-item-card {
+    display: none !important;
+  }
+}

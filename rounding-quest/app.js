@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 399;
+  const APP_VERSION = 400;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -1551,6 +1551,10 @@
     const plus = pulse
       ? `<span class="map-plus" aria-hidden="true"><img src="${artifactIcon(stageId)}" alt=""><b>+1</b></span>`
       : '';
+    const progressPips = Array.from({ length: SESSION_LENGTH }, (_, index) => {
+      const className = index < currentInSession - 1 ? 'done' : (index === currentInSession - 1 ? 'current' : '');
+      return `<i class="${className}" aria-hidden="true"></i>`;
+    }).join('');
     const reviewCount = session && session.stageId === stageId ? session.mistakes.length : 0;
     const reviewChip = reviewCount
       ? `<em class="session-review-chip" aria-label="見直しが${reviewCount}問あります">見直し ${reviewCount}問</em>`
@@ -1564,8 +1568,8 @@
             <span>${zone}・${artifactProgressText(stage, count)}</span>
           </div>
           <div class="session-progress-label" aria-hidden="true">
-            <strong>${zone}</strong>
-            <span>${currentInSession}/${SESSION_LENGTH}・5問で次へ</span>
+            <span class="question-step-label"><b>${currentInSession}</b><small>問目 / ${SESSION_LENGTH}問</small></span>
+            <span class="question-pips" aria-label="${currentInSession}問目">${progressPips}</span>
           </div>
           <div class="mini-map-track">
             <div class="mini-steps">${cells}</div>
