@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 398;
+  const APP_VERSION = 399;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -1562,6 +1562,10 @@
             <small>第${stage.order}章</small>
             <strong>${stage.artifact}</strong>
             <span>${zone}・${artifactProgressText(stage, count)}</span>
+          </div>
+          <div class="session-progress-label" aria-hidden="true">
+            <strong>${zone}</strong>
+            <span>${currentInSession}/${SESSION_LENGTH}・5問で次へ</span>
           </div>
           <div class="mini-map-track">
             <div class="mini-steps">${cells}</div>
