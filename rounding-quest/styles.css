@@ -24770,6 +24770,20 @@ html body main.app-shell section#homeView.hero.hidden {
   }
 }
 
+/* v403: normal practice uses only the aligned problem/input/keypad frames. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card {
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.problem-side {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
 @keyframes roundingAnswerCorrectWrap {
   0% { transform: scale(.99); opacity: .84; }
   28% { transform: scale(1.01); opacity: 1; }

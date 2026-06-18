@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 402;
+  const APP_VERSION = 403;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -392,10 +392,10 @@
       width: '92vw',
       height: '84vh',
       display: 'block',
-      background: 'rgba(255, 252, 239, .98)',
-      border: '4px solid #edbd55',
+      background: 'transparent',
+      border: '4px solid transparent',
       'border-radius': '24px',
-      'box-shadow': '0 10px 0 rgba(120, 78, 25, .15), 0 18px 32px rgba(78, 64, 38, .14)',
+      'box-shadow': 'none',
     });
     const problemSide = els.questionCard.querySelector('.problem-side');
     setImportantStyle(problemSide, {
