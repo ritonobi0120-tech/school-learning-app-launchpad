@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 400;
+  const APP_VERSION = 401;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -368,9 +368,9 @@
     const prompt = reviewMode
       ? els.questionText.querySelector('.review-problem-layout')
       : els.questionText.querySelector('.prompt-layout');
-    const titleLeft = reviewMode ? '6.8vw' : '14vw';
+    const titleLeft = reviewMode ? '6.8vw' : '23vw';
     const titleTop = reviewMode ? '18.2vh' : '16.9vh';
-    const titleWidth = reviewMode ? '50.2vw' : '72vw';
+    const titleWidth = reviewMode ? '50.2vw' : '54vw';
     const titleHeight = reviewMode ? '31vh' : '29vh';
     setImportantStyle(els.sessionView, {
       background: reviewMode
@@ -444,7 +444,7 @@
       top: reviewMode ? '16.3vh' : '15.2vh',
       height: '48px',
       'min-height': '48px',
-      display: 'flex',
+      display: reviewMode ? 'flex' : 'none',
       'align-items': 'center',
       'justify-content': 'center',
       gap: '8px',

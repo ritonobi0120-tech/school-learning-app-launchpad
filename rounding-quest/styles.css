@@ -24692,3 +24692,18 @@ html body main.app-shell section#homeView.hero.hidden {
     display: none !important;
   }
 }
+
+/* v401: align the problem frame with the answer row/tenkey and remove the redundant action label. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText {
+    left: 23vw !important;
+    width: 54vw !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.problem-side p#questionLabel.question-label {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
