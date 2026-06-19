@@ -25116,6 +25116,16 @@ html body.screen-miss-flash::before {
   }
 }
 
+/* v430: keep the retry-needed result title from clipping after the v429 enlargement. */
+@media (min-width: 1000px) {
+  html body.result-mode main.app-shell section#resultView.result-view.must-review h2#resultTitle {
+    font-size: clamp(42px, 4vw, 56px) !important;
+    line-height: .98 !important;
+    white-space: nowrap !important;
+    max-width: min(540px, 42vw) !important;
+  }
+}
+
 @keyframes roundingCorrectMaruOverAnswer {
   0% { transform: translate(-50%, -50%) scale(.92); opacity: 0; }
   16% { transform: translate(-50%, -50%) scale(1.03); opacity: 1; }
