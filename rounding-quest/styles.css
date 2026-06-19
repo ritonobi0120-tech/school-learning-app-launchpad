@@ -15167,19 +15167,8 @@ body:not(.session-mode):not(.result-mode) .stage-card em {
 }
 
 .session-mode #sessionView.work-area:not(.review-mode) .question-card h3::before {
-  content: "◆" !important;
-  position: absolute !important;
-  left: 50% !important;
-  top: -17px !important;
-  transform: translateX(-50%) !important;
-  width: 34px !important;
-  height: 24px !important;
-  display: grid !important;
-  place-items: center !important;
-  color: #e3ad1e !important;
-  font-size: 18px !important;
-  line-height: 1 !important;
-  text-shadow: 0 2px 0 rgba(255,255,255,.78) !important;
+  content: none !important;
+  display: none !important;
 }
 
 .session-mode #sessionView.work-area:not(.review-mode) .question-card h3::after {
