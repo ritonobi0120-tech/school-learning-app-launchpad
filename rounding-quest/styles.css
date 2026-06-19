@@ -24697,6 +24697,19 @@ html body main.app-shell section#homeView.hero.hidden {
   }
 }
 
+/* v424: wrong answers give a small whole-screen nudge without slowing the drill. */
+html body.screen-miss-flash.session-mode main.app-shell section#sessionView.work-area {
+  animation: roundingWrongScreenNudge .32s cubic-bezier(.19, 1, .22, 1) both !important;
+  transform-origin: center center !important;
+}
+
+html body.screen-miss-flash::before {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0) 0 38%, rgba(220, 38, 38, .09) 78%),
+    rgba(220, 38, 38, .055) !important;
+  animation: roundingWrongScreenTint .36s ease-out forwards !important;
+}
+
 /* v420: correct mark stretches a little lower behind a readable answer overlay. */
 @media (min-width: 1000px) {
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row.fx-answer-correct {
@@ -24840,6 +24853,20 @@ html body main.app-shell section#homeView.hero.hidden {
   0% { filter: saturate(1); }
   40% { filter: saturate(1.12); }
   100% { filter: saturate(1); }
+}
+
+@keyframes roundingWrongScreenNudge {
+  0%, 100% { transform: translateX(0); }
+  22% { transform: translateX(-4px); }
+  44% { transform: translateX(4px); }
+  66% { transform: translateX(-2px); }
+  84% { transform: translateX(2px); }
+}
+
+@keyframes roundingWrongScreenTint {
+  0% { opacity: 0; }
+  18% { opacity: .9; }
+  100% { opacity: 0; }
 }
 
 @keyframes roundingCorrectMaruOverAnswer {

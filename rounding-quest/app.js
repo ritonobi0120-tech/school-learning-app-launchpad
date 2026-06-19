@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 423;
+  const APP_VERSION = 424;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -961,6 +961,9 @@
     document.body.classList.remove('screen-miss-flash');
     els.questionCard.classList.remove('fx-correct', 'fx-incorrect');
     document.querySelectorAll('.problem-celebration-overlay').forEach((node) => node.remove());
+    void document.body.offsetWidth;
+    document.body.classList.add('screen-miss-flash');
+    window.setTimeout(() => document.body.classList.remove('screen-miss-flash'), 420);
   }
 
   function renderSupportText(q, result) {
