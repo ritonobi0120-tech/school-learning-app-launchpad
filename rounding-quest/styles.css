@@ -24969,6 +24969,153 @@ html body.screen-miss-flash::before {
   }
 }
 
+/* v428: keep narrow PC and fallback layouts from clipping labels. */
+@media (max-width: 999px) {
+  html body h1,
+  html body h2,
+  html body h3,
+  html body #questionText {
+    line-height: 1.12 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button {
+    line-height: 1 !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="クリア"],
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    font-size: clamp(9px, 1.1vw, 11px) !important;
+    letter-spacing: 0 !important;
+    padding-inline: 2px !important;
+  }
+
+  html body #homeView h1 {
+    font-size: clamp(48px, 6.6vw, 62px) !important;
+    line-height: .98 !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view h2#resultTitle {
+    font-size: 30px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view button#againButton.primary {
+    min-height: 70px !important;
+    height: 70px !important;
+    font-size: clamp(18px, 2.15vw, 26px) !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 480px) {
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card h3#questionText {
+    font-size: clamp(19px, 5.8vw, 24px) !important;
+    line-height: 1.05 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button {
+    font-size: clamp(18px, 5.3vw, 21px) !important;
+    line-height: .92 !important;
+    padding: 0 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="クリア"],
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    font-size: clamp(9px, 3vw, 11px) !important;
+  }
+}
+
+/* v429: enlarge the PC reading targets without changing the established frames. */
+@media (min-width: 1000px) {
+  body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #startButton.start-cta,
+  body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions .primary.start-cta {
+    font-size: clamp(38px, 3.35vw, 58px) !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card h3,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong {
+    font-size: clamp(24px, 1.95vw, 35px) !important;
+    line-height: 1.02 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout.number-below {
+    gap: 14px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout.number-below .prompt-task-first {
+    font-size: clamp(31px, 2.75vw, 42px) !important;
+    line-height: 1.08 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout.number-below .prompt-main-number {
+    font-size: clamp(84px, 8.6vw, 128px) !important;
+    line-height: .9 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row input#answerInput,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row input#answerInput {
+    font-size: clamp(60px, 4.8vw, 78px) !important;
+    line-height: .96 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row button#submitButton,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row button#submitButton,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row button#submitButton {
+    font-size: clamp(30px, 2.55vw, 40px) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view h2#resultTitle {
+    font-size: clamp(42px, 5vw, 64px) !important;
+    line-height: 1.02 !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view .result-main p:not(.eyebrow) {
+    font-size: 22px !important;
+    line-height: 1.42 !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view button#againButton.primary {
+    font-size: clamp(30px, 2.8vw, 42px) !important;
+    line-height: 1 !important;
+  }
+}
+
+@media (max-width: 999px) {
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy h1 {
+    font-size: 42px !important;
+    line-height: .9 !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy h1 span {
+    line-height: .9 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card h3#questionText,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText {
+    font-size: clamp(17px, 5.15vw, 22px) !important;
+    line-height: .98 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card h3#questionText .prompt-layout,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card h3#questionText .prompt-task,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card h3#questionText .prompt-task-first,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card h3#questionText .prompt-main-number {
+    line-height: .98 !important;
+  }
+}
+
 @keyframes roundingCorrectMaruOverAnswer {
   0% { transform: translate(-50%, -50%) scale(.92); opacity: 0; }
   16% { transform: translate(-50%, -50%) scale(1.03); opacity: 1; }

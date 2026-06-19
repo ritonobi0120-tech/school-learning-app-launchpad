@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 427;
+  const APP_VERSION = 429;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -593,7 +593,6 @@
 
   function childFriendlyTask(text) {
     return String(text || '')
-      .replace(/位/g, 'くらい')
       .replace(/答えましょう/g, 'こたえましょう')
       .replace(/で四捨五入/g, 'で\n四捨五入')
       .replace(/までのがい数/g, 'までの\nがい数')
@@ -828,8 +827,8 @@
         window.setTimeout(() => els.answerInput.focus(), 0);
       } else {
         els.submitButton.textContent = session.index + 1 >= session.questions.length ? '結果へ' : '次へ';
-        els.feedbackBox.className = 'feedback hidden';
-        els.feedbackBox.innerHTML = '';
+        els.feedbackBox.className = 'feedback wrong compact-wrong-feedback';
+        els.feedbackBox.innerHTML = '<strong>あとでやり直し</strong><span>この問題は最後にもう一回出ます。</span>';
         scheduleAutoAdvance(760);
       }
     }
@@ -1118,8 +1117,8 @@
       : stageCleared
         ? stageClearCopy(stage)
         : `${stage.artifact}を ${Math.max(0, stageKeys - (session.startKeys || 0))}こ あつめたよ`;
-    const nextActionLabel = stageCleared && nextStage ? `第${nextStage.order}章へ` : `第${stage.order}章を続ける`;
-    els.againButton.textContent = mustReview ? '見直しクエストへ' : (finalClear ? 'もう一度まとめバトル' : 'つづける');
+    const nextActionLabel = stageCleared && nextStage ? `第${nextStage.order}章へ` : `第${stage.order}章へ`;
+    els.againButton.textContent = mustReview ? '見直しクエストへ' : (finalClear ? 'もう一度' : nextActionLabel);
     els.againButton.setAttribute('aria-label', mustReview ? '見直しクエストへ' : (finalClear ? 'もう一度まとめバトル' : nextActionLabel));
     els.homeButton.classList.toggle('hidden', mustReview);
     const victoryOverlay = !mustReview && !session.reviewOnly && !finalClear
@@ -1250,6 +1249,19 @@
 
   function removeSessionMistake(question) {
     session.mistakes = session.mistakes.filter((mistake) => !isSameQuestion(mistake.question, question));
+  }
+
+  function persistSessionMistakes() {
+    if (!session || !session.mistakes.length) return;
+    progress.mistakes = progress.mistakes || {};
+    const merged = [...(progress.mistakes[session.stageId] || [])];
+    session.mistakes.forEach((mistake) => {
+      const existingIndex = merged.findIndex((item) => isSameQuestion(item.question, mistake.question));
+      if (existingIndex >= 0) merged[existingIndex] = mistake;
+      else merged.push(mistake);
+    });
+    progress.mistakes[session.stageId] = merged.slice(-12);
+    core.saveProgress(localStorage, progress);
   }
 
   function getNextMilestone(count) {
@@ -1694,6 +1706,7 @@
   els.sessionHomeButton.addEventListener('click', () => {
     unlockAudio();
     playSound('tap');
+    persistSessionMistakes();
     renderHomeStats();
     show(els.homeView);
   });
