@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 418;
+  const APP_VERSION = 419;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -903,7 +903,7 @@
     const maru = document.createElement('span');
     maru.className = 'answer-correct-maru';
     maru.style.setProperty('--maru-left', `${rect.left + rect.width / 2}px`);
-    maru.style.setProperty('--maru-top', `${rect.top + rect.height * 0.47}px`);
+    maru.style.setProperty('--maru-top', `${rect.top + rect.height * 0.5}px`);
     maru.style.setProperty('--maru-width', `${Math.min(rect.width - 24, Math.max(178, digitCount * 56 + 126))}px`);
     maru.style.setProperty('--maru-height', `${Math.min(68, rect.height * 0.9)}px`);
     const maruText = document.createElement('span');
