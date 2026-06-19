@@ -24708,7 +24708,7 @@ html body main.app-shell section#homeView.hero.hidden {
   }
 }
 
-/* v419: correct mark sits a touch lower behind a readable answer overlay. */
+/* v420: correct mark stretches a little lower behind a readable answer overlay. */
 @media (min-width: 1000px) {
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row.fx-answer-correct {
     animation: roundingAnswerCorrectWrap .42s cubic-bezier(.19, 1, .22, 1) both !important;
