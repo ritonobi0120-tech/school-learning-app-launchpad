@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 408;
+  const APP_VERSION = 411;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -895,11 +895,8 @@
       void answerCard.offsetWidth;
       answerCard.classList.add('fx-answer-correct');
       window.setTimeout(() => {
-        answerRow?.classList.remove('fx-answer-correct');
-        els.answerInput.classList.remove('fx-answer-correct');
         answerCard.classList.remove('fx-answer-correct');
       }, 560);
-      return;
     }
     const rect = els.answerInput.getBoundingClientRect();
     const digitCount = Math.max(1, core.normalizeAnswerText(els.answerInput.value).replace(/,/g, '').length);
@@ -909,6 +906,7 @@
     maru.style.setProperty('--maru-top', `${rect.top + rect.height / 2}px`);
     maru.style.setProperty('--maru-width', `${Math.min(rect.width - 20, Math.max(140, digitCount * 46 + 88))}px`);
     maru.style.setProperty('--maru-height', `${Math.min(88, rect.height * 1.1)}px`);
+    maru.innerHTML = '<svg viewBox="0 0 240 140" aria-hidden="true" focusable="false"><path d="M120 122 C70 122 28 100 28 70 C28 39 70 18 120 18 C170 18 212 39 212 70 C212 100 170 122 120 122 Z"></path></svg>';
     document.body.appendChild(maru);
     window.setTimeout(() => {
       answerRow?.classList.remove('fx-answer-correct');
@@ -958,16 +956,8 @@
 
   function miss() {
     document.body.classList.remove('screen-miss-flash');
-    void document.body.offsetWidth;
-    document.body.classList.add('screen-miss-flash');
     els.questionCard.classList.remove('fx-correct', 'fx-incorrect');
     document.querySelectorAll('.problem-celebration-overlay').forEach((node) => node.remove());
-    void els.questionCard.offsetWidth;
-    els.questionCard.classList.add('fx-incorrect');
-    window.setTimeout(() => {
-      els.questionCard.classList.remove('fx-incorrect');
-      document.body.classList.remove('screen-miss-flash');
-    }, 720);
   }
 
   function renderSupportText(q, result) {

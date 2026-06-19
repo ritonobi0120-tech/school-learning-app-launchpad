@@ -24708,7 +24708,7 @@ html body main.app-shell section#homeView.hero.hidden {
   }
 }
 
-/* v408: correct uses a small teacher-style mark; wrong feedback stays light. */
+/* v411: correct mark draws from the bottom; wrong feedback keeps the screen still. */
 @media (min-width: 1000px) {
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row.fx-answer-correct {
     animation: roundingAnswerCorrectWrap .42s cubic-bezier(.19, 1, .22, 1) both !important;
@@ -24725,7 +24725,7 @@ html body main.app-shell section#homeView.hero.hidden {
   }
 
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row.fx-answer-wrong {
-    animation: roundingAnswerWrongNudge .28s cubic-bezier(.36, .07, .19, .97) both !important;
+    animation: none !important;
   }
 
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput.fx-answer-wrong {
@@ -24735,6 +24735,7 @@ html body main.app-shell section#homeView.hero.hidden {
       0 0 0 6px rgba(220, 38, 38, .2),
       0 0 0 12px rgba(248, 113, 113, .1),
       inset 0 2px 0 rgba(255, 255, 255, .96) !important;
+    animation: roundingAnswerWrongPulse .28s cubic-bezier(.19, 1, .22, 1) both !important;
   }
 
   .instant-answer-card.fx-answer-correct {
@@ -24772,18 +24773,32 @@ html body main.app-shell section#homeView.hero.hidden {
     display: grid !important;
     place-items: center !important;
     color: transparent !important;
-    transform: translate(-50%, -50%) rotate(-6deg) scale(.4);
+    transform: translate(-50%, -50%) scale(.4);
     pointer-events: none !important;
     animation: roundingCorrectMaruOverAnswer .54s cubic-bezier(.19, 1, .22, 1) both !important;
   }
 
   .answer-correct-maru::before {
-    content: "" !important;
+    content: none !important;
+  }
+
+  .answer-correct-maru svg {
+    display: block !important;
     width: 100% !important;
     height: 100% !important;
-    border: 6px solid #16a34a !important;
-    border-radius: 50% !important;
-    box-shadow: 0 5px 0 rgba(255, 255, 255, .88), 0 12px 18px rgba(34, 197, 94, .18) !important;
+    overflow: visible !important;
+  }
+
+  .answer-correct-maru path {
+    fill: none !important;
+    stroke: #16a34a !important;
+    stroke-width: 12 !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+    stroke-dasharray: 480 !important;
+    stroke-dashoffset: 480;
+    filter: drop-shadow(0 5px 0 rgba(255, 255, 255, .88)) drop-shadow(0 10px 14px rgba(34, 197, 94, .18)) !important;
+    animation: roundingCorrectMaruDraw .54s cubic-bezier(.19, 1, .22, 1) both !important;
   }
 }
 
@@ -24807,19 +24822,24 @@ html body main.app-shell section#homeView.hero.hidden {
   100% { transform: scale(1); opacity: 1; }
 }
 
-@keyframes roundingAnswerWrongNudge {
-  0% { transform: translateX(0); }
-  22% { transform: translateX(-3px); }
-  44% { transform: translateX(3px); }
-  68% { transform: translateX(-1px); }
-  100% { transform: translateX(0); }
+@keyframes roundingAnswerWrongPulse {
+  0% { filter: saturate(1); }
+  40% { filter: saturate(1.12); }
+  100% { filter: saturate(1); }
 }
 
 @keyframes roundingCorrectMaruOverAnswer {
-  0% { transform: translate(-50%, -50%) rotate(-12deg) scale(.36); opacity: 0; }
-  16% { transform: translate(-50%, -50%) rotate(-6deg) scale(1.04); opacity: 1; }
-  72% { transform: translate(-50%, -50%) rotate(-6deg) scale(1); opacity: 1; }
-  100% { transform: translate(-50%, -50%) rotate(-6deg) scale(.98); opacity: 0; }
+  0% { transform: translate(-50%, -50%) scale(.92); opacity: 0; }
+  16% { transform: translate(-50%, -50%) scale(1.03); opacity: 1; }
+  72% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(.98); opacity: 0; }
+}
+
+@keyframes roundingCorrectMaruDraw {
+  0% { stroke-dashoffset: 480; opacity: .15; }
+  12% { opacity: 1; }
+  72% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: .98; }
 }
 
 @keyframes roundingCorrectCardMaru {
