@@ -248,7 +248,7 @@
   }
 
   function formatNumber(value) {
-    return Number(value).toLocaleString('ja-JP');
+    return String(Number(value));
   }
 
   function roundToUnit(value, unit) {
