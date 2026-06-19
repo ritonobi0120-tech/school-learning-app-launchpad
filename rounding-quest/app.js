@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 403;
+  const APP_VERSION = 404;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -808,9 +808,8 @@
       mapRendered = true;
       if (session.reviewOnly) renderFocusVisual(q, result, submittedInput);
       playSound('correct');
-      celebrate(q, result, `<img src="${artifactIcon(q.stageId)}" alt=""><strong>+1</strong>`);
       showAnswerCorrectFx();
-      scheduleAutoAdvance(1080);
+      scheduleAutoAdvance(620);
     } else {
       session.streak = 0;
       if (!session.reviewOnly) session.pathMissMarks.push(getCurrentPathMark(q.stageId));
@@ -898,7 +897,7 @@
         answerRow?.classList.remove('fx-answer-correct');
         els.answerInput.classList.remove('fx-answer-correct');
         answerCard.classList.remove('fx-answer-correct');
-      }, 900);
+      }, 560);
       return;
     }
     const rect = els.answerInput.getBoundingClientRect();
@@ -914,7 +913,7 @@
       answerRow?.classList.remove('fx-answer-correct');
       els.answerInput.classList.remove('fx-answer-correct');
       maru.remove();
-    }, 900);
+    }, 560);
   }
 
   function launchArtifactFly(stageId) {
