@@ -24708,7 +24708,7 @@ html body main.app-shell section#homeView.hero.hidden {
   }
 }
 
-/* v411: correct mark draws from the bottom; wrong feedback keeps the screen still. */
+/* v417: correct mark sits behind a readable answer overlay. */
 @media (min-width: 1000px) {
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row.fx-answer-correct {
     animation: roundingAnswerCorrectWrap .42s cubic-bezier(.19, 1, .22, 1) both !important;
@@ -24718,6 +24718,9 @@ html body main.app-shell section#homeView.hero.hidden {
     border-color: #16a34a !important;
     outline: none !important;
     background: #f0fdf4 !important;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    caret-color: transparent !important;
     box-shadow:
       0 0 0 6px rgba(34, 197, 94, .13),
       0 8px 16px rgba(22, 163, 74, .12),
@@ -24774,16 +24777,37 @@ html body main.app-shell section#homeView.hero.hidden {
     place-items: center !important;
     color: transparent !important;
     transform: translate(-50%, -50%) scale(.4);
+    isolation: isolate !important;
     pointer-events: none !important;
     animation: roundingCorrectMaruOverAnswer .54s cubic-bezier(.19, 1, .22, 1) both !important;
   }
 
   .answer-correct-maru::before {
-    content: none !important;
+    content: "" !important;
+    position: absolute !important;
+    inset: 3px 6px 5px !important;
+    border: 7px solid #16a34a !important;
+    border-radius: 50% !important;
+    box-shadow: 0 4px 0 rgba(255, 255, 255, .82), 0 8px 12px rgba(34, 197, 94, .14) !important;
+    z-index: 0 !important;
+  }
+
+  .answer-correct-maru .maru-answer-text {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 1 !important;
+    display: grid !important;
+    place-items: center !important;
+    color: #17120d !important;
+    font-size: 54px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-shadow: none !important;
   }
 
   .answer-correct-maru svg {
-    display: block !important;
+    display: none !important;
     width: 100% !important;
     height: 100% !important;
     overflow: visible !important;
@@ -24792,12 +24816,13 @@ html body main.app-shell section#homeView.hero.hidden {
   .answer-correct-maru path {
     fill: none !important;
     stroke: #16a34a !important;
-    stroke-width: 12 !important;
+    stroke-width: 8 !important;
     stroke-linecap: round !important;
     stroke-linejoin: round !important;
     stroke-dasharray: 480 !important;
     stroke-dashoffset: 480;
-    filter: drop-shadow(0 5px 0 rgba(255, 255, 255, .88)) drop-shadow(0 10px 14px rgba(34, 197, 94, .18)) !important;
+    opacity: .92 !important;
+    filter: drop-shadow(0 4px 0 rgba(255, 255, 255, .82)) drop-shadow(0 8px 12px rgba(34, 197, 94, .14)) !important;
     animation: roundingCorrectMaruDraw .54s cubic-bezier(.19, 1, .22, 1) both !important;
   }
 }

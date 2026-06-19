@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 411;
+  const APP_VERSION = 417;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -903,10 +903,13 @@
     const maru = document.createElement('span');
     maru.className = 'answer-correct-maru';
     maru.style.setProperty('--maru-left', `${rect.left + rect.width / 2}px`);
-    maru.style.setProperty('--maru-top', `${rect.top + rect.height / 2}px`);
-    maru.style.setProperty('--maru-width', `${Math.min(rect.width - 20, Math.max(140, digitCount * 46 + 88))}px`);
-    maru.style.setProperty('--maru-height', `${Math.min(88, rect.height * 1.1)}px`);
-    maru.innerHTML = '<svg viewBox="0 0 240 140" aria-hidden="true" focusable="false"><path d="M120 122 C70 122 28 100 28 70 C28 39 70 18 120 18 C170 18 212 39 212 70 C212 100 170 122 120 122 Z"></path></svg>';
+    maru.style.setProperty('--maru-top', `${rect.top + rect.height * 0.43}px`);
+    maru.style.setProperty('--maru-width', `${Math.min(rect.width - 24, Math.max(178, digitCount * 56 + 126))}px`);
+    maru.style.setProperty('--maru-height', `${Math.min(68, rect.height * 0.9)}px`);
+    const maruText = document.createElement('span');
+    maruText.className = 'maru-answer-text';
+    maruText.textContent = els.answerInput.value;
+    maru.appendChild(maruText);
     document.body.appendChild(maru);
     window.setTimeout(() => {
       answerRow?.classList.remove('fx-answer-correct');
