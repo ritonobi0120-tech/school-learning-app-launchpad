@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 407;
+  const APP_VERSION = 408;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -901,9 +901,19 @@
       }, 560);
       return;
     }
+    const rect = els.answerInput.getBoundingClientRect();
+    const digitCount = Math.max(1, core.normalizeAnswerText(els.answerInput.value).replace(/,/g, '').length);
+    const maru = document.createElement('span');
+    maru.className = 'answer-correct-maru';
+    maru.style.setProperty('--maru-left', `${rect.left + rect.width / 2}px`);
+    maru.style.setProperty('--maru-top', `${rect.top + rect.height / 2}px`);
+    maru.style.setProperty('--maru-width', `${Math.min(rect.width - 20, Math.max(140, digitCount * 46 + 88))}px`);
+    maru.style.setProperty('--maru-height', `${Math.min(88, rect.height * 1.1)}px`);
+    document.body.appendChild(maru);
     window.setTimeout(() => {
       answerRow?.classList.remove('fx-answer-correct');
       els.answerInput.classList.remove('fx-answer-correct');
+      maru.remove();
     }, 560);
   }
 

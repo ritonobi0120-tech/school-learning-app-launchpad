@@ -24708,7 +24708,7 @@ html body main.app-shell section#homeView.hero.hidden {
   }
 }
 
-/* v407: per-question feedback uses outside rings so the answer stays readable. */
+/* v408: correct uses a small teacher-style mark; wrong feedback stays light. */
 @media (min-width: 1000px) {
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row.fx-answer-correct {
     animation: roundingAnswerCorrectWrap .42s cubic-bezier(.19, 1, .22, 1) both !important;
@@ -24716,18 +24716,16 @@ html body main.app-shell section#homeView.hero.hidden {
 
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput.fx-answer-correct {
     border-color: #16a34a !important;
-    border-radius: 999px !important;
-    outline: 7px solid rgba(22, 163, 74, .92) !important;
-    outline-offset: 8px !important;
+    outline: none !important;
     background: #f0fdf4 !important;
     box-shadow:
-      0 0 0 17px rgba(34, 197, 94, .1),
-      0 12px 22px rgba(22, 163, 74, .16),
+      0 0 0 6px rgba(34, 197, 94, .13),
+      0 8px 16px rgba(22, 163, 74, .12),
       inset 0 2px 0 rgba(255, 255, 255, .96) !important;
   }
 
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row.fx-answer-wrong {
-    animation: roundingAnswerWrongNudge .42s cubic-bezier(.36, .07, .19, .97) both !important;
+    animation: roundingAnswerWrongNudge .28s cubic-bezier(.36, .07, .19, .97) both !important;
   }
 
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput.fx-answer-wrong {
@@ -24766,15 +24764,15 @@ html body main.app-shell section#homeView.hero.hidden {
 
   .answer-correct-maru {
     position: fixed !important;
-    left: calc(var(--answer-left) + (var(--answer-width) / 2)) !important;
-    top: calc(var(--answer-top) + (var(--answer-height) / 2)) !important;
+    left: var(--maru-left) !important;
+    top: var(--maru-top) !important;
     z-index: 120 !important;
-    width: calc(var(--answer-width) * 1.08) !important;
-    height: calc(var(--answer-height) * 1.28) !important;
+    width: var(--maru-width) !important;
+    height: var(--maru-height) !important;
     display: grid !important;
     place-items: center !important;
     color: transparent !important;
-    transform: translate(-50%, -50%) rotate(-2deg) scale(.4);
+    transform: translate(-50%, -50%) rotate(-6deg) scale(.4);
     pointer-events: none !important;
     animation: roundingCorrectMaruOverAnswer .54s cubic-bezier(.19, 1, .22, 1) both !important;
   }
@@ -24783,7 +24781,7 @@ html body main.app-shell section#homeView.hero.hidden {
     content: "" !important;
     width: 100% !important;
     height: 100% !important;
-    border: 7px solid #16a34a !important;
+    border: 6px solid #16a34a !important;
     border-radius: 50% !important;
     box-shadow: 0 5px 0 rgba(255, 255, 255, .88), 0 12px 18px rgba(34, 197, 94, .18) !important;
   }
@@ -24811,18 +24809,17 @@ html body main.app-shell section#homeView.hero.hidden {
 
 @keyframes roundingAnswerWrongNudge {
   0% { transform: translateX(0); }
-  18% { transform: translateX(-8px); }
-  36% { transform: translateX(7px); }
-  54% { transform: translateX(-4px); }
-  76% { transform: translateX(2px); }
+  22% { transform: translateX(-3px); }
+  44% { transform: translateX(3px); }
+  68% { transform: translateX(-1px); }
   100% { transform: translateX(0); }
 }
 
 @keyframes roundingCorrectMaruOverAnswer {
-  0% { transform: translate(-50%, -50%) rotate(-5deg) scale(.36); opacity: 0; }
-  16% { transform: translate(-50%, -50%) rotate(-2deg) scale(1.04); opacity: 1; }
-  72% { transform: translate(-50%, -50%) rotate(-2deg) scale(1); opacity: 1; }
-  100% { transform: translate(-50%, -50%) rotate(-2deg) scale(.98); opacity: 0; }
+  0% { transform: translate(-50%, -50%) rotate(-12deg) scale(.36); opacity: 0; }
+  16% { transform: translate(-50%, -50%) rotate(-6deg) scale(1.04); opacity: 1; }
+  72% { transform: translate(-50%, -50%) rotate(-6deg) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(-6deg) scale(.98); opacity: 0; }
 }
 
 @keyframes roundingCorrectCardMaru {
