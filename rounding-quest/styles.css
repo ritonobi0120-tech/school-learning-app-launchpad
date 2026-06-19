@@ -24877,6 +24877,44 @@ html body.screen-miss-flash::before {
   }
 }
 
+/* v426: use the enlarged review frame instead of leaving empty space. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board {
+    padding: 28px 30px 30px !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 22px !important;
+    align-content: stretch !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board > p {
+    padding: 13px 30px !important;
+    font-size: clamp(25px, 1.95vw, 34px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps {
+    height: 100% !important;
+    grid-template-rows: repeat(3, minmax(0, 1fr)) !important;
+    gap: 20px !important;
+    align-content: stretch !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps li {
+    min-height: 0 !important;
+    padding: 18px 22px !important;
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps b {
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 30px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps span {
+    font-size: clamp(26px, 2vw, 38px) !important;
+  }
+}
+
 @keyframes roundingCorrectMaruOverAnswer {
   0% { transform: translate(-50%, -50%) scale(.92); opacity: 0; }
   16% { transform: translate(-50%, -50%) scale(1.03); opacity: 1; }

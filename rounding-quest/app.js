@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 425;
+  const APP_VERSION = 426;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -112,7 +112,7 @@
   }
 
   function questionActionLabel(stageId, reviewOnly) {
-    if (reviewOnly) return '見直ししよう';
+    if (reviewOnly) return 'やり直し';
     if (stageId === 'significant') return 'がい数にしよう';
     if (stageId === 'final-mix') return 'まとめてとこう';
     return '四捨五入しよう';
@@ -733,7 +733,7 @@
     const digits = String(v.value).split('');
     const checkPower = Math.max(0, Math.round(Math.log10(v.checkUnit || 1)));
     const focusIndex = Math.max(0, Math.min(digits.length - 1, digits.length - 1 - checkPower));
-    const action = v.checkDigit >= 5 ? '5以上 → 切り上げる' : '4以下 → 切り捨てる';
+    const action = v.checkDigit >= 5 ? '5以上 → 切り上げ' : '4以下 → 切り捨て';
     const resultLine = result
       ? (result.correct
         ? '<p class="review-status ok">正解。この見方でOK。</p>'
@@ -743,7 +743,7 @@
     const changeText = reviewChangeText(q);
     els.visualBoard.innerHTML = `
       <div class="focus-board">
-        <p>見るのはここ</p>
+        <p>ここを見る</p>
         <div class="focus-number" aria-label="${v.value}の${v.checkLabel}">
           ${digits.map((digit, index) => `<span class="${index === focusIndex ? 'focus' : ''}">${digit}</span>`).join('')}
         </div>
