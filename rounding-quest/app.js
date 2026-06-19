@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 404;
+  const APP_VERSION = 405;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -900,19 +900,9 @@
       }, 560);
       return;
     }
-    const rect = els.answerInput.getBoundingClientRect();
-    const maru = document.createElement('span');
-    maru.className = 'answer-correct-maru';
-    maru.textContent = '○';
-    maru.style.setProperty('--answer-left', `${rect.left}px`);
-    maru.style.setProperty('--answer-top', `${rect.top}px`);
-    maru.style.setProperty('--answer-width', `${rect.width}px`);
-    maru.style.setProperty('--answer-height', `${rect.height}px`);
-    document.body.appendChild(maru);
     window.setTimeout(() => {
       answerRow?.classList.remove('fx-answer-correct');
       els.answerInput.classList.remove('fx-answer-correct');
-      maru.remove();
     }, 560);
   }
 
