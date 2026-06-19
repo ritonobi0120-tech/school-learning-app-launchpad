@@ -24869,6 +24869,14 @@ html body.screen-miss-flash::before {
   100% { opacity: 0; }
 }
 
+/* v425: align the review hint frame with the main left frame. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side {
+    top: 12.4vh !important;
+    height: 83.5vh !important;
+  }
+}
+
 @keyframes roundingCorrectMaruOverAnswer {
   0% { transform: translate(-50%, -50%) scale(.92); opacity: 0; }
   16% { transform: translate(-50%, -50%) scale(1.03); opacity: 1; }

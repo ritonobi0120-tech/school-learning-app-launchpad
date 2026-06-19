@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 424;
+  const APP_VERSION = 425;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -743,7 +743,7 @@
     const changeText = reviewChangeText(q);
     els.visualBoard.innerHTML = `
       <div class="focus-board">
-        <p>ここだけ見ればOK</p>
+        <p>見るのはここ</p>
         <div class="focus-number" aria-label="${v.value}の${v.checkLabel}">
           ${digits.map((digit, index) => `<span class="${index === focusIndex ? 'focus' : ''}">${digit}</span>`).join('')}
         </div>
