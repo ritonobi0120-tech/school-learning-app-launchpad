@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 405;
+  const APP_VERSION = 407;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -816,6 +816,7 @@
       upsertSessionMistake(q, els.answerInput.value);
       playSound('wrong');
       miss();
+      showAnswerWrongFx();
       if (session.reviewOnly) {
         session.answered = false;
         els.answerInput.disabled = false;
@@ -827,9 +828,9 @@
         window.setTimeout(() => els.answerInput.focus(), 0);
       } else {
         els.submitButton.textContent = session.index + 1 >= session.questions.length ? '結果へ' : '次へ';
-        els.feedbackBox.className = 'feedback wrong compact-wrong-feedback';
-        els.feedbackBox.innerHTML = '<strong>おしい！</strong><span>あとでこの問題をやり直します。</span>';
-        scheduleAutoAdvance(1080);
+        els.feedbackBox.className = 'feedback hidden';
+        els.feedbackBox.innerHTML = '';
+        scheduleAutoAdvance(760);
       }
     }
     renderSupportText(q, result);
@@ -884,8 +885,8 @@
     const answerRow = els.answerInput.closest('.answer-row');
     const answerCard = document.querySelector('.instant-answer-card');
     document.querySelectorAll('.answer-correct-maru').forEach((node) => node.remove());
-    answerRow?.classList.remove('fx-answer-correct');
-    els.answerInput.classList.remove('fx-answer-correct');
+    answerRow?.classList.remove('fx-answer-correct', 'fx-answer-wrong');
+    els.answerInput.classList.remove('fx-answer-correct', 'fx-answer-wrong');
     answerCard?.classList.remove('fx-answer-correct');
     void els.answerInput.offsetWidth;
     answerRow?.classList.add('fx-answer-correct');
@@ -904,6 +905,20 @@
       answerRow?.classList.remove('fx-answer-correct');
       els.answerInput.classList.remove('fx-answer-correct');
     }, 560);
+  }
+
+  function showAnswerWrongFx() {
+    const answerRow = els.answerInput.closest('.answer-row');
+    document.querySelectorAll('.answer-correct-maru').forEach((node) => node.remove());
+    answerRow?.classList.remove('fx-answer-correct', 'fx-answer-wrong');
+    els.answerInput.classList.remove('fx-answer-correct', 'fx-answer-wrong');
+    void els.answerInput.offsetWidth;
+    answerRow?.classList.add('fx-answer-wrong');
+    els.answerInput.classList.add('fx-answer-wrong');
+    window.setTimeout(() => {
+      answerRow?.classList.remove('fx-answer-wrong');
+      els.answerInput.classList.remove('fx-answer-wrong');
+    }, 620);
   }
 
   function launchArtifactFly(stageId) {

@@ -24708,7 +24708,7 @@ html body main.app-shell section#homeView.hero.hidden {
   }
 }
 
-/* v405: per-question correct feedback is lightweight and never covers the answer. */
+/* v407: per-question feedback uses outside rings so the answer stays readable. */
 @media (min-width: 1000px) {
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row.fx-answer-correct {
     animation: roundingAnswerCorrectWrap .42s cubic-bezier(.19, 1, .22, 1) both !important;
@@ -24716,10 +24716,26 @@ html body main.app-shell section#homeView.hero.hidden {
 
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput.fx-answer-correct {
     border-color: #16a34a !important;
+    border-radius: 999px !important;
+    outline: 7px solid rgba(22, 163, 74, .92) !important;
+    outline-offset: 8px !important;
     background: #f0fdf4 !important;
     box-shadow:
-      0 0 0 6px rgba(22, 163, 74, .22),
-      0 0 0 12px rgba(34, 197, 94, .1),
+      0 0 0 17px rgba(34, 197, 94, .1),
+      0 12px 22px rgba(22, 163, 74, .16),
+      inset 0 2px 0 rgba(255, 255, 255, .96) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row.fx-answer-wrong {
+    animation: roundingAnswerWrongNudge .42s cubic-bezier(.36, .07, .19, .97) both !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput.fx-answer-wrong {
+    border-color: #dc2626 !important;
+    background: #fff1f2 !important;
+    box-shadow:
+      0 0 0 6px rgba(220, 38, 38, .2),
+      0 0 0 12px rgba(248, 113, 113, .1),
       inset 0 2px 0 rgba(255, 255, 255, .96) !important;
   }
 
@@ -24791,6 +24807,15 @@ html body main.app-shell section#homeView.hero.hidden {
   0% { transform: scale(.99); opacity: .84; }
   28% { transform: scale(1.01); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes roundingAnswerWrongNudge {
+  0% { transform: translateX(0); }
+  18% { transform: translateX(-8px); }
+  36% { transform: translateX(7px); }
+  54% { transform: translateX(-4px); }
+  76% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
 }
 
 @keyframes roundingCorrectMaruOverAnswer {
