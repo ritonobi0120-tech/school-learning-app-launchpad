@@ -24915,6 +24915,60 @@ html body.screen-miss-flash::before {
   }
 }
 
+/* v427: slightly enlarge review text while keeping the PC layout stable. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.problem-side p#questionLabel.question-label {
+    font-size: 27px !important;
+    padding-inline: 26px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card h3#questionText .review-problem-layout {
+    font-size: clamp(34px, 2.75vw, 46px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit {
+    width: 90px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit b {
+    width: 88px !important;
+    height: 84px !important;
+    font-size: clamp(54px, 4.3vw, 74px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row input#answerInput {
+    font-size: clamp(54px, 4.6vw, 72px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row button#submitButton {
+    font-size: clamp(32px, 2.7vw, 44px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button {
+    font-size: clamp(32px, 2.8vw, 42px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    font-size: clamp(22px, 2.15vw, 32px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board > p {
+    font-size: clamp(28px, 2.12vw, 36px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps b {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 32px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps span {
+    font-size: clamp(26px, 1.9vw, 34px) !important;
+    white-space: nowrap !important;
+  }
+}
+
 @keyframes roundingCorrectMaruOverAnswer {
   0% { transform: translate(-50%, -50%) scale(.92); opacity: 0; }
   16% { transform: translate(-50%, -50%) scale(1.03); opacity: 1; }
