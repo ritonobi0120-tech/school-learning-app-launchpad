@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 430;
+  const APP_VERSION = 432;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -1102,7 +1102,7 @@
     else if (stageCleared && !mustReview) playSound('stageClear');
     else if (mustReview) playSound('notice');
     els.resultTitle.textContent = mustReview
-      ? '道をひらこう！'
+      ? 'やり直し'
       : finalClear
       ? '完全クリア！'
       : session.reviewOnly
@@ -1111,15 +1111,15 @@
         ? `第${stage.order}章クリア！`
         : '5問クリア！';
     els.resultCopy.textContent = mustReview
-      ? '見直しクエストで、続きの道がひらきます。'
+      ? 'この問題を直そう。'
       : finalClear
-      ? '王城に到着しました。'
+      ? ''
       : stageCleared
         ? stageClearCopy(stage)
         : `${stage.artifact}を ${Math.max(0, stageKeys - (session.startKeys || 0))}こ あつめたよ`;
     const nextActionLabel = stageCleared && nextStage ? `第${nextStage.order}章へ` : `第${stage.order}章へ`;
-    els.againButton.textContent = mustReview ? '見直しクエストへ' : (finalClear ? 'もう一度' : nextActionLabel);
-    els.againButton.setAttribute('aria-label', mustReview ? '見直しクエストへ' : (finalClear ? 'もう一度まとめバトル' : nextActionLabel));
+    els.againButton.textContent = mustReview ? 'やり直しへ' : (finalClear ? 'もう一度' : nextActionLabel);
+    els.againButton.setAttribute('aria-label', mustReview ? 'やり直しへ' : (finalClear ? 'もう一度まとめバトル' : nextActionLabel));
     els.homeButton.classList.toggle('hidden', mustReview);
     const victoryOverlay = !mustReview && !session.reviewOnly && !finalClear
       ? `
@@ -1164,7 +1164,7 @@
         <img src="${img(finalClear ? RPG_ASSETS.finalClear : (cleanResult ? RPG_ASSETS.resultClear : stage.image))}" alt="">
         ${answerShowcase}
         ${resultStatusCard}
-        ${finalCollection}
+        ${finalClear ? '' : finalCollection}
         ${victoryOverlay}
         ${renderResultProgressSummary(stage, stageKeys, remaining, stageCleared, finalClear, mustReview)}
       `;
@@ -1177,7 +1177,7 @@
       return;
     }
     els.mistakeList.innerHTML = mustReview
-      ? '<h3>この問題を直そう</h3>'
+      ? '<h3>やり直す問題</h3>'
       : '<h3>あとで見直せる問題</h3>';
     if (!mistakes.length) {
       els.mistakeList.insertAdjacentHTML('beforeend', '<p>今は見直す問題がありません。</p>');
@@ -1296,8 +1296,7 @@
       `;
     }
     if (finalClear) {
-      const totalQuestions = core.STAGES.length * STAGE_GOAL;
-      return `<div class="result-progress-summary complete final"><strong>全${totalQuestions}問を走り切りました</strong><span>これで「がい数マスター」です。</span></div>`;
+      return '';
     }
     if (stageCleared) {
       return `
@@ -1348,26 +1347,7 @@
   }
 
   function renderFinalClearCertificate(mistakeCount) {
-    const reviewLine = mistakeCount
-      ? `<p class="master-note">見直しリストが${mistakeCount}問あります。気になるときは最後に確認できます。</p>`
-      : '<p class="master-note">見直す問題はありません。最後までよく走り切りました。</p>';
-    return `
-      <div class="master-certificate">
-        <img class="master-medal" src="${stageCardBadge('final-mix')}" alt="">
-        <h3>がい数マスター証</h3>
-        <p>四つの力をすべて集めました。</p>
-        <div class="final-practice-grid" aria-label="練習する章">
-          ${core.STAGES.map((stage) => `
-            <button type="button" data-practice-stage="${stage.id}">
-              <img src="${stageCardBadge(stage.id)}" alt="">
-              <span>第${stage.order}章</span>
-              <strong>${stage.shortTitle || stage.title}</strong>
-            </button>
-          `).join('')}
-        </div>
-        ${reviewLine}
-      </div>
-    `;
+    return '';
   }
 
   function isStageCleared(stageId) {
