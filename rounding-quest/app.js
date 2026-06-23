@@ -1,7 +1,8 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 442;
+  const APP_VERSION = 443;
+  const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -179,6 +180,84 @@
   const IS_LOCAL_DEV = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
   let audioContext = null;
 
+  function normalizeActiveSession(saved) {
+    if (!saved || typeof saved !== 'object') return null;
+    if (!Array.isArray(saved.questions) || !saved.questions.length) return null;
+    const stage = core.getStage(saved.stageId);
+    if (!stage) return null;
+    const index = Math.min(saved.questions.length - 1, Math.max(0, Number(saved.index) || 0));
+    return {
+      reviewOnly: Boolean(saved.reviewOnly),
+      stageId: stage.id,
+      questions: saved.questions,
+      index,
+      correct: Math.max(0, Number(saved.correct) || 0),
+      streak: Math.max(0, Number(saved.streak) || 0),
+      bestStreak: Math.max(0, Number(saved.bestStreak) || 0),
+      mistakes: Array.isArray(saved.mistakes) ? saved.mistakes : [],
+      reviewMistakes: Array.isArray(saved.reviewMistakes) ? saved.reviewMistakes : [],
+      pathCorrectMarks: Array.isArray(saved.pathCorrectMarks) ? saved.pathCorrectMarks : [],
+      pathMissMarks: Array.isArray(saved.pathMissMarks) ? saved.pathMissMarks : [],
+      answered: false,
+      advanceTimer: null,
+      startKeys: Math.min(STAGE_GOAL, Math.max(0, Number(saved.startKeys) || 0)),
+      finishKeys: Math.min(STAGE_GOAL, Math.max(0, Number(saved.finishKeys) || 0)),
+      resumeInput: String(saved.input || '').replace(/[^\d]/g, '').slice(0, 9),
+    };
+  }
+
+  function loadActiveSession() {
+    try {
+      return normalizeActiveSession(JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY)));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function clearActiveSession() {
+    localStorage.removeItem(ACTIVE_SESSION_KEY);
+  }
+
+  function saveActiveSession() {
+    if (!session) return;
+    const nextIndex = session.answered ? session.index + 1 : session.index;
+    if (nextIndex >= session.questions.length) {
+      clearActiveSession();
+      return;
+    }
+    const payload = {
+      reviewOnly: session.reviewOnly,
+      stageId: session.stageId,
+      questions: session.questions,
+      index: nextIndex,
+      correct: session.correct,
+      streak: session.streak,
+      bestStreak: session.bestStreak,
+      mistakes: session.mistakes,
+      reviewMistakes: session.reviewMistakes,
+      pathCorrectMarks: session.pathCorrectMarks,
+      pathMissMarks: session.pathMissMarks,
+      startKeys: session.startKeys,
+      finishKeys: session.finishKeys,
+      input: session.answered ? '' : els.answerInput.value,
+    };
+    localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(payload));
+  }
+
+  function resumeActiveSession() {
+    const saved = loadActiveSession();
+    if (!saved) return false;
+    session = saved;
+    selectedStageId = saved.stageId;
+    show(els.sessionView);
+    renderQuestion();
+    if (saved.resumeInput) {
+      els.answerInput.value = saved.resumeInput;
+      els.answerInput.focus();
+    }
+    return true;
+  }
+
   function getAudioContext() {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return null;
@@ -253,6 +332,7 @@
   }
 
   function startSession(reviewOnly) {
+    clearActiveSession();
     const pendingStageId = getPendingReviewStageId();
     if (pendingStageId) {
       selectedStageId = pendingStageId;
@@ -363,7 +443,7 @@
   }
 
   function applyPcV4Layout(q) {
-    if (!window.matchMedia('(min-width: 721px)').matches) return;
+    if (!window.matchMedia('(min-width: 600px)').matches) return;
     const reviewMode = Boolean(session && session.reviewOnly);
     const prompt = reviewMode
       ? els.questionText.querySelector('.review-problem-layout')
@@ -379,10 +459,17 @@
     });
     if (!reviewMode) {
       setImportantStyle(els.sessionHomeButton, {
-        display: 'none',
-        visibility: 'hidden',
-        opacity: '0',
-        'pointer-events': 'none',
+        position: 'fixed',
+        left: '18px',
+        top: '18px',
+        width: '46px',
+        height: '46px',
+        display: 'grid',
+        'place-items': 'center',
+        visibility: 'visible',
+        opacity: '1',
+        'pointer-events': 'auto',
+        'z-index': '120',
       });
       setImportantStyle(els.comboChip, {
         display: 'none',
@@ -627,7 +714,7 @@
     setImportantStyle(els.tenkey, {
       position: 'fixed',
       left: reviewMode ? '10.4vw' : '23vw',
-      top: reviewMode ? '61.6vh' : '61.8vh',
+      top: reviewMode ? 'max(61.6vh, calc(50.6vh + 88px))' : 'max(61.8vh, calc(50.8vh + 88px))',
       width: reviewMode ? '47.4vw' : '54vw',
       'max-width': 'none',
       height: '31.8vh',
@@ -1214,6 +1301,7 @@
   }
 
   function finishSession() {
+    clearActiveSession();
     progress.sessions += 1;
     progress.best = Math.max(progress.best, session.correct);
     progress.bestStreak = Math.max(progress.bestStreak || 0, session.bestStreak);
@@ -1606,11 +1694,13 @@
           ? '全120問クリア！がい数マスターです'
           : `今の目的：${selectedStage.artifact}をあと${stageRemaining}こ集めよう`;
     }
-    els.startButton.textContent = hasMistakes
-      ? '見直しクエストへ'
-      : isStageCleared(selectedStageId)
-        ? 'もう一度とく'
-        : 'はじめる';
+    els.startButton.textContent = loadActiveSession()
+      ? 'つづきから'
+      : hasMistakes
+        ? '見直しクエストへ'
+        : isStageCleared(selectedStageId)
+          ? 'もう一度とく'
+          : 'はじめる';
     els.reviewButton.disabled = !hasMistakes;
     els.reviewButton.classList.toggle('hidden', !hasMistakes);
     els.reviewButton.textContent = hasMistakes ? '見直しクエスト' : '';
@@ -1852,6 +1942,7 @@
   els.startButton.addEventListener('click', () => {
     unlockAudio();
     playSound('tap');
+    if (resumeActiveSession()) return;
     startSession(Boolean(getPendingReviewStageId()));
   });
   els.reviewButton.addEventListener('click', () => {
@@ -1862,7 +1953,7 @@
   els.sessionHomeButton.addEventListener('click', () => {
     unlockAudio();
     playSound('tap');
-    persistSessionMistakes();
+    saveActiveSession();
     renderHomeStats();
     show(els.homeView);
   });
@@ -1874,6 +1965,7 @@
       playSound('tap');
       const action = button.dataset.homeAction;
       if (action === 'start') {
+        if (resumeActiveSession()) return;
         startSession(false);
       } else if (action === 'review') {
         if (!getPendingReviewStageId()) {
@@ -1947,6 +2039,7 @@
   els.answerInput.addEventListener('input', () => {
     const normalized = core.normalizeAnswerText(els.answerInput.value);
     if (els.answerInput.value !== normalized) els.answerInput.value = normalized;
+    saveActiveSession();
   });
   window.addEventListener('keydown', handlePhysicalKeyboard);
   window.addEventListener('resize', () => {

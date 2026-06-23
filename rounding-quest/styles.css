@@ -26209,8 +26209,8 @@ html body.screen-miss-flash::before {
   }
 }
 
-/* v442: keep tall tablet/small PC problem screens from falling back to the narrow portrait board. */
-@media (min-width: 721px) and (max-width: 999px) {
+/* v442/v443: keep narrow PC problem screens from falling back to the old portrait board. */
+@media (min-width: 600px) and (max-width: 999px) {
   html body.session-mode main.app-shell {
     position: fixed !important;
     inset: 0 !important;
@@ -26395,7 +26395,7 @@ html body.screen-miss-flash::before {
   html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey {
     position: fixed !important;
     left: 23vw !important;
-    top: 61.8vh !important;
+    top: max(61.8vh, calc(50.8vh + 88px)) !important;
     width: 54vw !important;
     height: 31.8vh !important;
     display: grid !important;
@@ -26422,5 +26422,22 @@ html body.screen-miss-flash::before {
   html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
   html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
     font-size: clamp(20px, 2.8vw, 28px) !important;
+  }
+}
+
+/* v443: the practice screen keeps a visible home shortcut and removes the old PC hide rule. */
+@media (min-width: 600px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) button#sessionHomeButton.session-home-button {
+    position: fixed !important;
+    left: 18px !important;
+    top: 18px !important;
+    width: 46px !important;
+    height: 46px !important;
+    display: grid !important;
+    place-items: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 120 !important;
   }
 }
