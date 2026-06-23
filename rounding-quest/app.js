@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 441;
+  const APP_VERSION = 442;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -363,7 +363,7 @@
   }
 
   function applyPcV4Layout(q) {
-    if (!window.matchMedia('(min-width: 1000px)').matches) return;
+    if (!window.matchMedia('(min-width: 721px)').matches) return;
     const reviewMode = Boolean(session && session.reviewOnly);
     const prompt = reviewMode
       ? els.questionText.querySelector('.review-problem-layout')
@@ -377,6 +377,124 @@
         ? 'linear-gradient(180deg, rgba(255, 249, 225, .92), rgba(246, 238, 210, .96))'
         : 'linear-gradient(180deg, #fff8df, #f5eccc)',
     });
+    if (!reviewMode) {
+      setImportantStyle(els.sessionHomeButton, {
+        display: 'none',
+        visibility: 'hidden',
+        opacity: '0',
+        'pointer-events': 'none',
+      });
+      setImportantStyle(els.comboChip, {
+        display: 'none',
+        visibility: 'hidden',
+        opacity: '0',
+        'pointer-events': 'none',
+      });
+      setImportantStyle(els.modeLabel.parentElement, {
+        display: 'none',
+        visibility: 'hidden',
+        opacity: '0',
+        'pointer-events': 'none',
+      });
+      setImportantStyle(els.sessionMap, {
+        position: 'fixed',
+        left: '50%',
+        top: '2.2vh',
+        width: 'min(620px, 45vw)',
+        height: '70px',
+        display: 'grid',
+        'place-items': 'center',
+        padding: '8px 16px',
+        border: '3px solid #e7b748',
+        'border-radius': '18px',
+        background: 'linear-gradient(180deg, #fffdf4, #fff0bd)',
+        'box-shadow': '0 6px 0 rgba(108, 76, 28, .14), 0 13px 22px rgba(38, 52, 42, .12)',
+        transform: 'translateX(-50%)',
+        overflow: 'hidden',
+        'z-index': '93',
+      });
+      setImportantStyle(els.sessionMap.querySelector('.key-rail'), {
+        display: 'block',
+        width: '100%',
+        height: '100%',
+        margin: '0',
+        padding: '0',
+        background: 'transparent',
+        border: '0',
+        'box-shadow': 'none',
+        overflow: 'hidden',
+      });
+      setImportantStyle(els.sessionMap.querySelector('.session-hud'), {
+        display: 'block',
+        width: '100%',
+        height: '100%',
+        margin: '0',
+        padding: '0',
+        background: 'transparent',
+        border: '0',
+        'box-shadow': 'none',
+        overflow: 'hidden',
+      });
+      setImportantStyle(els.sessionMap.querySelector('.session-progress-label'), {
+        position: 'static',
+        width: '100%',
+        height: '100%',
+        display: 'grid',
+        'grid-template-columns': '138px minmax(0, 1fr)',
+        'align-items': 'center',
+        gap: '18px',
+        padding: '0',
+        border: '0',
+        'border-radius': '0',
+        background: 'transparent',
+        'box-shadow': 'none',
+      });
+      setImportantStyle(els.sessionMap.querySelector('.question-step-label'), {
+        display: 'flex',
+        'align-items': 'baseline',
+        'justify-content': 'center',
+        gap: '5px',
+        color: '#12304a',
+        '-webkit-text-fill-color': '#12304a',
+        'white-space': 'nowrap',
+      });
+      setImportantStyle(els.sessionMap.querySelector('.question-step-label b'), {
+        display: 'inline',
+        width: 'auto',
+        padding: '0',
+        border: '0',
+        background: 'transparent',
+        'box-shadow': 'none',
+        color: '#12304a',
+        '-webkit-text-fill-color': '#12304a',
+        'font-size': '34px',
+        'font-weight': '1000',
+        'line-height': '1',
+      });
+      setImportantStyle(els.sessionMap.querySelector('.question-step-label small'), {
+        display: 'inline',
+        color: '#12304a',
+        '-webkit-text-fill-color': '#12304a',
+        'font-size': '17px',
+        'font-weight': '900',
+        'line-height': '1',
+      });
+      els.sessionMap.querySelectorAll('.session-plaque, .session-item-card, .mini-map-track, .mini-hero, .mini-gate, .map-plus')
+        .forEach((node) => setImportantStyle(node, { display: 'none', visibility: 'hidden' }));
+      setImportantStyle(els.sessionMap.querySelector('.question-pips'), {
+        display: 'grid',
+        'grid-template-columns': 'repeat(5, minmax(0, 1fr))',
+        gap: '8px',
+        'align-items': 'center',
+        width: '100%',
+      });
+      els.sessionMap.querySelectorAll('.question-pips i').forEach((pip) => setImportantStyle(pip, {
+        display: 'block',
+        width: '100%',
+        height: pip.classList.contains('current') ? '22px' : '20px',
+        'border-radius': '999px',
+      }));
+    }
     setImportantStyle(els.questionCard, reviewMode ? {
       position: 'fixed',
       left: '3.8vw',
@@ -453,10 +571,20 @@
       'z-index': '80',
     });
     setImportantStyle(els.answerInput, {
+      position: 'static',
       height: '76px',
       'min-height': '76px',
       'max-height': '76px',
       width: '100%',
+      'max-width': 'none',
+      margin: '0',
+      transform: 'none',
+      'grid-column': '1',
+      'grid-row': '1',
+      'grid-area': '1 / 1',
+      'align-self': 'stretch',
+      'justify-self': 'stretch',
+      'box-sizing': 'border-box',
     });
     const answerRow = els.answerInput.closest('.answer-row');
     setImportantStyle(answerRow, {
@@ -464,11 +592,15 @@
       left: reviewMode ? '10.4vw' : '23vw',
       top: reviewMode ? '50.6vh' : '50.8vh',
       width: reviewMode ? '47.4vw' : '54vw',
+      'max-width': 'none',
       height: '76px',
       display: 'grid',
       'grid-template-columns': 'minmax(0, 1fr) 168px',
       'grid-template-rows': '76px',
       gap: '12px',
+      'grid-auto-flow': 'column',
+      'align-items': 'stretch',
+      'justify-items': 'stretch',
       'z-index': '81',
     });
     setImportantStyle(els.submitButton, {
@@ -479,6 +611,7 @@
       bottom: 'auto',
       'grid-column': '2',
       'grid-row': '1',
+      'grid-area': '1 / 2',
       'align-self': 'stretch',
       'justify-self': 'stretch',
       width: '168px',
@@ -496,15 +629,36 @@
       left: reviewMode ? '10.4vw' : '23vw',
       top: reviewMode ? '61.6vh' : '61.8vh',
       width: reviewMode ? '47.4vw' : '54vw',
+      'max-width': 'none',
       height: '31.8vh',
+      'max-height': 'none',
       display: 'grid',
       'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
       'grid-template-rows': 'repeat(4, minmax(0, 1fr))',
       gap: '8px 16px',
       padding: '10px',
+      margin: '0',
+      transform: 'none',
       overflow: 'hidden',
       'align-items': 'stretch',
+      'justify-self': 'stretch',
       'z-index': '80',
+    });
+    [...els.tenkey.children].forEach((button, index) => {
+      setImportantStyle(button, {
+        order: String(index),
+        'grid-column': String((index % 3) + 1),
+        'grid-row': String(Math.floor(index / 3) + 1),
+        width: '100%',
+        'max-width': 'none',
+        height: '100%',
+        'max-height': 'none',
+        margin: '0',
+        transform: 'none',
+        'align-self': 'stretch',
+        'justify-self': 'stretch',
+        'place-self': 'stretch',
+      });
     });
   }
 
