@@ -26791,3 +26791,76 @@ html body.result-mode main.app-shell section#resultView.result-view.stage-unlock
     grid-template-columns: 64px minmax(0, 1fr) !important;
   }
 }
+
+/* v446: override the older clean-result action placement on the chapter unlock screen. */
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock.clean-result:not(.review-result):not(.final-clear) .result-main .result-actions,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock.clean-result:not(.review-result):not(.final-clear) .result-actions {
+  position: fixed !important;
+  left: 5.4vw !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: 7.2vh !important;
+  z-index: 40 !important;
+  width: min(510px, 41vw) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-columns: 76px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton {
+  position: static !important;
+  inset: auto !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  justify-self: stretch !important;
+  align-self: stretch !important;
+  width: 76px !important;
+  min-width: 76px !important;
+  max-width: 76px !important;
+  height: 72px !important;
+  min-height: 72px !important;
+  max-height: 72px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  z-index: 1 !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock.clean-result:not(.review-result):not(.final-clear) .result-actions #againButton {
+  position: static !important;
+  inset: auto !important;
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: stretch !important;
+  align-self: stretch !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 72px !important;
+  min-height: 72px !important;
+  max-height: 72px !important;
+  margin: 0 !important;
+  transform: none !important;
+  z-index: 1 !important;
+}
+
+@media (max-width: 720px) {
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock.clean-result:not(.review-result):not(.final-clear) .result-main .result-actions,
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock.clean-result:not(.review-result):not(.final-clear) .result-actions {
+    left: 7vw !important;
+    bottom: 5vh !important;
+    width: 86vw !important;
+    grid-template-columns: 64px minmax(0, 1fr) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton {
+    width: 64px !important;
+    min-width: 64px !important;
+    max-width: 64px !important;
+  }
+}
