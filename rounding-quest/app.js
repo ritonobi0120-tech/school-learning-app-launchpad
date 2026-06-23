@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 434;
+  const APP_VERSION = 441;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -1076,6 +1076,10 @@
     core.saveProgress(localStorage, progress);
     renderHomeStats();
     renderStageSelect();
+    if (!session.reviewOnly && session.mistakes.length) {
+      startSession(true);
+      return;
+    }
     renderResult();
   }
 
@@ -1110,14 +1114,16 @@
       : stageCleared
         ? `第${stage.order}章クリア！`
         : '5問クリア！';
-    els.resultCopy.textContent = mustReview
+    els.resultCopy.textContent = cleanResult && !session.reviewOnly && !stageCleared && !finalClear
+      ? ''
+      : mustReview
       ? 'この1問を直そう'
       : finalClear
       ? ''
       : stageCleared
         ? stageClearCopy(stage)
         : `${stage.artifact}を ${Math.max(0, stageKeys - (session.startKeys || 0))}こ あつめたよ`;
-    const nextActionLabel = stageCleared && nextStage ? `第${nextStage.order}章へ` : `第${stage.order}章へ`;
+    const nextActionLabel = '続ける';
     els.againButton.textContent = mustReview ? 'やり直しへ' : (finalClear ? 'もう一度' : nextActionLabel);
     els.againButton.setAttribute('aria-label', mustReview ? 'やり直しへ' : (finalClear ? 'もう一度まとめバトル' : nextActionLabel));
     els.homeButton.classList.toggle('hidden', mustReview);
@@ -1168,6 +1174,7 @@
         ${victoryOverlay}
         ${renderResultProgressSummary(stage, stageKeys, remaining, stageCleared, finalClear, mustReview)}
       `;
+    animateSimpleProgressBar();
     const mistakes = session.mistakes.length ? session.mistakes : (progress.mistakes[session.stageId] || []).slice(-5);
     els.resultReviewButton.classList.toggle('hidden', mustReview || finalClear || session.reviewOnly || !mistakes.length);
     els.resultReviewButton.disabled = !mistakes.length;
@@ -1205,26 +1212,36 @@
 
   function renderSimpleSessionClear(stage, stageKeys) {
     const gained = Math.max(0, stageKeys - (session.startKeys || 0));
+    const startPct = Math.min(100, Math.round(((session.startKeys || 0) / STAGE_GOAL) * 100));
     const progressPct = Math.min(100, Math.round((stageKeys / STAGE_GOAL) * 100));
     return `
       <div class="simple-clear-panel">
         <div class="simple-stat-list" aria-label="今回の結果">
           <span><b>✓</b><strong>正解</strong><em>${session.correct}問</em></span>
-          <span><b>♕</b><strong>ベスト</strong><em>${Math.max(progress.best || 0, session.correct)}問</em></span>
-          <span><b>●</b><strong>れんぞく</strong><em>${session.bestStreak}</em></span>
         </div>
         <div class="simple-clear-center">
           <img src="${artifactIcon(stage.id)}" alt="">
           <strong>${stage.artifact} ${stageKeys}/${STAGE_GOAL}</strong>
-          <div class="simple-progress" style="--pct:${progressPct}%"><i></i></div>
-        </div>
-        <div class="simple-clear-next">
-          <b>この章をつづけよう</b>
-          <span>${stage.artifact}を もっと集めよう</span>
-          <small>${STAGE_GOAL}こ集めると 次の章へ進めるよ</small>
+          <div class="simple-progress" data-from-pct="${startPct}" data-to-pct="${progressPct}" style="--from-pct:${startPct}%; --pct:${progressPct}%"><i></i></div>
         </div>
       </div>
     `;
+  }
+
+  function animateSimpleProgressBar() {
+    const track = els.rewardScene.querySelector('.simple-progress');
+    const bar = track ? track.querySelector('i') : null;
+    if (!track || !bar) return;
+    const from = Number(track.dataset.fromPct || 0);
+    const to = Number(track.dataset.toPct || from);
+    bar.style.transition = 'none';
+    bar.style.setProperty('width', `${from}%`, 'important');
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        bar.style.transition = 'width 2.8s cubic-bezier(.18, .82, .18, 1)';
+        bar.style.setProperty('width', `${to}%`, 'important');
+      });
+    });
   }
 
   function getNextStage(stageId) {
@@ -1591,7 +1608,12 @@
       ? `<span class="map-plus" aria-hidden="true"><img src="${artifactIcon(stageId)}" alt=""><b>+1</b></span>`
       : '';
     const progressPips = Array.from({ length: SESSION_LENGTH }, (_, index) => {
-      const className = index < currentInSession - 1 ? 'done' : (index === currentInSession - 1 ? 'current' : '');
+      const mark = windowStart + index;
+      const className = [
+        missedMarks.has(mark) || (missPulse && mark === missPulseMark) ? 'missed' : '',
+        correctMarks.has(mark) || mark <= baseCount ? 'done' : '',
+        index === currentInSession - 1 ? 'current' : '',
+      ].filter(Boolean).join(' ');
       return `<i class="${className}" aria-hidden="true"></i>`;
     }).join('');
     const reviewCount = session && session.stageId === stageId ? session.mistakes.length : 0;
