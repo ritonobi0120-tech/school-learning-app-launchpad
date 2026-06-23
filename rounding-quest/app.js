@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 444;
+  const APP_VERSION = 445;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -64,6 +64,7 @@
     worldMap: 'assets/rpg/world-map.png',
     heroIcon: 'assets/generated/hero-walker.png',
     resultClear: 'assets/generated/result-clear-celebration.png',
+    chapterUnlock: 'assets/generated/chapter-unlock-gate.png',
     finalClear: 'assets/generated/final-clear-celebration.png',
   };
 
@@ -1336,14 +1337,17 @@
     const stageCleared = isStageCleared(session.stageId);
     const mustReview = session.mistakes.length > 0;
     const finalClear = stageCleared && !nextStage && !mustReview;
+    const stageUnlock = stageCleared && Boolean(nextStage) && !mustReview && !session.reviewOnly;
     const cleanResult = !mustReview && !finalClear;
     els.sparkLayer.innerHTML = '';
+    document.querySelectorAll('.answer-correct-maru, .problem-celebration-overlay, .flying-artifact').forEach((node) => node.remove());
     els.resultView.classList.toggle('final-clear', finalClear);
+    els.resultView.classList.toggle('stage-unlock', stageUnlock);
     els.resultView.classList.toggle('must-review', mustReview);
     els.resultView.classList.toggle('clean-result', cleanResult);
     els.resultView.classList.toggle('review-result', session.reviewOnly && !mustReview && !finalClear);
-    els.resultView.classList.toggle('simple-session-clear', cleanResult && !session.reviewOnly);
-    const resultArt = finalClear ? RPG_ASSETS.finalClear : (cleanResult ? RPG_ASSETS.resultClear : stage.image);
+    els.resultView.classList.toggle('simple-session-clear', cleanResult && !session.reviewOnly && !stageUnlock);
+    const resultArt = finalClear ? RPG_ASSETS.finalClear : (stageUnlock ? RPG_ASSETS.chapterUnlock : (cleanResult ? RPG_ASSETS.resultClear : stage.image));
     els.resultView.style.setProperty('--result-art', `url("${img(resultArt)}")`);
     if (finalClear) playSound('finalClear');
     else if (stageCleared && !mustReview) playSound('stageClear');
@@ -1352,6 +1356,8 @@
       ? 'やり直し'
       : finalClear
       ? '完全クリア！'
+      : stageUnlock
+      ? `第${nextStage.order}章が開いた！`
       : session.reviewOnly
       ? '見直しクリア！'
       : stageCleared
@@ -1363,6 +1369,8 @@
       ? 'この1問を直そう'
       : finalClear
       ? ''
+      : stageUnlock
+      ? `第${stage.order}章クリア。次は${nextStage.artifact}を集めよう。`
       : stageCleared
         ? stageClearCopy(stage)
         : `${stage.artifact}を ${Math.max(0, stageKeys - (session.startKeys || 0))}こ あつめたよ`;
@@ -1407,7 +1415,9 @@
         </div>
       `
       : '';
-    els.rewardScene.innerHTML = cleanResult && !session.reviewOnly
+    els.rewardScene.innerHTML = stageUnlock
+      ? renderStageUnlockClear(stage, nextStage, stageKeys)
+      : cleanResult && !session.reviewOnly
       ? renderSimpleSessionClear(stage, stageKeys)
       : `
         <img src="${img(finalClear ? RPG_ASSETS.finalClear : (cleanResult ? RPG_ASSETS.resultClear : stage.image))}" alt="">
@@ -1467,6 +1477,28 @@
           <strong>${stage.artifact} ${stageKeys}/${STAGE_GOAL}</strong>
           <div class="simple-progress" data-from-pct="${startPct}" data-to-pct="${progressPct}" style="--from-pct:${startPct}%; --pct:${progressPct}%"><i></i></div>
         </div>
+      </div>
+    `;
+  }
+
+  function renderStageUnlockClear(stage, nextStage, stageKeys) {
+    return `
+      <img class="chapter-unlock-art" src="${img(RPG_ASSETS.chapterUnlock)}" alt="">
+      <div class="chapter-unlock-text">
+        <strong>第${nextStage.order}章が開いた！</strong>
+        <span>第${stage.order}章クリア。次は${nextStage.artifact}を集めよう。</span>
+      </div>
+      <div class="chapter-unlock-badges" aria-label="章の切り替わり">
+        <span class="cleared">
+          <img src="${artifactIcon(stage.id)}" alt="">
+          <b>第${stage.order}章</b>
+          <strong>${stage.artifact} ${stageKeys}/${STAGE_GOAL}</strong>
+        </span>
+        <span class="next">
+          <img src="${artifactIcon(nextStage.id)}" alt="">
+          <b>次へ</b>
+          <strong>第${nextStage.order}章 ${nextStage.artifact}</strong>
+        </span>
       </div>
     `;
   }

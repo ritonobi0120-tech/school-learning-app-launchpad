@@ -26441,3 +26441,353 @@ html body.screen-miss-flash::before {
     z-index: 120 !important;
   }
 }
+
+/* v445: a dedicated chapter-unlock moment for 30/30 stage clears. */
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: block !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #10283d !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-main {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-height: 0 !important;
+  display: block !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-main::before {
+  content: none !important;
+  display: none !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-main::after,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-main > .eyebrow,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .mistake-list,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock #resultReviewButton {
+  content: none !important;
+  display: none !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock #rewardScene.reward-scene {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: block !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  z-index: 0 !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock #rewardScene.reward-scene::before,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock #rewardScene.reward-scene::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock #rewardScene.reward-scene::before {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: block !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  background:
+    linear-gradient(90deg, rgba(7, 28, 45, .84) 0%, rgba(7, 28, 45, .64) 33%, rgba(7, 28, 45, .2) 56%, rgba(7, 28, 45, .02) 100%),
+    linear-gradient(0deg, rgba(7, 28, 45, .34), rgba(7, 28, 45, 0) 42%) !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-art {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  display: block !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  opacity: 1 !important;
+  filter: none !important;
+  transform: none !important;
+  z-index: 0 !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock h2#resultTitle {
+  position: fixed !important;
+  left: 5.2vw !important;
+  top: 12vh !important;
+  z-index: 3 !important;
+  width: min(520px, 41vw) !important;
+  min-width: 0 !important;
+  height: auto !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-size: clamp(48px, 5.3vw, 78px) !important;
+  line-height: 1.04 !important;
+  letter-spacing: 0 !important;
+  text-align: left !important;
+  text-shadow: 0 5px 0 rgba(3, 23, 38, .28), 0 12px 26px rgba(3, 23, 38, .5) !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock h2#resultTitle::before,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock h2#resultTitle::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock p#resultCopy {
+  position: fixed !important;
+  left: 5.4vw !important;
+  top: calc(12vh + clamp(116px, 12vw, 164px)) !important;
+  z-index: 3 !important;
+  width: min(500px, 40vw) !important;
+  min-width: 0 !important;
+  height: auto !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #f7fbff !important;
+  -webkit-text-fill-color: #f7fbff !important;
+  font-size: clamp(22px, 2.1vw, 31px) !important;
+  line-height: 1.32 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+  text-align: left !important;
+  text-shadow: 0 3px 12px rgba(3, 23, 38, .55) !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text {
+  position: fixed !important;
+  left: 5.2vw !important;
+  top: 10.5vh !important;
+  z-index: 10 !important;
+  width: min(540px, 42vw) !important;
+  display: grid !important;
+  gap: 18px !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-align: left !important;
+  pointer-events: none !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text strong {
+  display: block !important;
+  margin: 0 !important;
+  font-size: clamp(52px, 5.5vw, 82px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: 0 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-text-stroke: 1px rgba(8, 43, 65, .24) !important;
+  text-shadow: 0 3px 3px rgba(3, 23, 38, .38), 0 10px 24px rgba(3, 23, 38, .48) !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text span {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: clamp(23px, 2.15vw, 32px) !important;
+  line-height: 1.32 !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+  color: #f7fbff !important;
+  -webkit-text-fill-color: #f7fbff !important;
+  text-shadow: 0 3px 12px rgba(3, 23, 38, .6) !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-badges {
+  position: fixed !important;
+  left: 5.4vw !important;
+  top: 49vh !important;
+  z-index: 3 !important;
+  width: min(510px, 41vw) !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-badges span {
+  display: grid !important;
+  grid-template-columns: 46px auto !important;
+  grid-template-areas: "icon label" "icon value" !important;
+  align-items: center !important;
+  column-gap: 12px !important;
+  padding: 10px 14px !important;
+  border: 2px solid rgba(255, 255, 255, .46) !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, .16) !important;
+  box-shadow: 0 10px 24px rgba(4, 24, 40, .24) !important;
+  backdrop-filter: blur(8px) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-badges span.next {
+  border-color: rgba(255, 221, 111, .82) !important;
+  background: rgba(24, 119, 122, .42) !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-badges img {
+  grid-area: icon !important;
+  width: 46px !important;
+  height: 46px !important;
+  object-fit: contain !important;
+  border-radius: 12px !important;
+  background: rgba(255, 253, 243, .92) !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-badges b {
+  grid-area: label !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  opacity: .9 !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-badges strong {
+  grid-area: value !important;
+  font-size: 22px !important;
+  line-height: 1.08 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-actions {
+  position: fixed !important;
+  left: 5.4vw !important;
+  bottom: 7.2vh !important;
+  z-index: 4 !important;
+  width: min(510px, 41vw) !important;
+  display: grid !important;
+  grid-template-columns: 76px minmax(0, 1fr) !important;
+  gap: 14px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-actions button {
+  min-height: 68px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 18px !important;
+  font-size: 28px !important;
+  line-height: 1 !important;
+  text-align: center !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-actions #homeButton {
+  width: 76px !important;
+  min-width: 76px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-actions #homeButton::before {
+  content: "⌂" !important;
+  color: #23506a !important;
+  -webkit-text-fill-color: #23506a !important;
+  font-size: 38px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-actions #againButton {
+  grid-column: 2 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  font-size: clamp(30px, 3vw, 42px) !important;
+}
+
+@media (max-width: 720px) {
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-art {
+    object-position: 63% center !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-main::before {
+    background:
+      linear-gradient(180deg, rgba(7, 28, 45, .78) 0%, rgba(7, 28, 45, .48) 42%, rgba(7, 28, 45, .2) 100%),
+      linear-gradient(0deg, rgba(7, 28, 45, .62), rgba(7, 28, 45, 0) 50%) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock h2#resultTitle {
+    left: 7vw !important;
+    top: 8vh !important;
+    width: 86vw !important;
+    font-size: clamp(42px, 12vw, 58px) !important;
+    text-align: left !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock p#resultCopy {
+    left: 7vw !important;
+    top: 24vh !important;
+    width: 84vw !important;
+    font-size: clamp(19px, 5vw, 25px) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text {
+    left: 7vw !important;
+    top: 7.5vh !important;
+    width: 86vw !important;
+    gap: 12px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text strong {
+    font-size: clamp(42px, 12vw, 58px) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text span {
+    font-size: clamp(19px, 5vw, 25px) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-badges {
+    left: 7vw !important;
+    top: auto !important;
+    bottom: 18vh !important;
+    width: 86vw !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-actions {
+    left: 7vw !important;
+    bottom: 5vh !important;
+    width: 86vw !important;
+    grid-template-columns: 64px minmax(0, 1fr) !important;
+  }
+}
