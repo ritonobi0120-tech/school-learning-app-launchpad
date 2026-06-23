@@ -1,12 +1,13 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 443;
+  const APP_VERSION = 444;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
-  const shownVersion = Number(params.get('cb') || 0);
+  const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
   if (shownVersion && shownVersion < APP_VERSION) {
     params.set('cb', String(APP_VERSION));
+    params.set('v', String(APP_VERSION));
     window.location.replace(`${window.location.pathname}?${params.toString()}${window.location.hash}`);
     return;
   }
