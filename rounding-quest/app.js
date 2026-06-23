@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 432;
+  const APP_VERSION = 433;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -1111,7 +1111,7 @@
         ? `第${stage.order}章クリア！`
         : '5問クリア！';
     els.resultCopy.textContent = mustReview
-      ? 'この問題を直そう。'
+      ? 'この1問を直そう'
       : finalClear
       ? ''
       : stageCleared
@@ -1169,7 +1169,7 @@
         ${renderResultProgressSummary(stage, stageKeys, remaining, stageCleared, finalClear, mustReview)}
       `;
     const mistakes = session.mistakes.length ? session.mistakes : (progress.mistakes[session.stageId] || []).slice(-5);
-    els.resultReviewButton.classList.toggle('hidden', mustReview || finalClear || session.reviewOnly);
+    els.resultReviewButton.classList.toggle('hidden', mustReview || finalClear || session.reviewOnly || !mistakes.length);
     els.resultReviewButton.disabled = !mistakes.length;
     els.resultReviewButton.textContent = '見直し';
     if (finalClear) {

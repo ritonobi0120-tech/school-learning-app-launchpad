@@ -25494,3 +25494,326 @@ html body.screen-miss-flash::before {
   72% { transform: translate(-50%, -50%) rotate(-7deg) scale(1); opacity: 1; }
   100% { transform: translate(-50%, -50%) rotate(-7deg) scale(.98); opacity: 0; }
 }
+
+/* v433: tighten result layouts and keep labels/buttons aligned on PC. */
+@media (min-width: 1000px) {
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage] {
+    grid-template-columns: 112px minmax(0, 1fr) !important;
+    grid-template-rows: 96px 34px 24px !important;
+    justify-items: center !important;
+    align-items: center !important;
+    align-content: center !important;
+    gap: 4px !important;
+    padding: 18px 20px 14px !important;
+    text-align: center !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-badge,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card > span:not(.stage-count-pill) {
+    grid-column: 1 !important;
+    grid-row: 1 / span 3 !important;
+    justify-self: center !important;
+    align-self: center !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    min-height: 34px !important;
+    display: grid !important;
+    place-items: center !important;
+    margin: 0 !important;
+    text-align: center !important;
+    line-height: 1.08 !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-progress,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card em,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill {
+    grid-column: 2 !important;
+    grid-row: 3 !important;
+    justify-self: center !important;
+    align-self: center !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill {
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 92px !important;
+    margin: 0 !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.must-review {
+    grid-template-columns: minmax(0, 700px) !important;
+    gap: 14px !important;
+    padding: 4.5vh 5vw !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.must-review .result-main,
+  html body.result-mode main.app-shell section#resultView.result-view.must-review .mistake-list {
+    width: min(700px, 86vw) !important;
+    box-sizing: border-box !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.must-review .result-main {
+    gap: 14px !important;
+    padding: 24px 32px 26px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.must-review h2#resultTitle {
+    padding: 8px 32px 10px !important;
+    font-size: 44px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.must-review p#resultCopy {
+    font-size: 24px !important;
+    line-height: 1.15 !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.must-review .result-actions {
+    width: min(520px, 100%) !important;
+    justify-self: center !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.must-review .result-actions #againButton {
+    min-height: 72px !important;
+    font-size: 30px !important;
+    box-sizing: border-box !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.must-review .mistake-list {
+    padding: 14px 18px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.must-review .mistake-list h3,
+  html body.result-mode main.app-shell section#resultView.result-view.must-review .mistake-item small {
+    display: none !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.must-review .mistake-item {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-areas: "problem input" !important;
+    min-height: 70px !important;
+    padding: 14px 16px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.must-review .mistake-item strong,
+  html body.result-mode main.app-shell section#resultView.result-view.must-review .mistake-input {
+    font-size: 18px !important;
+    line-height: 1.25 !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result {
+    position: fixed !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    padding: 0 !important;
+    background: #0c2c43 !important;
+    overflow: hidden !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-main {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-main::before,
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-main::after,
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-main .eyebrow,
+  html body.result-mode main.app-shell section#resultView.result-view.review-result p#resultCopy,
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .mistake-list {
+    content: none !important;
+    display: none !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .reward-scene {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    display: block !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+    z-index: 0 !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .reward-scene > img {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    display: block !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result h2#resultTitle {
+    position: fixed !important;
+    right: 3.5vw !important;
+    top: 4vh !important;
+    left: auto !important;
+    bottom: auto !important;
+    z-index: 4 !important;
+    margin: 0 !important;
+    padding: 10px 26px 12px !important;
+    width: auto !important;
+    max-width: 360px !important;
+    border-radius: 999px !important;
+    background: rgba(17, 137, 74, .95) !important;
+    border: 4px solid rgba(255, 255, 255, .92) !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+    font-size: 34px !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    text-shadow: 0 3px 0 rgba(0, 63, 33, .25) !important;
+    box-shadow: 0 7px 0 rgba(0, 63, 33, .18), 0 16px 30px rgba(0, 35, 52, .18) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .review-clear-card {
+    display: none !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .review-clear-card .review-clear-hero {
+    grid-area: icon !important;
+    width: 52px !important;
+    height: 52px !important;
+    margin: 0 !important;
+    object-fit: contain !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .review-clear-card strong {
+    grid-area: main !important;
+    margin: 0 !important;
+    font-size: 26px !important;
+    line-height: 1.05 !important;
+    text-align: left !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .review-clear-card span {
+    grid-area: sub !important;
+    margin: 0 !important;
+    font-size: 17px !important;
+    line-height: 1.15 !important;
+    text-align: left !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-actions,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions {
+    position: fixed !important;
+    left: 8vw !important;
+    right: 8vw !important;
+    bottom: 4vh !important;
+    width: auto !important;
+    height: auto !important;
+    display: grid !important;
+    grid-template-columns: 220px minmax(360px, 1fr) !important;
+    gap: 22px !important;
+    align-items: stretch !important;
+    transform: none !important;
+    z-index: 5 !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-actions button,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions button {
+    min-height: 78px !important;
+    width: 100% !important;
+    border-radius: 18px !important;
+    display: grid !important;
+    place-items: center !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    transform: none !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-actions #homeButton,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton {
+    order: 1 !important;
+    font-size: 28px !important;
+    background: rgba(255, 252, 239, .96) !important;
+    color: #694318 !important;
+    -webkit-text-fill-color: #694318 !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-actions #againButton,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #againButton {
+    order: 2 !important;
+    font-size: 38px !important;
+    background: linear-gradient(180deg, #67d852, #22a236) !important;
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-actions #resultReviewButton,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #resultReviewButton {
+    display: none !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) {
+    padding: 32px 58px 128px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-main {
+    width: min(980px, 82vw) !important;
+    min-height: 0 !important;
+    max-height: calc(100vh - 176px) !important;
+    padding: 26px 34px 30px !important;
+    gap: 14px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-main > h2 {
+    font-size: 52px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-main > p#resultCopy {
+    font-size: 26px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .simple-clear-panel {
+    grid-template-columns: 230px minmax(240px, 1fr) 280px !important;
+    gap: 20px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .simple-clear-next {
+    gap: 12px !important;
+    padding: 18px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .simple-clear-next b {
+    display: grid !important;
+    place-items: center !important;
+    min-height: 54px !important;
+    padding: 6px 12px !important;
+    font-size: 22px !important;
+    line-height: 1.05 !important;
+    text-align: center !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.final-clear h2#resultTitle {
+    left: auto !important;
+    top: auto !important;
+    right: 3vw !important;
+    bottom: 4vh !important;
+    padding: 9px 20px 11px !important;
+    border-width: 4px !important;
+    border-radius: 999px !important;
+    font-size: clamp(28px, 2.6vw, 42px) !important;
+    line-height: 1 !important;
+    box-shadow: 0 5px 0 rgba(116, 62, 8, .22), 0 12px 24px rgba(40, 23, 4, .18) !important;
+  }
+}
