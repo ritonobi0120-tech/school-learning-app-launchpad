@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 433;
+  const APP_VERSION = 434;
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Number(params.get('cb') || 0);
   if (shownVersion && shownVersion < APP_VERSION) {
@@ -808,7 +808,7 @@
       if (session.reviewOnly) renderFocusVisual(q, result, submittedInput);
       playSound('correct');
       showAnswerCorrectFx();
-      scheduleAutoAdvance(620);
+      scheduleAutoAdvance(860);
     } else {
       session.streak = 0;
       if (!session.reviewOnly) session.pathMissMarks.push(getCurrentPathMark(q.stageId));
@@ -895,7 +895,7 @@
       answerCard.classList.add('fx-answer-correct');
       window.setTimeout(() => {
         answerCard.classList.remove('fx-answer-correct');
-      }, 560);
+      }, 860);
     }
     const rect = els.answerInput.getBoundingClientRect();
     const digitCount = Math.max(1, core.normalizeAnswerText(els.answerInput.value).replace(/,/g, '').length);
@@ -914,7 +914,7 @@
       answerRow?.classList.remove('fx-answer-correct');
       els.answerInput.classList.remove('fx-answer-correct');
       maru.remove();
-    }, 560);
+    }, 860);
   }
 
   function showAnswerWrongFx() {
