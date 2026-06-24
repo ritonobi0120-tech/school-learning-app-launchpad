@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 462;
+  const APP_VERSION = 464;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -488,7 +488,9 @@
   function applyPcV4Layout(q) {
     if (!window.matchMedia('(min-width: 600px)').matches) return;
     const reviewMode = Boolean(session && session.reviewOnly);
+    const viewportWidth = Math.max(0, window.innerWidth || 0);
     const viewportHeight = Math.max(0, window.innerHeight || 0);
+    const narrowReview = reviewMode && viewportWidth > 0 && viewportWidth <= 1180;
     const compactNormal = !reviewMode && viewportHeight > 0 && viewportHeight <= 680;
     const tightNormal = !reviewMode && viewportHeight > 0 && viewportHeight <= 560;
     const compactAnswerTop = compactNormal
@@ -504,10 +506,13 @@
     const prompt = reviewMode
       ? els.questionText.querySelector('.review-problem-layout')
       : els.questionText.querySelector('.prompt-layout');
-    const titleLeft = reviewMode ? '6.8vw' : '23vw';
+    const titleLeft = narrowReview ? '50%' : (reviewMode ? '6.8vw' : '23vw');
     const titleTop = reviewMode ? '18.2vh' : '16.9vh';
-    const titleWidth = reviewMode ? '50.2vw' : '54vw';
+    const titleWidth = narrowReview ? 'min(760px, 80vw)' : (reviewMode ? '50.2vw' : '54vw');
     const titleHeight = reviewMode ? '31vh' : '31vh';
+    const titleTransform = narrowReview
+      ? (viewportWidth >= 1000 ? 'translateX(calc(-50% + 760px - 50vw))' : 'translateX(-50%)')
+      : 'none';
     setImportantStyle(els.sessionView, {
       background: reviewMode
         ? 'linear-gradient(180deg, rgba(255, 249, 225, .92), rgba(246, 238, 210, .96))'
@@ -638,11 +643,40 @@
         'border-radius': '999px',
       }));
     }
+    if (reviewMode) {
+      const scoreMeter = els.scoreText ? els.scoreText.closest('.meter') : null;
+      const sessionTop = els.modeLabel ? els.modeLabel.closest('.session-top') : null;
+      setImportantStyle(sessionTop, {
+        background: 'transparent',
+        border: '0',
+        'box-shadow': 'none',
+        'pointer-events': 'none',
+        overflow: 'visible',
+      });
+      setImportantStyle(els.comboChip, {
+        display: 'none',
+        visibility: 'hidden',
+        opacity: '0',
+        'pointer-events': 'none',
+      });
+      setImportantStyle(els.modeLabel.parentElement, {
+        display: 'none',
+        visibility: 'hidden',
+        opacity: '0',
+        'pointer-events': 'none',
+      });
+      setImportantStyle(scoreMeter, {
+        display: 'none',
+        visibility: 'hidden',
+        opacity: '0',
+        'pointer-events': 'none',
+      });
+    }
     setImportantStyle(els.questionCard, reviewMode ? {
       position: 'fixed',
-      left: '3.8vw',
+      left: narrowReview ? '6vw' : '3.8vw',
       top: '12.4vh',
-      width: '56.2vw',
+      width: narrowReview ? '88vw' : '56.2vw',
       height: '83.5vh',
       display: 'block',
       background: 'rgba(255, 252, 239, .96)',
@@ -666,9 +700,9 @@
       display: 'block',
     });
     setImportantStyle(els.visualBoard, reviewMode ? {
-      display: 'block',
-      visibility: 'visible',
-      'pointer-events': 'auto',
+      display: narrowReview ? 'none' : 'block',
+      visibility: narrowReview ? 'hidden' : 'visible',
+      'pointer-events': narrowReview ? 'none' : 'auto',
     } : {
       display: 'none',
       visibility: 'hidden',
@@ -687,7 +721,7 @@
       padding: '0',
       margin: '0',
       overflow: 'visible',
-      transform: 'none',
+      transform: titleTransform,
       'z-index': '78',
     });
     setImportantStyle(prompt, {
@@ -701,16 +735,17 @@
     });
     setImportantStyle(els.questionLabel, {
       position: 'fixed',
-      left: reviewMode ? '10.7vw' : '13.5vw',
-      top: reviewMode ? '16.3vh' : '15.2vh',
-      height: '48px',
-      'min-height': '48px',
+      left: narrowReview ? '50%' : (reviewMode ? '10.7vw' : '13.5vw'),
+      top: narrowReview ? '13.2vh' : (reviewMode ? '16.3vh' : '15.2vh'),
+      height: narrowReview ? '38px' : '48px',
+      'min-height': narrowReview ? '38px' : '48px',
       display: reviewMode ? 'flex' : 'none',
       'align-items': 'center',
       'justify-content': 'center',
       gap: '8px',
-      padding: '0 22px',
+      padding: narrowReview ? '0 18px' : '0 22px',
       'line-height': '1',
+      transform: narrowReview ? 'translateX(-50%)' : 'none',
       'z-index': '80',
     });
     setImportantStyle(els.answerInput, {
@@ -732,9 +767,9 @@
     const answerRow = els.answerInput.closest('.answer-row');
     setImportantStyle(answerRow, {
       position: 'fixed',
-      left: reviewMode ? '10.4vw' : '23vw',
+      left: narrowReview ? '50%' : (reviewMode ? '10.4vw' : '23vw'),
       top: reviewMode ? '50.6vh' : (compactNormal ? `${compactAnswerTop}px` : '50.8vh'),
-      width: reviewMode ? '47.4vw' : '54vw',
+      width: narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : '54vw'),
       'max-width': 'none',
       height: reviewMode ? '76px' : `${compactAnswerHeight}px`,
       display: 'grid',
@@ -744,6 +779,7 @@
       'grid-auto-flow': 'column',
       'align-items': 'stretch',
       'justify-items': 'stretch',
+      transform: narrowReview ? 'translateX(-50%)' : 'none',
       'z-index': '81',
     });
     setImportantStyle(els.submitButton, {
@@ -769,9 +805,9 @@
     });
     setImportantStyle(els.tenkey, {
       position: 'fixed',
-      left: reviewMode ? '10.4vw' : '23vw',
+      left: narrowReview ? '50%' : (reviewMode ? '10.4vw' : '23vw'),
       top: reviewMode ? 'max(61.6vh, calc(50.6vh + 88px))' : (compactNormal ? `${compactTenkeyTop}px` : 'max(61.8vh, calc(50.8vh + 88px))'),
-      width: reviewMode ? '47.4vw' : '54vw',
+      width: narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : '54vw'),
       'max-width': 'none',
       height: reviewMode ? '31.8vh' : (compactNormal ? `${compactTenkeyHeight}px` : '31.8vh'),
       'max-height': 'none',
@@ -781,7 +817,7 @@
       gap: '8px 16px',
       padding: '10px',
       margin: '0',
-      transform: 'none',
+      transform: narrowReview ? 'translateX(-50%)' : 'none',
       overflow: 'hidden',
       'align-items': 'stretch',
       'justify-self': 'stretch',
@@ -1029,7 +1065,7 @@
     const digits = String(v.value).split('');
     const checkPower = Math.max(0, Math.round(Math.log10(v.checkUnit || 1)));
     const focusIndex = Math.max(0, Math.min(digits.length - 1, digits.length - 1 - checkPower));
-    const action = v.checkDigit >= 5 ? '5以上 → 切り上げ' : '4以下 → 切り捨て';
+    const action = v.checkDigit >= 5 ? '切り上げ' : '切り捨て';
     els.visualBoard.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
     els.visualBoard.innerHTML = `
       <div class="focus-board">
@@ -1038,7 +1074,7 @@
           ${digits.map((digit, index) => `<span class="${index === focusIndex ? 'focus' : ''}">${digit}</span>`).join('')}
         </div>
         <ul class="review-steps" aria-label="見直しの手順">
-          <li><b>1</b><span>見る数字は <strong>${escapeHtml(String(v.checkDigit))}</strong></span></li>
+          <li><b>1</b><span>見る数字 <strong>${escapeHtml(String(v.checkDigit))}</strong></span></li>
           <li><b>2</b><span>${escapeHtml(action)}</span></li>
           <li class="review-answer-step"><b>3</b><span><button type="button" data-review-answer-reveal>答えを見る</button><strong class="review-answer-reveal">${core.formatNumber(q.answer)}</strong></span></li>
         </ul>
