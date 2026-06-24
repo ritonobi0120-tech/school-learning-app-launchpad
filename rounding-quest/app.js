@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 452;
+  const APP_VERSION = 453;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -1952,10 +1952,14 @@
     const missedMarks = new Set((markState.missed || []).map(Number));
     const pulseMark = Number(markState.pulseMark) || 0;
     const missPulseMark = Number(markState.missPulseMark) || 0;
+    const inActiveNormalSession = session && !session.reviewOnly && session.stageId === stageId;
     const windowStart = Math.floor(Math.max(0, heroStep - 1) / SESSION_LENGTH) * SESSION_LENGTH + 1;
     const windowEnd = Math.min(STAGE_GOAL, windowStart + SESSION_LENGTH - 1);
     const zone = `${windowStart}〜${windowEnd}問目`;
-    const currentInSession = Math.min(SESSION_LENGTH, Math.max(1, heroStep - windowStart + 1));
+    const totalPips = inActiveNormalSession ? Math.max(1, session.questions.length) : SESSION_LENGTH;
+    const currentInSession = inActiveNormalSession
+      ? Math.min(totalPips, Math.max(1, session.index + 1))
+      : Math.min(SESSION_LENGTH, Math.max(1, heroStep - windowStart + 1));
     const cells = Array.from({ length: windowEnd - windowStart + 1 }, (_, index) => {
       const mark = windowStart + index;
       const isCurrentCell = mark === heroStep;
@@ -1982,11 +1986,11 @@
     const plus = pulse
       ? `<span class="map-plus" aria-hidden="true"><img src="${artifactIcon(stageId)}" alt=""><b>+1</b></span>`
       : '';
-    const progressPips = Array.from({ length: SESSION_LENGTH }, (_, index) => {
-      const mark = windowStart + index;
+    const progressPips = Array.from({ length: totalPips }, (_, index) => {
+      const mark = inActiveNormalSession ? session.startKeys + index + 1 : windowStart + index;
       const className = [
         missedMarks.has(mark) || (missPulse && mark === missPulseMark) ? 'missed' : '',
-        correctMarks.has(mark) || mark <= baseCount ? 'done' : '',
+        correctMarks.has(mark) || (!inActiveNormalSession && mark <= baseCount) ? 'done' : '',
         index === currentInSession - 1 ? 'current' : '',
       ].filter(Boolean).join(' ');
       return `<i class="${className}" aria-hidden="true"></i>`;
@@ -2004,7 +2008,7 @@
             <span>${zone}・${artifactProgressText(stage, count)}</span>
           </div>
           <div class="session-progress-label" aria-hidden="true">
-            <span class="question-step-label"><b>${currentInSession}</b><small>問目 / ${SESSION_LENGTH}問</small></span>
+            <span class="question-step-label"><b>${currentInSession}</b><small>問目 / ${totalPips}問</small></span>
             <span class="question-pips" aria-label="${currentInSession}問目">${progressPips}</span>
           </div>
           <div class="mini-map-track">
