@@ -15171,6 +15171,7 @@ body:not(.session-mode):not(.result-mode) .stage-card em {
   display: none !important;
 }
 
+
 .session-mode #sessionView.work-area:not(.review-mode) .question-card h3::after {
   content: "" !important;
   position: absolute !important;
@@ -27482,5 +27483,115 @@ html body.session-mode main.app-shell section#sessionView.work-area div#feedback
 @media (max-height: 700px) and (min-width: 1000px) {
   html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice {
     top: 222px !important;
+  }
+}
+
+/* v458: remove leftover Chromebook pseudo labels and keep short-PC keypad text clean. */
+@media (min-width: 721px) {
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row button#submitButton::before,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row button#submitButton::after,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row .primary::before,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row .primary::after,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="1つ消す"]::before,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="1つ消す"]::after,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="全部消す"]::before,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="全部消す"]::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button {
+    font-size: clamp(28px, 3.2vw, 40px) !important;
+    line-height: 1 !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    font-size: clamp(18px, 2.25vw, 26px) !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row button#submitButton {
+    display: grid !important;
+    place-items: center !important;
+    line-height: 1.05 !important;
+    white-space: normal !important;
+  }
+
+}
+
+/* v459: keep short-PC progress numbers and result actions inside the viewport. */
+@media (min-width: 721px) and (max-height: 700px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .question-step-label b,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .question-step-label b {
+    display: inline-grid !important;
+    place-items: center !important;
+    min-height: 42px !important;
+    line-height: 42px !important;
+    overflow: visible !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-actions,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions {
+    left: 50% !important;
+    right: auto !important;
+    bottom: 28px !important;
+    width: 460px !important;
+    grid-template-columns: 76px 360px !important;
+    justify-content: center !important;
+    gap: 14px !important;
+    transform: translateX(-50%) !important;
+    z-index: 20 !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-actions button,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions button {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    min-height: 68px !important;
+    max-height: 68px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-actions #homeButton,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton {
+    width: 68px !important;
+    min-width: 68px !important;
+    max-width: 68px !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    max-height: 68px !important;
+    justify-self: end !important;
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    transform: none !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-actions #homeButton::before,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton::before {
+    font-size: 34px !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-actions #againButton,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #againButton {
+    width: 100% !important;
+    min-width: 360px !important;
+    max-width: 360px !important;
+    justify-self: stretch !important;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    font-size: 32px !important;
+    transform: none !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.review-result .result-reward-status,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-reward-status,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .simple-stat-list,
+  html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .simple-clear-center strong {
+    display: none !important;
   }
 }

@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 457;
+  const APP_VERSION = 459;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -507,7 +507,7 @@
     const titleLeft = reviewMode ? '6.8vw' : '23vw';
     const titleTop = reviewMode ? '18.2vh' : '16.9vh';
     const titleWidth = reviewMode ? '50.2vw' : '54vw';
-    const titleHeight = reviewMode ? '31vh' : '29vh';
+    const titleHeight = reviewMode ? '31vh' : '31vh';
     setImportantStyle(els.sessionView, {
       background: reviewMode
         ? 'linear-gradient(180deg, rgba(255, 249, 225, .92), rgba(246, 238, 210, .96))'
