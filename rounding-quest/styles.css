@@ -26732,6 +26732,318 @@ html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .he
   }
 }
 
+/* v470 final: keep PC/Chromebook layouts contained after every older override. */
+@media (min-width: 900px) {
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select {
+    left: clamp(28px, 4.2vw, 80px) !important;
+    right: clamp(28px, 4.2vw, 80px) !important;
+    gap: clamp(10px, 1.15vw, 18px) !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage] {
+    display: grid !important;
+    grid-template-columns: minmax(58px, 34%) minmax(0, 1fr) !important;
+    grid-template-rows: 1fr auto auto 1fr !important;
+    column-gap: clamp(8px, 1vw, 14px) !important;
+    align-items: center !important;
+    justify-items: stretch !important;
+    padding: clamp(12px, 1.1vw, 18px) !important;
+    overflow: hidden !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-badge,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card > span:not(.stage-count-pill) {
+    position: static !important;
+    grid-column: 1 !important;
+    grid-row: 1 / -1 !important;
+    justify-self: center !important;
+    align-self: center !important;
+    width: clamp(58px, 6vw, 96px) !important;
+    height: clamp(58px, 6vw, 96px) !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card > span:not(.stage-count-pill) img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage="final-mix"] strong {
+    position: static !important;
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: stretch !important;
+    align-self: end !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    font-size: clamp(20px, 1.8vw, 30px) !important;
+    line-height: 1.18 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong::after,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card small,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card em,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-progress {
+    display: none !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill {
+    position: static !important;
+    grid-column: 2 !important;
+    grid-row: 3 !important;
+    justify-self: center !important;
+    align-self: start !important;
+    width: min(112px, 100%) !important;
+    max-width: 100% !important;
+    height: clamp(26px, 2.5vw, 34px) !important;
+    min-height: 0 !important;
+    margin: 6px 0 0 !important;
+    transform: none !important;
+    display: grid !important;
+    place-items: center !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill img {
+    display: none !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill b {
+    font-size: clamp(14px, 1.2vw, 18px) !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice {
+    top: clamp(270px, 42vh, 350px) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock h2#resultTitle {
+    width: min(760px, 50vw) !important;
+    height: auto !important;
+    font-size: clamp(46px, 4.2vw, 70px) !important;
+    line-height: 1.16 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: visible !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text {
+    width: min(760px, 50vw) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text strong {
+    font-size: clamp(46px, 4.2vw, 70px) !important;
+    line-height: 1.16 !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button {
+    display: grid !important;
+    place-items: center !important;
+    line-height: .82 !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-step-label,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-step-label b {
+    line-height: 1.15 !important;
+    overflow: visible !important;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1180px) {
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage] {
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    padding: 12px !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage="final-mix"] strong {
+    font-size: clamp(18px, 2.05vw, 24px) !important;
+  }
+}
+
+@media (min-width: 900px) and (max-height: 700px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button {
+    font-size: clamp(22px, 2.45vw, 30px) !important;
+    line-height: .78 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="1つ消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    font-size: clamp(16px, 1.9vw, 22px) !important;
+    line-height: .9 !important;
+  }
+}
+
+/* v470: keep PC/Chromebook layouts contained across short, normal, and fullscreen windows. */
+@media (min-width: 900px) {
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select {
+    left: clamp(28px, 4.2vw, 80px) !important;
+    right: clamp(28px, 4.2vw, 80px) !important;
+    gap: clamp(10px, 1.15vw, 18px) !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage] {
+    display: grid !important;
+    grid-template-columns: minmax(58px, 34%) minmax(0, 1fr) !important;
+    grid-template-rows: 1fr auto auto 1fr !important;
+    column-gap: clamp(8px, 1vw, 14px) !important;
+    align-items: center !important;
+    justify-items: stretch !important;
+    padding: clamp(12px, 1.1vw, 18px) !important;
+    overflow: hidden !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-badge,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card > span:not(.stage-count-pill) {
+    position: static !important;
+    grid-column: 1 !important;
+    grid-row: 1 / -1 !important;
+    justify-self: center !important;
+    align-self: center !important;
+    width: clamp(58px, 6vw, 96px) !important;
+    height: clamp(58px, 6vw, 96px) !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card > span:not(.stage-count-pill) img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage="final-mix"] strong {
+    position: static !important;
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: stretch !important;
+    align-self: end !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    font-size: clamp(20px, 1.8vw, 30px) !important;
+    line-height: 1.08 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong::after,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card small,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card em,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-progress {
+    display: none !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill {
+    position: static !important;
+    grid-column: 2 !important;
+    grid-row: 3 !important;
+    justify-self: center !important;
+    align-self: start !important;
+    width: min(112px, 100%) !important;
+    max-width: 100% !important;
+    height: clamp(26px, 2.5vw, 34px) !important;
+    min-height: 0 !important;
+    margin: 6px 0 0 !important;
+    transform: none !important;
+    display: grid !important;
+    place-items: center !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill img {
+    display: none !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill b {
+    font-size: clamp(14px, 1.2vw, 18px) !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice {
+    top: clamp(270px, 42vh, 350px) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock h2#resultTitle {
+    width: min(760px, 50vw) !important;
+    font-size: clamp(46px, 4.2vw, 70px) !important;
+    line-height: 1.06 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: visible !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text {
+    width: min(760px, 50vw) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text strong {
+    font-size: clamp(46px, 4.2vw, 70px) !important;
+    line-height: 1.06 !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button {
+    display: grid !important;
+    place-items: center !important;
+    line-height: .9 !important;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1180px) {
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage] {
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    padding: 12px !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage="final-mix"] strong {
+    font-size: clamp(18px, 2.05vw, 24px) !important;
+  }
+}
+
+@media (min-width: 900px) and (max-height: 700px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button {
+    font-size: clamp(24px, 2.8vw, 34px) !important;
+    line-height: .86 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="1つ消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    font-size: clamp(16px, 1.9vw, 22px) !important;
+    line-height: .95 !important;
+  }
+}
+
 /* v467 override: keep the start and fresh-start buttons horizontal on PC and Chromebook widths. */
 html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy {
   z-index: 30 !important;
@@ -28315,5 +28627,165 @@ html body.session-mode main.app-shell section#sessionView.work-area.review-mode 
     border-left: 10px solid transparent !important;
     border-right: 10px solid transparent !important;
     border-top: 14px solid #b96305 !important;
+  }
+}
+
+/* v470 final pass: this must stay after the narrow-Windows review overrides. */
+@media (min-width: 900px) {
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select {
+    left: clamp(28px, 4.2vw, 80px) !important;
+    right: clamp(28px, 4.2vw, 80px) !important;
+    gap: clamp(10px, 1.15vw, 18px) !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage] {
+    display: grid !important;
+    grid-template-columns: minmax(58px, 34%) minmax(0, 1fr) !important;
+    grid-template-rows: 1fr auto auto 1fr !important;
+    column-gap: clamp(8px, 1vw, 14px) !important;
+    align-items: center !important;
+    justify-items: stretch !important;
+    padding: clamp(12px, 1.1vw, 18px) !important;
+    overflow: hidden !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-badge,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card > span:not(.stage-count-pill) {
+    position: static !important;
+    grid-column: 1 !important;
+    grid-row: 1 / -1 !important;
+    justify-self: center !important;
+    align-self: center !important;
+    width: clamp(58px, 6vw, 96px) !important;
+    height: clamp(58px, 6vw, 96px) !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card > span:not(.stage-count-pill) img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage="final-mix"] strong {
+    position: static !important;
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: stretch !important;
+    align-self: end !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    font-size: clamp(20px, 1.8vw, 30px) !important;
+    line-height: 1.18 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong::after,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card small,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card em,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-progress {
+    display: none !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill {
+    position: static !important;
+    grid-column: 2 !important;
+    grid-row: 3 !important;
+    justify-self: center !important;
+    align-self: start !important;
+    width: min(112px, 100%) !important;
+    max-width: 100% !important;
+    height: clamp(26px, 2.5vw, 34px) !important;
+    min-height: 0 !important;
+    margin: 6px 0 0 !important;
+    transform: none !important;
+    display: grid !important;
+    place-items: center !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill img {
+    display: none !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill b {
+    font-size: clamp(14px, 1.2vw, 18px) !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice {
+    top: clamp(270px, 42vh, 350px) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock h2#resultTitle {
+    width: min(760px, 50vw) !important;
+    height: auto !important;
+    font-size: clamp(46px, 4.2vw, 70px) !important;
+    line-height: 1.16 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: visible !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text {
+    width: min(760px, 50vw) !important;
+  }
+
+  html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text strong {
+    font-size: clamp(46px, 4.2vw, 70px) !important;
+    line-height: 1.16 !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button {
+    display: grid !important;
+    place-items: center !important;
+    line-height: .82 !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-step-label,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-step-label b {
+    line-height: 1.15 !important;
+    overflow: visible !important;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1180px) {
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage] {
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    padding: 12px !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage="final-mix"] strong {
+    font-size: clamp(18px, 2.05vw, 24px) !important;
+  }
+}
+
+@media (min-width: 900px) and (max-height: 700px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button {
+    font-size: clamp(22px, 2.45vw, 30px) !important;
+    line-height: .78 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey > button[data-key="1つ消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    font-size: clamp(16px, 1.9vw, 22px) !important;
+    line-height: .9 !important;
   }
 }
