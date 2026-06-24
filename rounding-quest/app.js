@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 453;
+  const APP_VERSION = 454;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -2044,7 +2044,7 @@
         : (stage.unlockHint || '前の章を終えると進めます');
       const progressPct = `${Math.round((Math.min(STAGE_GOAL, best) / STAGE_GOAL) * 100)}%`;
       return `
-        <button class="stage-card ${active} ${stateClass}" type="button" data-stage="${stage.id}" data-state-label="${stateLabel}" ${unlocked && !blockedByReview ? '' : 'disabled'}>
+        <button class="stage-card ${active} ${stateClass}" type="button" data-stage="${stage.id}" data-state-label="${stateLabel}" aria-pressed="${stage.id === selectedStageId ? 'true' : 'false'}" ${unlocked && !blockedByReview ? '' : 'disabled'}>
           <b class="stage-order" aria-hidden="true">${stage.order}</b>
           <img class="stage-bg" src="${img(stage.image)}" alt="">
           <img class="stage-badge" src="${stageCardBadge(stage.id)}" alt="">
@@ -2062,6 +2062,10 @@
         const stageId = button.dataset.stage;
         const pendingStageId = getPendingReviewStageId();
         const canStart = selectedStageId === stageId && isStageUnlocked(stageId) && !pendingStageId;
+        const saved = loadActiveSession();
+        if (saved && saved.stageId !== stageId) {
+          clearActiveSession();
+        }
         selectedStageId = stageId;
         renderStageSelect();
         renderHomeStats();
