@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 466;
+  const APP_VERSION = 467;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -28,6 +28,7 @@
     stageBanner: document.getElementById('stageBanner'),
     questionCard: document.querySelector('#sessionView .question-card'),
     startButton: document.getElementById('startButton'),
+    restartButton: document.getElementById('restartButton'),
     reviewButton: document.getElementById('reviewButton'),
     sessionHomeButton: document.getElementById('sessionHomeButton'),
     againButton: document.getElementById('againButton'),
@@ -268,6 +269,37 @@
     if (!AudioContextClass) return null;
     if (!audioContext) audioContext = new AudioContextClass();
     return audioContext;
+  }
+
+  function hasSavedProgressData() {
+    const stageWins = progress.stageWins || {};
+    const mistakes = progress.mistakes || {};
+    const hasStageWins = Object.values(stageWins).some((value) => Number(value) > 0);
+    const hasMistakes = Object.values(mistakes).some((list) => Array.isArray(list) && list.length > 0);
+    return Boolean(loadActiveSession())
+      || Number(progress.sessions) > 0
+      || Number(progress.best) > 0
+      || Number(progress.bestStreak) > 0
+      || Number(progress.materials) > 0
+      || hasStageWins
+      || hasMistakes;
+  }
+
+  function startFromBeginning() {
+    if (hasSavedProgressData()) {
+      const confirmed = window.confirm(
+        'これまでの進みぐあいを消して、はじめからにします。\nあとから元にもどせません。\n本当にはじめからにしますか？'
+      );
+      if (!confirmed) return;
+    }
+    clearActiveSession();
+    session = null;
+    progress = core.defaultProgress();
+    selectedStageId = core.STAGES[0].id;
+    core.saveProgress(localStorage, progress);
+    renderStageSelect();
+    renderHomeStats();
+    startSession(false);
   }
 
   function unlockAudio() {
@@ -2140,6 +2172,11 @@
     playSound('tap');
     if (resumeActiveSession()) return;
     startSession(Boolean(getPendingReviewStageId()));
+  });
+  els.restartButton.addEventListener('click', () => {
+    unlockAudio();
+    playSound('tap');
+    startFromBeginning();
   });
   els.reviewButton.addEventListener('click', () => {
     unlockAudio();

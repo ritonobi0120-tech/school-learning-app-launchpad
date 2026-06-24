@@ -15171,6 +15171,48 @@ body:not(.session-mode):not(.result-mode) .stage-card em {
   display: none !important;
 }
 
+/* v467: testing entry point that never wipes saved progress without confirmation. */
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy #restartButton.fresh-start-button {
+  position: fixed !important;
+  left: calc(7.8% + min(25vw, 430px) + 14px) !important;
+  top: 58.2% !important;
+  z-index: 42 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: clamp(136px, 12vw, 178px) !important;
+  height: clamp(42px, 4.6vw, 58px) !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  border: 4px solid rgba(255, 255, 255, .92) !important;
+  background: linear-gradient(180deg, #fef8e7 0%, #f4dfb6 100%) !important;
+  color: #694318 !important;
+  -webkit-text-fill-color: #694318 !important;
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, .68), 0 6px 0 rgba(123, 84, 31, .22), 0 14px 22px rgba(55, 43, 27, .14) !important;
+  font-size: clamp(18px, 1.35vw, 24px) !important;
+  font-weight: 1000 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  text-shadow: none !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy #restartButton.fresh-start-button:hover,
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy #restartButton.fresh-start-button:focus-visible {
+  border-color: #24a56f !important;
+  outline: 0 !important;
+}
+
+@media (max-width: 900px) {
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy #restartButton.fresh-start-button {
+    left: 22px !important;
+    top: 406px !important;
+    width: 146px !important;
+    height: 42px !important;
+    font-size: 18px !important;
+  }
+}
+
 
 .session-mode #sessionView.work-area:not(.review-mode) .question-card h3::after {
   content: "" !important;
@@ -26509,6 +26551,97 @@ html body.screen-miss-flash::before {
   }
 }
 
+@media (max-width: 599px) {
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions {
+    position: fixed !important;
+    left: 22px !important;
+    top: 52.8% !important;
+    width: calc(100vw - 44px) !important;
+    height: 48px !important;
+    gap: 8px !important;
+    transform: none !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #startButton.start-cta {
+    height: 48px !important;
+    min-height: 48px !important;
+    font-size: 18px !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #restartButton.fresh-start-button {
+    flex-basis: 112px !important;
+    width: 112px !important;
+    height: 40px !important;
+    padding: 0 8px !important;
+    font-size: 15px !important;
+  }
+}
+
+/* v467 final: keep fresh-start inside the same clickable home action layer as start. */
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions {
+  width: min(38vw, 620px) !important;
+  gap: 14px !important;
+  align-items: center !important;
+  pointer-events: auto !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy {
+  z-index: 30 !important;
+  pointer-events: none !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #startButton.start-cta {
+  flex: 1 1 auto !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #restartButton.fresh-start-button {
+  position: static !important;
+  left: auto !important;
+  top: auto !important;
+  z-index: 42 !important;
+  display: grid !important;
+  place-items: center !important;
+  flex: 0 0 clamp(136px, 12vw, 178px) !important;
+  width: clamp(136px, 12vw, 178px) !important;
+  height: clamp(42px, 4.6vw, 58px) !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  border: 4px solid rgba(255, 255, 255, .92) !important;
+  background: linear-gradient(180deg, #fef8e7 0%, #f4dfb6 100%) !important;
+  color: #694318 !important;
+  -webkit-text-fill-color: #694318 !important;
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, .68), 0 6px 0 rgba(123, 84, 31, .22), 0 14px 22px rgba(55, 43, 27, .14) !important;
+  font-size: clamp(18px, 1.35vw, 24px) !important;
+  font-weight: 1000 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  text-shadow: none !important;
+  pointer-events: auto !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #restartButton.fresh-start-button:hover,
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #restartButton.fresh-start-button:focus-visible {
+  border-color: #24a56f !important;
+  outline: 0 !important;
+}
+
+@media (max-width: 900px) {
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions {
+    width: min(68vw, 420px) !important;
+    gap: 8px !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #restartButton.fresh-start-button {
+    flex-basis: 120px !important;
+    width: 120px !important;
+    height: 42px !important;
+    padding: 0 10px !important;
+    font-size: 16px !important;
+  }
+}
+
 @media (min-width: 1000px) and (max-width: 1180px) {
   html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card h3#questionText {
     left: 50% !important;
@@ -26596,6 +26729,56 @@ html body.screen-miss-flash::before {
     border-left: 10px solid transparent !important;
     border-right: 10px solid transparent !important;
     border-top: 14px solid #b96305 !important;
+  }
+}
+
+/* v467 override: keep the start and fresh-start buttons horizontal on PC and Chromebook widths. */
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy {
+  z-index: 30 !important;
+  pointer-events: none !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions {
+  position: fixed !important;
+  left: 7.8% !important;
+  top: 52.8% !important;
+  display: flex !important;
+  align-items: center !important;
+  width: min(38vw, 620px) !important;
+  height: 94px !important;
+  gap: 14px !important;
+  pointer-events: auto !important;
+  z-index: 40 !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #startButton.start-cta {
+  flex: 1 1 auto !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #restartButton.fresh-start-button {
+  position: static !important;
+  display: grid !important;
+  place-items: center !important;
+  flex: 0 0 clamp(136px, 12vw, 178px) !important;
+  width: clamp(136px, 12vw, 178px) !important;
+  height: clamp(42px, 4.6vw, 58px) !important;
+  pointer-events: auto !important;
+}
+
+@media (min-width: 600px) and (max-width: 999px) {
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions {
+    position: absolute !important;
+    left: 22px !important;
+    top: 322px !important;
+    width: 364px !important;
+    height: 52px !important;
+    gap: 8px !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #restartButton.fresh-start-button {
+    flex-basis: 136px !important;
+    width: 136px !important;
+    height: 44px !important;
   }
 }
 
