@@ -27594,4 +27594,32 @@ html body.session-mode main.app-shell section#sessionView.work-area div#feedback
   html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .simple-clear-center strong {
     display: none !important;
   }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips i,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips.review-pips i {
+    background: linear-gradient(180deg, #ffffff, #e8eef2) !important;
+    border: 2px solid rgba(45, 93, 115, .34) !important;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, .86) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips i.current:not(.done):not(.missed),
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips.review-pips i.current:not(.done):not(.missed) {
+    background: linear-gradient(180deg, #ffffff, #edf3f6) !important;
+    border-color: rgba(32, 128, 112, .58) !important;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, .86), 0 0 0 4px rgba(32, 128, 112, .14) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips i.done,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips.review-pips i.done {
+    background: linear-gradient(180deg, #37ce66, #15984b) !important;
+    border-color: #108142 !important;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, .35), 0 0 0 3px rgba(21, 152, 75, .14) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips i.missed,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips.review-pips i.missed {
+    background: linear-gradient(180deg, #ff7b73, #df302b) !important;
+    border-color: #b91f1b !important;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, .32), 0 0 0 3px rgba(217, 50, 47, .14) !important;
+  }
 }
