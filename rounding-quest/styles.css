@@ -27834,6 +27834,44 @@ html body.session-mode main.app-shell section#sessionView.work-area div#feedback
   }
 }
 
+/* v468: on PC/Chromebook widths, use the side margin instead of covering the answer row. */
+@media (min-width: 900px) {
+  html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice {
+    left: calc(50vw + min(28vw, 382px)) !important;
+    right: auto !important;
+    top: clamp(302px, 50.8vh, 390px) !important;
+    bottom: auto !important;
+    width: clamp(170px, 15vw, 200px) !important;
+    height: auto !important;
+    min-height: 62px !important;
+    max-height: none !important;
+    padding: 10px 12px !important;
+    overflow: visible !important;
+    display: grid !important;
+    grid-template-columns: 26px minmax(0, 1fr) !important;
+    align-items: center !important;
+    justify-content: start !important;
+    gap: 8px !important;
+    border-radius: 16px !important;
+    text-align: left !important;
+    font-size: clamp(16px, 1.18vw, 19px) !important;
+    line-height: 1.2 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice::before {
+    flex: none !important;
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 17px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice strong {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+}
+
 /* v458: remove leftover Chromebook pseudo labels and keep short-PC keypad text clean. */
 @media (min-width: 721px) {
   html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row button#submitButton::before,
