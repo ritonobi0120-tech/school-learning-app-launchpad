@@ -24787,20 +24787,15 @@ html body.screen-miss-flash::before {
     display: grid !important;
     place-items: center !important;
     color: transparent !important;
-    transform: translate(-50%, -50%) scale(.4);
+    transform: translate(-50%, -50%) scale(1);
     isolation: isolate !important;
     pointer-events: none !important;
     animation: roundingCorrectMaruOverAnswer .82s cubic-bezier(.19, 1, .22, 1) both !important;
   }
 
   .answer-correct-maru::before {
-    content: "" !important;
-    position: absolute !important;
-    inset: 3px 6px 5px !important;
-    border: 7px solid #16a34a !important;
-    border-radius: 50% !important;
-    box-shadow: 0 4px 0 rgba(255, 255, 255, .82), 0 8px 12px rgba(34, 197, 94, .14) !important;
-    z-index: 0 !important;
+    content: none !important;
+    display: none !important;
   }
 
   .answer-correct-maru .maru-answer-text {
@@ -24818,7 +24813,10 @@ html body.screen-miss-flash::before {
   }
 
   .answer-correct-maru svg {
-    display: none !important;
+    position: absolute !important;
+    inset: -5px -8px -8px !important;
+    z-index: 2 !important;
+    display: block !important;
     width: 100% !important;
     height: 100% !important;
     overflow: visible !important;
@@ -24830,11 +24828,12 @@ html body.screen-miss-flash::before {
     stroke-width: 8 !important;
     stroke-linecap: round !important;
     stroke-linejoin: round !important;
+    vector-effect: non-scaling-stroke !important;
     stroke-dasharray: 480 !important;
     stroke-dashoffset: 480;
     opacity: .92 !important;
     filter: drop-shadow(0 4px 0 rgba(255, 255, 255, .82)) drop-shadow(0 8px 12px rgba(34, 197, 94, .14)) !important;
-    animation: roundingCorrectMaruDraw .82s cubic-bezier(.19, 1, .22, 1) both !important;
+    animation: roundingCorrectMaruDraw .6s linear both !important;
   }
 }
 
@@ -25484,16 +25483,13 @@ html body.screen-miss-flash::before {
 }
 
 @keyframes roundingCorrectMaruOverAnswer {
-  0% { transform: translate(-50%, -50%) scale(.92); opacity: 0; }
-  16% { transform: translate(-50%, -50%) scale(1.03); opacity: 1; }
-  72% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(.98); opacity: 0; }
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  78% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 }
 
 @keyframes roundingCorrectMaruDraw {
-  0% { stroke-dashoffset: 480; opacity: .15; }
-  12% { opacity: 1; }
-  72% { stroke-dashoffset: 0; opacity: 1; }
+  0% { stroke-dashoffset: 480; opacity: 1; }
   100% { stroke-dashoffset: 0; opacity: .98; }
 }
 
@@ -25502,6 +25498,85 @@ html body.screen-miss-flash::before {
   16% { transform: translate(-50%, -50%) rotate(-7deg) scale(1.08); opacity: 1; }
   72% { transform: translate(-50%, -50%) rotate(-7deg) scale(1); opacity: 1; }
   100% { transform: translate(-50%, -50%) rotate(-7deg) scale(.98); opacity: 0; }
+}
+
+/* v466: draw the correct mark as a handwritten maru from the bottom, including Chromebook widths. */
+@media (min-width: 600px) {
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row.fx-answer-correct {
+    animation: roundingAnswerCorrectWrap .42s cubic-bezier(.19, 1, .22, 1) both !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput.fx-answer-correct {
+    border-color: #16a34a !important;
+    outline: none !important;
+    background: #f0fdf4 !important;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    caret-color: transparent !important;
+    box-shadow:
+      0 0 0 6px rgba(34, 197, 94, .13),
+      0 8px 16px rgba(22, 163, 74, .12),
+      inset 0 2px 0 rgba(255, 255, 255, .96) !important;
+  }
+
+  .answer-correct-maru {
+    position: fixed !important;
+    left: var(--maru-left) !important;
+    top: var(--maru-top) !important;
+    z-index: 120 !important;
+    width: var(--maru-width) !important;
+    height: var(--maru-height) !important;
+    display: grid !important;
+    place-items: center !important;
+    color: transparent !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+    isolation: isolate !important;
+    pointer-events: none !important;
+    animation: roundingCorrectMaruOverAnswer .82s cubic-bezier(.19, 1, .22, 1) both !important;
+  }
+
+  .answer-correct-maru::before {
+    content: none !important;
+    display: none !important;
+  }
+
+  .answer-correct-maru svg {
+    position: absolute !important;
+    inset: -5px -8px -8px !important;
+    z-index: 2 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important;
+  }
+
+  .answer-correct-maru path {
+    fill: none !important;
+    stroke: #16a34a !important;
+    stroke-width: 8 !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+    vector-effect: non-scaling-stroke !important;
+    stroke-dasharray: 480 !important;
+    stroke-dashoffset: 480;
+    opacity: .95 !important;
+    filter: drop-shadow(0 4px 0 rgba(255, 255, 255, .82)) drop-shadow(0 8px 12px rgba(34, 197, 94, .14)) !important;
+    animation: roundingCorrectMaruDraw .6s linear both !important;
+  }
+
+  .answer-correct-maru .maru-answer-text {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 3 !important;
+    display: grid !important;
+    place-items: center !important;
+    color: #17120d !important;
+    font-size: 54px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    text-shadow: none !important;
+  }
 }
 
 /* v434: keep the correct-answer maru visible before auto-advance. */

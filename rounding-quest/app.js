@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 465;
+  const APP_VERSION = 466;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -1231,6 +1231,11 @@
     maru.style.setProperty('--maru-top', `${rect.top + rect.height * 0.54}px`);
     maru.style.setProperty('--maru-width', `${Math.min(rect.width - 24, Math.max(178, digitCount * 56 + 126))}px`);
     maru.style.setProperty('--maru-height', `${Math.min(74, rect.height * 0.97)}px`);
+    maru.insertAdjacentHTML('beforeend', `
+      <svg class="maru-draw" viewBox="0 0 160 112" preserveAspectRatio="none" aria-hidden="true">
+        <path pathLength="480" d="M82 103 C46 105 17 89 13 61 C9 31 35 10 77 9 C124 8 151 32 148 62 C145 92 110 108 65 101 C36 96 17 81 19 58"></path>
+      </svg>
+    `);
     const maruText = document.createElement('span');
     maruText.className = 'maru-answer-text';
     maruText.textContent = els.answerInput.value;
