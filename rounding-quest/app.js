@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 464;
+  const APP_VERSION = 465;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
