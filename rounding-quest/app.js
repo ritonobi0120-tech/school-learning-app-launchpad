@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 447;
+  const APP_VERSION = 448;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -200,6 +200,7 @@
       reviewMistakes: Array.isArray(saved.reviewMistakes) ? saved.reviewMistakes : [],
       pathCorrectMarks: Array.isArray(saved.pathCorrectMarks) ? saved.pathCorrectMarks : [],
       pathMissMarks: Array.isArray(saved.pathMissMarks) ? saved.pathMissMarks : [],
+      returnResultAfterReview: saved.returnResultAfterReview || null,
       answered: false,
       advanceTimer: null,
       startKeys: Math.min(STAGE_GOAL, Math.max(0, Number(saved.startKeys) || 0)),
@@ -239,6 +240,7 @@
       reviewMistakes: session.reviewMistakes,
       pathCorrectMarks: session.pathCorrectMarks,
       pathMissMarks: session.pathMissMarks,
+      returnResultAfterReview: session.returnResultAfterReview || null,
       startKeys: session.startKeys,
       finishKeys: session.finishKeys,
       input: session.answered ? '' : els.answerInput.value,
@@ -333,7 +335,42 @@
     els.stageSelect.classList.toggle('hidden', inSession || inResult);
   }
 
-  function startSession(reviewOnly) {
+  function createReturnResultAfterReview(sourceSession) {
+    return {
+      stageId: sourceSession.stageId,
+      questions: sourceSession.questions,
+      correct: sourceSession.correct,
+      bestStreak: sourceSession.bestStreak,
+      startKeys: sourceSession.startKeys,
+      finishKeys: sourceSession.finishKeys,
+      pathCorrectMarks: sourceSession.pathCorrectMarks,
+      pathMissMarks: sourceSession.pathMissMarks,
+    };
+  }
+
+  function showReturnResultAfterReview(snapshot) {
+    session = {
+      reviewOnly: false,
+      stageId: snapshot.stageId,
+      questions: Array.isArray(snapshot.questions) ? snapshot.questions : [],
+      index: Array.isArray(snapshot.questions) ? snapshot.questions.length : 0,
+      correct: Math.max(0, Number(snapshot.correct) || 0),
+      streak: 0,
+      bestStreak: Math.max(0, Number(snapshot.bestStreak) || 0),
+      mistakes: [],
+      reviewMistakes: [],
+      pathCorrectMarks: Array.isArray(snapshot.pathCorrectMarks) ? snapshot.pathCorrectMarks : [],
+      pathMissMarks: Array.isArray(snapshot.pathMissMarks) ? snapshot.pathMissMarks : [],
+      returnResultAfterReview: null,
+      answered: true,
+      advanceTimer: null,
+      startKeys: Math.min(STAGE_GOAL, Math.max(0, Number(snapshot.startKeys) || 0)),
+      finishKeys: Math.min(STAGE_GOAL, Math.max(0, Number(snapshot.finishKeys) || 0)),
+    };
+    renderResult();
+  }
+
+  function startSession(reviewOnly, options = {}) {
     clearActiveSession();
     const pendingStageId = getPendingReviewStageId();
     if (pendingStageId) {
@@ -366,6 +403,7 @@
       bestStreak: 0,
       mistakes: [],
       reviewMistakes,
+      returnResultAfterReview: options.returnResultAfterReview || null,
       pathCorrectMarks: [],
       pathMissMarks: [],
       answered: false,
@@ -396,12 +434,12 @@
     els.sessionView.classList.toggle('review-mode', session.reviewOnly);
     els.sessionView.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
     els.stageBanner.innerHTML = `<img src="${miniStageBadge(stage.id)}" alt=""><span>第${stage.order}章</span><strong>${stage.title}</strong>`;
-    els.modeLabel.textContent = session.reviewOnly ? '見直しクエスト' : stage.artifact;
+    els.modeLabel.textContent = session.reviewOnly ? 'やり直し' : stage.artifact;
     const currentMark = getCurrentPathMark(q.stageId);
     const windowStart = Math.floor(Math.max(0, currentMark - 1) / SESSION_LENGTH) * SESSION_LENGTH + 1;
     const windowEnd = Math.min(STAGE_GOAL, windowStart + SESSION_LENGTH - 1);
     if (session.reviewOnly) {
-      els.questionCounter.textContent = `見直し ${session.index + 1} / ${session.questions.length}`;
+      els.questionCounter.textContent = `やり直し ${session.index + 1} / ${session.questions.length}`;
     } else {
       els.questionCounter.innerHTML = `${windowStart}〜${windowEnd}問目<span class="counter-test-text">${session.index + 1} / ${session.questions.length}</span>`;
     }
@@ -419,7 +457,7 @@
     els.questionText.classList.toggle('prompt-long', promptLong);
     els.questionText.innerHTML = renderQuestionPrompt(q, promptLayout);
     els.coachStrip.innerHTML = session.reviewOnly
-      ? '<span></span><strong>ここを見ればできる！</strong><em>落ち着いて直そう。</em>'
+      ? '<span></span><strong>やり直し</strong><em>ここを見よう。</em>'
       : '<span></span><strong>いいね！</strong><em>その調子！</em>';
     renderSupportText(q);
     els.answerInput.value = '';
@@ -976,26 +1014,18 @@
     const checkPower = Math.max(0, Math.round(Math.log10(v.checkUnit || 1)));
     const focusIndex = Math.max(0, Math.min(digits.length - 1, digits.length - 1 - checkPower));
     const action = v.checkDigit >= 5 ? '5以上 → 切り上げ' : '4以下 → 切り捨て';
-    const resultLine = result
-      ? (result.correct
-        ? '<p class="review-status ok">正解。この見方でOK。</p>'
-        : '<p class="review-status ng">もう一回。ここだけ見よう。</p>')
-      : '';
     els.visualBoard.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
-    const changeText = reviewChangeText(q);
     els.visualBoard.innerHTML = `
       <div class="focus-board">
         <p>ここを見る</p>
         <div class="focus-number" aria-label="${v.value}の${v.checkLabel}">
           ${digits.map((digit, index) => `<span class="${index === focusIndex ? 'focus' : ''}">${digit}</span>`).join('')}
         </div>
-        ${resultLine}
         <ul class="review-steps" aria-label="見直しの手順">
           <li><b>1</b><span>見る数字は <strong>${escapeHtml(String(v.checkDigit))}</strong></span></li>
           <li><b>2</b><span>${escapeHtml(action)}</span></li>
-          <li class="review-answer-step"><b>3</b><span><button type="button" data-review-answer-reveal>答えを見る</button><strong class="review-answer-reveal">${escapeHtml(changeText)}</strong></span></li>
+          <li class="review-answer-step"><b>3</b><span><button type="button" data-review-answer-reveal>答えを見る</button><strong class="review-answer-reveal">${core.formatNumber(q.answer)}</strong></span></li>
         </ul>
-        <div class="review-answer-big review-answer-reveal">答えは <strong>${core.formatNumber(q.answer)}</strong></div>
       </div>
     `;
   }
@@ -1063,7 +1093,8 @@
         session.answered = false;
         els.answerInput.disabled = false;
         els.answerInput.value = '';
-        els.submitButton.textContent = 'もう一回';
+        els.submitButton.textContent = 'こたえる';
+        els.submitButton.setAttribute('aria-label', 'こたえあわせ');
         els.feedbackBox.className = 'feedback hidden';
         els.feedbackBox.innerHTML = '';
         renderFocusVisual(q, result, submittedInput);
@@ -1320,8 +1351,14 @@
     core.saveProgress(localStorage, progress);
     renderHomeStats();
     renderStageSelect();
+    const returnResultAfterReview = session.returnResultAfterReview;
+    if (session.reviewOnly && !session.mistakes.length && returnResultAfterReview) {
+      showReturnResultAfterReview(returnResultAfterReview);
+      return;
+    }
     if (!session.reviewOnly && session.mistakes.length) {
-      startSession(true);
+      const returnResult = createReturnResultAfterReview(session);
+      startSession(true, { returnResultAfterReview: returnResult });
       return;
     }
     renderResult();
@@ -1840,7 +1877,40 @@
     `;
   }
 
+  function renderReviewSessionMap(stageId, pulse, missPulse) {
+    const stage = core.getStage(stageId);
+    const total = Math.max(1, session.questions.length);
+    const current = Math.min(total, session.index + 1);
+    const pips = Array.from({ length: total }, (_, index) => {
+      const className = [
+        index < session.index || (pulse && index === session.index) ? 'done' : '',
+        missPulse && index === session.index ? 'missed' : '',
+        index === session.index ? 'current' : '',
+      ].filter(Boolean).join(' ');
+      return `<i class="${className}" aria-hidden="true"></i>`;
+    }).join('');
+    els.sessionMap.innerHTML = `
+      <div class="key-rail review-rail" aria-label="やり直し ${current}/${total}">
+        <div class="session-hud">
+          <div class="session-plaque">
+            <small>やり直し</small>
+            <strong>${stage.artifact}</strong>
+            <span>${current}/${total}問</span>
+          </div>
+          <div class="session-progress-label" aria-hidden="true">
+            <span class="question-step-label"><b>${current}</b><small>問目 / ${total}問</small></span>
+            <span class="question-pips review-pips" style="grid-template-columns: repeat(${total}, minmax(0, 1fr))" aria-label="やり直し ${current}問目">${pips}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   function renderSessionMap(stageId, keyCount, pathCount, pulse, missPulse, markState = {}) {
+    if (session && session.reviewOnly && session.stageId === stageId) {
+      renderReviewSessionMap(stageId, pulse, missPulse);
+      return;
+    }
     const stage = core.getStage(stageId);
     els.sessionMap.style.setProperty('--session-road-art', `url("${img(RPG_ASSETS.worldMap)}")`);
     const count = Math.min(STAGE_GOAL, Math.max(0, keyCount));

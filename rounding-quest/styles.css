@@ -19941,6 +19941,8 @@ body:not(.session-mode):not(.result-mode) .home-dock button.disabled {
   body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions .primary.start-cta {
     position: static !important;
     display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     place-items: center !important;
     width: 100% !important;
     height: 100% !important;
@@ -20738,6 +20740,8 @@ body:not(.session-mode):not(.result-mode) .home-dock button.disabled {
   body.session-mode main.app-shell #sessionView.work-area #answerInput {
     position: static !important;
     display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     width: 100% !important;
     height: 76px !important;
     min-width: 0 !important;
@@ -21423,6 +21427,8 @@ body:not(.session-mode):not(.result-mode) .home-dock button.disabled {
     width: 100% !important;
     height: 100% !important;
     display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     align-content: center !important;
     justify-items: center !important;
     gap: 16px !important;
@@ -21460,6 +21466,8 @@ body:not(.session-mode):not(.result-mode) .home-dock button.disabled {
 
   body.session-mode main.app-shell #sessionView.work-area .focus-number {
     display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     justify-content: center !important;
     gap: 8px !important;
     width: 100% !important;
@@ -26987,5 +26995,143 @@ html body.result-mode main.app-shell section#resultView.result-view.stage-unlock
     height: calc(100vh - 366px) !important;
     gap: 6px 12px !important;
     padding: 9px 10px !important;
+  }
+}
+
+/* v448: make retry mode simpler and keep its progress bar visible. */
+@media (min-width: 600px) {
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map {
+    position: fixed !important;
+    left: 50% !important;
+    top: 2.2vh !important;
+    width: min(620px, 45vw) !important;
+    height: 70px !important;
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    place-items: center !important;
+    padding: 8px 16px !important;
+    border: 3px solid #e7b748 !important;
+    border-radius: 18px !important;
+    background: linear-gradient(180deg, #fffdf4, #fff0bd) !important;
+    box-shadow: 0 6px 0 rgba(108, 76, 28, .14), 0 13px 22px rgba(38, 52, 42, .12) !important;
+    transform: translateX(-50%) !important;
+    overflow: hidden !important;
+    z-index: 93 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .key-rail.review-rail,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .session-hud {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .session-plaque,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .session-item-card,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .mini-map-track {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .session-progress-label {
+    width: 100% !important;
+    height: 100% !important;
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    grid-template-columns: 150px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 18px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .question-step-label {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    align-items: baseline !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    color: #12304a !important;
+    -webkit-text-fill-color: #12304a !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .question-step-label b {
+    color: #12304a !important;
+    -webkit-text-fill-color: #12304a !important;
+    font-size: 34px !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .question-step-label small {
+    color: #12304a !important;
+    -webkit-text-fill-color: #12304a !important;
+    font-size: 17px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .question-pips.review-pips {
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    gap: 8px !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .question-pips.review-pips i {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    height: 20px !important;
+    border-radius: 999px !important;
+    background: #e4ddca !important;
+    box-shadow: inset 0 2px 3px rgba(83, 61, 28, .12) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .question-pips.review-pips i.done,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .question-pips.review-pips i.done.current {
+    background: linear-gradient(180deg, #9ddb27, #57ad16) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .question-pips.review-pips i.missed,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .question-pips.review-pips i.missed.current {
+    background: linear-gradient(180deg, #ff8a7b, #d9322f) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board.answer-open .review-answer-reveal {
+    display: inline-grid !important;
+    place-items: center !important;
+    min-width: 120px !important;
+    min-height: 48px !important;
+    padding: 6px 18px !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+    border: 3px solid #0b6d70 !important;
+    color: #0b4e52 !important;
+    -webkit-text-fill-color: #0b4e52 !important;
+    font-size: clamp(26px, 2.4vw, 38px) !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board.answer-open .review-answer-step span {
+    justify-content: center !important;
   }
 }
