@@ -26864,3 +26864,128 @@ html body.result-mode main.app-shell section#resultView.result-view.stage-unlock
     max-width: 64px !important;
   }
 }
+
+/* v447: keep short PC browser windows from compressing the practice screen, and center home card labels. */
+@media (min-width: 1000px) {
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage] {
+    grid-template-columns: 118px minmax(132px, 1fr) !important;
+    grid-template-rows: 28px 52px 34px 26px !important;
+    gap: 2px 10px !important;
+    align-content: center !important;
+    padding: 14px 18px !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-badge,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card > span:not(.stage-count-pill) {
+    grid-column: 1 !important;
+    grid-row: 1 / -1 !important;
+    justify-self: center !important;
+    align-self: center !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong,
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage="final-mix"] strong {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: center !important;
+    width: min(100%, 148px) !important;
+    min-height: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    text-align: center !important;
+    font-size: 26px !important;
+    line-height: 1.04 !important;
+  }
+
+  body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill {
+    grid-column: 2 !important;
+    grid-row: 3 !important;
+    justify-self: center !important;
+    width: 112px !important;
+    min-width: 112px !important;
+    height: 30px !important;
+  }
+}
+
+@media (min-width: 1000px) and (max-height: 680px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText {
+    top: 88px !important;
+    height: 186px !important;
+    min-height: 0 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout.number-below {
+    height: 100% !important;
+    align-content: center !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-task-first {
+    font-size: clamp(28px, 2.55vw, 35px) !important;
+    line-height: 1.02 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-main-number {
+    width: min(520px, 100%) !important;
+    height: 112px !important;
+    min-height: 112px !important;
+    max-height: 112px !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    font-size: clamp(84px, 7.2vw, 104px) !important;
+    line-height: .86 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row {
+    top: max(284px, 50.8vh) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey {
+    top: max(374px, calc(50.8vh + 88px)) !important;
+    height: min(31.8vh, calc(100vh - max(374px, calc(50.8vh + 88px)) - 18px)) !important;
+  }
+}
+
+@media (min-width: 1000px) and (max-height: 580px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map {
+    top: 12px !important;
+    height: 64px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText {
+    top: 82px !important;
+    height: 176px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-main-number {
+    height: 102px !important;
+    min-height: 102px !important;
+    max-height: 102px !important;
+    font-size: clamp(74px, 6.4vw, 90px) !important;
+    line-height: .96 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row {
+    top: 268px !important;
+    height: 72px !important;
+    grid-template-rows: 72px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row input#answerInput,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row button#submitButton {
+    height: 72px !important;
+    min-height: 72px !important;
+    max-height: 72px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey {
+    top: 350px !important;
+    height: calc(100vh - 366px) !important;
+    gap: 6px 12px !important;
+    padding: 9px 10px !important;
+  }
+}
