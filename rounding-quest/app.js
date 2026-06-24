@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 449;
+  const APP_VERSION = 450;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -465,6 +465,7 @@
     els.submitButton.textContent = 'こたえる';
     els.submitButton.setAttribute('aria-label', 'こたえあわせ');
     els.feedbackBox.className = 'feedback hidden';
+    els.feedbackBox.innerHTML = '';
     if (session.reviewOnly) {
       renderFocusVisual(q, null);
     } else {
@@ -1271,16 +1272,30 @@
     els.tenkey.innerHTML = TENKEYS.map((key) => `<button type="button" data-key="${key}">${key}</button>`).join('');
   }
 
+  function clearNoticeFeedback() {
+    if (!els.feedbackBox.classList.contains('notice')) return;
+    els.feedbackBox.className = 'feedback hidden';
+    els.feedbackBox.innerHTML = '';
+  }
+
   function pressTenkey(key) {
     if (!session || session.answered || els.answerInput.disabled) return;
     playSound('tap');
+    let changed = false;
     if (/^\d$/.test(key)) {
       const nextValue = `${els.answerInput.value}${key}`.slice(0, Number(els.answerInput.maxLength) || 9);
       els.answerInput.value = nextValue;
+      changed = true;
     } else if (key === '消す' || key === '1つ消す') {
       els.answerInput.value = els.answerInput.value.slice(0, -1);
+      changed = true;
     } else if (key === 'クリア' || key === '全部消す') {
       els.answerInput.value = '';
+      changed = true;
+    }
+    if (changed) {
+      clearNoticeFeedback();
+      saveActiveSession();
     }
     els.answerInput.focus();
   }
@@ -2142,6 +2157,7 @@
   els.answerInput.addEventListener('input', () => {
     const normalized = core.normalizeAnswerText(els.answerInput.value);
     if (els.answerInput.value !== normalized) els.answerInput.value = normalized;
+    clearNoticeFeedback();
     saveActiveSession();
   });
   window.addEventListener('keydown', handlePhysicalKeyboard);

@@ -26988,6 +26988,17 @@ body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-sele
   line-height: 1 !important;
 }
 
+/* v450: keep retry labels plain and prevent the small star badge from drifting. */
+html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.problem-side p#questionLabel.question-label {
+  gap: 0 !important;
+  padding-inline: 28px !important;
+}
+
+html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.problem-side p#questionLabel.question-label::before {
+  content: none !important;
+  display: none !important;
+}
+
 @media (min-width: 1000px) and (max-height: 580px) {
   html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map {
     top: 12px !important;
