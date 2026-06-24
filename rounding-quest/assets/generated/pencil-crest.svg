@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="pencil crest">
+  <defs>
+    <linearGradient id="badge" x1="20" y1="10" x2="108" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff8d7"/>
+      <stop offset=".62" stop-color="#ffe28a"/>
+      <stop offset="1" stop-color="#f3a928"/>
+    </linearGradient>
+    <linearGradient id="pencil" x1="30" y1="95" x2="96" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffcf4c"/>
+      <stop offset=".5" stop-color="#ff8f1f"/>
+      <stop offset="1" stop-color="#f05a2a"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="56" fill="url(#badge)" stroke="#fffdf7" stroke-width="8"/>
+  <circle cx="64" cy="64" r="48" fill="none" stroke="#8fd1e5" stroke-width="5" opacity=".9"/>
+  <g transform="rotate(-42 64 64)">
+    <rect x="56" y="24" width="20" height="72" rx="7" fill="url(#pencil)" stroke="#8d4b10" stroke-width="3"/>
+    <path d="M56 34h20" stroke="#fff5b8" stroke-width="5" stroke-linecap="round"/>
+    <path d="M56 82h20" stroke="#b34a2d" stroke-width="4" stroke-linecap="round"/>
+    <path d="M58 96h16l-8 20z" fill="#f7d7ad" stroke="#8d4b10" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M63 109h6l-3 8z" fill="#2a2a2a"/>
+    <rect x="55" y="15" width="22" height="15" rx="5" fill="#7cc9d8" stroke="#276c7c" stroke-width="3"/>
+  </g>
+  <path d="M24 86c12 18 31 27 52 24" fill="none" stroke="#fffdf7" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+</svg>
