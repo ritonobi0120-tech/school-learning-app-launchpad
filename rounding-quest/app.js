@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 450;
+  const APP_VERSION = 451;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -486,6 +486,19 @@
   function applyPcV4Layout(q) {
     if (!window.matchMedia('(min-width: 600px)').matches) return;
     const reviewMode = Boolean(session && session.reviewOnly);
+    const viewportHeight = Math.max(0, window.innerHeight || 0);
+    const compactNormal = !reviewMode && viewportHeight > 0 && viewportHeight <= 680;
+    const tightNormal = !reviewMode && viewportHeight > 0 && viewportHeight <= 560;
+    const compactAnswerTop = compactNormal
+      ? (tightNormal
+        ? Math.max(244, Math.min(262, Math.round(viewportHeight * 0.485)))
+        : Math.max(286, Math.round(viewportHeight * 0.48)))
+      : null;
+    const compactAnswerHeight = tightNormal ? 68 : 76;
+    const compactTenkeyTop = compactNormal ? compactAnswerTop + compactAnswerHeight + (tightNormal ? 22 : 14) : null;
+    const compactTenkeyHeight = compactNormal
+      ? Math.max(tightNormal ? 144 : 170, viewportHeight - compactTenkeyTop - 24)
+      : null;
     const prompt = reviewMode
       ? els.questionText.querySelector('.review-problem-layout')
       : els.questionText.querySelector('.prompt-layout');
@@ -700,9 +713,9 @@
     });
     setImportantStyle(els.answerInput, {
       position: 'static',
-      height: '76px',
-      'min-height': '76px',
-      'max-height': '76px',
+      height: reviewMode ? '76px' : `${compactAnswerHeight}px`,
+      'min-height': reviewMode ? '76px' : `${compactAnswerHeight}px`,
+      'max-height': reviewMode ? '76px' : `${compactAnswerHeight}px`,
       width: '100%',
       'max-width': 'none',
       margin: '0',
@@ -718,13 +731,13 @@
     setImportantStyle(answerRow, {
       position: 'fixed',
       left: reviewMode ? '10.4vw' : '23vw',
-      top: reviewMode ? '50.6vh' : '50.8vh',
+      top: reviewMode ? '50.6vh' : (compactNormal ? `${compactAnswerTop}px` : '50.8vh'),
       width: reviewMode ? '47.4vw' : '54vw',
       'max-width': 'none',
-      height: '76px',
+      height: reviewMode ? '76px' : `${compactAnswerHeight}px`,
       display: 'grid',
       'grid-template-columns': 'minmax(0, 1fr) 168px',
-      'grid-template-rows': '76px',
+      'grid-template-rows': reviewMode ? '76px' : `${compactAnswerHeight}px`,
       gap: '12px',
       'grid-auto-flow': 'column',
       'align-items': 'stretch',
@@ -743,9 +756,9 @@
       'align-self': 'stretch',
       'justify-self': 'stretch',
       width: '168px',
-      height: '76px',
-      'min-height': '76px',
-      'max-height': '76px',
+      height: reviewMode ? '76px' : `${compactAnswerHeight}px`,
+      'min-height': reviewMode ? '76px' : `${compactAnswerHeight}px`,
+      'max-height': reviewMode ? '76px' : `${compactAnswerHeight}px`,
       display: 'grid',
       'place-items': 'center',
       'font-size': 'clamp(26px, 2.4vw, 36px)',
@@ -755,10 +768,10 @@
     setImportantStyle(els.tenkey, {
       position: 'fixed',
       left: reviewMode ? '10.4vw' : '23vw',
-      top: reviewMode ? 'max(61.6vh, calc(50.6vh + 88px))' : 'max(61.8vh, calc(50.8vh + 88px))',
+      top: reviewMode ? 'max(61.6vh, calc(50.6vh + 88px))' : (compactNormal ? `${compactTenkeyTop}px` : 'max(61.8vh, calc(50.8vh + 88px))'),
       width: reviewMode ? '47.4vw' : '54vw',
       'max-width': 'none',
-      height: '31.8vh',
+      height: reviewMode ? '31.8vh' : (compactNormal ? `${compactTenkeyHeight}px` : '31.8vh'),
       'max-height': 'none',
       display: 'grid',
       'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
