@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 448;
+  const APP_VERSION = 449;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -2019,7 +2019,7 @@
           <span>第${stage.order}章</span>
           <strong>${stageCardQuestName(stage)}</strong>
           <small>${stageCardTitle(stage)}</small>
-          <span class="stage-count-pill"><img src="${artifactIcon(stage.id)}" alt=""><b>${best}/${STAGE_GOAL}</b></span>
+          <span class="stage-count-pill"><b>${best}/${STAGE_GOAL}</b></span>
           <i class="stage-progress" style="--pct:${progressPct}" aria-hidden="true"></i>
           <em>${status}</em>
         </button>

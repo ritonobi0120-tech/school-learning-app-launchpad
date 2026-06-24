@@ -26958,6 +26958,36 @@ html body.result-mode main.app-shell section#resultView.result-view.stage-unlock
   }
 }
 
+/* v449: simplify the home start button and center stage progress counts. */
+body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #startButton.start-cta::before,
+body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #startButton.start-cta::after,
+body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions .primary.start-cta::before,
+body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions .primary.start-cta::after {
+  content: none !important;
+  display: none !important;
+}
+
+body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill {
+  display: grid !important;
+  place-items: center !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0 !important;
+  padding-inline: 10px !important;
+  text-align: center !important;
+}
+
+body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill img {
+  display: none !important;
+}
+
+body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill b {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+  line-height: 1 !important;
+}
+
 @media (min-width: 1000px) and (max-height: 580px) {
   html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map {
     top: 12px !important;
@@ -27134,4 +27164,34 @@ html body.result-mode main.app-shell section#resultView.result-view.stage-unlock
   html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board.answer-open .review-answer-step span {
     justify-content: center !important;
   }
+}
+
+/* v449 final home overrides: no overlapping start icon, centered progress counts. */
+body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #startButton.start-cta::before,
+body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #startButton.start-cta::after,
+body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions .primary.start-cta::before,
+body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions .primary.start-cta::after {
+  content: none !important;
+  display: none !important;
+}
+
+body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill {
+  display: grid !important;
+  place-items: center !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 0 !important;
+  padding-inline: 10px !important;
+  text-align: center !important;
+}
+
+body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill img {
+  display: none !important;
+}
+
+body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill b {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+  line-height: 1 !important;
 }
