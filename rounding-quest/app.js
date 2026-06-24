@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 472;
+  const APP_VERSION = 473;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -383,7 +383,7 @@
 
   function showReturnResultAfterReview(snapshot) {
     session = {
-      reviewOnly: false,
+      reviewOnly: true,
       stageId: snapshot.stageId,
       questions: Array.isArray(snapshot.questions) ? snapshot.questions : [],
       index: Array.isArray(snapshot.questions) ? snapshot.questions.length : 0,
@@ -1186,7 +1186,7 @@
       } else {
         els.submitButton.textContent = session.index + 1 >= session.questions.length ? '結果へ' : '次へ';
         els.feedbackBox.className = 'feedback wrong compact-wrong-feedback';
-        els.feedbackBox.innerHTML = '<strong>あとでやり直し</strong><span>この問題は最後にもう一回出ます。</span>';
+        els.feedbackBox.innerHTML = '<strong>まちがい</strong><span>あとでやり直し。この問題は最後にもう一回出ます。</span>';
         scheduleAutoAdvance(760);
       }
     }
@@ -1513,7 +1513,7 @@
       : stageUnlock
       ? `第${nextStage.order}章が開いた！`
       : session.reviewOnly
-      ? '見直しクリア！'
+      ? 'やり直しクリア！'
       : stageCleared
         ? `第${stage.order}章クリア！`
         : '5問クリア！';
@@ -1525,6 +1525,8 @@
       ? ''
       : stageUnlock
       ? `第${stage.order}章クリア。次は${nextStage.artifact}を集めよう。`
+      : session.reviewOnly
+      ? 'まちがえた問題を直したよ'
       : stageCleared
         ? stageClearCopy(stage)
         : `${stage.artifact}を ${Math.max(0, stageKeys - (session.startKeys || 0))}こ あつめたよ`;
