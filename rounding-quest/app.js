@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 460;
+  const APP_VERSION = 462;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -1554,7 +1554,8 @@
         </div>
         <div class="simple-clear-center">
           <img src="${artifactIcon(stage.id)}" alt="">
-          <strong>${stage.artifact} ${stageKeys}/${STAGE_GOAL}</strong>
+          <span class="simple-progress-label">${stage.artifact}</span>
+          <strong>${stageKeys}/${STAGE_GOAL}</strong>
           <div class="simple-progress" data-from-pct="${startPct}" data-to-pct="${progressPct}" style="--from-pct:${startPct}%; --pct:${progressPct}%"><i></i></div>
         </div>
       </div>
