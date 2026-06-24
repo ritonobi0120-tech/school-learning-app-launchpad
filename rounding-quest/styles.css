@@ -27417,6 +27417,17 @@ html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage
 html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card.active .stage-order,
 html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[aria-pressed="true"] .stage-order {
   background: linear-gradient(180deg, #59d86d, #148a46) !important;
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+
+/* v456: unanswered current pips show position only; green means already correct. */
+@media (min-width: 1000px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) header.session-top div#sessionMap.session-map .question-pips i.current:not(.done):not(.missed) {
+    background: linear-gradient(180deg, #ffffff, #e7edf1) !important;
+    border: 2px solid rgba(32, 128, 112, .54) !important;
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, .82),
+      0 0 0 4px rgba(32, 128, 112, .16) !important;
+  }
 }
