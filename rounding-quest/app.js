@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 456;
+  const APP_VERSION = 457;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -176,6 +176,7 @@
   let progress = core.loadProgress(localStorage);
   let selectedStageId = 'round-digit';
   let session = null;
+  let noticeTimer = null;
   const TENKEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '全部消す', '0', '1つ消す'];
   const SESSION_LENGTH = core.SESSION_LENGTH || 10;
   const STAGE_GOAL = core.STAGE_GOAL || 30;
@@ -464,6 +465,7 @@
     els.answerInput.disabled = false;
     els.submitButton.textContent = 'こたえる';
     els.submitButton.setAttribute('aria-label', 'こたえあわせ');
+    clearNoticeFeedback();
     els.feedbackBox.className = 'feedback hidden';
     els.feedbackBox.innerHTML = '';
     if (session.reviewOnly) {
@@ -1070,11 +1072,11 @@
     }
     if (!els.answerInput.value.trim()) {
       playSound('notice');
-      els.feedbackBox.className = 'feedback notice';
-      els.feedbackBox.innerHTML = '<strong>数字を入れてから答えよう。</strong>';
+      showNoticeFeedback('数字を入れてから答えよう。');
       els.answerInput.focus();
       return;
     }
+    clearNoticeFeedback();
     const q = session.questions[session.index];
     const submittedInput = els.answerInput.value;
     const result = core.checkAnswer(q, submittedInput);
@@ -1286,9 +1288,22 @@
   }
 
   function clearNoticeFeedback() {
+    if (noticeTimer) {
+      window.clearTimeout(noticeTimer);
+      noticeTimer = null;
+    }
     if (!els.feedbackBox.classList.contains('notice')) return;
     els.feedbackBox.className = 'feedback hidden';
     els.feedbackBox.innerHTML = '';
+  }
+
+  function showNoticeFeedback(message) {
+    clearNoticeFeedback();
+    els.feedbackBox.className = 'feedback notice empty-notice';
+    els.feedbackBox.innerHTML = `<strong>${message}</strong>`;
+    noticeTimer = window.setTimeout(() => {
+      clearNoticeFeedback();
+    }, 1700);
   }
 
   function pressTenkey(key) {
