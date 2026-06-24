@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 468;
+  const APP_VERSION = 469;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -1426,6 +1426,7 @@
     const numpadDigit = /^Numpad\d$/.test(event.code || '') ? event.code.slice(-1) : '';
     const digit = /^\d$/.test(event.key || '') ? event.key : numpadDigit;
     if (digit) {
+      if (document.activeElement === els.answerInput) return;
       event.preventDefault();
       event.stopPropagation();
       unlockAudio();
@@ -2270,7 +2271,8 @@
     revealReviewAnswer(button);
   });
   els.answerInput.addEventListener('input', () => {
-    const normalized = core.normalizeAnswerText(els.answerInput.value);
+    const maxLength = Number(els.answerInput.maxLength) || 9;
+    const normalized = core.normalizeAnswerText(els.answerInput.value).slice(0, maxLength);
     if (els.answerInput.value !== normalized) els.answerInput.value = normalized;
     clearNoticeFeedback();
     saveActiveSession();
