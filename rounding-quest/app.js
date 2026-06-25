@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 483;
+  const APP_VERSION = 484;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -396,7 +396,10 @@
       window.clearTimeout(session.advanceTimer);
       session.advanceTimer = null;
     }
-    [els.homeView, els.sessionView, els.resultView].forEach((el) => el.classList.add('hidden'));
+    [els.homeView, els.sessionView, els.resultView].forEach((el) => {
+      el.classList.add('hidden');
+      if (el !== view) el.style.removeProperty('display');
+    });
     view.classList.remove('hidden');
     const inSession = view === els.sessionView;
     const inResult = view === els.resultView;
@@ -554,418 +557,140 @@
     });
   }
 
-  function applyPcV4Layout(q) {
+  function removeLayoutStyles(el) {
+    if (!el) return;
+    [
+      'position', 'inset', 'left', 'right', 'top', 'bottom', 'width', 'height',
+      'min-width', 'max-width', 'min-height', 'max-height', 'display',
+      'grid-template-columns', 'grid-template-rows', 'grid-column', 'grid-row',
+      'grid-area', 'grid-auto-flow', 'align-items', 'align-self',
+      'justify-items', 'justify-self', 'place-items', 'place-self',
+      'gap', 'padding', 'margin', 'border', 'border-radius', 'background',
+      'box-shadow', 'transform', 'overflow', 'visibility', 'opacity',
+      'pointer-events', 'z-index', 'box-sizing', 'line-height',
+    ].forEach((key) => el.style.removeProperty(key));
+  }
+
+  function applyPcV4Layout() {
     if (!window.matchMedia('(min-width: 600px)').matches) return;
-    const reviewMode = Boolean(session && session.reviewOnly);
-    const viewportWidth = Math.max(0, window.innerWidth || 0);
-    const viewportHeight = Math.max(0, window.innerHeight || 0);
-    const compactReview = reviewMode && viewportWidth >= 1000 && viewportHeight > 0 && viewportHeight <= 700;
-    const narrowReview = reviewMode && viewportWidth > 0 && viewportWidth <= 1180 && !compactReview;
-    const reviewMargin = compactReview ? Math.max(56, Math.round(Math.max(0, viewportWidth - 1120) / 2 + 24)) : 0;
-    const reviewGap = compactReview ? (viewportWidth <= 1100 ? 18 : 26) : 0;
-    const reviewRightWidth = compactReview ? Math.min(392, Math.max(306, Math.round(viewportWidth * 0.30))) : 0;
-    const reviewLeftWidth = compactReview
-      ? Math.max(540, viewportWidth - (reviewMargin * 2) - reviewGap - reviewRightWidth)
-      : 0;
-    const reviewLeftCenter = compactReview ? reviewMargin + (reviewLeftWidth / 2) : 0;
-    const reviewRightLeft = compactReview ? reviewMargin + reviewLeftWidth + reviewGap : 0;
-    const reviewTop = compactReview ? 82 : 0;
-    const reviewHeight = compactReview ? Math.max(400, viewportHeight - reviewTop - 18) : 0;
-    const reviewTitleTop = compactReview ? reviewTop + 34 : 0;
-    const reviewTitleHeight = compactReview ? Math.max(146, Math.min(190, Math.round(viewportHeight * 0.275))) : 0;
-    const reviewAnswerHeight = compactReview ? (viewportHeight <= 560 ? 62 : 72) : 76;
-    const reviewAnswerTop = compactReview ? reviewTitleTop + reviewTitleHeight + (viewportHeight <= 560 ? 12 : 16) : 0;
-    const reviewRenderedAnswerHeight = compactReview ? Math.max(82, reviewAnswerHeight) : reviewAnswerHeight;
-    const reviewTenkeyTop = compactReview ? reviewAnswerTop + reviewRenderedAnswerHeight + (viewportHeight <= 560 ? 12 : 14) : 0;
-    const reviewTenkeyHeight = compactReview ? Math.max(142, viewportHeight - reviewTenkeyTop - 16) : 0;
-    const compactNormal = !reviewMode && viewportHeight > 0 && viewportHeight <= 680;
-    const tightNormal = !reviewMode && viewportHeight > 0 && viewportHeight <= 560;
-    const compactTitleTop = compactNormal ? (tightNormal ? 82 : 90) : null;
-    const compactTitleHeight = compactNormal
-      ? (tightNormal
-        ? Math.max(138, Math.min(150, Math.round(viewportHeight * 0.285)))
-        : Math.max(164, Math.min(184, Math.round(viewportHeight * 0.28))))
-      : null;
-    const compactAnswerTop = compactNormal
-      ? (compactTitleTop + compactTitleHeight + (tightNormal ? 12 : 16))
-      : null;
-    const compactAnswerHeight = tightNormal ? 66 : 74;
-    const compactTenkeyTop = compactNormal ? compactAnswerTop + compactAnswerHeight + (tightNormal ? 24 : 22) : null;
-    const compactTenkeyHeight = compactNormal
-      ? Math.max(tightNormal ? 144 : 170, viewportHeight - compactTenkeyTop - 22)
-      : null;
-    const normalShellWidth = 'min(1120px, 92vw)';
-    const normalControlsWidth = compactNormal ? 'min(760px, calc(100vw - 96px))' : 'min(780px, 54vw)';
-    const normalTitleWidth = compactNormal ? normalControlsWidth : 'min(980px, 54vw)';
-    const normalTenkeyHeight = compactNormal ? `${compactTenkeyHeight}px` : 'min(316px, 31.8vh)';
-    const reviewCardTop = reviewMode && viewportHeight > 0 && viewportHeight <= 700 ? '88px' : '12.4vh';
-    const reviewCardHeight = reviewMode && viewportHeight > 0 && viewportHeight <= 700 ? 'calc(100vh - 104px)' : '83.5vh';
-    const prompt = reviewMode
+    const prompt = session && session.reviewOnly
       ? els.questionText.querySelector('.review-problem-layout')
       : els.questionText.querySelector('.prompt-layout');
-    const titleLeft = compactNormal
-      ? 'calc(50% - min(380px, calc((100vw - 96px) / 2)))'
-      : (compactReview ? `${reviewLeftCenter}px` : (narrowReview ? '50%' : (reviewMode ? '6.8vw' : '50%')));
-    const titleTop = compactReview ? `${reviewTitleTop}px` : (reviewMode ? '18.2vh' : (compactNormal ? `${compactTitleTop}px` : '16.9vh'));
-    const titleWidth = compactReview ? `${reviewLeftWidth}px` : (narrowReview ? 'min(760px, 80vw)' : (reviewMode ? '50.2vw' : normalTitleWidth));
-    const titleHeight = compactReview ? `${reviewTitleHeight}px` : (reviewMode ? '31vh' : (compactNormal ? `${compactTitleHeight}px` : '31vh'));
-    const titleTransform = !reviewMode
-      ? (compactNormal ? 'none' : 'translateX(-50%)')
-      : compactReview
-        ? 'translateX(-50%)'
-        : narrowReview
-        ? (viewportWidth >= 1000 ? 'translateX(calc(-50% + 760px - 50vw))' : 'translateX(-50%)')
-        : 'none';
+    const answerRow = els.answerInput.closest('.answer-row');
+    const sessionTop = els.modeLabel ? els.modeLabel.closest('.session-top') : null;
+    const problemSide = els.questionCard ? els.questionCard.querySelector('.problem-side') : null;
+    [
+      els.sessionView,
+      els.sessionHomeButton,
+      els.comboChip,
+      els.modeLabel && els.modeLabel.parentElement,
+      sessionTop,
+      els.sessionMap,
+      els.sessionMap && els.sessionMap.querySelector('.key-rail'),
+      els.sessionMap && els.sessionMap.querySelector('.session-hud'),
+      els.sessionMap && els.sessionMap.querySelector('.session-progress-label'),
+      els.sessionMap && els.sessionMap.querySelector('.question-step-label'),
+      els.questionCard,
+      els.questionCard && els.questionCard.querySelector('.problem-side'),
+      els.visualBoard,
+      els.questionText,
+      prompt,
+      els.questionLabel,
+      els.answerInput,
+      answerRow,
+      els.submitButton,
+      els.tenkey,
+      ...Array.from(els.tenkey ? els.tenkey.children : []),
+    ].forEach(removeLayoutStyles);
     setImportantStyle(els.sessionView, {
-      background: reviewMode
-        ? 'linear-gradient(180deg, rgba(255, 249, 225, .92), rgba(246, 238, 210, .96))'
-        : 'linear-gradient(180deg, #fff8df, #f5eccc)',
+      position: 'relative',
+      display: 'grid',
+      width: 'min(1180px, calc(100vw - 48px))',
+      'min-width': '0',
+      'max-width': 'calc(100vw - 48px)',
+      height: 'calc(100dvh - clamp(18px, 2.8vh, 28px))',
+      'min-height': '0',
+      margin: '0 auto',
+      'grid-template-rows': 'clamp(58px, 9vh, 72px) minmax(0, 1fr)',
+      'grid-template-columns': 'minmax(0, 1fr)',
+      gap: 'clamp(8px, 1.5vh, 12px)',
+      'justify-self': 'center',
+      'align-self': 'center',
+      overflow: 'visible',
     });
-    if (!reviewMode) {
-      setImportantStyle(els.sessionHomeButton, {
-        position: 'fixed',
-        left: '18px',
-        top: '18px',
-        width: '46px',
-        height: '46px',
-        display: 'grid',
-        'place-items': 'center',
-        visibility: 'visible',
-        opacity: '1',
-        'pointer-events': 'auto',
-        'z-index': '120',
-      });
-      setImportantStyle(els.comboChip, {
-        display: 'none',
-        visibility: 'hidden',
-        opacity: '0',
-        'pointer-events': 'none',
-      });
-      setImportantStyle(els.modeLabel.parentElement, {
-        display: 'none',
-        visibility: 'hidden',
-        opacity: '0',
-        'pointer-events': 'none',
-      });
-      setImportantStyle(els.sessionMap, {
-        position: 'fixed',
-        left: '50%',
-        top: '2.2vh',
-        width: 'min(620px, 45vw)',
-        height: '70px',
-        display: 'grid',
-        'place-items': 'center',
-        padding: '8px 16px',
-        border: '3px solid #e7b748',
-        'border-radius': '18px',
-        background: 'linear-gradient(180deg, #fffdf4, #fff0bd)',
-        'box-shadow': '0 6px 0 rgba(108, 76, 28, .14), 0 13px 22px rgba(38, 52, 42, .12)',
-        transform: 'translateX(-50%)',
-        overflow: 'hidden',
-        'z-index': '93',
-      });
-      setImportantStyle(els.sessionMap.querySelector('.key-rail'), {
-        display: 'block',
-        width: '100%',
-        height: '100%',
-        margin: '0',
-        padding: '0',
-        background: 'transparent',
-        border: '0',
-        'box-shadow': 'none',
-        overflow: 'hidden',
-      });
-      setImportantStyle(els.sessionMap.querySelector('.session-hud'), {
-        display: 'block',
-        width: '100%',
-        height: '100%',
-        margin: '0',
-        padding: '0',
-        background: 'transparent',
-        border: '0',
-        'box-shadow': 'none',
-        overflow: 'hidden',
-      });
-      setImportantStyle(els.sessionMap.querySelector('.session-progress-label'), {
-        position: 'static',
-        width: '100%',
-        height: '100%',
-        display: 'grid',
-        'grid-template-columns': '138px minmax(0, 1fr)',
-        'align-items': 'center',
-        gap: '18px',
-        padding: '0',
-        border: '0',
-        'border-radius': '0',
-        background: 'transparent',
-        'box-shadow': 'none',
-      });
-      setImportantStyle(els.sessionMap.querySelector('.question-step-label'), {
-        display: 'flex',
-        'align-items': 'baseline',
-        'justify-content': 'center',
-        gap: '5px',
-        color: '#12304a',
-        '-webkit-text-fill-color': '#12304a',
-        'white-space': 'nowrap',
-      });
-      setImportantStyle(els.sessionMap.querySelector('.question-step-label b'), {
-        display: 'inline',
-        width: 'auto',
-        padding: '0',
-        border: '0',
-        background: 'transparent',
-        'box-shadow': 'none',
-        color: '#12304a',
-        '-webkit-text-fill-color': '#12304a',
-        'font-size': '34px',
-        'font-weight': '1000',
-        'line-height': '1',
-      });
-      setImportantStyle(els.sessionMap.querySelector('.question-step-label small'), {
-        display: 'inline',
-        color: '#12304a',
-        '-webkit-text-fill-color': '#12304a',
-        'font-size': '17px',
-        'font-weight': '900',
-        'line-height': '1',
-      });
-      els.sessionMap.querySelectorAll('.session-plaque, .session-item-card, .mini-map-track, .mini-hero, .mini-gate, .map-plus')
-        .forEach((node) => setImportantStyle(node, { display: 'none', visibility: 'hidden' }));
-      setImportantStyle(els.sessionMap.querySelector('.question-pips'), {
-        display: 'grid',
-        'grid-template-columns': 'repeat(5, minmax(0, 1fr))',
-        gap: '8px',
-        'align-items': 'center',
-        width: '100%',
-      });
-      els.sessionMap.querySelectorAll('.question-pips i').forEach((pip) => setImportantStyle(pip, {
-        display: 'block',
-        width: '100%',
-        height: pip.classList.contains('current') ? '22px' : '20px',
-        'border-radius': '999px',
-      }));
-    }
-    if (reviewMode) {
-      const scoreMeter = els.scoreText ? els.scoreText.closest('.meter') : null;
-      const sessionTop = els.modeLabel ? els.modeLabel.closest('.session-top') : null;
-      setImportantStyle(sessionTop, {
-        background: 'transparent',
-        border: '0',
-        'box-shadow': 'none',
-        'pointer-events': 'none',
-        overflow: 'visible',
-      });
-      setImportantStyle(els.comboChip, {
-        display: 'none',
-        visibility: 'hidden',
-        opacity: '0',
-        'pointer-events': 'none',
-      });
-      setImportantStyle(els.modeLabel.parentElement, {
-        display: 'none',
-        visibility: 'hidden',
-        opacity: '0',
-        'pointer-events': 'none',
-      });
-      setImportantStyle(scoreMeter, {
-        display: 'none',
-        visibility: 'hidden',
-        opacity: '0',
-        'pointer-events': 'none',
-      });
-    }
-    setImportantStyle(els.questionCard, reviewMode ? {
-      position: 'fixed',
-      left: compactReview ? `${reviewMargin}px` : (narrowReview ? '6vw' : '3.8vw'),
-      top: compactReview ? `${reviewTop}px` : reviewCardTop,
-      width: compactReview ? `${reviewLeftWidth}px` : (narrowReview ? '88vw' : '56.2vw'),
-      height: compactReview ? `${reviewHeight}px` : reviewCardHeight,
-      display: 'block',
-      background: 'rgba(255, 252, 239, .96)',
-      transform: 'none',
-    } : {
-      position: 'fixed',
-      left: 'max(4vw, calc((100vw - 1120px) / 2))',
-      top: '11.5vh',
-      width: normalShellWidth,
-      height: '84vh',
-      display: 'block',
-      background: 'transparent',
-      border: '4px solid transparent',
-      'border-radius': '24px',
-      'box-shadow': 'none',
-      transform: 'none',
-    });
-    const problemSide = els.questionCard.querySelector('.problem-side');
-    setImportantStyle(problemSide, {
-      position: 'static',
+    setImportantStyle(els.questionCard, {
+      position: 'relative',
+      display: 'grid',
       width: '100%',
       height: '100%',
-      display: 'block',
-    });
-    setImportantStyle(els.visualBoard, reviewMode ? {
-      position: compactReview ? 'fixed' : 'fixed',
-      left: compactReview ? `${reviewRightLeft}px` : 'auto',
-      right: compactReview ? 'auto' : '3.8vw',
-      top: compactReview ? `${reviewTop}px` : reviewCardTop,
-      width: compactReview ? `${reviewRightWidth}px` : '34.2vw',
-      height: compactReview ? `${reviewHeight}px` : 'calc(83.5vh - 138px)',
-      display: narrowReview ? 'none' : 'block',
-      visibility: narrowReview ? 'hidden' : 'visible',
-      'pointer-events': narrowReview ? 'none' : 'auto',
-      transform: 'none',
+      'min-height': '0',
+      'grid-template-rows': 'minmax(0, 1fr)',
+      'grid-template-columns': session && session.reviewOnly
+        ? 'minmax(0, 1fr) minmax(290px, .44fr)'
+        : 'minmax(0, 1fr)',
+      gap: 'clamp(10px, 1.6vw, 22px)',
       overflow: 'hidden',
-      'z-index': '79',
-    } : {
-      display: 'none',
-      visibility: 'hidden',
-      'pointer-events': 'none',
+      transform: 'none',
+    });
+    setImportantStyle(problemSide, {
+      position: 'relative',
+      display: 'grid',
+      width: session && session.reviewOnly ? '100%' : 'min(800px, 100%)',
+      height: '100%',
+      'min-height': '0',
+      'grid-template-columns': 'minmax(0, 1fr)',
+      'grid-template-rows': session && session.reviewOnly
+        ? 'minmax(132px, 1fr) clamp(62px, 10.5vh, 76px) minmax(146px, .82fr)'
+        : 'minmax(132px, 1fr) clamp(62px, 11.5vh, 76px) minmax(154px, .92fr)',
+      'grid-template-areas': '"prompt" "answer" "tenkey"',
+      gap: 'clamp(8px, 1.6vh, 14px)',
+      'justify-self': 'center',
+      overflow: 'hidden',
     });
     setImportantStyle(els.questionText, {
-      position: 'fixed',
-      left: titleLeft,
-      top: titleTop,
-      width: titleWidth,
-      height: titleHeight,
-      'min-height': '0',
-      'max-height': 'none',
+      position: 'relative',
       display: 'grid',
-      'place-items': 'center',
-      padding: '0',
-      margin: '0',
-      overflow: reviewMode ? 'visible' : 'hidden',
-      transform: titleTransform,
-      'z-index': '78',
-    });
-    setImportantStyle(prompt, reviewMode ? {
-      transform: 'none',
-      position: 'static',
-      width: '100%',
-      height: compactReview ? '100%' : 'auto',
-      display: 'grid',
-      'place-items': 'center',
-      overflow: 'visible',
-    } : {
-      transform: 'none',
-      position: 'static',
+      'grid-area': 'prompt',
+      'grid-row': '1',
+      'grid-column': '1',
+      order: '0',
       width: '100%',
       height: '100%',
-      display: 'grid',
-      'grid-template-rows': 'auto minmax(0, 1fr)',
-      'align-items': 'center',
-      'justify-items': 'center',
-      gap: compactNormal ? '4px' : '8px',
-      overflow: 'hidden',
-    });
-    setImportantStyle(els.questionLabel, {
-      position: 'fixed',
-      left: compactReview ? `${reviewMargin + 20}px` : (narrowReview ? '50%' : (reviewMode ? '10.7vw' : '13.5vw')),
-      top: compactReview ? `${reviewTop + 20}px` : (narrowReview ? '13.2vh' : (reviewMode ? '16.3vh' : '15.2vh')),
-      height: compactReview ? '42px' : (narrowReview ? '38px' : '48px'),
-      'min-height': compactReview ? '42px' : (narrowReview ? '38px' : '48px'),
-      display: reviewMode ? 'flex' : 'none',
-      'align-items': 'center',
-      'justify-content': 'center',
-      gap: '8px',
-      padding: compactReview ? '0 20px' : (narrowReview ? '0 18px' : '0 22px'),
-      'line-height': '1',
-      transform: narrowReview ? 'translateX(-50%)' : 'none',
-      'z-index': '80',
-    });
-    setImportantStyle(els.answerInput, {
-      position: 'static',
-      height: reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
-      'min-height': reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
-      'max-height': reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
-      width: '100%',
-      'max-width': 'none',
+      'min-height': '0',
       margin: '0',
       transform: 'none',
-      'grid-column': '1',
-      'grid-row': '1',
-      'grid-area': '1 / 1',
-      'align-self': 'stretch',
-      'justify-self': 'stretch',
-      'box-sizing': 'border-box',
+      overflow: session && session.reviewOnly ? 'visible' : 'hidden',
     });
-    const answerRow = els.answerInput.closest('.answer-row');
     setImportantStyle(answerRow, {
-      position: 'fixed',
-      left: compactReview ? `${reviewLeftCenter}px` : (narrowReview ? '50%' : (reviewMode ? '10.4vw' : '50%')),
-      top: compactReview ? `${reviewAnswerTop}px` : (reviewMode ? '50.6vh' : (compactNormal ? `${compactAnswerTop}px` : '50.8vh')),
-      width: compactReview ? `${reviewLeftWidth}px` : (narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : normalControlsWidth)),
-      'max-width': 'none',
-      height: reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
+      position: 'relative',
       display: 'grid',
-      'grid-template-columns': compactReview ? 'minmax(0, 1fr) 150px' : 'minmax(0, 1fr) 168px',
-      'grid-template-rows': reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
-      gap: compactReview ? '10px' : '12px',
-      'grid-auto-flow': 'column',
-      'align-items': 'stretch',
-      'justify-items': 'stretch',
-      'box-sizing': 'border-box',
-      transform: (!reviewMode || narrowReview || compactReview) ? 'translateX(-50%)' : 'none',
-      'z-index': '81',
-    });
-    setImportantStyle(els.submitButton, {
-      position: 'static',
-      left: 'auto',
-      right: 'auto',
-      top: 'auto',
-      bottom: 'auto',
-      'grid-column': '2',
-      'grid-row': '1',
-      'grid-area': '1 / 2',
-      'align-self': 'stretch',
-      'justify-self': 'stretch',
-      width: compactReview ? '150px' : '168px',
-      height: reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
-      'min-height': reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
-      'max-height': reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
-      display: 'grid',
-      'place-items': 'center',
-      'font-size': 'clamp(26px, 2.4vw, 36px)',
-      'line-height': '1',
-      'z-index': '82',
+      'grid-area': 'answer',
+      'grid-row': '2',
+      'grid-column': '1',
+      order: '0',
+      width: '100%',
+      height: '100%',
+      'min-height': '0',
+      'grid-template-columns': 'minmax(0, 1fr) clamp(132px, 15vw, 168px)',
+      'grid-template-rows': 'minmax(0, 1fr)',
+      gap: 'clamp(8px, 1.2vw, 12px)',
+      transform: 'none',
     });
     setImportantStyle(els.tenkey, {
-      position: 'fixed',
-      left: compactReview ? `${reviewLeftCenter}px` : (narrowReview ? '50%' : (reviewMode ? '10.4vw' : '50%')),
-      top: compactReview ? `${reviewTenkeyTop}px` : (reviewMode ? 'max(61.6vh, calc(50.6vh + 88px))' : (compactNormal ? `${compactTenkeyTop}px` : 'max(61.8vh, calc(50.8vh + 88px))')),
-      width: compactReview ? `${reviewLeftWidth}px` : (narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : normalControlsWidth)),
-      'max-width': 'none',
-      height: compactReview ? `${reviewTenkeyHeight}px` : (reviewMode ? '31.8vh' : normalTenkeyHeight),
-      'min-height': '0',
-      'max-height': compactReview ? `${reviewTenkeyHeight}px` : 'none',
+      position: 'relative',
       display: 'grid',
+      'grid-area': 'tenkey',
+      'grid-row': '3',
+      'grid-column': '1',
+      order: '0',
+      width: '100%',
+      height: '100%',
+      'min-height': '0',
       'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
       'grid-template-rows': 'repeat(4, minmax(0, 1fr))',
-      gap: compactReview ? '6px 12px' : '8px 16px',
-      padding: compactReview ? '8px' : '10px',
-      margin: '0',
-      'box-sizing': 'border-box',
-      transform: (!reviewMode || narrowReview || compactReview) ? 'translateX(-50%)' : 'none',
+      gap: 'clamp(6px, 1.2vh, 10px) clamp(8px, 1.4vw, 16px)',
+      transform: 'none',
       overflow: 'hidden',
-      'align-items': 'stretch',
-      'justify-self': 'stretch',
-      'z-index': '80',
-    });
-    [...els.tenkey.children].forEach((button, index) => {
-      setImportantStyle(button, {
-        order: String(index),
-        'grid-column': String((index % 3) + 1),
-        'grid-row': String(Math.floor(index / 3) + 1),
-        width: '100%',
-        'max-width': 'none',
-        height: '100%',
-        'max-height': 'none',
-        margin: '0',
-        transform: 'none',
-        'align-self': 'stretch',
-        'justify-self': 'stretch',
-        'place-self': 'stretch',
-      });
     });
   }
 
@@ -1114,7 +839,7 @@
     return `
       <span class="review-problem-layout" aria-label="${escapeHtml(q.prompt)}">
         <span class="review-problem-title">${core.formatNumber(v.value)}を <span class="prompt-focus-underline">${escapeHtml(v.checkLabel)}</span>で 四捨五入</span>
-        <span class="review-digit-row">
+        <span class="review-digit-row" style="--digit-count:${digits.length}">
           ${digits.map((digit, index) => `
             <span class="review-digit ${index === focusIndex ? 'is-focus' : ''} ${index === targetIndex ? 'is-target' : ''}">
               ${index === focusIndex ? '<em class="digit-tag look">ここを見る</em>' : ''}
