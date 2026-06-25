@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 489;
+  const APP_VERSION = 492;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -188,22 +188,76 @@
   const IS_LOCAL_DEV = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
   let audioContext = null;
 
+  function isValidQuestion(question) {
+    if (!question || typeof question !== 'object') return false;
+    if (!core.getStage(question.stageId)) return false;
+    if (typeof question.id !== 'string' || !question.id.trim()) return false;
+    if (typeof question.type !== 'string' || !question.type.trim()) return false;
+    if (typeof question.prompt !== 'string' || !question.prompt.trim()) return false;
+    if (!Number.isFinite(Number(question.answer))) return false;
+    if (!question.visual || typeof question.visual !== 'object') return false;
+    return true;
+  }
+
+  function cleanQuestionList(questions, expectedStageId = '') {
+    if (!Array.isArray(questions)) return [];
+    return questions.filter((question) => {
+      if (!isValidQuestion(question)) return false;
+      return !expectedStageId || question.stageId === expectedStageId;
+    });
+  }
+
+  function cleanMistakeList(list, expectedStageId) {
+    if (!Array.isArray(list)) return [];
+    const cleaned = [];
+    list.forEach((mistake) => {
+      if (!mistake || typeof mistake !== 'object') return;
+      if (!isValidQuestion(mistake.question)) return;
+      if (expectedStageId && mistake.question.stageId !== expectedStageId) return;
+      cleaned.push({
+        question: mistake.question,
+        input: core.normalizeAnswerText(String(mistake.input || '')).slice(0, 9),
+        type: mistake.type || mistake.question.type || mistake.question.stageId,
+      });
+    });
+    return cleaned.slice(-12);
+  }
+
+  function sanitizeProgressState(rawProgress) {
+    const next = core.defaultProgress();
+    next.sessions = Math.max(0, Number(rawProgress && rawProgress.sessions) || 0);
+    next.best = Math.max(0, Number(rawProgress && rawProgress.best) || 0);
+    next.bestStreak = Math.max(0, Number(rawProgress && rawProgress.bestStreak) || 0);
+    next.materials = Math.max(0, Number(rawProgress && rawProgress.materials) || 0);
+    next.mistakes = {};
+    next.stageWins = {};
+    core.STAGES.forEach((stage) => {
+      const wins = rawProgress && rawProgress.stageWins ? rawProgress.stageWins[stage.id] : 0;
+      next.stageWins[stage.id] = Math.min(STAGE_GOAL, Math.max(0, Number(wins) || 0));
+      const mistakes = cleanMistakeList(rawProgress && rawProgress.mistakes ? rawProgress.mistakes[stage.id] : [], stage.id);
+      if (mistakes.length) next.mistakes[stage.id] = mistakes;
+    });
+    return next;
+  }
+
   function normalizeActiveSession(saved) {
     if (!saved || typeof saved !== 'object') return null;
-    if (!Array.isArray(saved.questions) || !saved.questions.length) return null;
     const stage = core.getStage(saved.stageId);
     if (!stage) return null;
-    const index = Math.min(saved.questions.length - 1, Math.max(0, Number(saved.index) || 0));
+    if (!Boolean(saved.reviewOnly) && !isStageUnlocked(stage.id)) return null;
+    const questions = cleanQuestionList(saved.questions, saved.reviewOnly ? stage.id : '');
+    if (!questions.length) return null;
+    const index = Math.min(questions.length - 1, Math.max(0, Number(saved.index) || 0));
     return {
       reviewOnly: Boolean(saved.reviewOnly),
       stageId: stage.id,
-      questions: saved.questions,
+      questions,
       index,
-      correct: Math.max(0, Number(saved.correct) || 0),
-      streak: Math.max(0, Number(saved.streak) || 0),
+      correct: Math.min(questions.length, Math.max(0, Number(saved.correct) || 0)),
+      streak: Math.min(questions.length, Math.max(0, Number(saved.streak) || 0)),
       bestStreak: Math.max(0, Number(saved.bestStreak) || 0),
-      mistakes: Array.isArray(saved.mistakes) ? saved.mistakes : [],
-      reviewMistakes: Array.isArray(saved.reviewMistakes) ? saved.reviewMistakes : [],
+      mistakes: cleanMistakeList(saved.mistakes, stage.id),
+      reviewMistakes: cleanMistakeList(saved.reviewMistakes, stage.id),
       pathCorrectMarks: Array.isArray(saved.pathCorrectMarks) ? saved.pathCorrectMarks : [],
       pathMissMarks: Array.isArray(saved.pathMissMarks) ? saved.pathMissMarks : [],
       returnResultAfterReview: saved.returnResultAfterReview || null,
@@ -257,6 +311,11 @@
   function resumeActiveSession() {
     const saved = loadActiveSession();
     if (!saved) return false;
+    const pendingStageId = getPendingReviewStageId();
+    if (pendingStageId && (!saved.reviewOnly || saved.stageId !== pendingStageId)) {
+      clearActiveSession();
+      return false;
+    }
     session = saved;
     selectedStageId = saved.stageId;
     show(els.sessionView);
@@ -457,7 +516,11 @@
       renderStageSelect();
       renderHomeStats();
     }
-    const reviewMistakes = ((progress.mistakes || {})[selectedStageId] || []).slice(-10);
+    const reviewMistakes = cleanMistakeList(((progress.mistakes || {})[selectedStageId] || []).slice(-10), selectedStageId);
+    if (reviewOnly && reviewMistakes.length !== (((progress.mistakes || {})[selectedStageId] || []).slice(-10)).length) {
+      progress.mistakes[selectedStageId] = reviewMistakes;
+      core.saveProgress(localStorage, progress);
+    }
     const reviewQuestions = reviewMistakes.map((mistake) => mistake.question);
     if (reviewOnly && !reviewQuestions.length) {
       renderHomeStats();
@@ -492,6 +555,15 @@
 
   function renderQuestion() {
     const q = session.questions[session.index];
+    if (!isValidQuestion(q)) {
+      clearActiveSession();
+      session = null;
+      progress = sanitizeProgressState(progress);
+      core.saveProgress(localStorage, progress);
+      renderHomeStats();
+      show(els.homeView);
+      return;
+    }
     const stage = core.getStage(q.stageId);
     if (session.advanceTimer) {
       window.clearTimeout(session.advanceTimer);
@@ -1588,8 +1660,9 @@
   function persistSessionMistakes() {
     if (!session || !session.mistakes.length) return;
     progress.mistakes = progress.mistakes || {};
-    const merged = [...(progress.mistakes[session.stageId] || [])];
+    const merged = cleanMistakeList(progress.mistakes[session.stageId] || [], session.stageId);
     session.mistakes.forEach((mistake) => {
+      if (!mistake || !isValidQuestion(mistake.question)) return;
       const existingIndex = merged.findIndex((item) => isSameQuestion(item.question, mistake.question));
       if (existingIndex >= 0) merged[existingIndex] = mistake;
       else merged.push(mistake);
@@ -1745,7 +1818,7 @@
 
   function getPendingReviewStageId() {
     const mistakes = progress.mistakes || {};
-    const stage = core.STAGES.find((item) => Array.isArray(mistakes[item.id]) && mistakes[item.id].length > 0);
+    const stage = core.STAGES.find((item) => cleanMistakeList(mistakes[item.id], item.id).length > 0);
     return stage ? stage.id : null;
   }
 
@@ -1769,10 +1842,10 @@
           ? '全120問クリア！がい数マスターです'
           : `今の目的：${selectedStage.artifact}をあと${stageRemaining}こ集めよう`;
     }
-    els.startButton.textContent = loadActiveSession()
-      ? 'つづきから'
-      : hasMistakes
+    els.startButton.textContent = hasMistakes
         ? '見直しクエストへ'
+      : loadActiveSession()
+        ? 'つづきから'
         : isStageCleared(selectedStageId)
           ? 'もう一度とく'
           : 'はじめる';
@@ -2178,6 +2251,8 @@
     RPG_ASSETS.finalClear,
     ...core.STAGES.map((stage) => stage.image),
   ]);
+  progress = sanitizeProgressState(progress);
+  core.saveProgress(localStorage, progress);
   renderTenkey();
   renderHomeStats();
   renderStageSelect();
