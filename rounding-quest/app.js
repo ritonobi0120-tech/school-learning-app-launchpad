@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 497;
+  const APP_VERSION = 498;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
