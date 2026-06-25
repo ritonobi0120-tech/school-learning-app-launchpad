@@ -390,11 +390,12 @@
     width: 100% !important;
     height: 100% !important;
     display: grid !important;
-    grid-template-rows: auto minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
     align-items: center !important;
     justify-items: center !important;
     align-content: center !important;
     gap: clamp(4px, 1.2vh, 9px) !important;
+    padding-block: clamp(10px, 2.2vh, 20px) !important;
     overflow: hidden !important;
     transform: none !important;
   }
@@ -895,5 +896,50 @@ html body.result-mode main.app-shell section#resultView.result-view > .mistake-l
 
   html body.result-mode main.app-shell section#resultView.result-view.final-clear > .mistake-list {
     display: none !important;
+  }
+}
+
+/* Stable home action placement: keep "はじめから" visible on short PC windows. */
+@media (min-width: 600px) {
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions {
+    position: fixed !important;
+    left: clamp(22px, 7.8vw, 106px) !important;
+    top: clamp(248px, 49vh, 392px) !important;
+    width: clamp(520px, 53vw, 680px) !important;
+    height: clamp(58px, 10.5vh, 76px) !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) clamp(136px, 13vw, 172px) !important;
+    grid-auto-flow: column !important;
+    gap: clamp(8px, 1vw, 14px) !important;
+    align-items: center !important;
+    justify-items: stretch !important;
+    z-index: 190 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #startButton.start-cta,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #restartButton.fresh-start-button {
+    position: static !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    transform: none !important;
+    white-space: nowrap !important;
+    pointer-events: auto !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #startButton.start-cta {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #restartButton.fresh-start-button {
+    height: clamp(42px, 8vh, 54px) !important;
+    align-self: center !important;
+    font-size: clamp(17px, 2.4vh, 22px) !important;
   }
 }
