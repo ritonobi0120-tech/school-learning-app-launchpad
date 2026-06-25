@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 481;
+  const APP_VERSION = 482;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -1463,17 +1463,74 @@
       noticeTimer = null;
     }
     if (!els.feedbackBox.classList.contains('notice')) return;
+    resetEmptyNoticeStyle();
     els.feedbackBox.className = 'feedback hidden';
     els.feedbackBox.innerHTML = '';
+  }
+
+  function resetEmptyNoticeStyle() {
+    [
+      'position',
+      'left',
+      'right',
+      'top',
+      'bottom',
+      'width',
+      'height',
+      'min-height',
+      'max-height',
+      'padding',
+      'display',
+      'align-items',
+      'justify-content',
+      'gap',
+      'transform',
+      'z-index',
+      'box-sizing',
+      'pointer-events',
+    ].forEach((key) => els.feedbackBox.style.removeProperty(key));
   }
 
   function showNoticeFeedback(message) {
     clearNoticeFeedback();
     els.feedbackBox.className = 'feedback notice empty-notice';
     els.feedbackBox.innerHTML = `<strong>${message}</strong>`;
+    positionEmptyNotice();
+    window.requestAnimationFrame(positionEmptyNotice);
     noticeTimer = window.setTimeout(() => {
       clearNoticeFeedback();
     }, 1700);
+  }
+
+  function positionEmptyNotice() {
+    if (!els.feedbackBox.classList.contains('empty-notice')) return;
+    const inputRect = els.answerInput.getBoundingClientRect();
+    if (!inputRect.width || !inputRect.height) return;
+    const isTiny = window.innerWidth < 420;
+    const height = isTiny ? 42 : 48;
+    const width = Math.max(188, Math.min(isTiny ? inputRect.width - 20 : 340, inputRect.width - 28));
+    const left = inputRect.left + ((inputRect.width - width) / 2);
+    const top = inputRect.top + Math.max(5, (inputRect.height - height) / 2);
+    setImportantStyle(els.feedbackBox, {
+      position: 'fixed',
+      left: `${Math.round(left)}px`,
+      right: 'auto',
+      top: `${Math.round(top)}px`,
+      bottom: 'auto',
+      width: `${Math.round(width)}px`,
+      height: `${height}px`,
+      'min-height': `${height}px`,
+      'max-height': `${height}px`,
+      padding: isTiny ? '0 10px' : '0 14px',
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+      gap: isTiny ? '7px' : '9px',
+      transform: 'none',
+      'z-index': '140',
+      'box-sizing': 'border-box',
+      'pointer-events': 'none',
+    });
   }
 
   function pressTenkey(key) {

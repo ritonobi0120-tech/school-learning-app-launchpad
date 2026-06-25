@@ -1080,3 +1080,46 @@ html body.session-mode main.app-shell section#sessionView.work-area.review-mode 
     font-size: clamp(18px, 1.8vw, 24px) !important;
   }
 }
+
+/* v482: empty-answer notice belongs to the answer box, not the side panels. */
+html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice {
+  border: 3px solid #e0ad32 !important;
+  border-radius: 14px !important;
+  background: linear-gradient(180deg, #fff9de, #ffe9a6) !important;
+  color: #533500 !important;
+  -webkit-text-fill-color: #533500 !important;
+  box-shadow: 0 5px 0 rgba(117, 82, 10, .18), 0 10px 20px rgba(61, 44, 10, .14) !important;
+  animation: feedbackPop .2s cubic-bezier(.19, 1, .22, 1) !important;
+}
+
+html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice::before {
+  content: "!" !important;
+  width: 24px !important;
+  height: 24px !important;
+  flex: 0 0 24px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  border-radius: 50% !important;
+  background: #d28a00 !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  font-size: 16px !important;
+  font-weight: 1000 !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+}
+
+html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice strong {
+  display: block !important;
+  min-width: 0 !important;
+  font-size: clamp(16px, 1.8vw, 21px) !important;
+  font-weight: 1000 !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 420px) {
+  html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice strong {
+    font-size: 15px !important;
+  }
+}
