@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 474;
+  const APP_VERSION = 475;
   const CORRECT_FX_MS = 760;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -286,11 +286,46 @@
       || hasMistakes;
   }
 
-  function startFromBeginning() {
+  function showFreshStartConfirm() {
+    return new Promise((resolve) => {
+      document.querySelectorAll('.fresh-start-confirm').forEach((node) => node.remove());
+      const overlay = document.createElement('div');
+      overlay.className = 'fresh-start-confirm';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+      overlay.setAttribute('aria-labelledby', 'freshStartTitle');
+      overlay.innerHTML = `
+        <div class="fresh-start-panel">
+          <strong id="freshStartTitle">はじめからにする？</strong>
+          <p>これまでの進みぐあいを消して、最初の問題から始めます。</p>
+          <p class="fresh-start-warning">あとから元にもどせません。</p>
+          <div>
+            <button type="button" class="fresh-cancel">やめる</button>
+            <button type="button" class="fresh-accept">はじめから</button>
+          </div>
+        </div>
+      `;
+      const finish = (answer) => {
+        document.removeEventListener('keydown', onKeyDown);
+        overlay.remove();
+        resolve(answer);
+      };
+      const onKeyDown = (event) => {
+        if (event.key === 'Escape') finish(false);
+      };
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay || event.target.closest('.fresh-cancel')) finish(false);
+        if (event.target.closest('.fresh-accept')) finish(true);
+      });
+      document.addEventListener('keydown', onKeyDown);
+      document.body.appendChild(overlay);
+      overlay.querySelector('.fresh-cancel')?.focus();
+    });
+  }
+
+  async function startFromBeginning() {
     if (hasSavedProgressData()) {
-      const confirmed = window.confirm(
-        'これまでの進みぐあいを消して、はじめからにします。\nあとから元にもどせません。\n本当にはじめからにしますか？'
-      );
+      const confirmed = await showFreshStartConfirm();
       if (!confirmed) return;
     }
     clearActiveSession();
@@ -2187,10 +2222,10 @@
     if (resumeActiveSession()) return;
     startSession(Boolean(getPendingReviewStageId()));
   });
-  els.restartButton.addEventListener('click', () => {
+  els.restartButton.addEventListener('click', async () => {
     unlockAudio();
     playSound('tap');
-    startFromBeginning();
+    await startFromBeginning();
   });
   els.reviewButton.addEventListener('click', () => {
     unlockAudio();
