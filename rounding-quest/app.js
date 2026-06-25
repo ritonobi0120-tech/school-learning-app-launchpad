@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 492;
+  const APP_VERSION = 493;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -178,6 +178,7 @@
 
   let progress = core.loadProgress(localStorage);
   let selectedStageId = 'round-digit';
+  let homeStageManuallySelected = false;
   let session = null;
   let noticeTimer = null;
   let ignoreEmptySubmitUntil = 0;
@@ -394,6 +395,7 @@
     session = null;
     progress = core.defaultProgress();
     selectedStageId = core.STAGES[0].id;
+    homeStageManuallySelected = false;
     core.saveProgress(localStorage, progress);
     renderStageSelect();
     renderHomeStats();
@@ -1813,7 +1815,38 @@
       selectedStageId = pendingStageId;
       return;
     }
+    const saved = loadActiveSession();
+    if (!homeStageManuallySelected && saved && !saved.reviewOnly && isStageUnlocked(saved.stageId)) {
+      selectedStageId = saved.stageId;
+      return;
+    }
     if (!isStageUnlocked(selectedStageId)) selectedStageId = getHighestUnlockedStage().id;
+  }
+
+  function selectHomeStage(stageId, { sound = false } = {}) {
+    const pendingStageId = getPendingReviewStageId();
+    if (pendingStageId || !isStageUnlocked(stageId)) return false;
+    homeStageManuallySelected = true;
+    if (selectedStageId === stageId) return true;
+    if (sound) playSound('tap');
+    selectedStageId = stageId;
+    renderStageSelect();
+    renderHomeStats();
+    return true;
+  }
+
+  function startHomeSelection() {
+    const pendingStageId = getPendingReviewStageId();
+    if (pendingStageId) {
+      selectedStageId = pendingStageId;
+      clearActiveSession();
+      startSession(true);
+      return;
+    }
+    const saved = loadActiveSession();
+    if (saved && saved.stageId === selectedStageId && resumeActiveSession()) return;
+    if (saved && saved.stageId !== selectedStageId) clearActiveSession();
+    startSession(false);
   }
 
   function getPendingReviewStageId() {
@@ -1842,9 +1875,10 @@
           ? '全120問クリア！がい数マスターです'
           : `今の目的：${selectedStage.artifact}をあと${stageRemaining}こ集めよう`;
     }
+    const savedSession = loadActiveSession();
     els.startButton.textContent = hasMistakes
         ? '見直しクエストへ'
-      : loadActiveSession()
+      : savedSession && savedSession.stageId === selectedStageId
         ? 'つづきから'
         : isStageCleared(selectedStageId)
           ? 'もう一度とく'
@@ -2095,6 +2129,7 @@
       const progressPct = `${Math.round((Math.min(STAGE_GOAL, best) / STAGE_GOAL) * 100)}%`;
       return `
         <button class="stage-card ${active} ${stateClass}" type="button" data-stage="${stage.id}" data-state-label="${stateLabel}" aria-pressed="${stage.id === selectedStageId ? 'true' : 'false'}" ${unlocked && !blockedByReview ? '' : 'disabled'}>
+          <img class="stage-select-pencil" src="${img('assets/generated/pencil-quest-item.png')}" alt="">
           <b class="stage-order" aria-hidden="true">${stage.order}</b>
           <img class="stage-bg" src="${img(stage.image)}" alt="">
           <img class="stage-badge" src="${stageCardBadge(stage.id)}" alt="">
@@ -2108,22 +2143,16 @@
       `;
     }).join('');
     els.stageSelect.querySelectorAll('[data-stage]').forEach((button) => {
+      const stageId = button.dataset.stage;
+      button.addEventListener('pointerenter', () => {
+        selectHomeStage(stageId);
+      });
+      button.addEventListener('focus', () => {
+        selectHomeStage(stageId);
+      });
       button.addEventListener('click', () => {
-        const stageId = button.dataset.stage;
-        const pendingStageId = getPendingReviewStageId();
-        const canStart = selectedStageId === stageId && isStageUnlocked(stageId) && !pendingStageId;
-        const saved = loadActiveSession();
-        if (saved && saved.stageId !== stageId) {
-          clearActiveSession();
-        }
-        selectedStageId = stageId;
-        renderStageSelect();
-        renderHomeStats();
-        if (canStart) {
-          unlockAudio();
-          playSound('tap');
-          startSession(false);
-        }
+        unlockAudio();
+        selectHomeStage(stageId, { sound: true });
       });
     });
   }
@@ -2131,8 +2160,7 @@
   els.startButton.addEventListener('click', () => {
     unlockAudio();
     playSound('tap');
-    if (resumeActiveSession()) return;
-    startSession(Boolean(getPendingReviewStageId()));
+    startHomeSelection();
   });
   els.restartButton.addEventListener('click', async () => {
     unlockAudio();
@@ -2159,8 +2187,7 @@
       playSound('tap');
       const action = button.dataset.homeAction;
       if (action === 'start') {
-        if (resumeActiveSession()) return;
-        startSession(false);
+        startHomeSelection();
       } else if (action === 'review') {
         if (!getPendingReviewStageId()) {
           renderHomeStats();

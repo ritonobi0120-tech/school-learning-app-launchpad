@@ -1652,10 +1652,48 @@ html body.result-mode main.app-shell section#resultView.result-view.final-clear 
   background: var(--rounding-home-icon) center / contain no-repeat !important;
 }
 
+/* v493: stage cards only select; the pencil marks the selected destination. */
+html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card {
+  cursor: pointer !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select {
+  z-index: 230 !important;
+  pointer-events: auto !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy p.save-note {
+  z-index: 80 !important;
+  pointer-events: none !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-select-pencil {
+  position: absolute !important;
+  right: clamp(8px, 1vw, 14px) !important;
+  top: clamp(8px, 1vw, 14px) !important;
+  width: clamp(34px, 4.2vw, 52px) !important;
+  height: clamp(34px, 4.2vw, 52px) !important;
+  object-fit: contain !important;
+  opacity: 0 !important;
+  transform: rotate(-16deg) scale(.86) !important;
+  transform-origin: center !important;
+  transition: opacity .16s ease, transform .16s ease !important;
+  pointer-events: none !important;
+  z-index: 8 !important;
+  filter: drop-shadow(0 5px 0 rgba(74, 46, 13, .18)) !important;
+}
+
+html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card.active .stage-select-pencil,
+html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card:hover .stage-select-pencil,
+html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card:focus-visible .stage-select-pencil {
+  opacity: 1 !important;
+  transform: rotate(-16deg) scale(1) !important;
+}
+
 /* v487: keep the retry hint arrow and right guide panel stable on PC/Chromebook. */
 @media (min-width: 600px) {
   html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card {
-    grid-template-columns: minmax(0, 1fr) clamp(280px, 29vw, 350px) !important;
+    grid-template-columns: minmax(0, 1fr) clamp(250px, 26vw, 310px) !important;
     gap: clamp(14px, 1.7vw, 22px) !important;
     align-items: stretch !important;
   }
@@ -1665,7 +1703,7 @@ html body.result-mode main.app-shell section#resultView.result-view.final-clear 
   }
 
   html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card h3#questionText {
-    padding-top: clamp(30px, 4.8vh, 42px) !important;
+    padding-top: clamp(20px, 3.4vh, 34px) !important;
   }
 
   html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card h3#questionText .review-problem-layout {
@@ -1766,9 +1804,9 @@ html body.result-mode main.app-shell section#resultView.result-view.final-clear 
   html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board {
     height: 100% !important;
     display: grid !important;
-    grid-template-rows: auto minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
     gap: clamp(12px, 2vh, 18px) !important;
-    align-content: stretch !important;
+    align-content: center !important;
     padding: clamp(12px, 2vh, 18px) clamp(12px, 1.4vw, 18px) !important;
     overflow: hidden !important;
   }
@@ -1794,12 +1832,12 @@ html body.result-mode main.app-shell section#resultView.result-view.final-clear 
 
   html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps {
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
     display: grid !important;
     grid-template-columns: 1fr !important;
-    grid-template-rows: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-rows: repeat(3, minmax(clamp(58px, 10vh, 76px), auto)) !important;
     gap: clamp(10px, 1.8vh, 14px) !important;
-    align-content: stretch !important;
+    align-content: start !important;
     min-height: 0 !important;
     overflow: hidden !important;
   }
