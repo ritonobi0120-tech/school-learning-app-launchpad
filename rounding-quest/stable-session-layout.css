@@ -981,3 +981,292 @@ html body.result-mode main.app-shell section#resultView.result-view.final-clear 
   height: 46px !important;
   background: var(--rounding-home-icon) center / contain no-repeat !important;
 }
+
+/* v487: keep the retry hint arrow and right guide panel stable on PC/Chromebook. */
+@media (min-width: 600px) {
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card {
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 29vw, 350px) !important;
+    gap: clamp(14px, 1.7vw, 22px) !important;
+    align-items: stretch !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.problem-side {
+    grid-template-rows: minmax(150px, 1fr) clamp(62px, 10.5vh, 76px) minmax(154px, .86fr) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card h3#questionText {
+    padding-top: clamp(30px, 4.8vh, 42px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card h3#questionText .review-problem-layout {
+    grid-template-rows: auto minmax(104px, 1fr) !important;
+    align-content: center !important;
+    justify-items: center !important;
+    gap: clamp(10px, 1.8vh, 18px) !important;
+    overflow: visible !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-problem-title {
+    width: 100% !important;
+    font-size: clamp(27px, 4.4vh, 34px) !important;
+    line-height: 1.08 !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit-row {
+    width: min(100%, 440px) !important;
+    padding-top: clamp(34px, 5.3vh, 44px) !important;
+    display: grid !important;
+    grid-template-columns: repeat(var(--digit-count, 3), minmax(0, 1fr)) !important;
+    gap: clamp(10px, 1.2vw, 14px) !important;
+    align-items: stretch !important;
+    justify-items: center !important;
+    overflow: visible !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit {
+    position: relative !important;
+    width: 100% !important;
+    height: clamp(82px, 13.5vh, 112px) !important;
+    min-height: 0 !important;
+    display: grid !important;
+    place-items: end center !important;
+    overflow: visible !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit b {
+    width: min(100%, 118px) !important;
+    height: clamp(64px, 10.2vh, 86px) !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 14px !important;
+    background: #fffdf7 !important;
+    border: 4px solid #d6bf7b !important;
+    box-shadow: 0 5px 0 rgba(114, 72, 26, .18) !important;
+    font-size: clamp(46px, 8.7vh, 72px) !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit.is-focus b {
+    background: #fff0b9 !important;
+    border-color: #c86a12 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag {
+    position: absolute !important;
+    top: -10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    min-width: 84px !important;
+    height: 28px !important;
+    padding: 0 10px !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 10px !important;
+    background: #a95607 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    font-size: clamp(13px, 1.25vw, 16px) !important;
+    font-style: normal !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    z-index: 3 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 50% !important;
+    bottom: -8px !important;
+    transform: translateX(-50%) !important;
+    border-left: 10px solid transparent !important;
+    border-right: 10px solid transparent !important;
+    border-top: 9px solid #a95607 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side {
+    border-radius: 20px !important;
+    border: 4px solid #e4c47e !important;
+    background: rgba(255, 252, 239, .96) !important;
+    box-shadow: 0 8px 0 rgba(122, 77, 17, .12), 0 16px 28px rgba(17, 74, 87, .13) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board {
+    height: 100% !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: clamp(12px, 2vh, 18px) !important;
+    align-content: stretch !important;
+    padding: clamp(12px, 2vh, 18px) clamp(12px, 1.4vw, 18px) !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board > p {
+    width: fit-content !important;
+    margin: 0 auto !important;
+    padding: 10px 22px !important;
+    border-radius: 12px !important;
+    background: #0f766e !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    font-size: clamp(24px, 2.3vw, 32px) !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    box-shadow: 0 6px 0 rgba(5, 70, 72, .22) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-number {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps {
+    width: 100% !important;
+    height: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: repeat(3, minmax(0, 1fr)) !important;
+    gap: clamp(10px, 1.8vh, 14px) !important;
+    align-content: stretch !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps li {
+    height: auto !important;
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-columns: clamp(42px, 4.6vw, 56px) minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: clamp(8px, 1.1vw, 12px) !important;
+    padding: clamp(8px, 1.3vh, 12px) clamp(8px, 1.1vw, 14px) !important;
+    border-radius: 14px !important;
+    background: rgba(255, 251, 240, .98) !important;
+    border: 2px solid #e4c47e !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps b {
+    width: clamp(40px, 4.2vw, 52px) !important;
+    height: clamp(40px, 4.2vw, 52px) !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 50% !important;
+    background: #0f766e !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    font-size: clamp(22px, 2.4vw, 30px) !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps span {
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #3a2414 !important;
+    -webkit-text-fill-color: #3a2414 !important;
+    font-size: clamp(20px, 2vw, 28px) !important;
+    font-weight: 1000 !important;
+    line-height: 1.12 !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps span strong {
+    color: #9a4f08 !important;
+    -webkit-text-fill-color: #9a4f08 !important;
+    font-size: 1.18em !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-answer-step button {
+    max-width: 100% !important;
+    min-height: 44px !important;
+    padding: 0 clamp(12px, 1.4vw, 18px) !important;
+    border-radius: 14px !important;
+    font-size: clamp(18px, 1.75vw, 24px) !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-answer-reveal {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board.answer-open .review-answer-step button {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board.answer-open .review-answer-reveal {
+    display: inline-grid !important;
+    place-items: center !important;
+    min-width: 120px !important;
+    min-height: 54px !important;
+    padding: 4px 18px !important;
+    border-radius: 14px !important;
+    background: #fff4c8 !important;
+    border: 4px solid #c86a12 !important;
+    color: #3a2414 !important;
+    -webkit-text-fill-color: #3a2414 !important;
+    font-size: clamp(30px, 4vw, 46px) !important;
+    line-height: 1 !important;
+  }
+}
+
+@media (min-width: 600px) and (max-height: 620px) {
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.problem-side {
+    grid-template-rows: minmax(126px, 1fr) 62px minmax(140px, .82fr) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card h3#questionText {
+    padding-top: 28px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-problem-title {
+    font-size: clamp(24px, 4.1vh, 30px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit-row {
+    width: min(100%, 360px) !important;
+    padding-top: 34px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit {
+    height: 84px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit b {
+    width: min(100%, 86px) !important;
+    height: 62px !important;
+    font-size: 48px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .digit-tag {
+    min-width: 78px !important;
+    height: 27px !important;
+    font-size: 13px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board {
+    gap: 10px !important;
+    padding: 12px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .focus-board > p {
+    padding: 9px 18px !important;
+    font-size: clamp(22px, 4.2vh, 28px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps {
+    gap: 10px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode div#visualBoard.visual-side .review-steps span {
+    font-size: clamp(18px, 3.3vh, 24px) !important;
+  }
+}

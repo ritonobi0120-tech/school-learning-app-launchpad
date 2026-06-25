@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 486;
+  const APP_VERSION = 487;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -626,7 +626,7 @@
       'min-height': '0',
       'grid-template-rows': 'minmax(0, 1fr)',
       'grid-template-columns': session && session.reviewOnly
-        ? 'minmax(0, 1fr) minmax(290px, .44fr)'
+        ? 'minmax(0, 1fr) clamp(280px, 29vw, 350px)'
         : 'minmax(0, 1fr)',
       gap: 'clamp(10px, 1.6vw, 22px)',
       overflow: 'hidden',
@@ -640,7 +640,7 @@
       'min-height': '0',
       'grid-template-columns': 'minmax(0, 1fr)',
       'grid-template-rows': session && session.reviewOnly
-        ? 'minmax(132px, 1fr) clamp(62px, 10.5vh, 76px) minmax(146px, .82fr)'
+        ? 'minmax(150px, 1fr) clamp(62px, 10.5vh, 76px) minmax(154px, .86fr)'
         : 'minmax(132px, 1fr) clamp(62px, 11.5vh, 76px) minmax(154px, .92fr)',
       'grid-template-areas': '"prompt" "answer" "tenkey"',
       gap: 'clamp(8px, 1.6vh, 14px)',
@@ -922,7 +922,7 @@
     els.visualBoard.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
     els.visualBoard.innerHTML = `
       <div class="focus-board">
-        <p>ここを見る</p>
+        <p>見方</p>
         <div class="focus-number" aria-label="${v.value}の${v.checkLabel}">
           ${digits.map((digit, index) => `<span class="${index === focusIndex ? 'focus' : ''}">${digit}</span>`).join('')}
         </div>
