@@ -728,3 +728,65 @@ html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .he
 html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select {
   z-index: 50 !important;
 }
+
+/* v477: replace the thin home glyph with one centered reusable icon. */
+:root {
+  --rounding-home-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23155869' d='M31.9 7.8a3.5 3.5 0 0 1 4.5 0l22.7 19.3a3.4 3.4 0 0 1-2.2 6h-3.1v18.5a5.4 5.4 0 0 1-5.4 5.4H17.6a5.4 5.4 0 0 1-5.4-5.4V33.1H9.1a3.4 3.4 0 0 1-2.2-6L31.9 7.8Z'/%3E%3Cpath fill='%23fff8e4' d='M18.4 30.9 34.1 17.8 48 30.1v20.1H37.9V38.8H26.1v11.4h-7.7V30.9Z'/%3E%3Cpath fill='%23ffe39b' d='M28.6 50.2V41.1h6.8v9.1h-6.8Z'/%3E%3Cpath fill='%23155869' d='M43.5 16.8h7.1v10.1l-7.1-6.1v-4Z'/%3E%3C/svg%3E") !important;
+}
+
+html body.session-mode main.app-shell section#sessionView.work-area button#sessionHomeButton.session-home-button,
+html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) button#sessionHomeButton.session-home-button,
+html body.session-mode main.app-shell section#sessionView.work-area.review-mode button#sessionHomeButton.session-home-button,
+html body.result-mode main.app-shell section#resultView.result-view .result-actions #homeButton,
+html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton,
+html body.result-mode main.app-shell section#resultView.result-view.review-result.clean-result .result-actions #homeButton,
+html body.result-mode main.app-shell section#resultView.result-view.final-clear .result-actions #homeButton {
+  display: grid !important;
+  place-items: center !important;
+  align-content: center !important;
+  justify-content: center !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+html body.session-mode main.app-shell section#sessionView.work-area button#sessionHomeButton.session-home-button::before,
+html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) button#sessionHomeButton.session-home-button::before,
+html body.session-mode main.app-shell section#sessionView.work-area.review-mode button#sessionHomeButton.session-home-button::before,
+html body.result-mode main.app-shell section#resultView.result-view .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.review-result.clean-result .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.final-clear .result-actions #homeButton::before {
+  content: "" !important;
+  display: block !important;
+  width: 38px !important;
+  height: 38px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: var(--rounding-home-icon) center / contain no-repeat !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+  transform: translateY(1px) !important;
+}
+
+html body.session-mode main.app-shell section#sessionView.work-area button#sessionHomeButton.session-home-button::after,
+html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) button#sessionHomeButton.session-home-button::after,
+html body.session-mode main.app-shell section#sessionView.work-area.review-mode button#sessionHomeButton.session-home-button::after,
+html body.result-mode main.app-shell section#resultView.result-view .result-actions #homeButton::after,
+html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton::after,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton::after,
+html body.result-mode main.app-shell section#resultView.result-view.review-result.clean-result .result-actions #homeButton::after,
+html body.result-mode main.app-shell section#resultView.result-view.final-clear .result-actions #homeButton::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body.session-mode main.app-shell section#sessionView.work-area button#sessionHomeButton.session-home-button::before,
+html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) button#sessionHomeButton.session-home-button::before,
+html body.session-mode main.app-shell section#sessionView.work-area.review-mode button#sessionHomeButton.session-home-button::before {
+  width: 34px !important;
+  height: 34px !important;
+}
