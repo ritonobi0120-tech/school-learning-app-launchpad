@@ -790,3 +790,72 @@ html body.session-mode main.app-shell section#sessionView.work-area.review-mode 
   width: 34px !important;
   height: 34px !important;
 }
+
+/* v479: short PC/Chromebook guard. The problem number, answer row, and keypad
+   must use separate slots so browser zoom cannot make them overlap. */
+@media (min-width: 600px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText {
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout.number-below {
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    align-items: center !important;
+    justify-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    gap: clamp(4px, 1vh, 8px) !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-task-first {
+    width: 100% !important;
+    text-align: center !important;
+    line-height: 1.05 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-main-number {
+    display: grid !important;
+    place-items: center !important;
+    width: min(520px, 100%) !important;
+    min-width: 0 !important;
+    height: clamp(82px, 14vh, 112px) !important;
+    min-height: 0 !important;
+    max-height: clamp(82px, 14vh, 112px) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    line-height: .9 !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (min-width: 600px) and (max-height: 680px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-task-first {
+    font-size: clamp(23px, 4.4vh, 31px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-main-number {
+    height: clamp(80px, 14.2vh, 96px) !important;
+    max-height: clamp(80px, 14.2vh, 96px) !important;
+    font-size: clamp(66px, 12.5vh, 88px) !important;
+    line-height: .86 !important;
+  }
+}
+
+@media (min-width: 600px) and (max-height: 560px) {
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout.number-below {
+    gap: 3px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-task-first {
+    font-size: clamp(21px, 4.2vh, 27px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-main-number {
+    height: clamp(72px, 13.4vh, 84px) !important;
+    max-height: clamp(72px, 13.4vh, 84px) !important;
+    font-size: clamp(60px, 11.4vh, 76px) !important;
+  }
+}

@@ -1,12 +1,13 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 478;
+  const APP_VERSION = 479;
   const CORRECT_FX_MS = 760;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
-  if (shownVersion && shownVersion < APP_VERSION) {
+  const hasVersionParam = params.has('cb') || params.has('v');
+  if (!hasVersionParam || shownVersion !== APP_VERSION) {
     params.set('cb', String(APP_VERSION));
     params.set('v', String(APP_VERSION));
     window.location.replace(`${window.location.pathname}?${params.toString()}${window.location.hash}`);
@@ -561,31 +562,37 @@
     const narrowReview = reviewMode && viewportWidth > 0 && viewportWidth <= 1180;
     const compactNormal = !reviewMode && viewportHeight > 0 && viewportHeight <= 680;
     const tightNormal = !reviewMode && viewportHeight > 0 && viewportHeight <= 560;
-    const compactAnswerTop = compactNormal
+    const compactTitleTop = compactNormal ? (tightNormal ? 82 : 90) : null;
+    const compactTitleHeight = compactNormal
       ? (tightNormal
-        ? Math.max(244, Math.min(262, Math.round(viewportHeight * 0.485)))
-        : Math.max(286, Math.round(viewportHeight * 0.48)))
+        ? Math.max(138, Math.min(150, Math.round(viewportHeight * 0.285)))
+        : Math.max(164, Math.min(184, Math.round(viewportHeight * 0.28))))
       : null;
-    const compactAnswerHeight = tightNormal ? 68 : 76;
-    const compactTenkeyTop = compactNormal ? compactAnswerTop + compactAnswerHeight + (tightNormal ? 22 : 14) : null;
+    const compactAnswerTop = compactNormal
+      ? (compactTitleTop + compactTitleHeight + (tightNormal ? 12 : 16))
+      : null;
+    const compactAnswerHeight = tightNormal ? 66 : 74;
+    const compactTenkeyTop = compactNormal ? compactAnswerTop + compactAnswerHeight + (tightNormal ? 24 : 22) : null;
     const compactTenkeyHeight = compactNormal
-      ? Math.max(tightNormal ? 144 : 170, viewportHeight - compactTenkeyTop - 24)
+      ? Math.max(tightNormal ? 144 : 170, viewportHeight - compactTenkeyTop - 22)
       : null;
     const normalShellWidth = 'min(1120px, 92vw)';
-    const normalTitleWidth = compactNormal ? 'min(820px, calc(100vw - 96px))' : 'min(980px, 54vw)';
     const normalControlsWidth = compactNormal ? 'min(760px, calc(100vw - 96px))' : 'min(780px, 54vw)';
+    const normalTitleWidth = compactNormal ? normalControlsWidth : 'min(980px, 54vw)';
     const normalTenkeyHeight = compactNormal ? `${compactTenkeyHeight}px` : 'min(316px, 31.8vh)';
     const reviewCardTop = reviewMode && viewportHeight > 0 && viewportHeight <= 700 ? '88px' : '12.4vh';
     const reviewCardHeight = reviewMode && viewportHeight > 0 && viewportHeight <= 700 ? 'calc(100vh - 104px)' : '83.5vh';
     const prompt = reviewMode
       ? els.questionText.querySelector('.review-problem-layout')
       : els.questionText.querySelector('.prompt-layout');
-    const titleLeft = narrowReview ? '50%' : (reviewMode ? '6.8vw' : '50%');
-    const titleTop = reviewMode ? '18.2vh' : '16.9vh';
+    const titleLeft = compactNormal
+      ? 'calc(50% - min(380px, calc((100vw - 96px) / 2)))'
+      : (narrowReview ? '50%' : (reviewMode ? '6.8vw' : '50%'));
+    const titleTop = reviewMode ? '18.2vh' : (compactNormal ? `${compactTitleTop}px` : '16.9vh');
     const titleWidth = narrowReview ? 'min(760px, 80vw)' : (reviewMode ? '50.2vw' : normalTitleWidth);
-    const titleHeight = reviewMode ? '31vh' : '31vh';
+    const titleHeight = reviewMode ? '31vh' : (compactNormal ? `${compactTitleHeight}px` : '31vh');
     const titleTransform = !reviewMode
-      ? 'translateX(-50%)'
+      ? (compactNormal ? 'none' : 'translateX(-50%)')
       : narrowReview
         ? (viewportWidth >= 1000 ? 'translateX(calc(-50% + 760px - 50vw))' : 'translateX(-50%)')
         : 'none';
@@ -798,11 +805,11 @@
       'place-items': 'center',
       padding: '0',
       margin: '0',
-      overflow: 'visible',
+      overflow: reviewMode ? 'visible' : 'hidden',
       transform: titleTransform,
       'z-index': '78',
     });
-    setImportantStyle(prompt, {
+    setImportantStyle(prompt, reviewMode ? {
       transform: 'none',
       position: 'static',
       width: '100%',
@@ -810,6 +817,17 @@
       display: 'grid',
       'place-items': 'center',
       overflow: 'visible',
+    } : {
+      transform: 'none',
+      position: 'static',
+      width: '100%',
+      height: '100%',
+      display: 'grid',
+      'grid-template-rows': 'auto minmax(0, 1fr)',
+      'align-items': 'center',
+      'justify-items': 'center',
+      gap: compactNormal ? '4px' : '8px',
+      overflow: 'hidden',
     });
     setImportantStyle(els.questionLabel, {
       position: 'fixed',
