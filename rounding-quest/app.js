@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 496;
+  const APP_VERSION = 497;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -754,6 +754,32 @@
       gap: 'clamp(8px, 1.2vw, 12px)',
       transform: 'none',
     });
+    if (!session || !session.reviewOnly) {
+      setImportantStyle(els.answerInput, {
+        position: 'static',
+        'grid-column': '1',
+        'grid-row': '1',
+        width: '100%',
+        height: '100%',
+        'min-height': '0',
+        'max-height': 'none',
+        transform: 'none',
+        'align-self': 'stretch',
+        'justify-self': 'stretch',
+      });
+      setImportantStyle(els.submitButton, {
+        position: 'static',
+        'grid-column': '2',
+        'grid-row': '1',
+        width: '100%',
+        height: '100%',
+        'min-height': '0',
+        'max-height': 'none',
+        transform: 'none',
+        'align-self': 'stretch',
+        'justify-self': 'stretch',
+      });
+    }
     setImportantStyle(els.tenkey, {
       position: 'relative',
       display: 'grid',
@@ -1160,7 +1186,7 @@
     const maru = document.createElement('span');
     maru.className = 'answer-correct-maru';
     maru.style.setProperty('--maru-left', `${rect.left + rect.width / 2}px`);
-    maru.style.setProperty('--maru-top', `${rect.top + rect.height * 0.54}px`);
+    maru.style.setProperty('--maru-top', `${rect.top + rect.height * 0.55}px`);
     maru.style.setProperty('--maru-width', `${Math.min(rect.width - 24, Math.max(178, digitCount * 56 + 126))}px`);
     maru.style.setProperty('--maru-height', `${Math.min(74, rect.height * 0.97)}px`);
     maru.insertAdjacentHTML('beforeend', `
