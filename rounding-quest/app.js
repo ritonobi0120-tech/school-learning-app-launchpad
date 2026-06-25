@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 488;
+  const APP_VERSION = 489;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -180,6 +180,8 @@
   let selectedStageId = 'round-digit';
   let session = null;
   let noticeTimer = null;
+  let ignoreEmptySubmitUntil = 0;
+  let suppressEmptySubmitAfterRender = false;
   const TENKEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '全部消す', '0', '1つ消す'];
   const SESSION_LENGTH = core.SESSION_LENGTH || 10;
   const STAGE_GOAL = core.STAGE_GOAL || 30;
@@ -547,6 +549,8 @@
     }
     renderTypeBadges(q);
     applyPcV4Layout(q);
+    ignoreEmptySubmitUntil = suppressEmptySubmitAfterRender ? performance.now() + 360 : 0;
+    suppressEmptySubmitAfterRender = false;
     els.answerInput.focus();
   }
 
@@ -960,6 +964,7 @@
       return;
     }
     if (!els.answerInput.value.trim()) {
+      if (performance.now() < ignoreEmptySubmitUntil) return;
       playSound('notice');
       showNoticeFeedback('数字を入れてから答えよう。');
       els.answerInput.focus();
@@ -1161,6 +1166,7 @@
     if (session.advanceTimer) window.clearTimeout(session.advanceTimer);
     session.advanceTimer = window.setTimeout(() => {
       session.advanceTimer = null;
+      suppressEmptySubmitAfterRender = true;
       nextQuestion();
     }, delay);
   }
@@ -2133,6 +2139,7 @@
     unlockAudio();
     if (session && session.answered) {
       playSound('tap');
+      suppressEmptySubmitAfterRender = true;
       nextQuestion();
       return;
     }
