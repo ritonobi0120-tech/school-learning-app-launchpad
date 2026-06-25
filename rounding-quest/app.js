@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 498;
+  const APP_VERSION = 499;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -1337,6 +1337,33 @@
     if (!els.feedbackBox.classList.contains('empty-notice')) return;
     const inputRect = els.answerInput.getBoundingClientRect();
     if (!inputRect.width || !inputRect.height) return;
+    if (window.innerWidth < 600) {
+      const height = window.innerHeight < 600 ? 40 : 44;
+      const width = Math.min(window.innerWidth - 32, Math.max(228, inputRect.width));
+      const left = Math.max(16, (window.innerWidth - width) / 2);
+      const top = Math.max(12, inputRect.top - height - 8);
+      setImportantStyle(els.feedbackBox, {
+        position: 'fixed',
+        left: `${Math.round(left)}px`,
+        right: 'auto',
+        top: `${Math.round(top)}px`,
+        bottom: 'auto',
+        width: `${Math.round(width)}px`,
+        height: `${height}px`,
+        'min-height': `${height}px`,
+        'max-height': `${height}px`,
+        padding: '0 12px',
+        display: 'flex',
+        'align-items': 'center',
+        'justify-content': 'center',
+        gap: '8px',
+        transform: 'none',
+        'z-index': '180',
+        'box-sizing': 'border-box',
+        'pointer-events': 'none',
+      });
+      return;
+    }
     const isTiny = window.innerWidth < 420;
     const height = isTiny ? 42 : 48;
     const width = Math.max(188, Math.min(isTiny ? inputRect.width - 20 : 340, inputRect.width - 28));

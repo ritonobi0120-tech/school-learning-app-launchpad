@@ -2438,3 +2438,772 @@ html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage
     font-size: 10px !important;
   }
 }
+
+/* v499: phone session surface. Keep the liked hero/key progress, but make the
+   answer controls a true one-screen tool with finger-sized buttons. */
+@media (max-width: 599px) {
+  html body.session-mode,
+  html body.session-mode main.app-shell {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: linear-gradient(180deg, #fff8df, #f1e4bc) !important;
+  }
+
+  html body.session-mode main.app-shell {
+    display: grid !important;
+    place-items: center !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode),
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode {
+    position: relative !important;
+    inset: auto !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 8px 10px 10px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: clamp(78px, 15vh, 104px) minmax(0, 1fr) !important;
+    gap: 7px !important;
+    overflow: hidden !important;
+    background: transparent !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area button#sessionHomeButton.session-home-button {
+    position: absolute !important;
+    left: 10px !important;
+    top: 12px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 13px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 40 !important;
+    transform: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area button#sessionHomeButton.session-home-button::before {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    place-items: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    pointer-events: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top > div:first-child,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top .meter,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top .combo-chip {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map {
+    position: relative !important;
+    width: calc(100% - 56px) !important;
+    max-width: 430px !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin-left: 50px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    pointer-events: none !important;
+    transform: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .key-rail,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .key-rail.review-rail {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 6px 8px !important;
+    border-radius: 18px !important;
+    overflow: visible !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-hud {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(58px, .6fr) minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, .86fr) minmax(24px, .34fr) !important;
+    grid-template-areas:
+      "plaque track"
+      "progress progress" !important;
+    gap: 4px 7px !important;
+    align-items: stretch !important;
+    overflow: visible !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-plaque {
+    grid-area: plaque !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    padding: 4px 5px !important;
+    display: grid !important;
+    place-items: center !important;
+    gap: 1px !important;
+    border-radius: 12px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-plaque small {
+    font-size: 10px !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-plaque strong {
+    font-size: clamp(13px, 4vw, 17px) !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-plaque span {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-progress-label {
+    grid-area: progress !important;
+    display: grid !important;
+    grid-template-columns: 56px minmax(0, 1fr) !important;
+    gap: 6px !important;
+    align-items: center !important;
+    min-width: 0 !important;
+    height: 100% !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-step-label {
+    position: static !important;
+    width: 56px !important;
+    min-width: 56px !important;
+    height: 24px !important;
+    display: grid !important;
+    place-items: center !important;
+    transform: none !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-step-label b {
+    font-size: 20px !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-step-label small {
+    font-size: 10px !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips.review-pips {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 17px !important;
+    gap: 4px !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode header.session-top div#sessionMap.session-map .question-pips.review-pips {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr)) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips i,
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .question-pips.review-pips i {
+    height: 17px !important;
+    border-radius: 999px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-map-track {
+    grid-area: track !important;
+    position: relative !important;
+    display: grid !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 4px 8px !important;
+    overflow: visible !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-steps {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 3px !important;
+    width: 100% !important;
+    align-items: center !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-cell {
+    position: relative !important;
+    height: clamp(22px, 6.5vh, 34px) !important;
+    min-width: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 999px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-cell b {
+    font-size: 10px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-hero {
+    width: 28px !important;
+    height: 28px !important;
+    right: -8px !important;
+    top: -14px !important;
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 7 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-gate {
+    width: 26px !important;
+    height: 26px !important;
+    right: -6px !important;
+    top: -6px !important;
+    display: grid !important;
+    visibility: visible !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .map-plus {
+    right: 8px !important;
+    top: -14px !important;
+    display: inline-grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 8 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-item-card {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 10px 10px 12px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+    border-radius: 18px !important;
+    box-sizing: border-box !important;
+    transform: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card .stage-banner,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card .coach-strip,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card .type-badges,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card p#supportText.support,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#visualBoard.visual-side {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.problem-side,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.problem-side,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.problem-side {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "prompt"
+      "review"
+      "answer"
+      "tenkey" !important;
+    grid-template-rows: minmax(116px, .9fr) 0px clamp(54px, 10vh, 64px) minmax(178px, 1.15fr) !important;
+    gap: 8px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    transform: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.problem-side {
+    grid-template-rows: minmax(94px, .62fr) minmax(132px, .9fr) clamp(52px, 9vh, 60px) minmax(154px, .9fr) !important;
+    gap: 7px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card p#questionLabel.question-label {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card h3#questionText,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card h3#questionText {
+    grid-area: prompt !important;
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 8px 10px !important;
+    display: grid !important;
+    place-items: center !important;
+    overflow: hidden !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-layout.number-below {
+    position: static !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    align-items: center !important;
+    justify-items: center !important;
+    gap: 4px !important;
+    transform: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-task-first {
+    width: 100% !important;
+    font-size: clamp(19px, 5.6vw, 25px) !important;
+    line-height: 1.12 !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card h3#questionText .prompt-main-number {
+    font-size: clamp(54px, 21vw, 84px) !important;
+    line-height: .92 !important;
+    letter-spacing: 0 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-problem-layout {
+    width: 100% !important;
+    height: 100% !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 5px !important;
+    align-items: center !important;
+    justify-items: center !important;
+    overflow: visible !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-problem-title {
+    font-size: clamp(17px, 5.2vw, 22px) !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit-row {
+    width: min(100%, 270px) !important;
+    gap: 6px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit {
+    height: clamp(38px, 9vh, 54px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit b {
+    font-size: clamp(30px, 10vw, 44px) !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side {
+    grid-area: review !important;
+    position: relative !important;
+    z-index: 2 !important;
+    display: grid !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 7px !important;
+    overflow: hidden !important;
+    border-radius: 15px !important;
+    pointer-events: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .focus-board {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 6px !important;
+    display: grid !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .focus-board > p,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .focus-number {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps {
+    width: 100% !important;
+    height: 100% !important;
+    display: grid !important;
+    grid-template-rows: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps li {
+    min-height: 0 !important;
+    grid-template-columns: 32px minmax(0, 1fr) !important;
+    gap: 7px !important;
+    padding: 5px 7px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps b {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 17px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps span {
+    font-size: clamp(15px, 4.6vw, 18px) !important;
+    line-height: 1.08 !important;
+    justify-content: center !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-answer-step button {
+    min-width: 92px !important;
+    min-height: 32px !important;
+    padding: 0 10px !important;
+    border-radius: 11px !important;
+    font-size: clamp(14px, 4.3vw, 17px) !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.answer-row,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row {
+    grid-area: answer !important;
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) clamp(90px, 27vw, 112px) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    gap: 8px !important;
+    align-items: stretch !important;
+    justify-self: center !important;
+    overflow: visible !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row .answer-caption {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput,
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row button#submitButton {
+    position: static !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
+    display: grid !important;
+    place-items: center !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    box-sizing: border-box !important;
+    touch-action: manipulation !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row input#answerInput {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    align-self: stretch !important;
+    justify-self: stretch !important;
+    font-size: clamp(30px, 9vw, 44px) !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.answer-row button#submitButton {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    align-self: stretch !important;
+    justify-self: stretch !important;
+    font-size: clamp(18px, 5vw, 22px) !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div#tenkey.tenkey,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey {
+    grid-area: tenkey !important;
+    position: relative !important;
+    z-index: 3 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 7px !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    overflow: hidden !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button {
+    position: static !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    font-size: clamp(24px, 8vw, 34px) !important;
+    line-height: 1 !important;
+    border-radius: 14px !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="1"] {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="2"] {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="3"] {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="4"] {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="5"] {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="6"] {
+    grid-column: 3 !important;
+    grid-row: 2 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="7"] {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="8"] {
+    grid-column: 2 !important;
+    grid-row: 3 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="9"] {
+    grid-column: 3 !important;
+    grid-row: 3 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="全部消す"] {
+    grid-column: 1 !important;
+    grid-row: 4 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="0"] {
+    grid-column: 2 !important;
+    grid-row: 4 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    grid-column: 3 !important;
+    grid-row: 4 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    font-size: clamp(14px, 4.2vw, 18px) !important;
+    white-space: nowrap !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area div#feedbackBox.feedback.empty-notice {
+    pointer-events: none !important;
+  }
+}
+
+@media (max-width: 340px) and (max-height: 600px) {
+  html body.session-mode main.app-shell section#sessionView.work-area,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode),
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode {
+    padding: 6px 8px 8px !important;
+    grid-template-rows: 74px minmax(0, 1fr) !important;
+    gap: 5px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card,
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card {
+    padding: 8px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div.problem-side,
+  html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) article.question-card div.problem-side {
+    grid-template-rows: minmax(98px, .72fr) 0px 50px minmax(160px, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.problem-side {
+    grid-template-rows: minmax(82px, .54fr) minmax(116px, .76fr) 48px minmax(142px, .9fr) !important;
+    gap: 5px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area article.question-card div#tenkey.tenkey {
+    gap: 5px !important;
+    padding: 5px !important;
+  }
+}
+
+/* v499 final phone retry override: placed after the shared phone rules. */
+@media (max-width: 599px) {
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "prompt"
+      "review"
+      "answer"
+      "tenkey" !important;
+    grid-template-rows: clamp(112px, 18vh, 126px) clamp(100px, 17vh, 120px) clamp(52px, 9vh, 62px) minmax(176px, 1fr) !important;
+    gap: 7px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.problem-side {
+    display: contents !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card h3#questionText {
+    grid-area: prompt !important;
+    grid-column: prompt !important;
+    grid-row: prompt !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.problem-side h3#questionText {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side {
+    grid-area: review !important;
+    grid-column: review !important;
+    grid-row: review !important;
+    order: 0 !important;
+    align-self: stretch !important;
+    justify-self: stretch !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div.answer-row {
+    grid-area: answer !important;
+    grid-column: answer !important;
+    grid-row: answer !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey {
+    grid-area: tenkey !important;
+    grid-column: tenkey !important;
+    grid-row: tenkey !important;
+    justify-self: center !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-problem-title {
+    font-size: clamp(15px, 4.8vw, 20px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode .review-digit b {
+    font-size: clamp(28px, 8.5vw, 40px) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button {
+    font-size: clamp(22px, 6.2vw, 28px) !important;
+    line-height: .9 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="全部消す"],
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#tenkey.tenkey > button[data-key="1つ消す"] {
+    font-size: clamp(13px, 4vw, 16px) !important;
+  }
+}
+
+@media (max-width: 340px) and (max-height: 600px) {
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card {
+    grid-template-rows: 128px 80px 48px minmax(188px, 1fr) !important;
+    gap: 5px !important;
+  }
+}
