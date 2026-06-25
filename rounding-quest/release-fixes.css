@@ -15,15 +15,15 @@ html body.result-mode main.app-shell section#resultView.result-view.simple-sessi
 html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-main {
   position: fixed !important;
   inset: auto 0 auto 0 !important;
-  top: clamp(52px, 10vh, 92px) !important;
+  top: 50% !important;
   left: 0 !important;
   right: 0 !important;
   bottom: auto !important;
   z-index: 30 !important;
-  width: min(780px, calc(100vw - 72px)) !important;
+  width: min(720px, calc(100vw - 72px)) !important;
   height: auto !important;
   min-height: 0 !important;
-  max-height: calc(100vh - 70px) !important;
+  max-height: calc(100vh - 56px) !important;
   margin: 0 auto !important;
   padding: clamp(20px, 2.1vh, 28px) clamp(24px, 2.6vw, 34px) !important;
   display: grid !important;
@@ -38,7 +38,7 @@ html body.result-mode main.app-shell section#resultView.result-view.simple-sessi
   border-radius: 22px !important;
   background: rgba(255, 253, 246, .96) !important;
   box-shadow: 0 12px 0 rgba(155, 111, 35, .18), 0 24px 42px rgba(89, 72, 26, .14) !important;
-  transform: none !important;
+  transform: translateY(-50%) !important;
 }
 
 html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-main::before,
@@ -290,9 +290,12 @@ html body.result-mode main.app-shell section#resultView.result-view.simple-sessi
 
 html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton {
   grid-column: 1 !important;
+  grid-row: 1 !important;
   display: grid !important;
   place-items: center !important;
+  height: 100% !important;
   min-width: 0 !important;
+  min-height: 0 !important;
   padding: 0 !important;
   font-size: 0 !important;
   color: transparent !important;
@@ -314,8 +317,11 @@ html body.result-mode main.app-shell section#resultView.result-view.simple-sessi
 
 html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #againButton {
   grid-column: 2 !important;
+  grid-row: 1 !important;
   display: grid !important;
   place-items: center !important;
+  height: 100% !important;
+  min-height: 0 !important;
   border: 4px solid rgba(255, 255, 255, .94) !important;
   background: linear-gradient(180deg, #43d34d 0%, #20aa34 100%) !important;
   box-shadow: 0 7px 0 rgba(12, 92, 65, .32), 0 15px 22px rgba(42, 64, 70, .16) !important;
@@ -329,10 +335,11 @@ html body.result-mode main.app-shell section#resultView.result-view.simple-sessi
 
 @media (max-width: 999px) {
   html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-main {
-    top: clamp(28px, 7vh, 54px) !important;
-    width: min(720px, calc(100vw - 44px)) !important;
+    top: 50% !important;
+    width: min(680px, calc(100vw - 44px)) !important;
     padding: 18px 20px 22px !important;
     gap: 14px !important;
+    transform: translateY(-50%) !important;
   }
 
   html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-main > h2#resultTitle {
