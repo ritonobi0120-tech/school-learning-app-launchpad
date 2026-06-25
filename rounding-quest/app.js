@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 495;
+  const APP_VERSION = 496;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -399,7 +399,7 @@
     core.saveProgress(localStorage, progress);
     renderStageSelect();
     renderHomeStats();
-    startSession(false);
+    show(els.homeView);
   }
 
   function unlockAudio() {
