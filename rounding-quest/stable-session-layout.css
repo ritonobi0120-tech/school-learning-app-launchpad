@@ -5,6 +5,13 @@
   --rounding-home-icon: url("./assets/generated/home-house-icon.png") !important;
 }
 
+/* v488: remove the long decorative light streak on the home background. */
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+}
+
 html body.session-mode main.app-shell section#sessionView.work-area button#sessionHomeButton.session-home-button::before {
   width: 40px !important;
   height: 40px !important;
