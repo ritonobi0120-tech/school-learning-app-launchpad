@@ -1,6 +1,22 @@
 /* v484: Consolidated PC session layout.
    The practice and retry screens use one parent grid, like the stable division apps. */
 
+:root {
+  --rounding-home-icon: url("./assets/generated/home-house-icon.png") !important;
+}
+
+html body.session-mode main.app-shell section#sessionView.work-area button#sessionHomeButton.session-home-button::before {
+  width: 40px !important;
+  height: 40px !important;
+  background: var(--rounding-home-icon) center / contain no-repeat !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view .result-actions #homeButton::before {
+  width: 46px !important;
+  height: 46px !important;
+  background: var(--rounding-home-icon) center / contain no-repeat !important;
+}
+
 @media (min-width: 600px) {
   html body.session-mode {
     overflow: hidden !important;
@@ -942,4 +958,26 @@ html body.result-mode main.app-shell section#resultView.result-view > .mistake-l
     align-self: center !important;
     font-size: clamp(17px, 2.4vh, 22px) !important;
   }
+}
+
+html body.session-mode main.app-shell section#sessionView.work-area button#sessionHomeButton.session-home-button::before,
+html body.session-mode main.app-shell section#sessionView.work-area:not(.review-mode) button#sessionHomeButton.session-home-button::before,
+html body.session-mode main.app-shell section#sessionView.work-area.review-mode button#sessionHomeButton.session-home-button::before {
+  width: 40px !important;
+  height: 40px !important;
+  background: var(--rounding-home-icon) center / contain no-repeat !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.simple-session-clear.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.review-result .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.review-result.clean-result .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock.clean-result:not(.review-result):not(.final-clear) .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.final-clear.clean-result .result-actions #homeButton::before,
+html body.result-mode main.app-shell section#resultView.result-view.final-clear .result-actions #homeButton::before {
+  width: 46px !important;
+  height: 46px !important;
+  background: var(--rounding-home-icon) center / contain no-repeat !important;
 }
