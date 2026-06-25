@@ -1,7 +1,8 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 473;
+  const APP_VERSION = 474;
+  const CORRECT_FX_MS = 760;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -535,16 +536,24 @@
     const compactTenkeyHeight = compactNormal
       ? Math.max(tightNormal ? 144 : 170, viewportHeight - compactTenkeyTop - 24)
       : null;
+    const normalShellWidth = 'min(1120px, 92vw)';
+    const normalTitleWidth = compactNormal ? 'min(820px, calc(100vw - 96px))' : 'min(980px, 54vw)';
+    const normalControlsWidth = compactNormal ? 'min(760px, calc(100vw - 96px))' : 'min(780px, 54vw)';
+    const normalTenkeyHeight = compactNormal ? `${compactTenkeyHeight}px` : 'min(316px, 31.8vh)';
+    const reviewCardTop = reviewMode && viewportHeight > 0 && viewportHeight <= 700 ? '88px' : '12.4vh';
+    const reviewCardHeight = reviewMode && viewportHeight > 0 && viewportHeight <= 700 ? 'calc(100vh - 104px)' : '83.5vh';
     const prompt = reviewMode
       ? els.questionText.querySelector('.review-problem-layout')
       : els.questionText.querySelector('.prompt-layout');
-    const titleLeft = narrowReview ? '50%' : (reviewMode ? '6.8vw' : '23vw');
+    const titleLeft = narrowReview ? '50%' : (reviewMode ? '6.8vw' : '50%');
     const titleTop = reviewMode ? '18.2vh' : '16.9vh';
-    const titleWidth = narrowReview ? 'min(760px, 80vw)' : (reviewMode ? '50.2vw' : '54vw');
+    const titleWidth = narrowReview ? 'min(760px, 80vw)' : (reviewMode ? '50.2vw' : normalTitleWidth);
     const titleHeight = reviewMode ? '31vh' : '31vh';
-    const titleTransform = narrowReview
-      ? (viewportWidth >= 1000 ? 'translateX(calc(-50% + 760px - 50vw))' : 'translateX(-50%)')
-      : 'none';
+    const titleTransform = !reviewMode
+      ? 'translateX(-50%)'
+      : narrowReview
+        ? (viewportWidth >= 1000 ? 'translateX(calc(-50% + 760px - 50vw))' : 'translateX(-50%)')
+        : 'none';
     setImportantStyle(els.sessionView, {
       background: reviewMode
         ? 'linear-gradient(180deg, rgba(255, 249, 225, .92), rgba(246, 238, 210, .96))'
@@ -707,22 +716,24 @@
     setImportantStyle(els.questionCard, reviewMode ? {
       position: 'fixed',
       left: narrowReview ? '6vw' : '3.8vw',
-      top: '12.4vh',
+      top: reviewCardTop,
       width: narrowReview ? '88vw' : '56.2vw',
-      height: '83.5vh',
+      height: reviewCardHeight,
       display: 'block',
       background: 'rgba(255, 252, 239, .96)',
+      transform: 'none',
     } : {
       position: 'fixed',
-      left: '4vw',
+      left: 'max(4vw, calc((100vw - 1120px) / 2))',
       top: '11.5vh',
-      width: '92vw',
+      width: normalShellWidth,
       height: '84vh',
       display: 'block',
       background: 'transparent',
       border: '4px solid transparent',
       'border-radius': '24px',
       'box-shadow': 'none',
+      transform: 'none',
     });
     const problemSide = els.questionCard.querySelector('.problem-side');
     setImportantStyle(problemSide, {
@@ -799,9 +810,9 @@
     const answerRow = els.answerInput.closest('.answer-row');
     setImportantStyle(answerRow, {
       position: 'fixed',
-      left: narrowReview ? '50%' : (reviewMode ? '10.4vw' : '23vw'),
+      left: narrowReview ? '50%' : (reviewMode ? '10.4vw' : '50%'),
       top: reviewMode ? '50.6vh' : (compactNormal ? `${compactAnswerTop}px` : '50.8vh'),
-      width: narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : '54vw'),
+      width: narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : normalControlsWidth),
       'max-width': 'none',
       height: reviewMode ? '76px' : `${compactAnswerHeight}px`,
       display: 'grid',
@@ -811,7 +822,7 @@
       'grid-auto-flow': 'column',
       'align-items': 'stretch',
       'justify-items': 'stretch',
-      transform: narrowReview ? 'translateX(-50%)' : 'none',
+      transform: (!reviewMode || narrowReview) ? 'translateX(-50%)' : 'none',
       'z-index': '81',
     });
     setImportantStyle(els.submitButton, {
@@ -837,11 +848,11 @@
     });
     setImportantStyle(els.tenkey, {
       position: 'fixed',
-      left: narrowReview ? '50%' : (reviewMode ? '10.4vw' : '23vw'),
+      left: narrowReview ? '50%' : (reviewMode ? '10.4vw' : '50%'),
       top: reviewMode ? 'max(61.6vh, calc(50.6vh + 88px))' : (compactNormal ? `${compactTenkeyTop}px` : 'max(61.8vh, calc(50.8vh + 88px))'),
-      width: narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : '54vw'),
+      width: narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : normalControlsWidth),
       'max-width': 'none',
-      height: reviewMode ? '31.8vh' : (compactNormal ? `${compactTenkeyHeight}px` : '31.8vh'),
+      height: reviewMode ? '31.8vh' : normalTenkeyHeight,
       'max-height': 'none',
       display: 'grid',
       'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
@@ -849,7 +860,7 @@
       gap: '8px 16px',
       padding: '10px',
       margin: '0',
-      transform: narrowReview ? 'translateX(-50%)' : 'none',
+      transform: (!reviewMode || narrowReview) ? 'translateX(-50%)' : 'none',
       overflow: 'hidden',
       'align-items': 'stretch',
       'justify-self': 'stretch',
@@ -1165,7 +1176,7 @@
       if (session.reviewOnly) renderFocusVisual(q, result, submittedInput);
       playSound('correct');
       showAnswerCorrectFx();
-      scheduleAutoAdvance(860);
+      scheduleAutoAdvance(CORRECT_FX_MS);
     } else {
       session.streak = 0;
       if (!session.reviewOnly) session.pathMissMarks.push(getCurrentPathMark(q.stageId));
@@ -1253,7 +1264,7 @@
       answerCard.classList.add('fx-answer-correct');
       window.setTimeout(() => {
         answerCard.classList.remove('fx-answer-correct');
-      }, 860);
+      }, CORRECT_FX_MS);
     }
     const rect = els.answerInput.getBoundingClientRect();
     const digitCount = Math.max(1, core.normalizeAnswerText(els.answerInput.value).replace(/,/g, '').length);
@@ -1277,7 +1288,7 @@
       answerRow?.classList.remove('fx-answer-correct');
       els.answerInput.classList.remove('fx-answer-correct');
       maru.remove();
-    }, 860);
+    }, CORRECT_FX_MS);
   }
 
   function showAnswerWrongFx() {

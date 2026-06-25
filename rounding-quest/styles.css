@@ -27274,7 +27274,7 @@ html body.result-mode main.app-shell section#resultView.result-view.simple-sessi
 
 /* v471: make the home screen read as "Pencil Kingdom" without disturbing the drill screens. */
 body:not(.session-mode):not(.result-mode) {
-  --pencil-crest: url("./assets/generated/pencil-crest.svg");
+  --pencil-crest: url("./assets/generated/pencil-quest-item.png");
 }
 
 body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero::before {
