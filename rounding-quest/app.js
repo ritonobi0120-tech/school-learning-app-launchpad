@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 494;
+  const APP_VERSION = 495;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -2129,7 +2129,7 @@
       const progressPct = `${Math.round((Math.min(STAGE_GOAL, best) / STAGE_GOAL) * 100)}%`;
       return `
         <button class="stage-card ${active} ${stateClass}" type="button" data-stage="${stage.id}" data-state-label="${stateLabel}" aria-pressed="${stage.id === selectedStageId ? 'true' : 'false'}" ${unlocked && !blockedByReview ? '' : 'disabled'}>
-          <img class="stage-select-pencil" src="${img('assets/generated/pencil-quest-item.png')}" alt="">
+          <span class="stage-select-pencil" aria-hidden="true"></span>
           <b class="stage-order" aria-hidden="true">${stage.order}</b>
           <img class="stage-bg" src="${img(stage.image)}" alt="">
           <img class="stage-badge" src="${stageCardBadge(stage.id)}" alt="">
