@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 480;
+  const APP_VERSION = 481;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -559,7 +559,25 @@
     const reviewMode = Boolean(session && session.reviewOnly);
     const viewportWidth = Math.max(0, window.innerWidth || 0);
     const viewportHeight = Math.max(0, window.innerHeight || 0);
-    const narrowReview = reviewMode && viewportWidth > 0 && viewportWidth <= 1180;
+    const compactReview = reviewMode && viewportWidth >= 1000 && viewportHeight > 0 && viewportHeight <= 700;
+    const narrowReview = reviewMode && viewportWidth > 0 && viewportWidth <= 1180 && !compactReview;
+    const reviewMargin = compactReview ? Math.max(56, Math.round(Math.max(0, viewportWidth - 1120) / 2 + 24)) : 0;
+    const reviewGap = compactReview ? (viewportWidth <= 1100 ? 18 : 26) : 0;
+    const reviewRightWidth = compactReview ? Math.min(392, Math.max(306, Math.round(viewportWidth * 0.30))) : 0;
+    const reviewLeftWidth = compactReview
+      ? Math.max(540, viewportWidth - (reviewMargin * 2) - reviewGap - reviewRightWidth)
+      : 0;
+    const reviewLeftCenter = compactReview ? reviewMargin + (reviewLeftWidth / 2) : 0;
+    const reviewRightLeft = compactReview ? reviewMargin + reviewLeftWidth + reviewGap : 0;
+    const reviewTop = compactReview ? 82 : 0;
+    const reviewHeight = compactReview ? Math.max(400, viewportHeight - reviewTop - 18) : 0;
+    const reviewTitleTop = compactReview ? reviewTop + 34 : 0;
+    const reviewTitleHeight = compactReview ? Math.max(146, Math.min(190, Math.round(viewportHeight * 0.275))) : 0;
+    const reviewAnswerHeight = compactReview ? (viewportHeight <= 560 ? 62 : 72) : 76;
+    const reviewAnswerTop = compactReview ? reviewTitleTop + reviewTitleHeight + (viewportHeight <= 560 ? 12 : 16) : 0;
+    const reviewRenderedAnswerHeight = compactReview ? Math.max(82, reviewAnswerHeight) : reviewAnswerHeight;
+    const reviewTenkeyTop = compactReview ? reviewAnswerTop + reviewRenderedAnswerHeight + (viewportHeight <= 560 ? 12 : 14) : 0;
+    const reviewTenkeyHeight = compactReview ? Math.max(142, viewportHeight - reviewTenkeyTop - 16) : 0;
     const compactNormal = !reviewMode && viewportHeight > 0 && viewportHeight <= 680;
     const tightNormal = !reviewMode && viewportHeight > 0 && viewportHeight <= 560;
     const compactTitleTop = compactNormal ? (tightNormal ? 82 : 90) : null;
@@ -587,13 +605,15 @@
       : els.questionText.querySelector('.prompt-layout');
     const titleLeft = compactNormal
       ? 'calc(50% - min(380px, calc((100vw - 96px) / 2)))'
-      : (narrowReview ? '50%' : (reviewMode ? '6.8vw' : '50%'));
-    const titleTop = reviewMode ? '18.2vh' : (compactNormal ? `${compactTitleTop}px` : '16.9vh');
-    const titleWidth = narrowReview ? 'min(760px, 80vw)' : (reviewMode ? '50.2vw' : normalTitleWidth);
-    const titleHeight = reviewMode ? '31vh' : (compactNormal ? `${compactTitleHeight}px` : '31vh');
+      : (compactReview ? `${reviewLeftCenter}px` : (narrowReview ? '50%' : (reviewMode ? '6.8vw' : '50%')));
+    const titleTop = compactReview ? `${reviewTitleTop}px` : (reviewMode ? '18.2vh' : (compactNormal ? `${compactTitleTop}px` : '16.9vh'));
+    const titleWidth = compactReview ? `${reviewLeftWidth}px` : (narrowReview ? 'min(760px, 80vw)' : (reviewMode ? '50.2vw' : normalTitleWidth));
+    const titleHeight = compactReview ? `${reviewTitleHeight}px` : (reviewMode ? '31vh' : (compactNormal ? `${compactTitleHeight}px` : '31vh'));
     const titleTransform = !reviewMode
       ? (compactNormal ? 'none' : 'translateX(-50%)')
-      : narrowReview
+      : compactReview
+        ? 'translateX(-50%)'
+        : narrowReview
         ? (viewportWidth >= 1000 ? 'translateX(calc(-50% + 760px - 50vw))' : 'translateX(-50%)')
         : 'none';
     setImportantStyle(els.sessionView, {
@@ -757,10 +777,10 @@
     }
     setImportantStyle(els.questionCard, reviewMode ? {
       position: 'fixed',
-      left: narrowReview ? '6vw' : '3.8vw',
-      top: reviewCardTop,
-      width: narrowReview ? '88vw' : '56.2vw',
-      height: reviewCardHeight,
+      left: compactReview ? `${reviewMargin}px` : (narrowReview ? '6vw' : '3.8vw'),
+      top: compactReview ? `${reviewTop}px` : reviewCardTop,
+      width: compactReview ? `${reviewLeftWidth}px` : (narrowReview ? '88vw' : '56.2vw'),
+      height: compactReview ? `${reviewHeight}px` : reviewCardHeight,
       display: 'block',
       background: 'rgba(255, 252, 239, .96)',
       transform: 'none',
@@ -785,9 +805,18 @@
       display: 'block',
     });
     setImportantStyle(els.visualBoard, reviewMode ? {
+      position: compactReview ? 'fixed' : 'fixed',
+      left: compactReview ? `${reviewRightLeft}px` : 'auto',
+      right: compactReview ? 'auto' : '3.8vw',
+      top: compactReview ? `${reviewTop}px` : reviewCardTop,
+      width: compactReview ? `${reviewRightWidth}px` : '34.2vw',
+      height: compactReview ? `${reviewHeight}px` : 'calc(83.5vh - 138px)',
       display: narrowReview ? 'none' : 'block',
       visibility: narrowReview ? 'hidden' : 'visible',
       'pointer-events': narrowReview ? 'none' : 'auto',
+      transform: 'none',
+      overflow: 'hidden',
+      'z-index': '79',
     } : {
       display: 'none',
       visibility: 'hidden',
@@ -813,7 +842,7 @@
       transform: 'none',
       position: 'static',
       width: '100%',
-      height: 'auto',
+      height: compactReview ? '100%' : 'auto',
       display: 'grid',
       'place-items': 'center',
       overflow: 'visible',
@@ -831,24 +860,24 @@
     });
     setImportantStyle(els.questionLabel, {
       position: 'fixed',
-      left: narrowReview ? '50%' : (reviewMode ? '10.7vw' : '13.5vw'),
-      top: narrowReview ? '13.2vh' : (reviewMode ? '16.3vh' : '15.2vh'),
-      height: narrowReview ? '38px' : '48px',
-      'min-height': narrowReview ? '38px' : '48px',
+      left: compactReview ? `${reviewMargin + 20}px` : (narrowReview ? '50%' : (reviewMode ? '10.7vw' : '13.5vw')),
+      top: compactReview ? `${reviewTop + 20}px` : (narrowReview ? '13.2vh' : (reviewMode ? '16.3vh' : '15.2vh')),
+      height: compactReview ? '42px' : (narrowReview ? '38px' : '48px'),
+      'min-height': compactReview ? '42px' : (narrowReview ? '38px' : '48px'),
       display: reviewMode ? 'flex' : 'none',
       'align-items': 'center',
       'justify-content': 'center',
       gap: '8px',
-      padding: narrowReview ? '0 18px' : '0 22px',
+      padding: compactReview ? '0 20px' : (narrowReview ? '0 18px' : '0 22px'),
       'line-height': '1',
       transform: narrowReview ? 'translateX(-50%)' : 'none',
       'z-index': '80',
     });
     setImportantStyle(els.answerInput, {
       position: 'static',
-      height: reviewMode ? '76px' : `${compactAnswerHeight}px`,
-      'min-height': reviewMode ? '76px' : `${compactAnswerHeight}px`,
-      'max-height': reviewMode ? '76px' : `${compactAnswerHeight}px`,
+      height: reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
+      'min-height': reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
+      'max-height': reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
       width: '100%',
       'max-width': 'none',
       margin: '0',
@@ -863,19 +892,20 @@
     const answerRow = els.answerInput.closest('.answer-row');
     setImportantStyle(answerRow, {
       position: 'fixed',
-      left: narrowReview ? '50%' : (reviewMode ? '10.4vw' : '50%'),
-      top: reviewMode ? '50.6vh' : (compactNormal ? `${compactAnswerTop}px` : '50.8vh'),
-      width: narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : normalControlsWidth),
+      left: compactReview ? `${reviewLeftCenter}px` : (narrowReview ? '50%' : (reviewMode ? '10.4vw' : '50%')),
+      top: compactReview ? `${reviewAnswerTop}px` : (reviewMode ? '50.6vh' : (compactNormal ? `${compactAnswerTop}px` : '50.8vh')),
+      width: compactReview ? `${reviewLeftWidth}px` : (narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : normalControlsWidth)),
       'max-width': 'none',
-      height: reviewMode ? '76px' : `${compactAnswerHeight}px`,
+      height: reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
       display: 'grid',
-      'grid-template-columns': 'minmax(0, 1fr) 168px',
-      'grid-template-rows': reviewMode ? '76px' : `${compactAnswerHeight}px`,
-      gap: '12px',
+      'grid-template-columns': compactReview ? 'minmax(0, 1fr) 150px' : 'minmax(0, 1fr) 168px',
+      'grid-template-rows': reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
+      gap: compactReview ? '10px' : '12px',
       'grid-auto-flow': 'column',
       'align-items': 'stretch',
       'justify-items': 'stretch',
-      transform: (!reviewMode || narrowReview) ? 'translateX(-50%)' : 'none',
+      'box-sizing': 'border-box',
+      transform: (!reviewMode || narrowReview || compactReview) ? 'translateX(-50%)' : 'none',
       'z-index': '81',
     });
     setImportantStyle(els.submitButton, {
@@ -889,10 +919,10 @@
       'grid-area': '1 / 2',
       'align-self': 'stretch',
       'justify-self': 'stretch',
-      width: '168px',
-      height: reviewMode ? '76px' : `${compactAnswerHeight}px`,
-      'min-height': reviewMode ? '76px' : `${compactAnswerHeight}px`,
-      'max-height': reviewMode ? '76px' : `${compactAnswerHeight}px`,
+      width: compactReview ? '150px' : '168px',
+      height: reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
+      'min-height': reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
+      'max-height': reviewMode ? `${reviewAnswerHeight}px` : `${compactAnswerHeight}px`,
       display: 'grid',
       'place-items': 'center',
       'font-size': 'clamp(26px, 2.4vw, 36px)',
@@ -901,19 +931,21 @@
     });
     setImportantStyle(els.tenkey, {
       position: 'fixed',
-      left: narrowReview ? '50%' : (reviewMode ? '10.4vw' : '50%'),
-      top: reviewMode ? 'max(61.6vh, calc(50.6vh + 88px))' : (compactNormal ? `${compactTenkeyTop}px` : 'max(61.8vh, calc(50.8vh + 88px))'),
-      width: narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : normalControlsWidth),
+      left: compactReview ? `${reviewLeftCenter}px` : (narrowReview ? '50%' : (reviewMode ? '10.4vw' : '50%')),
+      top: compactReview ? `${reviewTenkeyTop}px` : (reviewMode ? 'max(61.6vh, calc(50.6vh + 88px))' : (compactNormal ? `${compactTenkeyTop}px` : 'max(61.8vh, calc(50.8vh + 88px))')),
+      width: compactReview ? `${reviewLeftWidth}px` : (narrowReview ? 'min(620px, 72vw)' : (reviewMode ? '47.4vw' : normalControlsWidth)),
       'max-width': 'none',
-      height: reviewMode ? '31.8vh' : normalTenkeyHeight,
-      'max-height': 'none',
+      height: compactReview ? `${reviewTenkeyHeight}px` : (reviewMode ? '31.8vh' : normalTenkeyHeight),
+      'min-height': '0',
+      'max-height': compactReview ? `${reviewTenkeyHeight}px` : 'none',
       display: 'grid',
       'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
       'grid-template-rows': 'repeat(4, minmax(0, 1fr))',
-      gap: '8px 16px',
-      padding: '10px',
+      gap: compactReview ? '6px 12px' : '8px 16px',
+      padding: compactReview ? '8px' : '10px',
       margin: '0',
-      transform: (!reviewMode || narrowReview) ? 'translateX(-50%)' : 'none',
+      'box-sizing': 'border-box',
+      transform: (!reviewMode || narrowReview || compactReview) ? 'translateX(-50%)' : 'none',
       overflow: 'hidden',
       'align-items': 'stretch',
       'justify-self': 'stretch',
