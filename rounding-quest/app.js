@@ -1,8 +1,8 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 479;
-  const CORRECT_FX_MS = 760;
+  const APP_VERSION = 480;
+  const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
   const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
@@ -1329,7 +1329,8 @@
     maru.style.setProperty('--maru-height', `${Math.min(74, rect.height * 0.97)}px`);
     maru.insertAdjacentHTML('beforeend', `
       <svg class="maru-draw" viewBox="0 0 160 112" preserveAspectRatio="none" aria-hidden="true">
-        <path pathLength="480" d="M82 103 C46 105 17 89 13 61 C9 31 35 10 77 9 C124 8 151 32 148 62 C145 92 110 108 65 101 C36 96 17 81 19 58"></path>
+        <path class="maru-stroke-draw" pathLength="480" d="M80 104 A66 43 0 1 1 80 18 A66 43 0 1 1 80 104 Z"></path>
+        <path class="maru-stroke-complete" d="M80 104 A66 43 0 1 1 80 18 A66 43 0 1 1 80 104 Z"></path>
       </svg>
     `);
     const maruText = document.createElement('span');
