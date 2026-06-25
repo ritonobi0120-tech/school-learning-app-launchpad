@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 482;
+  const APP_VERSION = 483;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -420,7 +420,7 @@
 
   function showReturnResultAfterReview(snapshot) {
     session = {
-      reviewOnly: true,
+      reviewOnly: false,
       stageId: snapshot.stageId,
       questions: Array.isArray(snapshot.questions) ? snapshot.questions : [],
       index: Array.isArray(snapshot.questions) ? snapshot.questions.length : 0,
