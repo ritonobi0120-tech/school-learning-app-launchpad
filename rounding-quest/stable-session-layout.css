@@ -3207,3 +3207,296 @@ html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage
     gap: 5px !important;
   }
 }
+
+/* v500: final mobile alignment pass. This block intentionally sits last so
+   older phone rules cannot push the map, retry guide, or correct mark around. */
+@media (max-width: 599px) {
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-hud {
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-columns: clamp(70px, 23vw, 88px) minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) 24px !important;
+    grid-template-areas:
+      "plaque track"
+      "progress progress" !important;
+    align-items: center !important;
+    gap: 3px 6px !important;
+    overflow: visible !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-plaque {
+    position: relative !important;
+    inset: auto !important;
+    grid-area: plaque !important;
+    width: 100% !important;
+    height: clamp(38px, 8vh, 48px) !important;
+    align-self: center !important;
+    justify-self: stretch !important;
+    margin: 0 !important;
+    padding: 3px 5px !important;
+    transform: none !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-map-track {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    grid-area: track !important;
+    width: 100% !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    align-self: center !important;
+    justify-self: stretch !important;
+    margin: 0 !important;
+    padding: 0 18px 0 0 !important;
+    transform: none !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-steps {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    height: 28px !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 2px !important;
+    align-items: center !important;
+    transform: none !important;
+    overflow: visible !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-cell {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    justify-self: center !important;
+    align-self: center !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-cell b {
+    font-size: 10px !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-hero {
+    width: 24px !important;
+    height: 24px !important;
+    right: -6px !important;
+    top: -12px !important;
+    transform: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-gate {
+    position: absolute !important;
+    right: 0 !important;
+    left: auto !important;
+    top: 50% !important;
+    bottom: auto !important;
+    width: 22px !important;
+    height: 22px !important;
+    transform: translateY(-50%) !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .map-plus {
+    position: absolute !important;
+    right: 2px !important;
+    top: -9px !important;
+    transform: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card {
+    grid-template-rows: 124px 126px 62px minmax(204px, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side {
+    padding: 6px !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .focus-board {
+    width: 100% !important;
+    height: 100% !important;
+    padding: 4px !important;
+    display: grid !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps {
+    width: 100% !important;
+    height: 100% !important;
+    display: grid !important;
+    grid-template-rows: repeat(3, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps li {
+    display: grid !important;
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 7px !important;
+    min-height: 0 !important;
+    height: 32px !important;
+    padding: 3px 7px !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps b {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps span {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    align-self: stretch !important;
+    min-width: 0 !important;
+    min-height: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    font-size: clamp(14px, 4.2vw, 17px) !important;
+    line-height: 1.15 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-answer-step button {
+    min-width: 86px !important;
+    min-height: 26px !important;
+    height: 26px !important;
+    padding: 0 10px !important;
+    font-size: clamp(13px, 4vw, 15px) !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .focus-board:not(.answer-open) .review-answer-reveal {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .focus-board.answer-open .review-answer-step button {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .focus-board.answer-open .review-answer-reveal {
+    display: inline-grid !important;
+    place-items: center !important;
+    min-width: 70px !important;
+    min-height: 26px !important;
+    height: 26px !important;
+    padding: 0 10px !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+  }
+
+  .answer-correct-maru {
+    position: fixed !important;
+    left: var(--maru-left) !important;
+    top: var(--maru-top) !important;
+    width: var(--maru-width) !important;
+    height: var(--maru-height) !important;
+    max-width: calc(100vw - 44px) !important;
+    transform: translate(-50%, -64%) scale(.78) !important;
+    z-index: 180 !important;
+  }
+
+  .answer-correct-maru svg {
+    inset: 0 -2px 0 !important;
+  }
+
+  .answer-correct-maru .maru-answer-text {
+    display: none !important;
+  }
+}
+
+@media (max-width: 340px) and (max-height: 600px) {
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-hud {
+    grid-template-columns: 76px minmax(0, 1fr) !important;
+    gap: 3px 4px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-plaque {
+    height: 42px !important;
+    padding: 3px 4px !important;
+    gap: 0 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-plaque small {
+    font-size: 9px !important;
+    line-height: 1 !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-plaque strong {
+    max-width: 100% !important;
+    font-size: 10px !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .session-plaque span {
+    display: none !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-cell {
+    width: 23px !important;
+    height: 23px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area header.session-top div#sessionMap.session-map .mini-hero {
+    width: 21px !important;
+    height: 21px !important;
+    right: -5px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card {
+    grid-template-rows: 112px 116px 50px minmax(174px, 1fr) !important;
+    gap: 5px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps {
+    gap: 4px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps li {
+    grid-template-columns: 27px minmax(0, 1fr) !important;
+    gap: 5px !important;
+    padding: 2px 6px !important;
+    height: 28px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps b {
+    width: 23px !important;
+    height: 23px !important;
+    font-size: 14px !important;
+  }
+
+  html body.session-mode main.app-shell section#sessionView.work-area.review-mode article.question-card div#visualBoard.visual-side .review-steps span {
+    font-size: 13px !important;
+    min-height: 24px !important;
+    height: 24px !important;
+  }
+}
