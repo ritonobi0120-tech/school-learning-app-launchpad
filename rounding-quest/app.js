@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 500;
+  const APP_VERSION = 501;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -68,6 +68,11 @@
     heroIcon: 'assets/generated/hero-walker.png',
     resultClear: 'assets/generated/result-clear-celebration.png',
     chapterUnlock: 'assets/generated/chapter-unlock-gate.png',
+    chapterUnlocks: {
+      'round-place': 'assets/generated/chapter-unlock-round-place.png',
+      significant: 'assets/generated/chapter-unlock-significant.png',
+      'final-mix': 'assets/generated/chapter-unlock-final-mix.png',
+    },
     finalClear: 'assets/generated/final-clear-celebration.png',
   };
 
@@ -136,6 +141,11 @@
 
   function artifactIcon(stageId) {
     return stageCardBadge(stageId);
+  }
+
+  function chapterUnlockArt(nextStage) {
+    if (!nextStage) return RPG_ASSETS.chapterUnlock;
+    return RPG_ASSETS.chapterUnlocks[nextStage.id] || RPG_ASSETS.chapterUnlock;
   }
 
   function artifactUnit(stage) {
@@ -1513,7 +1523,7 @@
     els.resultView.classList.toggle('clean-result', cleanResult);
     els.resultView.classList.toggle('review-result', session.reviewOnly && !mustReview && !finalClear);
     els.resultView.classList.toggle('simple-session-clear', cleanResult && !session.reviewOnly && !stageUnlock);
-    const resultArt = finalClear ? RPG_ASSETS.finalClear : (stageUnlock ? RPG_ASSETS.chapterUnlock : (cleanResult ? RPG_ASSETS.resultClear : stage.image));
+    const resultArt = finalClear ? RPG_ASSETS.finalClear : (stageUnlock ? chapterUnlockArt(nextStage) : (cleanResult ? RPG_ASSETS.resultClear : stage.image));
     els.resultView.style.setProperty('--result-art', `url("${img(resultArt)}")`);
     if (finalClear) playSound('finalClear');
     else if (stageCleared && !mustReview) playSound('stageClear');
@@ -1652,7 +1662,7 @@
 
   function renderStageUnlockClear(stage, nextStage, stageKeys) {
     return `
-      <img class="chapter-unlock-art" src="${img(RPG_ASSETS.chapterUnlock)}" alt="">
+      <img class="chapter-unlock-art" src="${img(chapterUnlockArt(nextStage))}" alt="">
       <div class="chapter-unlock-text">
         <strong>第${nextStage.order}章が開いた！</strong>
         <span>第${stage.order}章クリア。次は${nextStage.artifact}を集めよう。</span>
