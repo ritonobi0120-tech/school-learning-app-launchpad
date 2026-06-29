@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 502;
+  const APP_VERSION = 503;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
   const params = new URLSearchParams(window.location.search);
@@ -186,7 +186,30 @@
     });
   }
 
-  let progress = core.loadProgress(localStorage);
+  function createStorage() {
+    try {
+      const testKey = 'roundingQuest.storageCheck';
+      window.localStorage.setItem(testKey, '1');
+      window.localStorage.removeItem(testKey);
+      return window.localStorage;
+    } catch (_) {
+      const memory = new Map();
+      return {
+        getItem(key) {
+          return memory.has(key) ? memory.get(key) : null;
+        },
+        setItem(key, value) {
+          memory.set(key, String(value));
+        },
+        removeItem(key) {
+          memory.delete(key);
+        },
+      };
+    }
+  }
+
+  const storage = createStorage();
+  let progress = core.loadProgress(storage);
   let selectedStageId = 'round-digit';
   let homeStageManuallySelected = false;
   let session = null;
@@ -282,14 +305,14 @@
 
   function loadActiveSession() {
     try {
-      return normalizeActiveSession(JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY)));
+      return normalizeActiveSession(JSON.parse(storage.getItem(ACTIVE_SESSION_KEY)));
     } catch (_) {
       return null;
     }
   }
 
   function clearActiveSession() {
-    localStorage.removeItem(ACTIVE_SESSION_KEY);
+    storage.removeItem(ACTIVE_SESSION_KEY);
   }
 
   function saveActiveSession() {
@@ -316,7 +339,7 @@
       finishKeys: session.finishKeys,
       input: session.answered ? '' : els.answerInput.value,
     };
-    localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(payload));
+    storage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(payload));
   }
 
   function resumeActiveSession() {
@@ -406,7 +429,7 @@
     progress = core.defaultProgress();
     selectedStageId = core.STAGES[0].id;
     homeStageManuallySelected = false;
-    core.saveProgress(localStorage, progress);
+    core.saveProgress(storage, progress);
     renderStageSelect();
     renderHomeStats();
     show(els.homeView);
@@ -531,7 +554,7 @@
     const reviewMistakes = cleanMistakeList(((progress.mistakes || {})[selectedStageId] || []).slice(-10), selectedStageId);
     if (reviewOnly && reviewMistakes.length !== (((progress.mistakes || {})[selectedStageId] || []).slice(-10)).length) {
       progress.mistakes[selectedStageId] = reviewMistakes;
-      core.saveProgress(localStorage, progress);
+      core.saveProgress(storage, progress);
     }
     const reviewQuestions = reviewMistakes.map((mistake) => mistake.question);
     if (reviewOnly && !reviewQuestions.length) {
@@ -571,7 +594,7 @@
       clearActiveSession();
       session = null;
       progress = sanitizeProgressState(progress);
-      core.saveProgress(localStorage, progress);
+      core.saveProgress(storage, progress);
       renderHomeStats();
       show(els.homeView);
       return;
@@ -1487,7 +1510,7 @@
     const current = progress.mistakes[session.stageId] || [];
     progress.mistakes[session.stageId] = [...current, ...session.mistakes].slice(-12);
     if (session.reviewOnly) progress.mistakes[session.stageId] = session.mistakes.slice(-12);
-    core.saveProgress(localStorage, progress);
+    core.saveProgress(storage, progress);
     renderHomeStats();
     renderStageSelect();
     const returnResultAfterReview = session.returnResultAfterReview;
@@ -1733,7 +1756,7 @@
       else merged.push(mistake);
     });
     progress.mistakes[session.stageId] = merged.slice(-12);
-    core.saveProgress(localStorage, progress);
+    core.saveProgress(storage, progress);
   }
 
   function getNextMilestone(count) {
@@ -2342,7 +2365,7 @@
     ...core.STAGES.map((stage) => stage.image),
   ]);
   progress = sanitizeProgressState(progress);
-  core.saveProgress(localStorage, progress);
+  core.saveProgress(storage, progress);
   renderTenkey();
   renderHomeStats();
   renderStageSelect();
