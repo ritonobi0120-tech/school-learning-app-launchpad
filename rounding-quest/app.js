@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 507;
+  const APP_VERSION = 508;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
 
@@ -1388,10 +1388,11 @@
     const inputRect = els.answerInput.getBoundingClientRect();
     if (!inputRect.width || !inputRect.height) return;
     if (window.innerWidth < 600) {
-      const height = window.innerHeight < 600 ? 40 : 44;
-      const width = Math.min(window.innerWidth - 32, Math.max(228, inputRect.width));
-      const left = Math.max(16, (window.innerWidth - width) / 2);
-      const top = Math.max(12, inputRect.top - height - 8);
+      const height = window.innerHeight < 600 ? 36 : 40;
+      const width = Math.min(window.innerWidth - 36, 320);
+      const left = Math.max(18, (window.innerWidth - width) / 2);
+      const idealTop = window.innerHeight < 600 ? 42 : 64;
+      const top = Math.max(32, Math.min(inputRect.top - height - 14, idealTop));
       setImportantStyle(els.feedbackBox, {
         position: 'fixed',
         left: `${Math.round(left)}px`,
