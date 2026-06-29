@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 504;
+  const APP_VERSION = 505;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
 
