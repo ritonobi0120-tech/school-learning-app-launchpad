@@ -1,18 +1,35 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 503;
+  const APP_VERSION = 504;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
-  const params = new URLSearchParams(window.location.search);
-  const shownVersion = Math.max(Number(params.get('cb') || 0), Number(params.get('v') || 0));
-  const hasVersionParam = params.has('cb') || params.has('v');
-  if (!hasVersionParam || shownVersion !== APP_VERSION) {
-    params.set('cb', String(APP_VERSION));
-    params.set('v', String(APP_VERSION));
-    window.location.replace(`${window.location.pathname}?${params.toString()}${window.location.hash}`);
-    return;
+
+  function showFatalFallback(message) {
+    const home = document.getElementById('homeView');
+    const session = document.getElementById('sessionView');
+    const result = document.getElementById('resultView');
+    if (session) session.classList.add('hidden');
+    if (result) result.classList.add('hidden');
+    if (home) home.classList.remove('hidden');
+    document.body.classList.remove('session-mode', 'result-mode');
+    let notice = document.getElementById('fatalFallback');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.id = 'fatalFallback';
+      notice.className = 'fatal-fallback';
+      notice.setAttribute('role', 'alert');
+      document.body.appendChild(notice);
+    }
+    notice.textContent = message || '読み込みに失敗しました。ページをもう一度開いてください。';
   }
+
+  window.addEventListener('error', () => {
+    showFatalFallback('読み込みが途中で止まりました。ページを更新してください。');
+  });
+  window.addEventListener('unhandledrejection', () => {
+    showFatalFallback('読み込みが途中で止まりました。ページを更新してください。');
+  });
 
   const core = window.RoundingCore;
   const els = {
