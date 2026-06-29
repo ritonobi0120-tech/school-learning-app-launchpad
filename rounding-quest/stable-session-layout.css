@@ -5,6 +5,132 @@
   --rounding-home-icon: url("./assets/generated/home-house-icon.png") !important;
 }
 
+/* v506: phone home card strip. Keep the desktop home unchanged, but make the
+   stage picker readable and touch-friendly on school phone browsers. */
+@media (max-width: 599px) {
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select {
+    left: 16px !important;
+    right: 16px !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
+    width: auto !important;
+    height: 132px !important;
+    max-width: none !important;
+    padding: 10px !important;
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: 10px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-radius: 20px !important;
+    background: rgba(255, 255, 255, 0.82) !important;
+    border: 2px solid rgba(255, 255, 255, 0.85) !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select::before,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage] {
+    flex: 0 0 calc(100% - 18px) !important;
+    width: calc(100% - 18px) !important;
+    min-width: calc(100% - 18px) !important;
+    height: 108px !important;
+    margin: 0 !important;
+    scroll-snap-align: center !important;
+    display: grid !important;
+    grid-template-columns: 72px 1fr !important;
+    grid-template-rows: 1fr 28px !important;
+    column-gap: 12px !important;
+    align-items: center !important;
+    padding: 12px 14px !important;
+    border-radius: 18px !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-bg,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card small,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card em,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card > span:not(.stage-count-pill) {
+    display: none !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-order {
+    position: absolute !important;
+    left: 14px !important;
+    top: 14px !important;
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 1rem !important;
+    z-index: 4 !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-badge {
+    grid-column: 1 !important;
+    grid-row: 1 / span 2 !important;
+    width: 64px !important;
+    height: 64px !important;
+    margin: 14px 0 0 0 !important;
+    position: static !important;
+    transform: none !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage="final-mix"] strong {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    position: static !important;
+    transform: none !important;
+    align-self: end !important;
+    margin: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    font-size: clamp(1.25rem, 6vw, 1.55rem) !important;
+    line-height: 1.05 !important;
+    text-align: left !important;
+    white-space: normal !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong::after {
+    content: attr(data-mobile-label);
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    position: static !important;
+    width: 100% !important;
+    min-height: 26px !important;
+    padding: 2px 12px !important;
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border-radius: 999px !important;
+    font-size: 1rem !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill img {
+    display: none !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card.locked,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-state-label="未開放"] {
+    opacity: 1 !important;
+    background: linear-gradient(180deg, rgba(255, 244, 242, 0.96), rgba(255, 227, 222, 0.96)) !important;
+    border-color: #e85d55 !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .save-note {
+    display: none !important;
+  }
+}
+
+
 /* v488: remove the long decorative light streak on the home background. */
 html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero::after {
   content: none !important;
@@ -3498,5 +3624,128 @@ html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage
     font-size: 13px !important;
     min-height: 24px !important;
     height: 24px !important;
+  }
+}
+
+/* v506 final: phone home stage picker must win over older mobile blocks. */
+@media (max-width: 599px) {
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select {
+    left: 16px !important;
+    right: 16px !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
+    width: auto !important;
+    height: 132px !important;
+    max-width: none !important;
+    padding: 10px !important;
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: 10px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-radius: 20px !important;
+    background: rgba(255, 255, 255, 0.82) !important;
+    border: 2px solid rgba(255, 255, 255, 0.85) !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select::before,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage] {
+    flex: 0 0 calc(100% - 18px) !important;
+    width: calc(100% - 18px) !important;
+    min-width: calc(100% - 18px) !important;
+    height: 108px !important;
+    margin: 0 !important;
+    scroll-snap-align: center !important;
+    display: grid !important;
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    grid-template-rows: 1fr 28px !important;
+    column-gap: 12px !important;
+    align-items: center !important;
+    padding: 12px 14px !important;
+    border-radius: 18px !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-bg,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card small,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card em,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card > span:not(.stage-count-pill) {
+    display: none !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-order {
+    position: absolute !important;
+    left: 14px !important;
+    top: 14px !important;
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 1rem !important;
+    z-index: 4 !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-badge {
+    grid-column: 1 !important;
+    grid-row: 1 / span 2 !important;
+    width: 64px !important;
+    height: 64px !important;
+    margin: 14px 0 0 0 !important;
+    position: static !important;
+    transform: none !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-stage="final-mix"] strong {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    position: static !important;
+    transform: none !important;
+    align-self: end !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    font-size: clamp(1.25rem, 6vw, 1.55rem) !important;
+    line-height: 1.05 !important;
+    text-align: left !important;
+    white-space: normal !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card strong::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    position: static !important;
+    width: 100% !important;
+    min-height: 26px !important;
+    padding: 2px 12px !important;
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border-radius: 999px !important;
+    font-size: 1rem !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card .stage-count-pill img {
+    display: none !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card.locked,
+  html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage-select .stage-card[data-state-label="未開放"] {
+    opacity: 1 !important;
+    background: linear-gradient(180deg, rgba(255, 244, 242, 0.96), rgba(255, 227, 222, 0.96)) !important;
+    border-color: #e85d55 !important;
+  }
+
+  html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .save-note {
+    display: none !important;
   }
 }
