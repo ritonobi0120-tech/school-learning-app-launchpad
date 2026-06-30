@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 512;
+  const APP_VERSION = 513;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
 
@@ -990,9 +990,10 @@
     const focusIndex = Math.max(0, Math.min(digits.length - 1, digits.length - 1 - checkPower));
     const targetPower = Math.max(0, Math.round(Math.log10(v.targetUnit || 1)));
     const targetIndex = Math.max(0, Math.min(digits.length - 1, digits.length - 1 - targetPower));
+    const title = reviewQuestionTitle(q, v);
     return `
       <span class="review-problem-layout" aria-label="${escapeHtml(q.prompt)}">
-        <span class="review-problem-title">${core.formatNumber(v.value)}を <span class="prompt-focus-underline">${escapeHtml(v.checkLabel)}</span>で 四捨五入</span>
+        <span class="review-problem-title">${title}</span>
         <span class="review-digit-row" data-digit-count="${digits.length}" style="--digit-count:${digits.length}">
           ${digits.map((digit, index) => `
             <span class="review-digit ${index === focusIndex ? 'is-focus' : ''} ${index === targetIndex ? 'is-target' : ''}">
@@ -1003,6 +1004,18 @@
         </span>
       </span>
     `;
+  }
+
+  function reviewQuestionTitle(q, v) {
+    const value = core.formatNumber(v.value);
+    if (q.type === 'round-place') {
+      return `${value}を <span class="prompt-focus-underline">${escapeHtml(v.targetLabel)}</span>までの がい数`;
+    }
+    if (q.type === 'significant') {
+      const digits = Number(q.digits) || 2;
+      return `${value}を <span class="prompt-focus-underline">上から${escapeHtml(String(digits))}けた</span>の がい数`;
+    }
+    return `${value}を <span class="prompt-focus-underline">${escapeHtml(v.checkLabel)}</span>で 四捨五入`;
   }
 
   function renderPromptChunk(chunk) {
