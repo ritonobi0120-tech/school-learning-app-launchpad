@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 511;
+  const APP_VERSION = 512;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
 
@@ -993,7 +993,7 @@
     return `
       <span class="review-problem-layout" aria-label="${escapeHtml(q.prompt)}">
         <span class="review-problem-title">${core.formatNumber(v.value)}を <span class="prompt-focus-underline">${escapeHtml(v.checkLabel)}</span>で 四捨五入</span>
-        <span class="review-digit-row" style="--digit-count:${digits.length}">
+        <span class="review-digit-row" data-digit-count="${digits.length}" style="--digit-count:${digits.length}">
           ${digits.map((digit, index) => `
             <span class="review-digit ${index === focusIndex ? 'is-focus' : ''} ${index === targetIndex ? 'is-target' : ''}">
               ${index === focusIndex ? '<em class="digit-tag look">ここを見る</em>' : ''}
