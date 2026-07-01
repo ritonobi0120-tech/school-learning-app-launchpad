@@ -6281,7 +6281,28 @@ html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .he
   display: inline-flex !important;
 }
 
-/* v516: the super-complete image is full-bleed, so keep the title safely inside. */
-html body.result-mode main.app-shell section#resultView.result-view.super-clear .result-main > h2#resultTitle {
-  margin-top: clamp(10px, 2vh, 20px) !important;
+/* v517: prevent result titles from clipping and remove duplicate unlock text. */
+html body.result-mode main.app-shell section#resultView.result-view.final-clear .result-main {
+  padding-top: clamp(18px, 3vh, 34px) !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.final-clear .result-main > h2#resultTitle {
+  margin-top: 0 !important;
+  padding: 10px 26px 12px !important;
+  line-height: 1.12 !important;
+  overflow: visible !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock h2#resultTitle,
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock p#resultCopy {
+  display: none !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text strong {
+  -webkit-text-stroke: 0 !important;
+  text-shadow: 0 4px 14px rgba(3, 23, 38, .58) !important;
+}
+
+html body.result-mode main.app-shell section#resultView.result-view.stage-unlock .chapter-unlock-text span {
+  text-shadow: 0 3px 10px rgba(3, 23, 38, .56) !important;
 }
