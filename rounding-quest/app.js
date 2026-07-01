@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 514;
+  const APP_VERSION = 515;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
 
@@ -175,7 +175,7 @@
   }
 
   function artifactProgressText(stage, count) {
-    if (session && session.extraMode && stage.id === EXTRA_STAGE_ID) return `おかわり ${count}/${EXTRA_GOAL}`;
+    if (session && session.extraMode && stage.id === EXTRA_STAGE_ID) return `おかわり30問 ${count}/${EXTRA_GOAL}`;
     return `${stage.artifact} ${count}/${STAGE_GOAL}`;
   }
 
@@ -667,7 +667,7 @@
     els.sessionView.classList.toggle('review-mode', session.reviewOnly);
     els.sessionView.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
     els.stageBanner.innerHTML = `<img src="${miniStageBadge(stage.id)}" alt=""><span>第${stage.order}章</span><strong>${stage.title}</strong>`;
-    els.modeLabel.textContent = session.reviewOnly ? 'やり直し' : session.extraMode ? 'おかわり' : stage.artifact;
+    els.modeLabel.textContent = session.reviewOnly ? 'やり直し' : session.extraMode ? 'おかわり30問' : stage.artifact;
     const currentMark = getCurrentPathMark(q.stageId);
     const windowStart = Math.floor(Math.max(0, currentMark - 1) / SESSION_LENGTH) * SESSION_LENGTH + 1;
     const windowEnd = Math.min(STAGE_GOAL, windowStart + SESSION_LENGTH - 1);
@@ -1635,7 +1635,7 @@
       : session.reviewOnly
       ? 'やり直しクリア！'
       : session.extraMode
-      ? 'おかわり5問クリア！'
+      ? 'おかわり30問中 5問クリア！'
       : stageCleared
         ? `第${stage.order}章クリア！`
         : '5問クリア！';
@@ -1652,13 +1652,13 @@
       : session.reviewOnly
       ? 'まちがえた問題を直したよ'
       : session.extraMode
-      ? `おかわりを ${Math.max(0, stageKeys - (session.startKeys || 0))}問 進めたよ`
+      ? `おかわり30問を ${stageKeys}/${EXTRA_GOAL} まで進めたよ`
       : stageCleared
         ? stageClearCopy(stage)
         : `${stage.artifact}を ${Math.max(0, stageKeys - (session.startKeys || 0))}こ あつめたよ`;
     const nextActionLabel = '続ける';
-    els.againButton.textContent = mustReview ? 'やり直しへ' : (finalClear || extraClear ? 'おかわり練習' : nextActionLabel);
-    els.againButton.setAttribute('aria-label', mustReview ? 'やり直しへ' : (finalClear || extraClear ? 'おかわり練習へ' : nextActionLabel));
+    els.againButton.textContent = mustReview ? 'やり直しへ' : (finalClear || extraClear ? 'おかわり30問' : nextActionLabel);
+    els.againButton.setAttribute('aria-label', mustReview ? 'やり直しへ' : (finalClear || extraClear ? 'おかわり30問へ' : nextActionLabel));
     els.homeButton.classList.toggle('hidden', mustReview);
     const victoryOverlay = !mustReview && !session.reviewOnly && !finalClear && !extraClear
       ? `
@@ -1682,7 +1682,7 @@
       ? `
         <div class="result-reward-status" aria-label="今回の正解とアイテム">
           <strong>${stageKeys}/${goal}</strong>
-          <span>${session.extraMode ? 'おかわり' : stage.artifact}</span>
+          <span>${session.extraMode ? 'おかわり30問' : stage.artifact}</span>
           <img src="${artifactIcon(stage.id)}" alt="">
           <b>+${Math.max(1, stageKeys - (session.startKeys || 0))}</b>
         </div>
@@ -1750,7 +1750,7 @@
   function renderSimpleSessionClear(stage, stageKeys) {
     const gained = Math.max(0, stageKeys - (session.startKeys || 0));
     const goal = session.extraMode ? EXTRA_GOAL : STAGE_GOAL;
-    const label = session.extraMode ? 'おかわり' : stage.artifact;
+    const label = session.extraMode ? 'おかわり30問' : stage.artifact;
     const startPct = Math.min(100, Math.round(((session.startKeys || 0) / goal) * 100));
     const progressPct = Math.min(100, Math.round((stageKeys / goal) * 100));
     return `
@@ -1864,7 +1864,7 @@
   function renderResultProgressSummary(stage, stageKeys, remaining, stageCleared, finalClear, mustReview = false) {
     const gained = session.reviewOnly ? 0 : Math.max(0, stageKeys - (session.startKeys || 0));
     if (mustReview) {
-      return `<div class="result-progress-summary"><strong>今回 ${session.extraMode ? `おかわり +${gained}` : artifactCollectText(stage, gained)}</strong></div>`;
+      return `<div class="result-progress-summary"><strong>今回 ${session.extraMode ? `おかわり30問 +${gained}` : artifactCollectText(stage, gained)}</strong></div>`;
     }
     if (session.reviewOnly) {
       return `
@@ -1872,7 +1872,7 @@
           <b>見直しクリア</b>
           <img class="review-clear-hero" src="${img(RPG_ASSETS.heroIcon)}" alt="">
           <strong>道がひらいた！</strong>
-          <span>${session.extraMode ? 'おかわりの続きを進めよう' : 'つづきを進めよう'}</span>
+          <span>${session.extraMode ? 'おかわり30問の続きを進めよう' : 'つづきを進めよう'}</span>
         </div>
       `;
     }
@@ -1898,8 +1898,8 @@
           <div class="result-session-ribbon">${session.questions.length}問クリア</div>
           <div class="result-item-score">
             <img src="${artifactIcon(stage.id)}" alt="">
-            <span>${session.extraMode ? 'おかわりを進めた！' : `${stage.artifact}を手に入れた！`}</span>
-            <strong>${session.extraMode ? 'おかわり' : stage.artifact}</strong>
+            <span>${session.extraMode ? 'おかわり30問を進めた！' : `${stage.artifact}を手に入れた！`}</span>
+            <strong>${session.extraMode ? 'おかわり30問' : stage.artifact}</strong>
             <b class="result-stage-progress">${stageKeys}/${session.extraMode ? EXTRA_GOAL : STAGE_GOAL}</b>
           </div>
           <div class="result-hero-message">
@@ -2029,8 +2029,13 @@
       return;
     }
     const saved = loadActiveSession();
+    if (saved && saved.extraMode && resumeActiveSession()) return;
     if (saved && saved.stageId === selectedStageId && resumeActiveSession()) return;
     if (saved && saved.stageId !== selectedStageId) clearActiveSession();
+    if (isAllClear()) {
+      startExtraSession();
+      return;
+    }
     startSession(false);
   }
 
@@ -2060,20 +2065,22 @@
       els.homeGoal.textContent = hasMistakes
         ? '今の目的：見直しで続きの道をひらこう'
         : allClear
-          ? `全120問クリア！おかわり ${extraKeys}/${EXTRA_GOAL}`
+          ? `全120問クリア！おかわり30問 ${extraKeys}/${EXTRA_GOAL}`
           : `今の目的：${selectedStage.artifact}をあと${stageRemaining}こ集めよう`;
     }
     const savedSession = loadActiveSession();
     els.startButton.textContent = hasMistakes
-        ? '見直しクエストへ'
+      ? '見直しクエストへ'
       : savedSession && savedSession.stageId === selectedStageId
         ? 'つづきから'
+        : allClear
+          ? 'おかわり30問へ'
         : isStageCleared(selectedStageId)
           ? 'もう一度とく'
           : 'はじめる';
     if (els.extraButton) {
       els.extraButton.classList.toggle('hidden', !allClear || hasMistakes);
-      els.extraButton.textContent = extraRemaining > 0 ? `おかわり練習 ${extraKeys}/${EXTRA_GOAL}` : 'おかわり練習';
+      els.extraButton.textContent = extraRemaining > 0 ? `おかわり30問 ${extraKeys}/${EXTRA_GOAL}` : 'おかわり30問 もう一度';
     }
     els.reviewButton.disabled = !hasMistakes;
     els.reviewButton.classList.toggle('hidden', !hasMistakes);
