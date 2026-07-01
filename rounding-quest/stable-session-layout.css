@@ -6280,3 +6280,8 @@ html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage
 html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #extraButton.secondary:not(.hidden) {
   display: inline-flex !important;
 }
+
+/* v516: the super-complete image is full-bleed, so keep the title safely inside. */
+html body.result-mode main.app-shell section#resultView.result-view.super-clear .result-main > h2#resultTitle {
+  margin-top: clamp(10px, 2vh, 20px) !important;
+}

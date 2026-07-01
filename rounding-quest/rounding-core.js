@@ -97,7 +97,7 @@
   const CHECK_DIGIT_ORDER = [2, 7, 1, 6, 3, 8, 0, 5, 4, 9];
   const SESSION_LENGTH = 5;
   const STAGE_GOAL = 30;
-  const DEFAULT_PROGRESS = { sessions: 0, best: 0, bestStreak: 0, materials: 0, mistakes: {}, stageWins: {}, extraWins: 0 };
+  const DEFAULT_PROGRESS = { sessions: 0, best: 0, bestStreak: 0, materials: 0, mistakes: {}, stageWins: {}, extraWins: 0, oniWins: 0 };
   const TRANSFER_PREFIX = 'RQ1-';
   const TYPE_LABELS = {
     'round-digit': '何の位で四捨五入',
@@ -242,6 +242,39 @@
       { type: 'significant', digits: 3, totalDigits: 7, kept: 314, tail: 0 },
     ]),
   };
+
+  const ONI_PLANS = [
+    { type: 'round-digit', place: 'thousands', kept: 123, tail: 420 },
+    { type: 'round-place', place: 'tenThousands', kept: 76, tail: 3200 },
+    { type: 'significant', digits: 3, totalDigits: 7, kept: 314, tail: 200 },
+    { type: 'round-digit', place: 'tenThousands', kept: 21, tail: 3400 },
+    { type: 'round-place', place: 'thousands', kept: 842, tail: 300 },
+    { type: 'significant', digits: 2, totalDigits: 7, kept: 68, tail: 400 },
+    { type: 'round-digit', place: 'hundreds', kept: 9876, tail: 20 },
+    { type: 'round-place', place: 'tenThousands', kept: 135, tail: 1200 },
+    { type: 'significant', digits: 4, totalDigits: 7, kept: 2468, tail: 30 },
+    { type: 'round-digit', place: 'thousands', kept: 654, tail: 900 },
+    { type: 'round-place', place: 'thousands', kept: 5310, tail: 400 },
+    { type: 'significant', digits: 3, totalDigits: 8, kept: 709, tail: 1000 },
+    { type: 'round-digit', place: 'tenThousands', kept: 43, tail: 2100 },
+    { type: 'round-place', place: 'tenThousands', kept: 248, tail: 4300 },
+    { type: 'significant', digits: 4, totalDigits: 8, kept: 1357, tail: 200 },
+    { type: 'round-digit', place: 'hundreds', kept: 76543, tail: 60 },
+    { type: 'round-place', place: 'thousands', kept: 6421, tail: 500 },
+    { type: 'significant', digits: 2, totalDigits: 8, kept: 83, tail: 2000 },
+    { type: 'round-digit', place: 'thousands', kept: 4321, tail: 800 },
+    { type: 'round-place', place: 'tenThousands', kept: 391, tail: 900 },
+    { type: 'significant', digits: 3, totalDigits: 7, kept: 506, tail: 700 },
+    { type: 'round-digit', place: 'tenThousands', kept: 67, tail: 4500 },
+    { type: 'round-place', place: 'thousands', kept: 8080, tail: 600 },
+    { type: 'significant', digits: 4, totalDigits: 7, kept: 3141, tail: 50 },
+    { type: 'round-digit', place: 'hundreds', kept: 90817, tail: 40 },
+    { type: 'round-place', place: 'tenThousands', kept: 777, tail: 7000 },
+    { type: 'significant', digits: 3, totalDigits: 8, kept: 880, tail: 3000 },
+    { type: 'round-digit', place: 'thousands', kept: 9999, tail: 900 },
+    { type: 'round-place', place: 'tenThousands', kept: 990, tail: 8000 },
+    { type: 'significant', digits: 4, totalDigits: 8, kept: 9876, tail: 400 },
+  ];
 
   function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -423,6 +456,26 @@
     return makePrompt ? makePrompt(question, plan) : question.prompt;
   }
 
+  function oniPrompt(question, plan, index) {
+    const contexts = {
+      'round-digit': [
+        (q, p) => `鬼チャレンジです。${formatNumber(q.value)}を${PLACE_BY_KEY[p.place].label}で四捨五入しましょう。`,
+        (q, p) => `最後の門です。${formatNumber(q.value)}を${PLACE_BY_KEY[p.place].label}で四捨五入した数を答えましょう。`,
+      ],
+      'round-place': [
+        (q, p) => `鬼チャレンジです。${formatNumber(q.value)}を${PLACE_BY_KEY[p.place].label}までのがい数で表しましょう。`,
+        (q, p) => `最後の門です。${formatNumber(q.value)}を${PLACE_BY_KEY[p.place].label}までのがい数にしましょう。`,
+      ],
+      significant: [
+        (q, p) => `鬼チャレンジです。${formatNumber(q.value)}を上から${p.digits}けたのがい数で表しましょう。`,
+        (q, p) => `最後の門です。${formatNumber(q.value)}を上から${p.digits}けたのがい数にしましょう。`,
+      ],
+    };
+    const options = contexts[question.type] || [];
+    const makePrompt = options[index % Math.max(1, options.length)];
+    return makePrompt ? makePrompt(question, plan) : question.prompt;
+  }
+
   function createStageQuestion(stageId, index) {
     const plans = STAGE_PLANS[stageId] || [];
     const basePlan = plans[index % Math.max(1, plans.length)];
@@ -475,6 +528,22 @@
     return createSignificantPlannedQuestion(plan, checkDigit);
   }
 
+  function createOniQuestion(index) {
+    const basePlan = ONI_PLANS[index % ONI_PLANS.length];
+    const plan = varyPlan('final-mix', basePlan, index, ONI_PLANS.length);
+    const checkDigit = CHECK_DIGIT_ORDER[(index * 7 + 3) % CHECK_DIGIT_ORDER.length];
+    const question = createMixedPlannedQuestion(plan, checkDigit);
+    const typeOccurrence = Array.from({ length: index + 1 }, (_, itemIndex) => ONI_PLANS[itemIndex % ONI_PLANS.length])
+      .filter((item) => item && item.type === plan.type).length - 1;
+    question.stageId = 'final-mix';
+    question.id = `oni-${index}-${question.id}`;
+    question.level = '鬼';
+    question.prompt = oniPrompt(question, plan, typeOccurrence);
+    question.label = `鬼: ${TYPE_LABELS[question.type] || question.label}`;
+    question.support = `${TYPE_LABELS[question.type] || '問題のことば'}を見分けます。${question.support}`;
+    return question;
+  }
+
   function createQuestion(index) {
     const stage = STAGES[index % STAGES.length];
     return createStageQuestion(stage.id, index);
@@ -516,6 +585,7 @@
       mistakes: progress.mistakes && typeof progress.mistakes === 'object' ? progress.mistakes : {},
       stageWins: progress.stageWins && typeof progress.stageWins === 'object' ? progress.stageWins : {},
       extraWins: Math.max(0, Number(progress.extraWins) || 0),
+      oniWins: Math.max(0, Number(progress.oniWins) || 0),
     };
   }
 
@@ -582,6 +652,7 @@
     getStage,
     createQuestion,
     createStageQuestion,
+    createOniQuestion,
     createRoundDigitQuestion,
     createRoundPlaceQuestion,
     createSignificantQuestion,
