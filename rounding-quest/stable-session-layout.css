@@ -6275,3 +6275,8 @@ html body:not(.session-mode):not(.result-mode) main.app-shell #stageSelect.stage
     font-size: 13px !important;
   }
 }
+
+/* v514: keep the all-clear extra practice button visible on short school-PC windows. */
+html body:not(.session-mode):not(.result-mode) main.app-shell #homeView.hero .hero-copy .hero-actions #extraButton.secondary:not(.hidden) {
+  display: inline-flex !important;
+}

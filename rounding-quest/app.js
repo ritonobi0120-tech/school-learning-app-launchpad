@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 513;
+  const APP_VERSION = 514;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
 
@@ -47,6 +47,7 @@
     stageBanner: document.getElementById('stageBanner'),
     questionCard: document.querySelector('#sessionView .question-card'),
     startButton: document.getElementById('startButton'),
+    extraButton: document.getElementById('extraButton'),
     restartButton: document.getElementById('restartButton'),
     reviewButton: document.getElementById('reviewButton'),
     sessionHomeButton: document.getElementById('sessionHomeButton'),
@@ -174,6 +175,7 @@
   }
 
   function artifactProgressText(stage, count) {
+    if (session && session.extraMode && stage.id === EXTRA_STAGE_ID) return `おかわり ${count}/${EXTRA_GOAL}`;
     return `${stage.artifact} ${count}/${STAGE_GOAL}`;
   }
 
@@ -236,6 +238,9 @@
   const TENKEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '全部消す', '0', '1つ消す'];
   const SESSION_LENGTH = core.SESSION_LENGTH || 10;
   const STAGE_GOAL = core.STAGE_GOAL || 30;
+  const EXTRA_STAGE_ID = 'final-mix';
+  const EXTRA_GOAL = 30;
+  const EXTRA_START_INDEX = STAGE_GOAL;
   const IS_LOCAL_DEV = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
   let audioContext = null;
 
@@ -269,6 +274,7 @@
         question: mistake.question,
         input: core.normalizeAnswerText(String(mistake.input || '')).slice(0, 9),
         type: mistake.type || mistake.question.type || mistake.question.stageId,
+        extraMode: Boolean(mistake.extraMode),
       });
     });
     return cleaned.slice(-12);
@@ -280,6 +286,7 @@
     next.best = Math.max(0, Number(rawProgress && rawProgress.best) || 0);
     next.bestStreak = Math.max(0, Number(rawProgress && rawProgress.bestStreak) || 0);
     next.materials = Math.max(0, Number(rawProgress && rawProgress.materials) || 0);
+    next.extraWins = Math.min(EXTRA_GOAL, Math.max(0, Number(rawProgress && rawProgress.extraWins) || 0));
     next.mistakes = {};
     next.stageWins = {};
     core.STAGES.forEach((stage) => {
@@ -299,8 +306,10 @@
     const questions = cleanQuestionList(saved.questions, saved.reviewOnly ? stage.id : '');
     if (!questions.length) return null;
     const index = Math.min(questions.length - 1, Math.max(0, Number(saved.index) || 0));
+    const extraMode = Boolean(saved.extraMode);
     return {
       reviewOnly: Boolean(saved.reviewOnly),
+      extraMode,
       stageId: stage.id,
       questions,
       index,
@@ -314,8 +323,8 @@
       returnResultAfterReview: saved.returnResultAfterReview || null,
       answered: false,
       advanceTimer: null,
-      startKeys: Math.min(STAGE_GOAL, Math.max(0, Number(saved.startKeys) || 0)),
-      finishKeys: Math.min(STAGE_GOAL, Math.max(0, Number(saved.finishKeys) || 0)),
+      startKeys: Math.min(extraMode ? EXTRA_GOAL : STAGE_GOAL, Math.max(0, Number(saved.startKeys) || 0)),
+      finishKeys: Math.min(extraMode ? EXTRA_GOAL : STAGE_GOAL, Math.max(0, Number(saved.finishKeys) || 0)),
       resumeInput: String(saved.input || '').replace(/[^\d]/g, '').slice(0, 9),
     };
   }
@@ -341,6 +350,7 @@
     }
     const payload = {
       reviewOnly: session.reviewOnly,
+      extraMode: Boolean(session.extraMode),
       stageId: session.stageId,
       questions: session.questions,
       index: nextIndex,
@@ -395,6 +405,7 @@
       || Number(progress.best) > 0
       || Number(progress.bestStreak) > 0
       || Number(progress.materials) > 0
+      || Number(progress.extraWins) > 0
       || hasStageWins
       || hasMistakes;
   }
@@ -523,6 +534,7 @@
 
   function createReturnResultAfterReview(sourceSession) {
     return {
+      extraMode: Boolean(sourceSession.extraMode),
       stageId: sourceSession.stageId,
       questions: sourceSession.questions,
       correct: sourceSession.correct,
@@ -537,6 +549,7 @@
   function showReturnResultAfterReview(snapshot) {
     session = {
       reviewOnly: false,
+      extraMode: Boolean(snapshot.extraMode),
       stageId: snapshot.stageId,
       questions: Array.isArray(snapshot.questions) ? snapshot.questions : [],
       index: Array.isArray(snapshot.questions) ? snapshot.questions.length : 0,
@@ -554,6 +567,21 @@
       finishKeys: Math.min(STAGE_GOAL, Math.max(0, Number(snapshot.finishKeys) || 0)),
     };
     renderResult();
+  }
+
+  function createExtraQuestion(index) {
+    return core.createStageQuestion(EXTRA_STAGE_ID, EXTRA_START_INDEX + index);
+  }
+
+  function startExtraSession() {
+    if (!isAllClear()) {
+      renderHomeStats();
+      show(els.homeView);
+      return;
+    }
+    selectedStageId = EXTRA_STAGE_ID;
+    homeStageManuallySelected = true;
+    startSession(false, { extraMode: true });
   }
 
   function startSession(reviewOnly, options = {}) {
@@ -578,13 +606,19 @@
       renderHomeStats();
       return;
     }
-    const startIndex = Math.min(STAGE_GOAL, getStageKeyCount(selectedStageId));
+    const reviewExtraMode = reviewOnly && reviewMistakes.some((mistake) => mistake.extraMode);
+    const extraMode = !reviewOnly && Boolean(options.extraMode) && selectedStageId === EXTRA_STAGE_ID && isAllClear();
+    const sessionExtraMode = extraMode || reviewExtraMode;
+    const startIndex = sessionExtraMode ? Math.min(EXTRA_GOAL, getExtraKeyCount()) : Math.min(STAGE_GOAL, getStageKeyCount(selectedStageId));
     const questions = reviewOnly && reviewQuestions.length
       ? reviewQuestions
+      : sessionExtraMode
+      ? Array.from({ length: SESSION_LENGTH }, (_, index) => createExtraQuestion(startIndex + index))
       : Array.from({ length: SESSION_LENGTH }, (_, index) => core.createStageQuestion(selectedStageId, startIndex + index));
     const sessionStageId = reviewOnly && questions[0] ? questions[0].stageId : selectedStageId;
     session = {
       reviewOnly,
+      extraMode: sessionExtraMode,
       stageId: sessionStageId,
       questions,
       index: 0,
@@ -598,8 +632,8 @@
       pathMissMarks: [],
       answered: false,
       advanceTimer: null,
-      startKeys: Math.min(STAGE_GOAL, getStageKeyCount(sessionStageId)),
-      finishKeys: Math.min(STAGE_GOAL, getStageKeyCount(sessionStageId)),
+      startKeys: sessionExtraMode ? Math.min(EXTRA_GOAL, getExtraKeyCount()) : Math.min(STAGE_GOAL, getStageKeyCount(sessionStageId)),
+      finishKeys: sessionExtraMode ? Math.min(EXTRA_GOAL, getExtraKeyCount()) : Math.min(STAGE_GOAL, getStageKeyCount(sessionStageId)),
     };
     show(els.sessionView);
     renderQuestion();
@@ -633,7 +667,7 @@
     els.sessionView.classList.toggle('review-mode', session.reviewOnly);
     els.sessionView.style.setProperty('--stage-art', `url("${img(stage.image)}")`);
     els.stageBanner.innerHTML = `<img src="${miniStageBadge(stage.id)}" alt=""><span>第${stage.order}章</span><strong>${stage.title}</strong>`;
-    els.modeLabel.textContent = session.reviewOnly ? 'やり直し' : stage.artifact;
+    els.modeLabel.textContent = session.reviewOnly ? 'やり直し' : session.extraMode ? 'おかわり' : stage.artifact;
     const currentMark = getCurrentPathMark(q.stageId);
     const windowStart = Math.floor(Math.max(0, currentMark - 1) / SESSION_LENGTH) * SESSION_LENGTH + 1;
     const windowEnd = Math.min(STAGE_GOAL, windowStart + SESSION_LENGTH - 1);
@@ -646,7 +680,7 @@
     els.scoreBar.style.width = `${(session.correct / session.questions.length) * 100}%`;
     const stageKeys = getProjectedStageKeyCount(session.stageId);
     const pathCount = getProjectedStagePathCount(session.stageId);
-    els.comboChip.textContent = `あと${Math.max(0, STAGE_GOAL - stageKeys)}問`;
+    els.comboChip.textContent = `あと${Math.max(0, getCurrentGoal() - stageKeys)}問`;
     els.comboChip.classList.toggle('hot', session.streak >= 3);
     renderSessionMap(q.stageId, stageKeys, pathCount, false, false, sessionPathMarks());
     const promptLayout = getQuestionPromptLayout(q);
@@ -1192,7 +1226,7 @@
     const currentMark = getCurrentPathMark(stageId);
     if (result.correct) marks.pulseMark = currentMark;
     else marks.missPulseMark = currentMark;
-    els.comboChip.textContent = `あと${Math.max(0, STAGE_GOAL - stageKeys)}問`;
+    els.comboChip.textContent = `あと${Math.max(0, getCurrentGoal() - stageKeys)}問`;
     els.comboChip.classList.toggle('hot', session.streak >= 3);
     renderSessionMap(stageId, stageKeys, pathCount, result.correct, !result.correct, marks);
   }
@@ -1533,10 +1567,14 @@
     progress.bestStreak = Math.max(progress.bestStreak || 0, session.bestStreak);
     progress.stageWins = progress.stageWins || {};
     if (!session.reviewOnly) {
-      progress.materials += session.correct;
-      progress.stageWins[session.stageId] = Math.min(STAGE_GOAL, getStageKeyCount(session.stageId) + session.correct);
+      if (session.extraMode) {
+        progress.extraWins = Math.min(EXTRA_GOAL, getExtraKeyCount() + session.correct);
+      } else {
+        progress.materials += session.correct;
+        progress.stageWins[session.stageId] = Math.min(STAGE_GOAL, getStageKeyCount(session.stageId) + session.correct);
+      }
     }
-    session.finishKeys = Math.min(STAGE_GOAL, getStageKeyCount(session.stageId));
+    session.finishKeys = session.extraMode ? Math.min(EXTRA_GOAL, getExtraKeyCount()) : Math.min(STAGE_GOAL, getStageKeyCount(session.stageId));
     progress.mistakes = progress.mistakes || {};
     const current = progress.mistakes[session.stageId] || [];
     progress.mistakes[session.stageId] = [...current, ...session.mistakes].slice(-12);
@@ -1562,34 +1600,42 @@
     const total = session.questions.length;
     const stage = core.getStage(session.stageId);
     const nextStage = getNextStage(session.stageId);
-    const stageKeys = getStageKeyCount(session.stageId);
-    const remaining = Math.max(0, STAGE_GOAL - stageKeys);
-    const stageCleared = isStageCleared(session.stageId);
+    const stageKeys = session.extraMode ? getExtraKeyCount() : getStageKeyCount(session.stageId);
+    const goal = session.extraMode ? EXTRA_GOAL : STAGE_GOAL;
+    const remaining = Math.max(0, goal - stageKeys);
+    const stageCleared = session.extraMode ? stageKeys >= EXTRA_GOAL : isStageCleared(session.stageId);
     const mustReview = session.mistakes.length > 0;
-    const finalClear = stageCleared && !nextStage && !mustReview;
-    const stageUnlock = stageCleared && Boolean(nextStage) && !mustReview && !session.reviewOnly;
-    const cleanResult = !mustReview && !finalClear;
+    const extraClear = session.extraMode && stageCleared && !mustReview;
+    const finalClear = !session.extraMode && stageCleared && !nextStage && !mustReview;
+    const stageUnlock = !session.extraMode && stageCleared && Boolean(nextStage) && !mustReview && !session.reviewOnly;
+    const cleanResult = !mustReview && !finalClear && !stageUnlock;
     els.sparkLayer.innerHTML = '';
     document.querySelectorAll('.answer-correct-maru, .problem-celebration-overlay, .flying-artifact').forEach((node) => node.remove());
     els.resultView.classList.toggle('final-clear', finalClear);
     els.resultView.classList.toggle('stage-unlock', stageUnlock);
+    els.resultView.classList.toggle('extra-clear', extraClear);
+    els.resultView.classList.toggle('extra-result', Boolean(session.extraMode));
     els.resultView.classList.toggle('must-review', mustReview);
     els.resultView.classList.toggle('clean-result', cleanResult);
     els.resultView.classList.toggle('review-result', session.reviewOnly && !mustReview && !finalClear);
     els.resultView.classList.toggle('simple-session-clear', cleanResult && !session.reviewOnly && !stageUnlock);
-    const resultArt = finalClear ? RPG_ASSETS.finalClear : (stageUnlock ? chapterUnlockArt(nextStage) : (cleanResult ? RPG_ASSETS.resultClear : stage.image));
+    const resultArt = finalClear || extraClear ? RPG_ASSETS.finalClear : (stageUnlock ? chapterUnlockArt(nextStage) : (cleanResult ? RPG_ASSETS.resultClear : stage.image));
     els.resultView.style.setProperty('--result-art', `url("${img(resultArt)}")`);
     if (finalClear) playSound('finalClear');
     else if (stageCleared && !mustReview) playSound('stageClear');
     else if (mustReview) playSound('notice');
     els.resultTitle.textContent = mustReview
       ? 'やり直し'
+      : extraClear
+      ? 'おかわり30問クリア！'
       : finalClear
       ? '完全クリア！'
       : stageUnlock
       ? `第${nextStage.order}章が開いた！`
       : session.reviewOnly
       ? 'やり直しクリア！'
+      : session.extraMode
+      ? 'おかわり5問クリア！'
       : stageCleared
         ? `第${stage.order}章クリア！`
         : '5問クリア！';
@@ -1597,20 +1643,24 @@
       ? ''
       : mustReview
       ? 'この1問を直そう'
+      : extraClear
+      ? '追加の問題もやりきったよ'
       : finalClear
       ? ''
       : stageUnlock
       ? `第${stage.order}章クリア。次は${nextStage.artifact}を集めよう。`
       : session.reviewOnly
       ? 'まちがえた問題を直したよ'
+      : session.extraMode
+      ? `おかわりを ${Math.max(0, stageKeys - (session.startKeys || 0))}問 進めたよ`
       : stageCleared
         ? stageClearCopy(stage)
         : `${stage.artifact}を ${Math.max(0, stageKeys - (session.startKeys || 0))}こ あつめたよ`;
     const nextActionLabel = '続ける';
-    els.againButton.textContent = mustReview ? 'やり直しへ' : (finalClear ? 'もう一度' : nextActionLabel);
-    els.againButton.setAttribute('aria-label', mustReview ? 'やり直しへ' : (finalClear ? 'もう一度まとめバトル' : nextActionLabel));
+    els.againButton.textContent = mustReview ? 'やり直しへ' : (finalClear || extraClear ? 'おかわり練習' : nextActionLabel);
+    els.againButton.setAttribute('aria-label', mustReview ? 'やり直しへ' : (finalClear || extraClear ? 'おかわり練習へ' : nextActionLabel));
     els.homeButton.classList.toggle('hidden', mustReview);
-    const victoryOverlay = !mustReview && !session.reviewOnly && !finalClear
+    const victoryOverlay = !mustReview && !session.reviewOnly && !finalClear && !extraClear
       ? `
         <div class="result-item-pop" aria-hidden="true">
           <img src="${artifactIcon(stage.id)}" alt="">
@@ -1631,8 +1681,8 @@
     const resultStatusCard = cleanResult && !session.reviewOnly
       ? `
         <div class="result-reward-status" aria-label="今回の正解とアイテム">
-          <strong>${stageKeys}/${STAGE_GOAL}</strong>
-          <span>${stage.artifact}</span>
+          <strong>${stageKeys}/${goal}</strong>
+          <span>${session.extraMode ? 'おかわり' : stage.artifact}</span>
           <img src="${artifactIcon(stage.id)}" alt="">
           <b>+${Math.max(1, stageKeys - (session.startKeys || 0))}</b>
         </div>
@@ -1647,7 +1697,9 @@
         </div>
       `
       : '';
-    els.rewardScene.innerHTML = stageUnlock
+    els.rewardScene.innerHTML = extraClear
+      ? renderSimpleSessionClear(stage, stageKeys)
+      : stageUnlock
       ? renderStageUnlockClear(stage, nextStage, stageKeys)
       : cleanResult && !session.reviewOnly
       ? renderSimpleSessionClear(stage, stageKeys)
@@ -1655,7 +1707,7 @@
         <img src="${img(finalClear ? RPG_ASSETS.finalClear : (cleanResult ? RPG_ASSETS.resultClear : stage.image))}" alt="">
         ${answerShowcase}
         ${resultStatusCard}
-        ${finalClear ? '' : finalCollection}
+        ${finalClear || extraClear ? '' : finalCollection}
         ${victoryOverlay}
         ${renderResultProgressSummary(stage, stageKeys, remaining, stageCleared, finalClear, mustReview)}
       `;
@@ -1697,8 +1749,10 @@
 
   function renderSimpleSessionClear(stage, stageKeys) {
     const gained = Math.max(0, stageKeys - (session.startKeys || 0));
-    const startPct = Math.min(100, Math.round(((session.startKeys || 0) / STAGE_GOAL) * 100));
-    const progressPct = Math.min(100, Math.round((stageKeys / STAGE_GOAL) * 100));
+    const goal = session.extraMode ? EXTRA_GOAL : STAGE_GOAL;
+    const label = session.extraMode ? 'おかわり' : stage.artifact;
+    const startPct = Math.min(100, Math.round(((session.startKeys || 0) / goal) * 100));
+    const progressPct = Math.min(100, Math.round((stageKeys / goal) * 100));
     return `
       <div class="simple-clear-panel">
         <div class="simple-stat-list" aria-label="今回の結果">
@@ -1706,8 +1760,8 @@
         </div>
         <div class="simple-clear-center">
           <img src="${artifactIcon(stage.id)}" alt="">
-          <span class="simple-progress-label">${stage.artifact}</span>
-          <strong>${stageKeys}/${STAGE_GOAL}</strong>
+          <span class="simple-progress-label">${label}</span>
+          <strong>${stageKeys}/${goal}</strong>
           <div class="simple-progress" data-from-pct="${startPct}" data-to-pct="${progressPct}" style="--from-pct:${startPct}%; --pct:${progressPct}%"><i></i></div>
         </div>
       </div>
@@ -1767,9 +1821,10 @@
     const existing = session.mistakes.find((mistake) => isSameQuestion(mistake.question, question));
     if (existing) {
       existing.input = input;
+      existing.extraMode = Boolean(session && session.extraMode);
       return;
     }
-    session.mistakes.push({ question, input, type: question.stageId });
+    session.mistakes.push({ question, input, type: question.stageId, extraMode: Boolean(session && session.extraMode) });
   }
 
   function removeSessionMistake(question) {
@@ -1809,7 +1864,7 @@
   function renderResultProgressSummary(stage, stageKeys, remaining, stageCleared, finalClear, mustReview = false) {
     const gained = session.reviewOnly ? 0 : Math.max(0, stageKeys - (session.startKeys || 0));
     if (mustReview) {
-      return `<div class="result-progress-summary"><strong>今回 ${artifactCollectText(stage, gained)}</strong></div>`;
+      return `<div class="result-progress-summary"><strong>今回 ${session.extraMode ? `おかわり +${gained}` : artifactCollectText(stage, gained)}</strong></div>`;
     }
     if (session.reviewOnly) {
       return `
@@ -1817,7 +1872,7 @@
           <b>見直しクリア</b>
           <img class="review-clear-hero" src="${img(RPG_ASSETS.heroIcon)}" alt="">
           <strong>道がひらいた！</strong>
-          <span>つづきを進めよう</span>
+          <span>${session.extraMode ? 'おかわりの続きを進めよう' : 'つづきを進めよう'}</span>
         </div>
       `;
     }
@@ -1825,6 +1880,7 @@
       return '';
     }
     if (stageCleared) {
+      if (session.extraMode) return '';
       return `
         <div class="result-progress-summary complete joy-result">
           <img src="${artifactIcon(stage.id)}" alt="">
@@ -1842,9 +1898,9 @@
           <div class="result-session-ribbon">${session.questions.length}問クリア</div>
           <div class="result-item-score">
             <img src="${artifactIcon(stage.id)}" alt="">
-            <span>${stage.artifact}を手に入れた！</span>
-            <strong>${stage.artifact}</strong>
-            <b class="result-stage-progress">${stageKeys}/${STAGE_GOAL}</b>
+            <span>${session.extraMode ? 'おかわりを進めた！' : `${stage.artifact}を手に入れた！`}</span>
+            <strong>${session.extraMode ? 'おかわり' : stage.artifact}</strong>
+            <b class="result-stage-progress">${stageKeys}/${session.extraMode ? EXTRA_GOAL : STAGE_GOAL}</b>
           </div>
           <div class="result-hero-message">
             <img src="${img(RPG_ASSETS.heroIcon)}" alt="">
@@ -1876,6 +1932,14 @@
     return '';
   }
 
+  function getExtraKeyCount() {
+    return Math.min(EXTRA_GOAL, Math.max(0, Number(progress.extraWins) || 0));
+  }
+
+  function getCurrentGoal() {
+    return session && session.extraMode ? EXTRA_GOAL : STAGE_GOAL;
+  }
+
   function isStageCleared(stageId) {
     return getStageKeyCount(stageId) >= STAGE_GOAL;
   }
@@ -1889,25 +1953,29 @@
   }
 
   function getProjectedStageKeyCount(stageId) {
+    if (session && session.extraMode && stageId === EXTRA_STAGE_ID) {
+      const earned = session.reviewOnly ? 0 : session.correct;
+      return Math.min(EXTRA_GOAL, getExtraKeyCount() + earned);
+    }
     const earned = session && !session.reviewOnly && session.stageId === stageId ? session.correct : 0;
     return Math.min(STAGE_GOAL, getStageKeyCount(stageId) + earned);
   }
 
   function getCurrentPathMark(stageId) {
     if (!session || session.reviewOnly || session.stageId !== stageId) return getProjectedStageKeyCount(stageId);
-    return Math.min(STAGE_GOAL, session.startKeys + session.index + 1);
+    return Math.min(getCurrentGoal(), session.startKeys + session.index + 1);
   }
 
   function getProjectedStagePathCount(stageId, result = null) {
     if (!session || session.reviewOnly || session.stageId !== stageId) return getProjectedStageKeyCount(stageId);
     const answeredStep = session.answered && result && result.correct ? 1 : 0;
-    return Math.min(STAGE_GOAL, session.startKeys + session.index + answeredStep);
+    return Math.min(getCurrentGoal(), session.startKeys + session.index + answeredStep);
   }
 
   function sessionPathMarks() {
     if (!session) return {};
     if (session.reviewOnly) {
-      return { baseCount: getStageKeyCount(session.stageId) };
+      return { baseCount: session.extraMode ? getExtraKeyCount() : getStageKeyCount(session.stageId) };
     }
     return {
       baseCount: session.startKeys,
@@ -1980,6 +2048,9 @@
     const totalKeys = core.STAGES.reduce((sum, stage) => sum + getStageKeyCount(stage.id), 0);
     const totalGoal = core.STAGES.length * STAGE_GOAL;
     const remainingKeys = Math.max(0, totalGoal - totalKeys);
+    const allClear = remainingKeys === 0;
+    const extraKeys = getExtraKeyCount();
+    const extraRemaining = Math.max(0, EXTRA_GOAL - extraKeys);
     const stageKeys = getStageKeyCount(selectedStageId);
     const stageRemaining = Math.max(0, STAGE_GOAL - stageKeys);
     els.homeProgress.style.setProperty('--home-progress-rate', `${Math.min(100, Math.round((totalKeys / totalGoal) * 100))}%`);
@@ -1988,8 +2059,8 @@
     if (els.homeGoal) {
       els.homeGoal.textContent = hasMistakes
         ? '今の目的：見直しで続きの道をひらこう'
-        : remainingKeys === 0
-          ? '全120問クリア！がい数マスターです'
+        : allClear
+          ? `全120問クリア！おかわり ${extraKeys}/${EXTRA_GOAL}`
           : `今の目的：${selectedStage.artifact}をあと${stageRemaining}こ集めよう`;
     }
     const savedSession = loadActiveSession();
@@ -2000,6 +2071,10 @@
         : isStageCleared(selectedStageId)
           ? 'もう一度とく'
           : 'はじめる';
+    if (els.extraButton) {
+      els.extraButton.classList.toggle('hidden', !allClear || hasMistakes);
+      els.extraButton.textContent = extraRemaining > 0 ? `おかわり練習 ${extraKeys}/${EXTRA_GOAL}` : 'おかわり練習';
+    }
     els.reviewButton.disabled = !hasMistakes;
     els.reviewButton.classList.toggle('hidden', !hasMistakes);
     els.reviewButton.textContent = hasMistakes ? '見直しクエスト' : '';
@@ -2142,12 +2217,13 @@
     }
     const stage = core.getStage(stageId);
     els.sessionMap.style.setProperty('--session-road-art', `url("${img(RPG_ASSETS.worldMap)}")`);
-    const count = Math.min(STAGE_GOAL, Math.max(0, keyCount));
-    const path = Math.min(STAGE_GOAL, Math.max(0, pathCount));
+    const goal = session && session.extraMode && stageId === EXTRA_STAGE_ID ? EXTRA_GOAL : STAGE_GOAL;
+    const count = Math.min(goal, Math.max(0, keyCount));
+    const path = Math.min(goal, Math.max(0, pathCount));
     const heroStep = path > 0 && path % SESSION_LENGTH === 0
       ? path
-      : Math.min(STAGE_GOAL, Math.max(1, path + 1));
-    const rest = Math.max(0, STAGE_GOAL - count);
+      : Math.min(goal, Math.max(1, path + 1));
+    const rest = Math.max(0, goal - count);
     const baseCount = Math.min(STAGE_GOAL, Math.max(0, Number(markState.baseCount) || 0));
     const correctMarks = new Set((markState.correct || []).map(Number));
     const missedMarks = new Set((markState.missed || []).map(Number));
@@ -2155,7 +2231,7 @@
     const missPulseMark = Number(markState.missPulseMark) || 0;
     const inActiveNormalSession = session && !session.reviewOnly && session.stageId === stageId;
     const windowStart = Math.floor(Math.max(0, heroStep - 1) / SESSION_LENGTH) * SESSION_LENGTH + 1;
-    const windowEnd = Math.min(STAGE_GOAL, windowStart + SESSION_LENGTH - 1);
+    const windowEnd = Math.min(goal, windowStart + SESSION_LENGTH - 1);
     const zone = `${windowStart}〜${windowEnd}問目`;
     const totalPips = inActiveNormalSession ? Math.max(1, session.questions.length) : SESSION_LENGTH;
     const currentInSession = inActiveNormalSession
@@ -2219,7 +2295,7 @@
           </div>
           <div class="session-item-card">
             <img src="${artifactIcon(stage.id)}" alt="">
-            <strong>${count}/${STAGE_GOAL}</strong>
+            <strong>${count}/${goal}</strong>
             ${reviewChip}
           </div>
         </div>
@@ -2284,6 +2360,13 @@
     playSound('tap');
     await startFromBeginning();
   });
+  if (els.extraButton) {
+    els.extraButton.addEventListener('click', () => {
+      unlockAudio();
+      playSound('tap');
+      startExtraSession();
+    });
+  }
   els.reviewButton.addEventListener('click', () => {
     unlockAudio();
     playSound('tap');
@@ -2325,6 +2408,10 @@
       return;
     }
     const nextStage = session && isStageCleared(session.stageId) ? getNextStage(session.stageId) : null;
+    if (session && !session.mistakes.length && (session.extraMode || (!nextStage && isStageCleared(session.stageId)))) {
+      startExtraSession();
+      return;
+    }
     if (nextStage) {
       selectedStageId = nextStage.id;
       renderStageSelect();

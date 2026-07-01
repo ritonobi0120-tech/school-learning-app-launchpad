@@ -97,7 +97,7 @@
   const CHECK_DIGIT_ORDER = [2, 7, 1, 6, 3, 8, 0, 5, 4, 9];
   const SESSION_LENGTH = 5;
   const STAGE_GOAL = 30;
-  const DEFAULT_PROGRESS = { sessions: 0, best: 0, bestStreak: 0, materials: 0, mistakes: {}, stageWins: {} };
+  const DEFAULT_PROGRESS = { sessions: 0, best: 0, bestStreak: 0, materials: 0, mistakes: {}, stageWins: {}, extraWins: 0 };
   const TRANSFER_PREFIX = 'RQ1-';
   const TYPE_LABELS = {
     'round-digit': '何の位で四捨五入',
@@ -515,6 +515,7 @@
       materials: Math.max(0, Number(progress.materials) || 0),
       mistakes: progress.mistakes && typeof progress.mistakes === 'object' ? progress.mistakes : {},
       stageWins: progress.stageWins && typeof progress.stageWins === 'object' ? progress.stageWins : {},
+      extraWins: Math.max(0, Number(progress.extraWins) || 0),
     };
   }
 
