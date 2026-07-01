@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = 517;
+  const APP_VERSION = 520;
   const CORRECT_FX_MS = 900;
   const ACTIVE_SESSION_KEY = 'roundingQuest.activeSession.v1';
 
@@ -1651,11 +1651,12 @@
     const extraClear = session.extraMode && stageCleared && !mustReview;
     const finalClear = !session.extraMode && !session.oniMode && stageCleared && !nextStage && !mustReview;
     const stageUnlock = !session.extraMode && !session.oniMode && stageCleared && Boolean(nextStage) && !mustReview && !session.reviewOnly;
-    const cleanResult = !mustReview && !finalClear && !superClear && !stageUnlock;
+    const cleanResult = !mustReview && !finalClear && !superClear && !extraClear && !stageUnlock;
     els.sparkLayer.innerHTML = '';
     document.querySelectorAll('.answer-correct-maru, .problem-celebration-overlay, .flying-artifact').forEach((node) => node.remove());
-    els.resultView.classList.toggle('final-clear', finalClear || superClear);
+    els.resultView.classList.toggle('final-clear', finalClear || superClear || extraClear);
     els.resultView.classList.toggle('super-clear', superClear);
+    els.resultView.classList.toggle('oni-unlock', extraClear);
     els.resultView.classList.toggle('stage-unlock', stageUnlock);
     els.resultView.classList.toggle('extra-clear', extraClear);
     els.resultView.classList.toggle('extra-result', Boolean(session.extraMode || session.oniMode));
@@ -1673,7 +1674,7 @@
       : superClear
       ? '超完全クリア！'
       : extraClear
-      ? 'おかわり30問クリア！'
+      ? '鬼30問があらわれた！'
       : finalClear
       ? '完全クリア！'
       : stageUnlock
@@ -1694,7 +1695,7 @@
       : superClear
       ? ''
       : extraClear
-      ? '追加の問題もやりきったよ'
+      ? ''
       : finalClear
       ? ''
       : stageUnlock
@@ -1709,7 +1710,7 @@
         ? stageClearCopy(stage)
         : `${stage.artifact}を ${Math.max(0, stageKeys - (session.startKeys || 0))}こ あつめたよ`;
     const nextActionLabel = '続ける';
-    els.againButton.textContent = mustReview ? 'やり直しへ' : (superClear ? '鬼30問' : extraClear ? '鬼30問' : finalClear ? 'おかわり30問' : nextActionLabel);
+    els.againButton.textContent = mustReview ? 'やり直しへ' : (superClear ? '鬼30問' : extraClear ? '鬼30問へ' : finalClear ? 'おかわり30問' : nextActionLabel);
     els.againButton.setAttribute('aria-label', mustReview ? 'やり直しへ' : (superClear ? '鬼30問へ' : extraClear ? '鬼30問へ' : finalClear ? 'おかわり30問へ' : nextActionLabel));
     els.homeButton.classList.toggle('hidden', mustReview);
     const victoryOverlay = !mustReview && !session.reviewOnly && !finalClear && !superClear && !extraClear
@@ -1750,7 +1751,7 @@
       `
       : '';
     els.rewardScene.innerHTML = extraClear
-      ? renderSimpleSessionClear(stage, stageKeys)
+      ? renderOniUnlockClear()
       : superClear
       ? `<img src="${img(RPG_ASSETS.superComplete)}" alt="">`
       : stageUnlock
@@ -1767,11 +1768,11 @@
       `;
     animateSimpleProgressBar();
     const mistakes = session.mistakes.length ? session.mistakes : (progress.mistakes[session.stageId] || []).slice(-5);
-    els.resultReviewButton.classList.toggle('hidden', mustReview || finalClear || superClear || session.reviewOnly || !mistakes.length);
+    els.resultReviewButton.classList.toggle('hidden', mustReview || finalClear || superClear || extraClear || session.reviewOnly || !mistakes.length);
     els.resultReviewButton.disabled = !mistakes.length;
     els.resultReviewButton.textContent = '見直し';
-    if (finalClear || superClear) {
-      els.mistakeList.innerHTML = renderFinalClearCertificate(mistakes.length);
+    if (finalClear || superClear || extraClear) {
+      els.mistakeList.innerHTML = extraClear ? '' : renderFinalClearCertificate(mistakes.length);
       return;
     }
     els.mistakeList.innerHTML = mustReview
@@ -1818,6 +1819,18 @@
           <strong>${stageKeys}/${goal}</strong>
           <div class="simple-progress" data-from-pct="${startPct}" data-to-pct="${progressPct}" style="--from-pct:${startPct}%; --pct:${progressPct}%"><i></i></div>
         </div>
+      </div>
+    `;
+  }
+
+  function renderOniUnlockClear() {
+    return `
+      <img src="${img(RPG_ASSETS.finalClear)}" alt="">
+      <div class="oni-unlock-panel" aria-label="鬼30問登場">
+        <span>新しい難易度</span>
+        <strong>鬼30問</strong>
+        <b>あらわれた！</b>
+        <p>ここから最後の30問</p>
       </div>
     `;
   }
