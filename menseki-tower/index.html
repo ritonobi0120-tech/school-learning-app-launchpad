@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260915-43723 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260915-57579 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -543,6 +543,24 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 .zk-fight { cursor: pointer; font-size: calc(var(--fs) * clamp(15px, 2.7vh, 27px)); min-height: 58px; border: 3px solid #ffd37c; box-shadow: 4px 4px 0 #0a1430; background: #c9402f; color: #fbf9f2; display: flex; align-items: center; justify-content: center; gap: 0.6vw; white-space: nowrap; }
 .zk-fight[disabled] { background: #4a4860; border-color: #6e6b85; color: #cfd6e6; cursor: default; }
 .zk-fight .tri-w { width: 0; height: 0; border-top: 9px solid transparent; border-bottom: 9px solid transparent; border-left: 13px solid #fbf9f2; display: block; flex-shrink: 0; }
+
+/* ---- 管理者画面（先生の 確認用。kanri と打つ ／ ロゴを 7回 タップ） ---- */
+.admin-screen { background: #141b33; color: #f2efe6; overflow: auto; padding: 16px 24px 40px; }
+.admin-screen h2 { font-size: 18px; color: #ffd37c; margin: 18px 0 8px; font-weight: normal; }
+.admin-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.admin-head .t { font-size: 26px; color: #ffd37c; }
+.admin-note { font-size: 14px; color: #9fc4ef; }
+.admin-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.admin-btn { cursor: pointer; min-height: 40px; min-width: 52px; padding: 0 12px; background: #1f2a4a; color: #f2efe6; border: 2px solid #a8b6d8; font-size: 15px; font-family: inherit; }
+.admin-btn:active { transform: translate(1px, 1px); }
+.admin-btn.on { background: #ffd37c; color: #2b2a3a; border-color: #ffd37c; }
+.admin-btn.warn { background: #8a2a1e; border-color: #ffd37c; }
+.admin-list { margin-top: 8px; border-top: 2px solid #2f3f75; }
+.admin-q { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 5px 0; border-bottom: 1px solid #2f3f75; font-size: 16px; }
+.admin-q.head { color: #ffd37c; }
+.admin-q .id { font-size: 12px; color: #9fc4ef; }
+.admin-fab { position: absolute; left: 50%; top: 4px; transform: translateX(-50%); z-index: 60; background: #7b60a9; color: #fbf9f2; border: 2px solid #fbf9f2; box-shadow: 2px 2px 0 #1e1d2a; padding: 0 12px; min-height: 30px; font-size: 13px; cursor: pointer; font-family: inherit; }
+.admin-answer { position: absolute; left: 50%; top: 38px; transform: translateX(-50%); z-index: 59; background: rgba(123, 96, 169, 0.95); color: #fff; border: 2px solid #fbf9f2; padding: 2px 12px; font-size: 14px; pointer-events: none; max-width: 70vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* 動きを へらす設定の端末では アニメを止める（出てくる前の 見えない状態で 止まらないように） */
 @media (prefers-reduced-motion: reduce) {
@@ -9141,6 +9159,9 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
     const scr = h('div', { class: 'screen home-screen' });
     const logo = h('div', { class: 'logo' });
+    // ロゴを 7回 つづけて タップすると 管理者画面（先生の 確認用）
+    let taps = 0, tapAt = 0;
+    logo.addEventListener('click', function () { const now = Date.now(); taps = now - tapAt < 1500 ? taps + 1 : 1; tapAt = now; if (taps >= 7) { taps = 0; ctx.go('admin'); } });
     logo.appendChild(document.createTextNode('面積'));
     logo.appendChild(h('span', { class: 'no', plain: 'の' }));
     logo.appendChild(document.createTextNode('塔'));
@@ -9149,7 +9170,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       logo,
       h('div', { class: 'catch', text: '図形を といて　塔を のぼろう！' }),
       h('div', { class: 'lead' }, [UI.tx('キミの ひらめきが'), h('br'), UI.tx('まだ見ぬ てっぺんへ つづく'), h('br'), UI.tx('面積の たびが はじまる――')]),
-      E.persistent === false ? h('div', { class: 'home-warn', text: 'この ブラウザでは きろくが のこらないよ。とじる前に「せってい」→「ひきつぎコード」を 写しておこう。' }) : null
+      E.persistent === false && !ctx.state.admin ? h('div', { class: 'home-warn', text: 'この ブラウザでは きろくが のこらないよ。とじる前に「せってい」→「ひきつぎコード」を 写しておこう。' }) : null
     ]));
 
     const icons = h('div', { class: 'home-icons' }, [
@@ -9341,6 +9362,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   }
 
   UI.openHandbook = openHandbook;
+  UI.openHow = openHow;
   UI.startGame = startGame;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 
@@ -9964,6 +9986,9 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       ctx.render();
     }
 
+    // 管理者の ためしプレイ: こたえを 画面の 上に 出す
+    if (st.admin && st.adminShowAnswer && !hold && UI.adminAnswerText) scr.appendChild(h('div', { class: 'admin-answer', plain: 'こたえ： ' + UI.adminAnswerText(q, step, finalChoiceNow) }));
+
     ctx.setKey(function (k) {
       if (hold) { if (k === 'enter') next(); return; }
       if (finalChoiceNow || q.format === 'choice') {
@@ -10318,6 +10343,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       ctx.render();
     }
 
+    if (st.admin && st.adminShowAnswer) { const rv = E.retryReveal(); if (rv) scr.appendChild(h('div', { class: 'admin-answer', plain: 'こたえ： ' + rv.text })); }
     ctx.setKey(onKey);
     app.appendChild(scr);
   }
@@ -10484,6 +10510,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     }
 
     function nextItem() { st.retryHold = null; ctx.render(); }
+
+    if (st.admin && st.adminShowAnswer && !held) { const rv = E.retryReveal(); if (rv) scr.appendChild(h('div', { class: 'admin-answer', plain: 'こたえ： ' + rv.text })); }
 
     function onKey(k) {
       if (held) { if (k === 'enter') nextItem(); return; }
@@ -11013,6 +11041,171 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 
 
+/* 面積の塔: 管理者画面（先生・作る人の 確認用。子どもには 見せない）
+ * ひらき方: キーボードで kanri と打つ ／ ホームの ロゴを 7回 タップ
+ * ここから 始める プレイは「ためしプレイ」。べつの 保存（メモリ）で 動くので、子どもの きろくは かわらない。
+ * 「ためしプレイを おわる」で もとの きろくに もどる（ページを 読みこみなおしても もどる）。
+ */
+(function (root) {
+  'use strict';
+  const MT = root.MT;
+  const UI = MT.UI;
+  const h = UI.h;
+  UI.screens = UI.screens || {};
+
+  function range(a, b) { const out = []; for (let i = a; i <= b; i += 1) out.push(i); return out; }
+
+  // ためしプレイ用の エンジン。その階の 手前まで クリアした ことにする
+  function sandbox(floor, o) {
+    const opts = o || {};
+    const P = MT.Progress;
+    const s = P.memoryStorage();
+    const p = P.create('せんせい');
+    p.howSeen = true;
+    const f = Math.max(1, Math.min(15, floor));
+    p.currentFloor = f;
+    p.clearedFloors = range(1, Math.min(14, f - 1));
+    if (!opts.intro) p.intro = { m2Seen: true, m2Prediction: 100, seen: { m2: true, units: true } };
+    if (opts.ug) {
+      p.currentFloor = 15; p.clearedFloors = range(1, 14);
+      p.roofCleared = true; p.roofSeen = true;
+      p.underground.unlocked = true;
+      p.underground.cleared = range(1, Math.min(30, opts.ug - 1));
+    }
+    s.setItem(P.STORAGE_KEY, JSON.stringify(p));
+    return { storage: s, engine: MT.Engine.create({ storage: s, seed: 'admin' + Date.now() }) };
+  }
+
+  // まちがいの 答え（形は 正しい。まちがい直しを 見るため）
+  function wrongGiven(q) {
+    if (q.format === 'choice') { const c = (q.choices || []).filter(function (x) { return x.id !== q.answer; })[0]; return c ? c.id : 'zz'; }
+    if (q.format === 'fields') { const o = {}; q.fields.forEach(function (f) { o[f.key] = String(f.answer + 1); }); return o; }
+    if (q.format === 'order') return q.order.answer.slice().reverse();
+    if (q.format === 'pairs') return [[1, 1]];
+    if (q.format === 'line') return null;
+    if (q.format === 'cut' && q.cut && q.cut.guide === 'three' && q.finalChoice) { const c = (q.finalChoice.choices || []).filter(function (x) { return x.id !== q.finalChoice.answer; })[0]; return c ? c.id : 'b'; }
+    return String(Number(q.answer) + 1);
+  }
+
+  function startFloor(n, intro) {
+    const E = sandbox(n, { intro: intro }).engine;
+    E.startFloor();
+    return E;
+  }
+
+  // えらんだ 問題 1問だけの 10問（1問）にする。toRetry なら まちがえて まちがい直しへ
+  function onlyQuestion(n, item, toRetry) {
+    const sb = sandbox(n);
+    let E = sb.engine;
+    E.startFloor();
+    if (E.phase() === 'intro') E.finishIntro('100');
+    const p = E.progress();
+    p.session.items = [{ templateId: item.t, seed: 1 + Math.floor(Math.random() * 999999), params: item.p || {}, role: 'own' }];
+    p.session.index = 0;
+    p.session.answers = [];
+    sb.storage.setItem(MT.Progress.STORAGE_KEY, JSON.stringify(p));
+    E = MT.Engine.create({ storage: sb.storage, seed: 'admin' + Date.now() });
+    E.resume();
+    if (toRetry) {
+      E.answer(wrongGiven(E.currentQuestion()));
+      if (E.phase() === 'result') E.beginRetry();
+    }
+    return E;
+  }
+
+  function floorAllWrong(n, toRetry) {
+    const E = sandbox(n).engine;
+    E.startFloor();
+    if (E.phase() === 'intro') E.finishIntro('100');
+    let g = 0;
+    while (E.phase() === 'session' && g++ < 20) E.answer(wrongGiven(E.currentQuestion()));
+    if (toRetry && E.phase() === 'result') E.beginRetry();
+    return E;
+  }
+
+  function startUg(n) {
+    const E = sandbox(15, { ug: n }).engine;
+    E.startUnderground();
+    return E;
+  }
+
+  UI.screens.admin = function (ctx) {
+    const st = ctx.state;
+    UI.noBg();
+    const app = document.getElementById('app');
+    if (st.adminShowAnswer == null) st.adminShowAnswer = true;
+    const selFloor = st.adminFloor || 12;
+    const enter = function (E, view) { UI.adminEnter(E, view); };
+    const btn = function (label, fn, cls) { return h('button', { class: 'admin-btn' + (cls ? ' ' + cls : ''), type: 'button', onclick: fn }, [label]); };
+
+    const scr = h('div', { class: 'screen admin-screen' });
+    scr.appendChild(h('div', { class: 'admin-head' }, [
+      h('span', { class: 't', plain: '管理者画面' }),
+      h('span', { class: 'admin-note', plain: st.admin ? 'いまは ためしプレイ中（子どもの きろくは そのまま）' : 'ここから 始めると ためしプレイ（子どもの きろくは かわらない）' }),
+      h('span', { style: 'flex:1' }),
+      btn(st.adminShowAnswer ? 'こたえを 表示：ON' : 'こたえを 表示：OFF', function () { st.adminShowAnswer = !st.adminShowAnswer; ctx.render(); }, st.adminShowAnswer ? 'on' : ''),
+      st.admin ? btn('ためしプレイを おわる（もとの きろくへ）', function () { UI.adminExit(); }, 'warn') : null,
+      btn('とじる', function () { st.view = null; ctx.render(); })
+    ]));
+
+    scr.appendChild(h('h2', { plain: '階から はじめる' }));
+    scr.appendChild(h('div', { class: 'admin-row' }, range(1, 14).map(function (n) { return btn(n + '階', function () { enter(startFloor(n)); }); }).concat([
+      btn('8階（導入から）', function () { enter(startFloor(8, true)); }),
+      btn('9階（導入から）', function () { enter(startFloor(9, true)); }),
+      btn('屋上', function () { enter(startFloor(15)); })
+    ])));
+
+    scr.appendChild(h('h2', { plain: '地下' }));
+    scr.appendChild(h('div', { class: 'admin-row' }, range(1, 30).map(function (n) { return btn('B' + n, function () { enter(startUg(n)); }); })));
+
+    scr.appendChild(h('h2', { plain: '問題を えらぶ（1問だけ出す ／ まちがえて まちがい直しへ）' }));
+    scr.appendChild(h('div', { class: 'admin-row' }, range(1, 14).map(function (n) { return btn(n + '階', function () { st.adminFloor = n; ctx.render(); }, n === selFloor ? 'on' : ''); })));
+    const floor = MT.Floors.get(selFloor);
+    const list = h('div', { class: 'admin-list' });
+    list.appendChild(h('div', { class: 'admin-q head' }, [
+      h('span', { plain: selFloor + '階 ' + (floor ? floor.name : '') + '（' + (floor ? floor.count : '') + '問）' }),
+      btn('この階を ぜんぶ まちがえて 結果へ', function () { enter(floorAllWrong(selFloor, false)); }),
+      btn('ぜんぶ まちがえて まちがい直しへ', function () { enter(floorAllWrong(selFloor, true)); })
+    ]));
+    ((floor && floor.own) || []).forEach(function (item, i) {
+      const params = item.p && Object.keys(item.p).length ? ' ' + JSON.stringify(item.p) : '';
+      list.appendChild(h('div', { class: 'admin-q' }, [
+        h('span', {}, [h('span', { plain: (i + 1) + '. ' + MT.Titles.title(item.t) + (item.core ? '（核）' : '') }), h('span', { class: 'id', plain: '  ' + item.t + params })]),
+        btn('出す', function () { enter(onlyQuestion(selFloor, item, false)); }),
+        btn('まちがえて 解説へ', function () { enter(onlyQuestion(selFloor, item, true)); })
+      ]));
+    });
+    scr.appendChild(list);
+
+    scr.appendChild(h('h2', { plain: '画面' }));
+    scr.appendChild(h('div', { class: 'admin-row' }, [
+      btn('結果（12階 ぜんぶ まちがい）', function () { enter(floorAllWrong(12, false)); }),
+      btn('屋上（宝箱）', function () { enter(startFloor(15)); }),
+      btn('地下クリア', function () { enter(startUg(31)); }),
+      btn('エンディング', function () { enter(startUg(31), 'ending'); }),
+      btn('番人ずかん', function () { enter(startUg(31), 'zukan'); }),
+      btn('ホーム（すべて クリア）', function () { const E = startUg(31); E.goMap(); enter(E); }),
+      btn('あそびかた', function () { UI.openHow(null); })
+    ]));
+    scr.appendChild(h('p', { class: 'admin-note', plain: '「管理」ボタン（画面の 上の まん中）で いつでも ここに もどれる。こたえの 表示は ためしプレイ中だけ 出る。' }));
+    app.appendChild(scr);
+  };
+
+  // 問題の こたえを 1行で（管理者の ためしプレイで 画面の 上に 出す）
+  UI.adminAnswerText = function (q, step, finalChoiceNow) {
+    if (!q) return '';
+    if (finalChoiceNow && q.finalChoice) { const c = (q.finalChoice.choices || []).filter(function (x) { return x.id === q.finalChoice.answer; })[0]; return c ? c.text : ''; }
+    if (step) return step.answer + (step.unit || '') + '（いまの だん）／ 答え ' + q.answer + (q.unit || '');
+    if (q.format === 'choice') { const c = (q.choices || []).filter(function (x) { return x.id === q.answer; })[0]; return c ? c.text : String(q.answer); }
+    if (q.format === 'fields') return q.fields.map(function (f) { return f.label + ' ' + f.answer + (f.unit || ''); }).join(' ／ ');
+    if (q.format === 'order') { const m = {}; q.order.items.forEach(function (it) { m[it.id] = it.text; }); return q.order.answer.map(function (id) { return m[id]; }).join(' → '); }
+    if (q.format === 'pairs') return q.pairs.answer.map(function (pr) { return pr[0] + '×' + pr[1]; }).join('、');
+    if (q.format === 'line') return '線で 分ける';
+    return q.answer + (q.unit || '');
+  };
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+
 /* 面積の塔: 画面の切りかえ（エンジンの phase と、画面だけの状態から 出す画面を決める） */
 (function (root) {
   'use strict';
@@ -11061,8 +11254,26 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     } catch (err) {
       showError(err);
     }
+    // 管理者の ためしプレイ中は「管理」ボタンを 出す（管理者画面へ もどる）
+    if (state.admin && state.view !== 'admin') app.appendChild(UI.h('button', { class: 'admin-fab', type: 'button', onclick: function () { state.view = 'admin'; render(); } }, ['管理（ためしプレイ中）']));
     if (MT.Sound && MT.Sound.bgm) MT.Sound.bgm(bgmFor(), engine.progress().sound);
   }
+
+  // 管理者画面から: ためしプレイの エンジンに きりかえる ／ もとの きろくに もどる
+  function setEngine(e, admin, view) {
+    engine = e; ctx.engine = e; root.MT.app.engine = e;
+    state.admin = !!admin;
+    state.hold = null; state.retryHold = null; state.qs = null; state.rs = null; state.explainShown = {};
+    state.intro = null; state.roof = null; state.view = view || null;
+    render();
+  }
+  UI.adminEnter = function (e, view) { setEngine(e, true, view); };
+  UI.adminExit = function () {
+    let e;
+    try { e = MT.Engine.create({}); e.resume(); } catch (err) { e = MT.Engine.create({ storage: MT.Progress.memoryStorage() }); }
+    setEngine(e, false, null);
+  };
+  UI.openAdmin = function () { state.view = 'admin'; render(); };
 
   function bgmFor() {
     const ph = engine.phase();
@@ -11074,6 +11285,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
   function route() {
     const S = UI.screens;
+    if (state.view === 'admin' && S.admin) { S.admin(ctx); return; }
     if (state.hold) { S.question(ctx); return; }
     if (state.retryHold) { S.retry(ctx); return; }
     const phase = engine.phase();
@@ -11118,6 +11330,15 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     ]));
   }
 
+  // 管理者画面の ひみつの コマンド: キーボードで k a n r i と 打つ
+  let secret = '';
+  document.addEventListener('keydown', function (ev) {
+    const t = ev.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+    if (!ev.key || ev.key.length !== 1 || !/[a-z]/i.test(ev.key)) return;
+    secret = (secret + ev.key.toLowerCase()).slice(-5);
+    if (secret === 'kanri') { secret = ''; const m = document.querySelector('.modal-back'); if (m) m.remove(); state.view = 'admin'; render(); }
+  });
   document.addEventListener('keydown', function (ev) {
     const t = ev.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
