@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260915-34124 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260915-36883 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -5028,9 +5028,11 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   function submitHissan(state, value) {
     // 筆算の途中式を1つずつ。全部できたら、その欄は自動で埋まる
     const item = currentItem(state);
-    if (!item || !item.hissan) return { correct: false, message: 'いまは 筆算ではないよ。' };
+    if (!item || !item.hissan || !Array.isArray(item.hissan.steps)) return { correct: false, message: 'いまは 筆算ではないよ。' };
     const h = item.hissan;
-    const res = Hissan.answer(h, Util.parseInteger(value));
+    const n = Util.parseInteger(value);
+    if (n == null) return { correct: false, empty: true };   // 空は まちがいに 数えない（0 あつかいに しない）
+    const res = Hissan.answer(h, n);
     if (res.empty) return { correct: false, empty: true };
     if (!res.correct) {
       const fail = registerFail(state, item, { key: 'hissan:' + (res.step ? res.step.key : '?') });
@@ -5063,6 +5065,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const q = questionOf(item);
     const step = stepNow(item, q);
     if (!step || step.kind !== 'choice') return { correct: false, message: 'いまは えらぶところではないよ。' };
+    if (choiceId == null || choiceId === '') return { correct: false, empty: true };
     const res = Bank.check(q, choiceId);
     if (!res.correct) return registerFail(state, item, step);
     return advanceStep(state, item, q);
@@ -5074,6 +5077,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const q = questionOf(item);
     const step = stepNow(item, q);
     if (!step || step.kind !== 'order') return { correct: false };
+    if (!Array.isArray(order) || !order.length) return { correct: false, empty: true };
     const res = Bank.check(q, order);
     if (!res.correct) return registerFail(state, item, step);
     return advanceStep(state, item, q);
@@ -5085,6 +5089,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const q = questionOf(item);
     const step = stepNow(item, q);
     if (!step || step.kind !== 'pairs') return { correct: false };
+    if (!Array.isArray(pairs) || !pairs.length) return { correct: false, empty: true };
     const res = Bank.check(q, pairs);
     if (!res.correct) return Object.assign(registerFail(state, item, step), { found: res.found, extra: res.extra });
     return advanceStep(state, item, q);
@@ -5279,6 +5284,18 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   }
 
   function num(v, d) { const n = Number(v); return Number.isFinite(n) && n >= 0 ? n : d; }
+  // 整数だけ・範囲の中だけ・重なりなし・小さい順（こわれた保存や 写しまちがいの コード から 身をまもる）
+  function uniqInts(a, lo, hi) {
+    if (!Array.isArray(a)) return [];
+    return a.map(Number).filter(function (n, i, arr) { return Number.isInteger(n) && n >= lo && n <= hi && arr.indexOf(n) === i; }).sort(function (x, y) { return x - y; });
+  }
+  function plainObj(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
+  // 階は 1から じゅんに クリアする。とびとびの ところから 先は 数えない（[30] だけ などで エンディングが 開かないように）
+  function prefixRun(sorted) {
+    const out = [];
+    for (let i = 0; i < sorted.length && sorted[i] === i + 1; i += 1) out.push(sorted[i]);
+    return out;
+  }
 
   function normalize(raw) {
     const base = create('');
@@ -5286,26 +5303,33 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const p = Object.assign({}, base, raw);
     p.version = VERSION;
     p.name = String(p.name || '').slice(0, 20);
-    p.currentFloor = Math.min(15, Math.max(1, Number(p.currentFloor) || 1));
-    p.clearedFloors = Array.isArray(p.clearedFloors) ? p.clearedFloors.filter(function (n) { return Number.isInteger(n); }) : [];
+    p.currentFloor = Math.min(15, Math.max(1, Math.floor(Number(p.currentFloor)) || 1));
+    p.clearedFloors = prefixRun(uniqInts(p.clearedFloors, 1, 15));
+    p.roofCleared = !!p.roofCleared;
     p.roofSeen = !!p.roofSeen;
     p.howSeen = !!p.howSeen;
-    p.floorStats = p.floorStats && typeof p.floorStats === 'object' ? p.floorStats : {};
+    const fs0 = plainObj(p.floorStats) ? p.floorStats : {};
+    p.floorStats = {};
+    Object.keys(fs0).forEach(function (k) { if (plainObj(fs0[k])) p.floorStats[k] = fs0[k]; });
     p.carryOver = Array.isArray(p.carryOver) ? p.carryOver.filter(function (c) { return c && typeof c.templateId === 'string'; }).slice(0, 4) : [];
     p.handbook = Array.isArray(p.handbook) ? p.handbook : [];
     p.intro = Object.assign({ m2Seen: false, m2Prediction: null, seen: {} }, (p.intro && typeof p.intro === 'object') ? p.intro : {});
     if (!p.intro.seen || typeof p.intro.seen !== 'object') p.intro.seen = {};
     if (p.intro.m2Seen) p.intro.seen.m2 = true;
     p.underground = Object.assign({ unlocked: false, current: 1, cleared: [], reached: 0, attempts: {} }, (p.underground && typeof p.underground === 'object') ? p.underground : {});
-    if (!Array.isArray(p.underground.cleared)) p.underground.cleared = [];
-    p.underground.cleared = p.underground.cleared.filter(function (n) { return Number.isInteger(n); });
-    if (!p.underground.attempts || typeof p.underground.attempts !== 'object') p.underground.attempts = {};
-    p.underground.current = Math.min(31, Math.max(1, Number(p.underground.current) || 1));
-    p.underground.reached = Math.min(30, Math.max(0, Number(p.underground.reached) || 0));
+    p.underground.cleared = prefixRun(uniqInts(p.underground.cleared, 1, 30));
+    if (!plainObj(p.underground.attempts)) p.underground.attempts = {};
+    p.underground.current = Math.min(31, Math.max(1, Math.floor(Number(p.underground.current)) || 1));
+    // いまの階は クリアした いちばん深い階の つぎ（地下は 1階ずつ すすむので）
+    p.underground.current = p.underground.cleared.length ? Math.min(31, p.underground.cleared[p.underground.cleared.length - 1] + 1) : 1;
+    p.underground.reached = Math.min(30, Math.max(0, Math.floor(Number(p.underground.reached)) || 0, p.underground.cleared.length ? p.underground.cleared[p.underground.cleared.length - 1] : 0));
+    // 屋上を クリアしていれば 地下は 開いている（ここが 消えると 地下に 二度と 入れない）
+    p.underground.unlocked = !!p.underground.unlocked || p.roofCleared;
     p.session = normalizeSession(p.session);
     p.retry = normalizeRetry(p.retry);
     p.undergroundSession = normalizeUndergroundSession(p.undergroundSession);
     if (p.lastResult && (typeof p.lastResult !== 'object' || !Array.isArray(p.lastResult.wrong))) p.lastResult = null;
+    if (p.lastResult) p.lastResult.wrong = p.lastResult.wrong.filter(function (a) { return plainObj(a) && typeof a.templateId === 'string'; });
     if (p.lastOutcome && (typeof p.lastOutcome !== 'object' || typeof p.lastOutcome.outcome !== 'string')) p.lastOutcome = null;
     p.handbook = p.handbook.filter(function (h) { return h && typeof h === 'object' && typeof h.labelId === 'string'; });
     p.stopStats = p.stopStats && typeof p.stopStats === 'object' ? p.stopStats : {};
@@ -5349,7 +5373,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     if (!s.items.length || !s.items.every(isItem)) return null;
     const index = Number(s.index);
     if (!Number.isInteger(index) || index < 0 || index > s.items.length) return null;
-    if (!Array.isArray(s.answers)) return null;
+    if (!Array.isArray(s.answers) || !s.answers.every(plainObj)) return null;
     if (!Number.isInteger(s.floorNo)) return null;
     s.index = index;
     s.count = s.items.length;
@@ -5398,16 +5422,17 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     return memoryStorage();
   }
 
-  function load(storage) {
+  // info.readError: 読みこみ そのものが 失敗した（一時的な 故障）。このときは 呼んだ側が 保存を 止める
+  function load(storage, info) {
     const s = storage || defaultStorage();
     let raw = null;
+    try { raw = s.getItem(STORAGE_KEY); } catch (e) { if (info) info.readError = true; return null; }
+    if (!raw) return null;
     try {
-      raw = s.getItem(STORAGE_KEY);
-      if (!raw) return null;
       return normalize(JSON.parse(raw));
     } catch (e) {
       // 壊れたデータは消さずに退避しておく（子どもの進み具合を あとで取り出せるように）
-      try { if (raw) s.setItem(STORAGE_KEY + '.broken', raw); } catch (e2) { /* ignore */ }
+      try { s.setItem(STORAGE_KEY + '.broken', raw); } catch (e2) { /* ignore */ }
       return null;
     }
   }
@@ -5428,7 +5453,14 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     try { s.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
   }
 
-  const CODE_PREFIX = 'MT1.';
+  // ひきつぎコード: MT2.<中身>.<たしかめの4文字>。1文字でも 写しまちがえると はじく（MT1. は たしかめなしの 古い形）
+  const CODE_PREFIX = 'MT2.';
+  const OLD_PREFIX = 'MT1.';
+  function checksum(text) {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < text.length; i += 1) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    return ('0000' + (h % 1679616).toString(36)).slice(-4).toUpperCase();
+  }
 
   function utf8ToBase64Url(text) {
     let binary = '';
@@ -5463,12 +5495,18 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       settings: progress.settings, zukan: progress.zukan,
       stats: progress.stats ? { correct: progress.stats.correct, answered: progress.stats.answered, beaten: progress.stats.beaten, playMs: progress.stats.playMs } : undefined
     };
-    return CODE_PREFIX + utf8ToBase64Url(JSON.stringify(slim));
+    const body = utf8ToBase64Url(JSON.stringify(slim));
+    return CODE_PREFIX + body + '.' + checksum(body);
   }
 
   function importCode(code) {
     let clean = String(code || '').replace(/\s|　/g, '');
-    if (clean.indexOf(CODE_PREFIX) === 0) clean = clean.slice(CODE_PREFIX.length);
+    if (clean.indexOf(CODE_PREFIX) === 0) {
+      const rest = clean.slice(CODE_PREFIX.length);
+      const dot = rest.lastIndexOf('.');
+      if (dot < 0 || checksum(rest.slice(0, dot)) !== rest.slice(dot + 1).toUpperCase()) throw new Error('コードが ちがうみたい。1文字ずつ たしかめてね。');
+      clean = rest.slice(0, dot);
+    } else if (clean.indexOf(OLD_PREFIX) === 0) clean = clean.slice(OLD_PREFIX.length);
     if (!clean) throw new Error('コードを入れてね。');
     let data;
     try { data = JSON.parse(base64UrlToUtf8(clean)); } catch (e) { throw new Error('コードが ちがうみたい。もう一度 たしかめてね。'); }
@@ -6407,13 +6445,20 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
   function create(options) {
     const o = options || {};
-    const storage = o.storage || Progress.defaultStorage();
-    let p = Progress.load(storage) || Progress.create('');
+    let storage = o.storage || Progress.defaultStorage();
+    const loadInfo = {};
+    let p = Progress.load(storage, loadInfo) || Progress.create('');
+    // 読みこみ そのものが 失敗したときは、もとの 進み具合を 上書きしないように この回は 保存しない（画面に「きろくが のこらない」と 出る）
+    if (loadInfo.readError) storage = Progress.memoryStorage();
     const seedSalt = o.seed || '';
     let guide = null;
     sanitize(p);
     let phase = computePhase();
-    if (phase === 'outcome-pending') { applyOutcomeInner(); phase = 'map'; }
+    if (phase === 'outcome-pending') {
+      // こわれた 保存で 結果の反映に 失敗しても、アプリは 開く（その10問は なかったことに）
+      try { applyOutcomeInner(); } catch (e) { p.session = null; p.retry = null; p.lastResult = null; }
+      phase = 'map';
+    }
 
     function save() { Progress.save(storage, p); }
 
@@ -6425,13 +6470,33 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       return !!s && s.items.every(function (it) { return knownTemplate(it.templateId); }) && s.answers.length === s.index;
     }
 
+    // その問題が 今の テンプレートで 作れるか（params が こわれていると 作れない）
+    function buildable(it) {
+      if (!it || !knownTemplate(it.templateId)) return false;
+      try { Bank.build(it.templateId, it.seed != null ? it.seed : 1, it.params); return true; } catch (e) { return false; }
+    }
+    // やり直しの 1問が つづけられるか。ステップの 番号が 範囲外なら その問題の はじめから、こわれた 筆算は すてる
+    function retryItemOk(it) {
+      let q;
+      try { q = Bank.build(it.templateId, it.seed, it.params); } catch (e) { return false; }
+      const steps = Retry.stepsOf(q);
+      if (!Number.isInteger(it.stepIndex) || it.stepIndex < 0 || (it.stepIndex >= steps.length && !it.done)) it.stepIndex = 0;
+      if (it.hissan && (typeof it.hissan !== 'object' || !Array.isArray(it.hissan.steps))) { it.hissan = null; it.hissanDone = false; }
+      return true;
+    }
+
     function sanitize(prog) {
-      // 保存データの中身が今のテンプレートと合わなければ、その部分だけ捨てる（テンプレートを改名したときなど）
-      prog.carryOver = (prog.carryOver || []).filter(function (c) { return knownTemplate(c.templateId); });
-      if (prog.session && !sessionOk(prog.session)) { prog.session = null; prog.retry = null; prog.lastResult = null; }
-      if (prog.retry && !prog.retry.items.every(function (it) { return knownTemplate(it.templateId); })) { prog.retry = null; }
+      // 保存データの中身が今のテンプレートと合わなければ、その部分だけ捨てる（テンプレートを改名したとき・こわれた保存・写しまちがいのコード）
+      prog.carryOver = (prog.carryOver || []).filter(function (c) { return buildable({ templateId: c.templateId, seed: 1, params: c.params }); });
+      if (prog.session && (!sessionOk(prog.session) || !prog.session.items.every(buildable))) { prog.session = null; prog.retry = null; prog.lastResult = null; }
+      if (prog.retry && !prog.retry.items.every(function (it) { return knownTemplate(it.templateId) && retryItemOk(it); })) { prog.retry = null; }
       if (prog.undergroundSession) {
         try { Underground.buildQuestion(prog.undergroundSession.no, prog.undergroundSession.seed); } catch (e) { prog.undergroundSession = null; }
+      }
+      if (prog.undergroundSession && prog.undergroundSession.stage === 'extra') {
+        let ex = null;
+        try { ex = Underground.buildExtra(prog.undergroundSession.no, prog.undergroundSession.seed); } catch (e) { ex = null; }
+        if (!ex) prog.undergroundSession.stage = 'main';
       }
       if (!prog.underground.unlocked) prog.undergroundSession = null;
       if (prog.mode === 'rematch') {
@@ -6610,6 +6675,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     };
 
     engine.guideAddLine = function (line) {
+      if (!validLine(line)) return { ok: false, message: 'そこでは 切れないよ。' };
       const q = engine.currentQuestion();
       const g = engine.guide();
       if (!g) return { ok: false };
@@ -6649,10 +6715,22 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       return false;
     }
 
+    // 線として あつかえるか（整数の 座標で、図の まわりの 大きさの中）。ほかは 受けつけない
+    function validLine(l) {
+      return !!l && typeof l === 'object' && [l.x1, l.y1, l.x2, l.y2].every(function (v) { return Number.isInteger(v) && Math.abs(v) <= 200; });
+    }
+
     engine.answer = function (given) {
       if (!p.session || Session.isDone(p.session)) return null;
       const q = engine.currentQuestion();
       if (q.format !== 'line' && isBlankGiven(given)) return { result: { empty: true, correct: false }, question: q, done: false };
+      // 形の ちがう答え（順番・ペアに 配列でない、数に 配列 など）や、読めない数（3.5 など）も 進めずに 返す
+      if (q.format !== 'line' && q.format !== 'cut') {
+        const needArray = q.format === 'order' || q.format === 'pairs';
+        let empty = needArray ? (!Array.isArray(given) || !given.length) : Array.isArray(given);
+        if (!empty) { try { const pre = Bank.check(q, given); empty = !!(pre && pre.empty); } catch (e) { empty = true; } }
+        if (empty) return { result: { empty: true, correct: false }, question: q, done: false };
+      }
       let res;
       if (q.format === 'line') {
         const g = engine.guide();
@@ -6690,6 +6768,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     engine.beginRetry = function () {
       if (!p.session || !Session.isDone(p.session)) return null;
       if (p.lastResult && p.lastResult.applied) return null;
+      // 地下の番人との 再戦には まちがい直しが ない（地下の 問題は あなうめを 持たない）。結果のあとは ずかんへ もどる
+      if (p.mode === 'rematch' && p.session.floorNo >= 100) { engine.endRematch(); return phase; }
       if (!p.retry) p.retry = Retry.build(p.session);
       phase = p.retry.finished ? 'outcome' : 'retry';
       if (phase === 'outcome') applyOutcomeInner();
@@ -6719,7 +6799,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     engine.retryPairs = function (pairs) { return p.retry ? afterRetryStep(Retry.submitPairs(p.retry, pairs)) : NO_RETRY; };
     engine.retryReanswer = function (given) { return p.retry ? afterRetryStep(Retry.submitReanswer(p.retry, given)) : NO_RETRY; };
     engine.retryGuide = function () { return p.retry ? Retry.guideFor(p.retry) : null; };
-    engine.retryGuideAddLine = function (line) { if (!p.retry) return { ok: false }; const r = Retry.guideAddLine(p.retry, line); save(); return r; };
+    engine.retryGuideAddLine = function (line) { if (!p.retry || !validLine(line)) return { ok: false }; const r = Retry.guideAddLine(p.retry, line); save(); return r; };
     engine.retryGuideAnswer = function (value) { return p.retry ? afterRetryStep(Retry.guideAnswer(p.retry, value)) : NO_RETRY; };
     engine.retryGuideFinalChoice = function (id) { return p.retry ? afterRetryStep(Retry.guideFinalChoice(p.retry, id)) : NO_RETRY; };
     engine.retryReveal = function () { return p.retry ? Retry.revealValue(p.retry) : null; };
@@ -6907,7 +6987,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
     engine.undergroundAddLine = function (line) {
       const s = p.undergroundSession;
-      if (!s) return { ok: false };
+      if (!s || !validLine(line)) return { ok: false };
       s.lines.push(line);
       save();
       return { ok: true };
@@ -7927,7 +8007,10 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(function () { draw(); }) : null;
     if (ro) ro.observe(host);
 
-    function set(m) { model = m || {}; draw(); }
+    // 同じ大きさ・同じ中身なら 描きなおさない（画面を作るたびに 3回 描いていた。大きい図は 重い）
+    let version = 0;
+    let drawnKey = '';
+    function set(m) { model = m || {}; version += 1; draw(); }
 
     function extentOf(spec, margin) {
       const b = Figure.bounds(spec.fig);
@@ -7988,8 +8071,11 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
     function draw() {
       const bw = host.clientWidth, bh = host.clientHeight;
+      const k = bw + 'x' + bh + ':' + version;
+      if (bw && bh && k === drawnKey && root_.firstChild) return;
       while (root_.firstChild) root_.removeChild(root_.firstChild);
-      if (!bw || !bh) return;
+      if (!bw || !bh) { drawnKey = ''; return; }
+      drawnKey = k;
       root_.setAttribute('width', bw);
       root_.setAttribute('height', bh);
       root_.setAttribute('viewBox', '0 0 ' + bw + ' ' + bh);
@@ -10926,7 +11012,16 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   'use strict';
   const MT = root.MT;
   const UI = MT.UI;
-  const engine = MT.Engine.create({});
+  // 保存データが こわれていて 作れないときは、こわれたデータを よけて はじめから（まっ白な 画面に しない）
+  let engine;
+  try { engine = MT.Engine.create({}); } catch (err) {
+    try {
+      const raw = localStorage.getItem(MT.Progress.STORAGE_KEY);
+      if (raw) localStorage.setItem(MT.Progress.STORAGE_KEY + '.broken', raw);
+      localStorage.removeItem(MT.Progress.STORAGE_KEY);
+    } catch (e) { /* ignore */ }
+    engine = MT.Engine.create({});
+  }
   const app = document.getElementById('app');
 
   const state = {
@@ -11051,7 +11146,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     }, 250);
   });
 
-  engine.resume();
+  try { engine.resume(); } catch (e) { engine.goMap(); }
   render();
   root.MT.app = { engine: engine, render: render, state: state };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
