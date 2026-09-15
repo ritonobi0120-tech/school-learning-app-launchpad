@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260915-57579 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260915-75936 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -316,7 +316,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 .intro-big { font-size: calc(var(--fs) * clamp(22px, 4vh, 44px)); color: #2b2a3a; background: #fff3c4; border: 3px solid #2b2a3a; box-shadow: 4px 4px 0 #1e1d2a; padding: 0.6vh 1.2vw; text-align: center; }
 .intro-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .intro-svg { display: block; }
-.intro-svg .intro-label { fill: #2b2a3a; font-family: 'DotGothic16', sans-serif; font-size: 18px; }
+.intro-svg .intro-label { fill: #2b2a3a; font-family: 'DotGothic16', sans-serif; font-size: 20px; }
+.intro-svg .intro-label.small { font-size: 16px; fill: #8a2a1e; }
+/* ほかの子の 答案（大きな カード） */
+.peer-card { display: flex; align-items: center; gap: 1vw; flex-shrink: 0; background: #fff3c4; border: 3px solid #c2661f; box-shadow: 4px 4px 0 #1e1d2a; padding: 0.6vh 1vw; min-width: 0; }
+.peer-card .hd { flex-shrink: 0; background: #c2661f; color: #fbf9f2; padding: 1px 10px; font-size: calc(var(--fs) * clamp(12px, 1.9vh, 18px)); white-space: nowrap; }
+.peer-card .tx { font-size: calc(var(--fs) * clamp(18px, 3.3vh, 32px)); color: #2b2a3a; min-width: 0; overflow-wrap: anywhere; line-height: 1.3; }
+.peer-card.dark { background: #d9d2c4; border-color: #8a6a3a; box-shadow: 4px 4px 0 #06070c; }
 
 /* ---- ホーム ---- */
 .plaque { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.15; color: #f1e4c3; font-size: 1.2cqw; text-align: center; white-space: nowrap; pointer-events: none; }
@@ -3802,7 +3808,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   });
 
   Bank.register({
-    id: 'f14-peer', floor: 14, format: 'choice',
+    // 答案の まちがい探し。えらぶ形だと まちがい直しで 消去法で 当たるので、正しい 面積を 数で 答える（本人の指摘 2026-09-15）
+    id: 'f14-peer', floor: 14, format: 'number',
     make: function (rng, params) {
       const kind = params.kind || rng.pick(['one-part', 'double-cut', 'wrong-side', 'add-cut']);
       const L = randomL(rng, { minW: 6, maxW: 10, minH: 5, maxH: 8, corner: 'tr' });
@@ -3814,19 +3821,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       else if (kind === 'double-cut') { expr = L.W + '×' + L.H + '−' + L.cw + '×' + L.ch + '−' + L.cw + '×' + L.ch + '＝' + (L.W * L.H - 2 * L.cw * L.ch); value = L.W * L.H - 2 * L.cw * L.ch; }
       else if (kind === 'add-cut') { expr = L.W + '×' + L.H + '＋' + L.cw + '×' + L.ch + '＝' + (L.W * L.H + L.cw * L.ch); value = L.W * L.H + L.cw * L.ch; }
       else { expr = L.H + '×' + L.W + '＋' + lowH + '×' + L.cw + '＝' + (L.H * L.W + lowH * L.cw); value = L.H * L.W + lowH * L.cw; }
-      const c = mkChoice(rng, [
-        { text: 'かたほうの長方形しか たしていない', correct: kind === 'one-part', misconception: 'one-part' },
-        { text: '欠けたところを 2回ひいている', correct: kind === 'double-cut', misconception: 'double-cut' },
-        { text: '切り取った ところを たしている', correct: kind === 'add-cut', misconception: 'add-cut' },
-        { text: '辺の長さを 取りちがえている', correct: kind === 'wrong-side', misconception: 'wrong-side' },
-        { text: '合っている' }
-      ], { keepOrder: true });
-      c.choices.forEach(function (ch) { if (ch.id === c.answer) ch.misconception = null; });
+      const wrong = {};
+      wrong[String(value)] = kind;
       return {
-        prompt: 'ほかの子の答案：「' + expr + '　答え ' + value + 'cm²」。どこが まちがい?',
+        prompt: 'ほかの子の 答案は まちがっている。どこが ちがうか 考えて、正しい 面積を 出そう。何cm²?',
         figure: QFig.fromFigure(fig, Figure.fullEdgeLabels(fig), [], { interaction: null }),
-        peerAnswer: expr,
-        choices: c.choices, answer: c.answer,
+        peerAnswer: expr + '　答え ' + value + 'cm²',
+        answer: area, unit: 'cm²', wrong: wrong,
         explain: {
           sentence: kind === 'one-part'
             ? L.H + '×' + leftW + ' は 左の長方形だけ。右の ' + lowH + '×' + L.cw + ' も たすよ。'
@@ -3838,8 +3839,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
           steps: [
             { key: 'left', label: '左の長方形', parts: ['たて', B('lh', L.H, 'cm'), '×', 'よこ', B('lw', leftW, 'cm'), '＝', B('la', L.H * leftW, 'cm²', ['mul', L.H, leftW])] },
             { key: 'right', label: '右の長方形', parts: ['たて', B('rh', lowH, 'cm'), '×', 'よこ', B('rw', L.cw, 'cm'), '＝', B('ra', lowH * L.cw, 'cm²', ['mul', lowH, L.cw])] },
-            { key: 'sum', label: 'ぜんぶ', parts: [B('l2', L.H * leftW, 'cm²'), '＋', B('r2', lowH * L.cw, 'cm²'), '＝', B('area', area, 'cm²', ['add', [L.H * leftW, lowH * L.cw]])] },
-            { key: 'rechoose', kind: 'choice', label: '正しい面積と くらべて、答案は どこが まちがい?' }
+            { key: 'sum', label: 'ぜんぶ', parts: [B('l2', L.H * leftW, 'cm²'), '＋', B('r2', lowH * L.cw, 'cm²'), '＝', B('area', area, 'cm²', ['add', [L.H * leftW, lowH * L.cw]])] }
           ]
         }
       };
@@ -3952,30 +3952,27 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   });
 
   Bank.register({
-    id: 'f14-gate-enclose-expr', floor: 14, format: 'choice', gate: true,
+    // 関所。えらぶ形だと 消去法で 当たるので、ひく前の 2つと 答えを 数で 入れる（本人の指摘 2026-09-15）
+    id: 'f14-gate-enclose-expr', floor: 14, format: 'fields', gate: true,
     make: function (rng) {
       const L = randomL(rng, { minW: 6, maxW: 10, minH: 5, maxH: 8, corner: 'tr' });
       const fig = Shapes.lShape(L.W, L.H, L.cw, L.ch, 'tr', { grid: true });
-      const leftW = L.W - L.cw, lowH = L.H - L.ch;
-      const correctText = L.W + '×' + L.H + '−' + L.cw + '×' + L.ch;
-      const wrongSideCandidates = [leftW + '×' + lowH, L.cw + '×' + lowH, leftW + '×' + L.ch, L.cw + '×' + L.H, L.W + '×' + L.ch].map(function (t) { return L.W + '×' + L.H + '−' + t; });
-      const wrongSide = wrongSideCandidates.filter(function (t) { return t !== correctText; })[0] || (L.W + '×' + L.H + '−' + (L.cw + 1) + '×' + L.ch);
-      const c = mkChoice(rng, [
-        { text: correctText, correct: true },
-        { text: wrongSide, misconception: 'wrong-side' },
-        { text: L.W + '×' + L.H + '＋' + L.cw + '×' + L.ch }
-      ]);
+      const box = L.W * L.H, cut = L.cw * L.ch;
       return {
-        prompt: '「かこんでひく」でとくと、何から何をひいた? 正しい式は?',
+        prompt: '「かこんでひく」で とこう。かこむ 大きい 長方形の 面積、欠けたところの 面積、ひいた 答えを 入れよう。',
         figure: QFig.fromFigure(fig, Figure.fullEdgeLabels(fig), [], { interaction: null, marks: [{ kind: 'enclose-hint' }] }),
-        choices: c.choices, answer: c.answer,
+        fields: [
+          { key: 'ba', label: '大きい 長方形', answer: box, unit: 'cm²' },
+          { key: 'ca', label: '欠けたところ', answer: cut, unit: 'cm²' },
+          { key: 'area', label: 'ひいた 答え', answer: box - cut, unit: 'cm²' }
+        ],
+        answer: box - cut, unit: 'cm²',
         explain: {
           sentence: 'かこむ大きい長方形の面積から、欠けたところの面積を ひくよ。欠けたところは 上の右の 小さい長方形だよ。',
           steps: [
             { key: 'box', label: 'かこむ大きい長方形', parts: ['たて', B('bh', L.H, 'cm'), '×', 'よこ', B('bw', L.W, 'cm'), '＝', B('ba', L.W * L.H, 'cm²', ['mul', L.H, L.W])] },
             { key: 'cutout', label: '欠けたところ', parts: ['たて', B('ch', L.ch, 'cm'), '×', 'よこ', B('cw', L.cw, 'cm'), '＝', B('ca', L.cw * L.ch, 'cm²', ['mul', L.ch, L.cw])] },
-            { key: 'sub', label: 'ひく', parts: [B('b2', L.W * L.H, 'cm²'), '−', B('c2', L.cw * L.ch, 'cm²'), '＝', B('area', L.W * L.H - L.cw * L.ch, 'cm²')] },
-            { key: 'rechoose', kind: 'choice', label: 'だから 正しい式は?' }
+            { key: 'sub', label: 'ひく', parts: [B('b2', L.W * L.H, 'cm²'), '−', B('c2', L.cw * L.ch, 'cm²'), '＝', B('area', L.W * L.H - L.cw * L.ch, 'cm²')] }
           ]
         }
       };
@@ -5702,17 +5699,15 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const right = (W - r1 - r2) * (H - rh);
     const wrong = W * H - r1 * H - r2 * H - rh * W;
     const expr = W + '×' + H + '−' + r1 + '×' + H + '−' + r2 + '×' + H + '−' + rh + '×' + W + '＝' + wrong;
-    const c = mkChoice(Util.createRng('b27'), [
-      { text: '正しい。道は 1本ずつ ひけばよい' },
-      { text: '道の交わるところ（2か所）を 2回ずつ ひいている', correct: true, misconception: null },
-      { text: '道が まん中に ないから、よせて計算しては いけない' }
-    ], { keepOrder: true });
+    // えらぶ形だと 消去法で 当たるので、自分で 計算した 面積を 数で 答える（本人の指摘 2026-09-15）
+    const wrongMap = {};
+    wrongMap[String(wrong)] = 'double-sub';
     return {
-      format: 'choice',
-      prompt: 'たてに道が2本（はば' + r1 + 'mと' + r2 + 'm）、よこに道が1本（はば' + rh + 'm）通る土地。土地の面積の答案：「' + expr + '」。この答案は 正しい?',
+      format: 'number',
+      prompt: 'たてに道が2本（はば' + r1 + 'mと' + r2 + 'm）、よこに道が1本（はば' + rh + 'm）通る土地。ほかの子の 答案は 正しい? 自分で 計算して、道を のぞいた 土地の 面積を 答えよう。何m²?',
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + r1 + 'm・' + r2 + 'm・' + rh + 'm' }),
       peerAnswer: expr,
-      choices: c.choices, answer: c.answer,
+      answer: right, unit: 'm²', wrong: wrongMap,
       explain: { sentence: 'たて道とよこ道が交わるところは、たて道でも よこ道でも ひかれる。2か所で 2回ずつ ひいているから ' + (r1 * rh + r2 * rh) + 'm² 少ない。道をよせて (' + W + '−' + r1 + '−' + r2 + ')×(' + H + '−' + rh + ')＝' + right + 'm² が正しい。' }
     };
   }
@@ -5759,17 +5754,15 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const innerW = W - l - r, innerH = H - t - b;
     const area = W * H - innerW * innerH;
     const expr = W + '×' + H + '−' + innerW + '×' + innerH + '＝' + area;
-    const c = mkChoice(Util.createRng('b29'), [
-      { text: '正しい。はばは 両がわから ひく', correct: true },
-      { text: '内の長方形の よこがちがう（' + (W - l) + 'のはず）', misconception: 'wrong-side' },
-      { text: '内の長方形の たてがちがう（' + (H - b) + 'のはず）', misconception: 'wrong-side' }
-    ], { keepOrder: true });
+    const wrongMap = {};
+    wrongMap[String(W * H - (W - l) * (H - t - b))] = 'wrong-side';
+    wrongMap[String(W * H - innerW * (H - b))] = 'wrong-side';
     return {
-      format: 'choice',
-      prompt: 'がくのはばが 左' + l + 'm・右' + r + 'm・上' + t + 'm・下' + b + 'm。がくぶちの面積の答案：「' + expr + '」。この答案は 正しい?',
+      format: 'number',
+      prompt: 'がくのはばが 左' + l + 'm・右' + r + 'm・上' + t + 'm・下' + b + 'm。ほかの子の 答案は 正しい? 自分で 計算して、がくぶちの 面積を 答えよう。何m²?',
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば 左' + l + ' 右' + r + ' 上' + t + ' 下' + b }),
       peerAnswer: expr,
-      choices: c.choices, answer: c.answer,
+      answer: area, unit: 'm²', wrong: wrongMap,
       explain: { sentence: '内のよこは ' + W + '−' + l + '−' + r + '＝' + innerW + '、内のたては ' + H + '−' + t + '−' + b + '＝' + innerH + '。答案は 合っている。「答案はまちがっている」と決めつけないこと。' }
     };
   }
@@ -6117,18 +6110,16 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const doubleCut = W * H - rw * H - rh * W;
       const isRight = rng.chance(0.4);
       const expr = isRight ? '(' + W + '−' + rw + ')×(' + H + '−' + rh + ')＝' + right : W + '×' + H + '−' + rw + '×' + H + '−' + rh + '×' + W + '＝' + doubleCut;
-      const c = mkChoice(rng, [
-        { text: '正しい', correct: isRight },
-        { text: '道の交わるところを 2回ひいている', correct: !isRight, misconception: 'double-cut' },
-        { text: '道をひくのを わすれている', misconception: 'no-cut' }
-      ], { keepOrder: true });
-      c.choices.forEach(function (ch) { if (ch.id === c.answer) ch.misconception = null; });
+      // えらぶ形だと 消去法で 当たるので、自分で 計算した 面積を 数で 答える（本人の指摘 2026-09-15）
+      const wrongMap = {};
+      wrongMap[String(doubleCut)] = 'double-cut';
+      wrongMap[String(W * H)] = 'no-cut';
       return {
-        format: 'choice',
-        prompt: 'はば' + rw + unit + 'と' + rh + unit + 'の道が通る土地。答案：「' + expr + '」。この答案は 正しい?',
+        format: 'number',
+        prompt: 'はば' + rw + unit + 'と' + rh + unit + 'の道が通る土地。ほかの子の 答案は 正しい? 自分で 計算して、道を のぞいた 面積を 答えよう。何' + unit + '²?',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + rw + unit + '・' + rh + unit }),
         peerAnswer: expr,
-        choices: c.choices, answer: c.answer,
+        answer: right, unit: unit + '²', wrong: wrongMap,
         explain: { sentence: '道が交わるところは 2本の道に共通。たて道とよこ道を べつべつにひくと、交わる ' + rw + '×' + rh + ' を2回ひいてしまう。道をよせて (' + W + '−' + rw + ')×(' + H + '−' + rh + ')＝' + right + ' が正しい。' }
       };
     }
@@ -6139,18 +6130,14 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const wrongInner = W * H - (W - b) * (H - b);
     const isRight = rng.chance(0.4);
     const expr = isRight ? W + '×' + H + '−' + (W - 2 * b) + '×' + (H - 2 * b) + '＝' + right : W + '×' + H + '−' + (W - b) + '×' + (H - b) + '＝' + wrongInner;
-    const c = mkChoice(rng, [
-      { text: '正しい', correct: isRight },
-      { text: '内の長方形の辺が ちがう（はばは 両がわにある）', correct: !isRight, misconception: 'wrong-side' },
-      { text: '外の長方形をひいている', misconception: 'no-cut' }
-    ], { keepOrder: true });
-    c.choices.forEach(function (ch) { if (ch.id === c.answer) ch.misconception = null; });
+    const wrongMap = {};
+    wrongMap[String(wrongInner)] = 'wrong-side';
     return {
-      format: 'choice',
-      prompt: 'はば' + b + unit + 'の がくぶち。答案：「' + expr + '」。この答案は 正しい?',
+      format: 'number',
+      prompt: 'はば' + b + unit + 'の がくぶち。ほかの子の 答案は 正しい? 自分で 計算して、がくぶちの 面積を 答えよう。何' + unit + '²?',
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば ' + b + unit }),
       peerAnswer: expr,
-      choices: c.choices, answer: c.answer,
+      answer: right, unit: unit + '²', wrong: wrongMap,
       explain: { sentence: 'はばは 左右・上下の両がわにある。内のよこは ' + W + '−' + b + '−' + b + '＝' + (W - 2 * b) + '、内のたては ' + (H - 2 * b) + '。' }
     };
   }
@@ -6327,11 +6314,11 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     { no: 18, type: 'reverse', opts: { kind: 'L-area-side' }, name: '面積から辺を' },
     { no: 19, type: 'unit-mixed', opts: { steps: 3, hidden: 2, ops: 2 }, name: 'mとcm' },
     { no: 20, type: 'equal-cut', opts: { kind: 'stairs' }, name: '半分に分ける線 2' },
-    { no: 21, type: 'overlap', opts: { n: 3, hidden: 3, ops: 3 }, name: '3つの重なり' },
-    { no: 22, type: 'squares', opts: { n: 8, showLabels: 1, ops: 5 }, name: '8つの正方形' },
-    { no: 23, type: 'frame-road', opts: { hidden: 3, ops: 3 }, name: 'がくぶちと道 2' },
-    { no: 24, type: 'stairs', opts: { steps: 6, hidden: 5, ops: 3 }, name: '6だんのかいだん' },
-    { no: 25, type: 'overlap', opts: { n: 3, hidden: 4, ops: 4, unit: 'm' }, name: '3つの重なり 2' },
+    { no: 21, type: 'overlap', opts: { n: 3, hidden: 2, ops: 2 }, name: '3つの重なり' },
+    { no: 22, type: 'squares', opts: { n: 8, showLabels: 1, ops: 4 }, name: '8つの正方形' },
+    { no: 23, type: 'frame-road', opts: { hidden: 2, ops: 2 }, name: 'がくぶちと道 2' },
+    { no: 24, type: 'stairs', opts: { steps: 6, hidden: 4, ops: 3 }, name: '6だんのかいだん' },
+    { no: 25, type: 'overlap', opts: { n: 3, hidden: 3, ops: 3, unit: 'm' }, name: '3つの重なり 2' },
     { no: 26, type: 'handmade', opts: { no: 26 }, name: 'ボス: 深いかいだん' },
     { no: 27, type: 'handmade', opts: { no: 27 }, name: 'ボス: この答案は正しい?' },
     { no: 28, type: 'handmade', opts: { no: 28 }, name: 'ボス: 9つの正方形' },
@@ -8036,16 +8023,96 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     let drawnKey = '';
     function set(m) { model = m || {}; version += 1; draw(); }
 
+    // 図の 中を 通る 寸法線は 図の 外へ 出す（線と 数が 図と かさならないように。本人の指摘 2026-09-15）。外は 列を ずらして ならべる
+    // 寸法線は ぜんぶ 図の 外に「列」で ならべる（辺の 数より 外。短いものほど 図の 近く。かさならない 列には いっしょに 入れる）
+    function outsideDims(spec, b, margin) {
+      const all = (spec.labels || []).map(function (l) { return { l: l, hid: false }; }).concat((spec.hidden || []).map(function (l) { return { l: l, hid: true }; }));
+      const sides = { bottom: [], top: [], left: [], right: [] };
+      all.forEach(function (o, i) {
+        const l = o.l;
+        if (l.kind !== 'dim' || l.at == null) return;
+        let side;
+        if (l.axis === 'x') side = l.at <= b.y1 ? 'bottom' : l.at >= b.y2 ? 'top' : (l.at - b.y1 <= b.y2 - l.at ? 'bottom' : 'top');
+        else side = l.at <= b.x1 ? 'left' : l.at >= b.x2 ? 'right' : (l.at - b.x1 <= b.x2 - l.at ? 'left' : 'right');
+        sides[side].push({ o: o, len: l.b - l.a, i: i });
+      });
+      const newAt = new Map();
+      Object.keys(sides).forEach(function (side) {
+        const vertical = side === 'left' || side === 'right';
+        const first = vertical ? margin * 2.4 : margin * 1.5;
+        const gap = vertical ? margin * 2.0 : margin * 1.05;
+        const lanes = [];   // lanes[k] = その列に 入っている はんい
+        sides[side].sort(function (p, q) { return (p.len - q.len) || (p.i - q.i); }).forEach(function (it) {
+          const l = it.o.l;
+          const pad = vertical ? margin * 0.6 : margin * 1.2;   // 数の はばの ぶん あける
+          let k = 0;
+          while (lanes[k] && lanes[k].some(function (r) { return l.a < r.b + pad && l.b > r.a - pad; })) k += 1;
+          (lanes[k] = lanes[k] || []).push({ a: l.a, b: l.b });
+          const d = first + k * gap;
+          newAt.set(it.o, side === 'bottom' ? b.y1 - d : side === 'top' ? b.y2 + d : side === 'left' ? b.x1 - d : b.x2 + d);
+        });
+      });
+      const out = { labels: [], hidden: [] };
+      all.forEach(function (o) {
+        const l = newAt.has(o) ? Object.assign({}, o.l, { at: newAt.get(o), at0: o.l.at }) : o.l;
+        (o.hid ? out.hidden : out.labels).push(l);
+      });
+      return out;
+    }
+
     function extentOf(spec, margin) {
       const b = Figure.bounds(spec.fig);
+      const moved = outsideDims(spec, b, margin);
       let x1 = b.x1 - margin, x2 = b.x2 + margin, y1 = b.y1 - margin, y2 = b.y2 + margin;
-      (spec.labels || []).concat(spec.hidden || []).forEach(function (l) {
+      moved.labels.concat(moved.hidden).forEach(function (l) {
         if (l.kind !== 'dim' || l.at == null) return;
         if (l.axis === 'x') { y1 = Math.min(y1, l.at - margin * 0.9); y2 = Math.max(y2, l.at + margin * 0.9); }
         else { x1 = Math.min(x1, l.at - margin * 1.2); x2 = Math.max(x2, l.at + margin * 1.2); }
       });
       if (spec.caption || (spec.marks || []).some(function (m) { return m.kind === 'perimeter'; })) y1 -= margin * 0.9;
-      return { x1: x1, x2: x2, y1: y1, y2: y2, w: x2 - x1, h: y2 - y1, b: b };
+      return { x1: x1, x2: x2, y1: y1, y2: y2, w: x2 - x1, h: y2 - y1, b: b, labels: moved.labels, hidden: moved.hidden };
+    }
+
+    // 数や「?」の 置き場所が かさならないように（あとから 置くものを 辺から はなれる ほうへ ずらす）
+    let occupied = [];
+    function boxOf(pt, w, hh) {
+      const x = pt.anchor === 'middle' ? pt.x - w / 2 : pt.anchor === 'start' ? pt.x : pt.x - w;
+      return { x1: x, y1: pt.y - hh / 2, x2: x + w, y2: pt.y + hh / 2 };
+    }
+    function hits(bx) { return occupied.some(function (o) { return bx.x1 < o.x2 && bx.x2 > o.x1 && bx.y1 < o.y2 && bx.y2 > o.y1; }); }
+    function reserve(pt, w, hh) { occupied.push(boxOf(pt, w, hh)); return pt; }
+    // 板の 中に おさめる（ふちで 切れないように）
+    function clampIn(p, w, hh) {
+      const bx = boxOf(p, w, hh);
+      let dx = 0, dy = 0;
+      if (bx.x1 < 3) dx = 3 - bx.x1; else if (bx.x2 > geo.bw - 3) dx = geo.bw - 3 - bx.x2;
+      if (bx.y1 < 3) dy = 3 - bx.y1; else if (bx.y2 > geo.bh - 3) dy = geo.bh - 3 - bx.y2;
+      return { x: p.x + dx, y: p.y + dy, anchor: p.anchor };
+    }
+    // 辺の 数: かさなったら 辺に そって ずらす → だめなら 少しだけ 外へ（遠くへは とばさない）
+    function overlapArea(bx) {
+      let s = 0;
+      occupied.forEach(function (o) {
+        const w = Math.min(bx.x2, o.x2) - Math.max(bx.x1, o.x1), hh = Math.min(bx.y2, o.y2) - Math.max(bx.y1, o.y1);
+        if (w > 0 && hh > 0) s += w * hh;
+      });
+      return s;
+    }
+    function placeFree(pt, w, hh, l) {
+      const outDx = l.axis === 'x' ? 0 : (l.facing === 'right' ? 1 : -1) * (w * 0.35 + 4);
+      const outDy = l.axis === 'x' ? (l.facing === 'up' ? -1 : 1) * hh * 0.8 : 0;
+      const sx = l.axis === 'x' ? w * 0.55 + 4 : 0, sy = l.axis === 'x' ? 0 : hh * 0.95;
+      // [辺に そって, 外へ] の ずらし方を 近い じゅんに ためし、かさならない 最初の 場所（なければ いちばん かさなりの 少ない 場所）
+      const moves = [[0, 0], [1, 0], [-1, 0], [0, 1], [1, 1], [-1, 1], [2, 0], [-2, 0], [0, 2]];
+      let best = null, bestScore = Infinity;
+      for (let i = 0; i < moves.length; i += 1) {
+        const m = moves[i];
+        const c = clampIn({ x: pt.x + sx * m[0] + outDx * m[1], y: pt.y + sy * m[0] + outDy * m[1], anchor: pt.anchor }, w, hh);
+        const score = overlapArea(boxOf(c, w, hh));
+        if (score === 0) { best = c; break; }
+        if (score < bestScore) { bestScore = score; best = c; }
+      }
+      return reserve(best || pt, w, hh);
     }
 
     function layout(bw, bh) {
@@ -8100,6 +8167,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       while (root_.firstChild) root_.removeChild(root_.firstChild);
       if (!bw || !bh) { drawnKey = ''; return; }
       drawnKey = k;
+      occupied = [];
       root_.setAttribute('width', bw);
       root_.setAttribute('height', bh);
       root_.setAttribute('viewBox', '0 0 ' + bw + ' ' + bh);
@@ -8248,15 +8316,17 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       const helpIds = {};
       (model.helpSegs || []).forEach(function (grp) { grp.forEach(function (l) { helpIds[l.axis + ':' + l.a + '-' + l.b + ':' + l.at] = true; }); });
       const lit = function (l) { return (model.litDims || []).some(function (d) { return d.axis === l.axis && d.a === l.a && d.b === l.b; }); };
-      (spec.labels || []).forEach(function (l) {
-        const isHelp = helpIds[l.axis + ':' + l.a + '-' + l.b + ':' + l.at];
-        drawLabel(pl, l, labelText(l, unit), isHelp ? HELP : DIM, { help: isHelp, lit: primary && lit(l) });
-      });
-      (spec.hidden || []).forEach(function (l) {
-        const isHelp = helpIds[l.axis + ':' + l.a + '-' + l.b + ':' + l.at];
+      // 寸法線（場所が きまっている）を 先に、辺の 数と「?」を あとに（かさなったら ずらす）
+      const items = (pl.ext.labels || spec.labels || []).map(function (l) { return { l: l, hid: false }; })
+        .concat((pl.ext.hidden || spec.hidden || []).map(function (l) { return { l: l, hid: true }; }));
+      const rank = function (it) { return it.l.kind === 'dim' ? 0 : it.hid ? 1 : 2; };   // 寸法線 → 「?」 → 辺の 数
+      items.sort(function (p1, p2) { return rank(p1) - rank(p2); });
+      items.forEach(function (it) {
+        const l = it.l;
+        const isHelp = helpIds[l.axis + ':' + l.a + '-' + l.b + ':' + (l.at0 != null ? l.at0 : l.at)];
+        if (!it.hid) { drawLabel(pl, l, labelText(l, unit), isHelp ? HELP : DIM, { help: isHelp, lit: primary && lit(l) }); return; }
         const show = model.showHidden || (primary && lit(l));
-        if (!show) return;
-        drawHidden(pl, l, isHelp);
+        if (show) drawHidden(pl, l, isHelp);
       });
       if (spec.areaText) tag((pl.X(b.x1) + pl.X(b.x2)) / 2, (pl.Y(b.y1) + pl.Y(b.y2)) / 2, spec.areaText, { fs: Math.max(13, Math.min(geo.fs, 26)) });
       // 図の下に とっておいた 帯の まん中に 書く（板の ふちで 切れないように）
@@ -8286,11 +8356,13 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         if (l.axis === 'x') {
           const y = pl.Y(l.at), xa = pl.X(l.a), xb = pl.X(l.b);
           svg('line', { x1: xa, y1: y, x2: xb, y2: y, stroke: color, 'stroke-width': thick }, g);
+          occupied.push({ x1: Math.min(xa, xb), x2: Math.max(xa, xb), y1: y - 5, y2: y + 5 });
           svg('line', { x1: xa, y1: y - tick / 2, x2: xa, y2: y + tick / 2, stroke: color, 'stroke-width': 3 }, g);
           svg('line', { x1: xb, y1: y - tick / 2, x2: xb, y2: y + tick / 2, stroke: color, 'stroke-width': 3 }, g);
         } else {
           const x = pl.X(l.at), ya = pl.Y(l.a), yb = pl.Y(l.b);
           svg('line', { x1: x, y1: ya, x2: x, y2: yb, stroke: color, 'stroke-width': thick }, g);
+          occupied.push({ x1: x - 5, x2: x + 5, y1: Math.min(ya, yb), y2: Math.max(ya, yb) });
           svg('line', { x1: x - tick / 2, y1: ya, x2: x + tick / 2, y2: ya, stroke: color, 'stroke-width': 3 }, g);
           svg('line', { x1: x - tick / 2, y1: yb, x2: x + tick / 2, y2: yb, stroke: color, 'stroke-width': 3 }, g);
         }
@@ -8299,7 +8371,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         if (l.axis === 'x') svg('line', { x1: pl.X(l.a), y1: pl.Y(l.at), x2: pl.X(l.b), y2: pl.Y(l.at), stroke: HELP, 'stroke-width': 7 }, g);
         else svg('line', { x1: pl.X(l.at), y1: pl.Y(l.a), x2: pl.X(l.at), y2: pl.Y(l.b), stroke: HELP, 'stroke-width': 7 }, g);
       }
-      const pt = labelPoint(pl, l);
+      const tw = String(text).length * fs * 0.62 + 8, th = fs * 1.3;
+      const pt = l.kind === 'dim' && l.at != null ? reserve(clampIn(labelPoint(pl, l), tw, th), tw, th) : placeFree(labelPoint(pl, l), tw, th, l);
       if (opt.lit) {
         const w = text.length * fs * 0.62 + 14;
         const bx = pt.anchor === 'middle' ? pt.x - w / 2 : pt.anchor === 'start' ? pt.x - 4 : pt.x - w + 4;
@@ -8322,17 +8395,20 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         if (l.axis === 'x') {
           const y = pl.Y(l.at), xa = pl.X(l.a), xb = pl.X(l.b);
           svg('line', { x1: xa, y1: y, x2: xb, y2: y, stroke: col, 'stroke-width': 3, 'stroke-dasharray': '6 4' }, g);
+          occupied.push({ x1: Math.min(xa, xb), x2: Math.max(xa, xb), y1: y - 5, y2: y + 5 });
           svg('line', { x1: xa, y1: y - tick / 2, x2: xa, y2: y + tick / 2, stroke: col, 'stroke-width': 3 }, g);
           svg('line', { x1: xb, y1: y - tick / 2, x2: xb, y2: y + tick / 2, stroke: col, 'stroke-width': 3 }, g);
         } else {
           const x = pl.X(l.at), ya = pl.Y(l.a), yb = pl.Y(l.b);
           svg('line', { x1: x, y1: ya, x2: x, y2: yb, stroke: col, 'stroke-width': 3, 'stroke-dasharray': '6 4' }, g);
+          occupied.push({ x1: x - 5, x2: x + 5, y1: Math.min(ya, yb), y2: Math.max(ya, yb) });
           svg('line', { x1: x - tick / 2, y1: ya, x2: x + tick / 2, y2: ya, stroke: col, 'stroke-width': 3 }, g);
           svg('line', { x1: x - tick / 2, y1: yb, x2: x + tick / 2, y2: yb, stroke: col, 'stroke-width': 3 }, g);
         }
       }
-      const pt = labelPoint(pl, l);
       const s = Math.max(22, geo.fs * 1.3);
+      // 「?」は 辺の そばに おく（ほかの 数より 先に 場所を とる）。「?」どうしが かさなるときだけ 辺に そって 少し ずらす
+      const pt = l.kind === 'dim' && l.at != null ? reserve(clampIn(labelPoint(pl, l), s + 4, s + 4), s + 4, s + 4) : placeFree(labelPoint(pl, l), s + 4, s + 4, l);
       const x = pt.anchor === 'middle' ? pt.x - s / 2 : pt.anchor === 'start' ? pt.x : pt.x - s;
       svg('rect', { x: x, y: pt.y - s / 2, width: s, height: s, fill: '#ffe66d', stroke: INK, 'stroke-width': 3 }, g);
       const t = svg('text', { x: x + s / 2, y: pt.y + 1, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'board-text', fill: INK, 'font-size': s * 0.72 }, g);
@@ -8760,90 +8836,88 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 
 
-/* 不思議の塔: 8階の前の導入だけに使うアニメ
- * 10000枚のタイルを本当に描かない。「100枚を1列描く → その列を100だんコピーして縮小」で見せる。
+/* 不思議の塔: 8階の前の導入「1m² に 1cm² は 何まい?」の 図
+ * 自動で 流すと 速くて 小さくて 見えないので（本人の指摘 2026-09-15）、1だんずつ「つぎへ」「もどる」で 見せる。
+ * step 0: 1m² の 正方形 / 1: 1cm² が 1まい / 2: よこに 100まい / 3: 10だんで 1000まい / 4: 100だんで 10000まい
+ * 大きい 正方形の 左下（10まい × 10まい）を 大きく した 図を となりに ならべる。
  */
 (function (root) {
   'use strict';
   const NS = 'http://www.w3.org/2000/svg';
+  const STEPS = 5;
+  const CAPTIONS = ['1m² の 正方形（1m × 1m）', '1cm² の タイルが 1まい', 'よこに 100まい', '10だんで 1000まい', '100だんで 10000まい'];
+  const GREEN = '#9fd3a8', DARK = '#3d8f74', INK = '#2b2a3a', RED = '#c9402f';
 
-  function svg(tag, attrs) {
+  function svg(tag, attrs, parent) {
     const e = document.createElementNS(NS, tag);
     Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+    if (parent) parent.appendChild(e);
     return e;
   }
+  function text(parent, x, y, str, anchor, cls) {
+    const t = svg('text', { x: x, y: y, 'text-anchor': anchor || 'middle', 'dominant-baseline': 'central', class: cls || 'intro-label' }, parent);
+    t.textContent = str;
+    return t;
+  }
 
-  // container に SVG を作り、だん階ごとに描く。onDone は最後に呼ぶ
-  function play(container, options) {
+  function render(container, step, options) {
     const o = options || {};
-    const size = o.size || 320;          // 1m² の枠の大きさ（px）
-    const tile = size / 100;             // 1cm² の大きさ（px）
-    const s = svg('svg', { viewBox: '0 0 ' + (size + 60) + ' ' + (size + 50), width: size + 60, height: size + 50, class: 'intro-svg' });
-    const ox = 40, oy = 10;
-    s.appendChild(svg('rect', { x: ox, y: oy, width: size, height: size, fill: '#1b2233', stroke: '#f2c14e', 'stroke-width': 2 }));
-    const label = svg('text', { x: ox + size / 2, y: oy + size + 30, 'text-anchor': 'middle', class: 'intro-label' });
-    label.textContent = '1m × 1m';
-    s.appendChild(label);
-    const side = svg('text', { x: ox - 8, y: oy + size / 2, 'text-anchor': 'end', class: 'intro-label' });
-    side.textContent = '1m';
-    s.appendChild(side);
-    const gRow = svg('g'), gRows = svg('g');
-    s.appendChild(gRows); s.appendChild(gRow);
+    const st = Math.max(0, Math.min(STEPS - 1, step | 0));
+    const W = Math.max(320, o.width || 640), H = Math.max(240, o.height || 420);
+    const S = Math.floor(Math.max(150, Math.min(H - 64, (W - 70) * 0.56)));   // 1m² の 正方形
+    const Z = Math.floor(Math.max(120, Math.min(S * 0.85, W - S - 90)));      // 左下を 大きく した 図
+    const ox = 40, oy = 12;
+    const zx = ox + S + 46, zy = oy + S - Z;
+    const s = svg('svg', { viewBox: '0 0 ' + (zx + Z + 12) + ' ' + (S + 56), width: zx + Z + 12, height: S + 56, class: 'intro-svg' });
+    const tile = S / 100;
+
+    // 1m² の 正方形と しきつめた ぶん
+    svg('rect', { x: ox, y: oy, width: S, height: S, fill: '#fbf9f2' }, s);
+    if (st >= 4) svg('rect', { x: ox, y: oy, width: S, height: S, fill: GREEN }, s);
+    else if (st === 3) svg('rect', { x: ox, y: oy + S - tile * 10, width: S, height: tile * 10, fill: GREEN }, s);
+    else if (st === 2) svg('rect', { x: ox, y: oy + S - Math.max(tile, 2), width: S, height: Math.max(tile, 2), fill: DARK }, s);
+    else if (st === 1) svg('rect', { x: ox, y: oy + S - Math.max(tile, 2), width: Math.max(tile, 2), height: Math.max(tile, 2), fill: DARK }, s);
+    // 10まいごとの めもり
+    if (st >= 2) for (let i = 1; i < 10; i += 1) svg('line', { x1: ox + i * S / 10, y1: oy + S, x2: ox + i * S / 10, y2: oy + S + 7, stroke: INK, 'stroke-width': 2 }, s);
+    if (st >= 3) for (let i = 1; i < 10; i += 1) svg('line', { x1: ox - 7, y1: oy + S - i * S / 10, x2: ox, y2: oy + S - i * S / 10, stroke: INK, 'stroke-width': 2 }, s);
+    svg('rect', { x: ox, y: oy, width: S, height: S, fill: 'none', stroke: INK, 'stroke-width': 3 }, s);
+    text(s, ox + S / 2, oy + S + 28, '1m ＝ 100cm');
+    text(s, ox - 12, oy + S / 2, '1m', 'end');
+
+    // 左下を 大きく した 図（10まい × 10まい ぶん）
+    if (st >= 1) {
+      const zs = S / 10;
+      svg('rect', { x: ox, y: oy + S - zs, width: zs, height: zs, fill: 'none', stroke: RED, 'stroke-width': 3 }, s);
+      svg('line', { x1: ox + zs, y1: oy + S - zs, x2: zx, y2: zy, stroke: RED, 'stroke-width': 2, 'stroke-dasharray': '6 4' }, s);
+      svg('line', { x1: ox + zs, y1: oy + S, x2: zx, y2: zy + Z, stroke: RED, 'stroke-width': 2, 'stroke-dasharray': '6 4' }, s);
+      svg('rect', { x: zx, y: zy, width: Z, height: Z, fill: '#fbf9f2' }, s);
+      const c = Z / 10;
+      for (let i = 1; i < 10; i += 1) {
+        svg('line', { x1: zx + i * c, y1: zy, x2: zx + i * c, y2: zy + Z, stroke: '#d9c9a0', 'stroke-width': 1 }, s);
+        svg('line', { x1: zx, y1: zy + i * c, x2: zx + Z, y2: zy + i * c, stroke: '#d9c9a0', 'stroke-width': 1 }, s);
+      }
+      for (let r = 0; r < 10; r += 1) {
+        for (let col = 0; col < 10; col += 1) {
+          const on = st >= 3 || (st === 2 && r === 9) || (st === 1 && r === 9 && col === 0);
+          if (on) svg('rect', { x: zx + col * c + 1.5, y: zy + r * c + 1.5, width: c - 3, height: c - 3, fill: st <= 2 ? DARK : GREEN, stroke: '#2f6a55', 'stroke-width': 1 }, s);
+        }
+      }
+      svg('rect', { x: zx, y: zy, width: Z, height: Z, fill: 'none', stroke: RED, 'stroke-width': 3 }, s);
+      text(s, zx + Z / 2, zy - 14, '左下を 大きく すると', 'middle', 'intro-label small');
+      if (st === 1) text(s, zx + c * 0.5, zy + Z + 20, '1cm²', 'middle', 'intro-label small');
+      if (st === 2) text(s, zx + Z, zy + Z + 22, 'この ならびが 1m まで つづく →', 'end', 'intro-label small');
+    }
+
     container.innerHTML = '';
     container.appendChild(s);
-
     const counter = document.createElement('div');
     counter.className = 'intro-counter';
+    counter.textContent = (st + 1) + '／' + STEPS + '　' + CAPTIONS[st];
     container.appendChild(counter);
-
-    let cancelled = false;
-    function stage1(done) {
-      // 1列: 100枚を1枚ずつ
-      let i = 0;
-      const startAt = performance.now();
-      function tick() {
-        if (cancelled) return;
-        const now = performance.now();
-        const target = Math.min(100, Math.floor((now - startAt) / 18));
-        while (i < target) {
-          gRow.appendChild(svg('rect', { x: ox + i * tile, y: oy + size - tile, width: tile - 0.2, height: tile - 0.2, fill: '#9fd3a8' }));
-          i += 1;
-        }
-        counter.textContent = 'よこに ' + i + 'まい';
-        if (i < 100) setTimeout(tick, 16); else done();
-      }
-      setTimeout(tick, 16);
-    }
-    function stage2(done) {
-      // その列を100だんコピー（1だん＝細い帯として描く）
-      let r = 0;
-      const startAt = performance.now();
-      function tick() {
-        if (cancelled) return;
-        const now = performance.now();
-        const target = Math.min(100, Math.floor((now - startAt) / 22));
-        while (r < target) {
-          gRows.appendChild(svg('rect', { x: ox, y: oy + size - (r + 1) * tile, width: size, height: tile - 0.2, fill: r % 2 ? '#8ac79a' : '#9fd3a8' }));
-          r += 1;
-        }
-        counter.textContent = '100まいの列が ' + r + 'だん → ' + (r * 100) + 'まい';
-        if (r < 100) setTimeout(tick, 16); else done();
-      }
-      setTimeout(tick, 16);
-    }
-    stage1(function () {
-      setTimeout(function () {
-        stage2(function () {
-          counter.textContent = '100 × 100 ＝ 10000まい';
-          if (o.onDone) o.onDone();
-        });
-      }, 500);
-    });
-    return { cancel: function () { cancelled = true; } };
   }
 
   root.MT = root.MT || {};
-  root.MT.IntroAnim = { play: play };
+  root.MT.IntroAnim = { render: render, STEPS: STEPS };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 
 
@@ -9562,7 +9636,13 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     return list;
   }
 
-  Object.assign(UI, { formulaText: formulaText, figuresModel: figuresModel, mountBoard: mountBoard, hissanGrid: hissanGrid, hissanOverlay: hissanOverlay, flash: flash, numDisplay: numDisplay, choiceList: choiceList, fieldRows: fieldRows, orderList: orderList, floorLabelOf: floorLabelOf, guardOfSession: guardOfSession });
+  // ほかの子の 答案（大事な 問題なので ふきだしの 中ではなく 大きな カードで 見せる。本人の指摘 2026-09-15）
+  function peerCard(q, dark) {
+    if (!q || !q.peerAnswer) return null;
+    return h('div', { class: 'peer-card' + (dark ? ' dark' : '') }, [h('span', { class: 'hd', text: 'ほかの子の 答案' }), h('span', { class: 'tx', plain: q.peerAnswer })]);
+  }
+
+  Object.assign(UI, { peerCard: peerCard, formulaText: formulaText, figuresModel: figuresModel, mountBoard: mountBoard, hissanGrid: hissanGrid, hissanOverlay: hissanOverlay, flash: flash, numDisplay: numDisplay, choiceList: choiceList, fieldRows: fieldRows, orderList: orderList, floorLabelOf: floorLabelOf, guardOfSession: guardOfSession });
 
   function newState(key, q) {
     return {
@@ -9672,7 +9752,6 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const bubbleKids = [];
     if (tags.length) bubbleKids.push(h('div', { class: 'tags' }, tags));
     bubbleKids.push(UI.tx(q.prompt));
-    if (q.peerAnswer && String(q.prompt).indexOf(q.peerAnswer) < 0) bubbleKids.push(h('span', { class: 'peer', text: '答案：' + q.peerAnswer }));
     let extraText = '';
     if (finalChoiceNow) extraText = q.finalChoice.prompt;
     else if (step) extraText = step.ask;
@@ -9695,6 +9774,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     }
     if (q.handbook) speaker.push(h('button', { class: 'side-btn on', type: 'button', onclick: function () { UI.openHandbook(ctx); } }, [UI.tx('手帳')]));
     left.appendChild(h('div', { class: 'speaker-row' }, speaker));
+    const pc = peerCard(q, dark);
+    if (pc) left.appendChild(pc);
 
     const wrap = h('div', { class: 'board-wrap' + (dark ? ' dark' : '') + (hold ? (hold.correct ? ' ok' : ' ng') : '') });
     left.appendChild(wrap);
@@ -10035,6 +10116,18 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     };
   }
 
+  // やり直しモードの 選択肢は、はじめの 問題と ならびを かえる（まちがえるたびに また かえる）
+  function shuffleChoices(list, rs) {
+    const arr = list.slice();
+    let s = ((rs && rs.shuffle) || 0) * 7919 + 104729;
+    for (let i = arr.length - 1; i > 0; i -= 1) {
+      s = (s * 9301 + 49297) % 233280;
+      const j = Math.floor(s / 233280 * (i + 1));
+      const t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
   function yaPill(label, value, strike, small) {
     return h('div', { class: 'ya-pill' + (strike ? ' strike' : '') + (small ? ' small' : '') }, [h('span', { class: 'l', text: label }), h('span', { class: 'v', text: value || '（なし）' })]);
   }
@@ -10146,6 +10239,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     }
     const sayText = say.map(function (n) { return n.textContent || ''; }).join('');
     left.appendChild(h('div', { class: 'speaker-row' }, [UI.guardBox('angel', 'light'), h('div', { class: 'bubble' + UI.bubbleSizeClass(sayText) }, say)]));
+    const pcE = UI.peerCard(q);
+    if (pcE) left.appendChild(pcE);
 
     // 板: 正しい見方を書き込んだ状態
     const wrap = h('div', { class: 'board-wrap' });
@@ -10389,6 +10484,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     if (held) say.splice(0, say.length, h('span', { class: 'say-ok', text: 'よし。通って よい。' }));
     const sayText = say.map(function (n) { return n.textContent || ''; }).join('');
     left.appendChild(h('div', { class: 'speaker-row' }, [UI.guardBox(guardId), h('div', { class: 'bubble' + UI.bubbleSizeClass(sayText) }, say)]));
+    const pcR = UI.peerCard(q);
+    if (pcR) left.appendChild(pcR);
     left.appendChild(h('div', { class: 'ya-row' }, [yaPill('さっきの答え', v.yourAnswer, true, true)]));
 
     const wrap = h('div', { class: 'board-wrap redo' + (held ? ' ok' : (rs.fb ? ' ng' : '')) });
@@ -10427,7 +10524,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       const col = h('div', { class: 'q-right' });
       const locked = !!held || !!rs.fb;
       if (kind === 'final' || kind === 'choice') {
-        const choices = kind === 'final' ? q.finalChoice.choices : q.choices;
+        const choices = shuffleChoices(kind === 'final' ? q.finalChoice.choices : q.choices, rs);
         col.appendChild(h('div', { class: 'col-label', text: 'ひとつ えらぼう' }));
         col.appendChild(UI.choiceList(choices, { selected: rs.choice, held: locked, given: held ? held.given : rs.lastGiven, correct: !!held, onPick: function (id) { rs.choice = id; redrawRight(); } }));
       } else if (kind === 'order') {
@@ -10505,6 +10602,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
     function again() {
       rs.fb = null; rs.value = ''; rs.choice = null; rs.lastGiven = null; rs.pairA = ''; rs.pairB = '';
+      rs.shuffle = (rs.shuffle || 0) + 1;   // もう一度 えらぶときは ならびを かえる（場所で 覚えないように）
       if (q.format === 'fields') { rs.fields = {}; rs.fieldFocus = q.fields[0].key; }
       ctx.render();
     }
@@ -10517,7 +10615,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       if (held) { if (k === 'enter') nextItem(); return; }
       if (rs.fb) { if (k === 'enter') again(); return; }
       if (kind === 'final' || kind === 'choice') {
-        const choices = kind === 'final' ? q.finalChoice.choices : q.choices;
+        const choices = shuffleChoices(kind === 'final' ? q.finalChoice.choices : q.choices, rs);
         if (/^[1-9]$/.test(k) && choices[Number(k) - 1]) { rs.choice = choices[Number(k) - 1].id; redrawRight(); return; }
         if (k === 'enter' && ready()) submit();
         return;
@@ -10722,12 +10820,20 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   UI.screens = UI.screens || {};
 
   // ================= 導入 =================
+  // 1m² の しきつめ（1だんずつ）の ふきだし
+  const ANIM_SAY = [
+    'この 大きな 正方形が 1m²（1m × 1m）。ここに 1cm² の タイルを しきつめると、何まい?',
+    '左下の すみを 大きく すると… これが 1cm² の タイル 1まい。',
+    '1m は 100cm。だから よこに ならぶのは 100まい。',
+    'その 1れつを 10だん かさねると、100 × 10 ＝ 1000まい。',
+    '100だん かさねると、100 × 100 ＝ 10000まい。'
+  ];
   UI.screens.intro = function (ctx) {
     const E = ctx.engine, st = ctx.state, p = E.progress();
     const floor = MT.Floors.get(p.currentFloor);
     const kind = floor && floor.intro === 'units' ? 'units' : 'm2';
     let is = st.intro;
-    if (!is || is.kind !== kind) is = st.intro = { kind: kind, step: 0, num: UI.numberInput(6), guess: null, animDone: false, animating: false };
+    if (!is || is.kind !== kind) is = st.intro = { kind: kind, step: 0, num: UI.numberInput(6), guess: null, animStep: 0 };
     UI.bg('room', {});
     const app = document.getElementById('app');
     const scr = h('div', { class: 'screen' });
@@ -10744,7 +10850,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     body.appendChild(left);
     const texts = kind === 'm2' ? MT.Story.INTRO_M2 : MT.Story.INTRO_UNITS;
     let lines;
-    if (kind === 'm2' && is.step === 3) lines = is.animDone ? texts[3].concat(['きみの よそう：' + is.guess + 'まい → 答え：10000まい']) : ['しきつめると…'];
+    if (kind === 'm2' && is.step === 3) lines = [ANIM_SAY[is.animStep]].concat(is.animStep >= 4 ? texts[3].concat(['きみの よそう：' + is.guess + 'まい → 答え：10000まい']) : []);
     else lines = texts[Math.min(is.step, texts.length - 1)] || [];
     const bubble = h('div', { class: 'bubble long' });
     lines.forEach(function (t, i) { if (i) bubble.appendChild(h('br')); bubble.appendChild(UI.tx(t)); });
@@ -10762,24 +10868,21 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     }
     if (model) UI.mountBoard(wrap, model, '');
     else if (kind === 'units') wrap.appendChild(h('div', { class: 'intro-wrap' }, [h('div', { class: 'intro-big', plain: 'cm² → m² → a → ha → km²' })]));
-    else if (is.animDone) wrap.appendChild(h('div', { class: 'intro-wrap' }, [h('div', { class: 'intro-big', text: '100 × 100 ＝ 10000まい' })]));
     else {
+      // 1m² の しきつめ: 1だんずつ（「つぎへ」「もどる」で 行き来。自動では 流さない）
       const stage = h('div', { class: 'intro-wrap intro-stage' });
       wrap.appendChild(stage);
-      // 画面を 作り直したら（大きさを 変えたときなど）新しい板で はじめから 流す。古いほうの 終わりは むし
-      const token = is.animToken = (is.animToken || 0) + 1;
-      setTimeout(function () {
-        if (is.animToken !== token || !stage.isConnected) return;
-        const size = Math.max(160, Math.min(stage.clientHeight - 70, stage.clientWidth - 90, 420));
-        MT.IntroAnim.play(stage, { size: size, onDone: function () { if (is.animToken !== token) return; is.animDone = true; if (st.intro === is) ctx.render(); } });
-      }, 60);
+      UI.onMounted(function () { MT.IntroAnim.render(stage, is.animStep, { width: stage.clientWidth, height: stage.clientHeight }); });
     }
 
     const right = h('div', { class: 'q-right' });
     body.appendChild(right);
     function advance() {
       if (kind === 'm2' && is.step === 2) return;
-      if (kind === 'm2' && is.step === 3) { if (!is.animDone) return; st.intro = null; E.finishIntro(String(is.guess)); ctx.render(); return; }
+      if (kind === 'm2' && is.step === 3) {
+        if (is.animStep < MT.IntroAnim.STEPS - 1) { is.animStep += 1; ctx.render(); return; }
+        st.intro = null; E.finishIntro(String(is.guess)); ctx.render(); return;
+      }
       if (kind === 'units' && is.step >= 3) { st.intro = null; E.finishIntro(null); ctx.render(); return; }
       is.step += 1;
       ctx.render();
@@ -10788,6 +10891,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       if (!is.num.value) return;
       is.guess = MT.Util.parseInteger(is.num.value);
       is.step = 3;
+      is.animStep = 0;
       ctx.render();
     }
     function draw() {
@@ -10800,12 +10904,16 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         return;
       }
       right.appendChild(h('div', { style: 'flex:1' }));
-      const last = (kind === 'm2' && is.step === 3) || (kind === 'units' && is.step >= 3);
+      const anim = kind === 'm2' && is.step === 3;
+      const last = (anim && is.animStep >= MT.IntroAnim.STEPS - 1) || (kind === 'units' && is.step >= 3);
       const label = last ? p.currentFloor + '階へ　▶' : 'つぎへ　▶';
-      const waiting = kind === 'm2' && is.step === 3 && !is.animDone;
-      right.appendChild(h('button', { class: 'answer-btn' + (waiting ? ' wait' : ' next'), type: 'button', onclick: advance }, [label]));
+      const go = h('button', { class: 'answer-btn next', type: 'button', onclick: advance }, [label]);
+      if (anim) right.appendChild(h('div', { class: 'btn-row2' }, [h('button', { class: 'answer-btn' + (is.animStep > 0 ? '' : ' disabled'), type: 'button', onclick: back }, ['◀ もどる']), go]));
+      else right.appendChild(go);
     }
+    function back() { if (kind === 'm2' && is.step === 3 && is.animStep > 0) { is.animStep -= 1; ctx.render(); } }
     function onKey(k) {
+      if (k === 'back') { back(); return; }
       if (kind === 'm2' && is.step === 2) {
         if (k === 'enter') { guess(); return; }
         if (k === 'back') is.num.back(); else if (k === 'clear') is.num.clear(); else is.num.type(k);
@@ -11042,7 +11150,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
 
 /* 面積の塔: 管理者画面（先生・作る人の 確認用。子どもには 見せない）
- * ひらき方: キーボードで kanri と打つ ／ ホームの ロゴを 7回 タップ
+ * ひらき方: ホームの ロゴを 7回 つづけて タップ
  * ここから 始める プレイは「ためしプレイ」。べつの 保存（メモリ）で 動くので、子どもの きろくは かわらない。
  * 「ためしプレイを おわる」で もとの きろくに もどる（ページを 読みこみなおしても もどる）。
  */
@@ -11128,6 +11236,9 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     E.startUnderground();
     return E;
   }
+
+  // 開発用ページの ?act= からも 使う
+  UI.adminApi = { sandbox: sandbox, startFloor: startFloor, startUg: startUg, onlyQuestion: onlyQuestion, floorAllWrong: floorAllWrong };
 
   UI.screens.admin = function (ctx) {
     const st = ctx.state;
@@ -11330,15 +11441,6 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     ]));
   }
 
-  // 管理者画面の ひみつの コマンド: キーボードで k a n r i と 打つ
-  let secret = '';
-  document.addEventListener('keydown', function (ev) {
-    const t = ev.target;
-    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
-    if (!ev.key || ev.key.length !== 1 || !/[a-z]/i.test(ev.key)) return;
-    secret = (secret + ev.key.toLowerCase()).slice(-5);
-    if (secret === 'kanri') { secret = ''; const m = document.querySelector('.modal-back'); if (m) m.remove(); state.view = 'admin'; render(); }
-  });
   document.addEventListener('keydown', function (ev) {
     const t = ev.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
