@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260915-75936 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260915-77315 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -1321,7 +1321,26 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     return best.result;
   }
 
-  return { plan: plan, planWithTarget: planWithTarget };
+  // 見せている寸法線のうち、なくても 全部の辺が きまるものは けす（線が 多すぎて 図が 読めなかった。本人の指摘 2026-09-15）
+  // 長い寸法線から ためす。手数は もとの案より ふやさない（むずかしさは かえない）
+  function prune(fig, planned, options) {
+    const opts = options || {};
+    const solveOpts = { squares: opts.squares || [], areas: opts.areas || [] };
+    const limit = planned.solution.maxOps;
+    const keep = new Set(opts.mustShow || []);
+    let shown = planned.shown.slice();
+    shown.filter(function (l) { return l.kind === 'dim' && !keep.has(l.id); })
+      .sort(function (p, q) { return (q.b - q.a) - (p.b - p.a); })
+      .forEach(function (lab) {
+        const trial = shown.filter(function (l) { return l.id !== lab.id; });
+        const sol = Deduce.solve(fig, trial, solveOpts);
+        if (sol.determined && sol.maxOps <= limit) shown = trial;
+      });
+    if (shown.length === planned.shown.length) return planned;
+    return { shown: shown, hidden: planned.hidden, solution: Deduce.solve(fig, shown, solveOpts) };
+  }
+
+  return { plan: plan, planWithTarget: planWithTarget, prune: prune };
 });
 
 
@@ -1930,7 +1949,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: 'まだ 決められない', correct: true }
       ], { keepOrder: true });
       return {
-        prompt: '重ねてみた。はみ出したところと、たりないところがある。重ねただけで、どっちが広いか 決められる?',
+        prompt: '重ねると、はみ出す ところと たりない ところが ある。どっちが 広いか 決められる?',
         figure: QFig.spec(fig, { pieceColors: ['#8fc7ff', '#ffb0a0'], caption: 'はみ出したところ と たりないところ' }),
         choices: c.choices, answer: c.answer,
         explain: { sentence: '重ねても、はみ出したところと たりないところが出て、まだ決まらないね。同じ大きさの何かで うめてみよう。' }
@@ -1982,7 +2001,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: '1m²' }
       ], { keepOrder: true });
       return {
-        prompt: 'ものさしで 1cm をはかって、1辺が1cmの正方形を作った。この広さを、何とよぶ?',
+        prompt: '1辺が 1cm の 正方形の 広さを、何と よぶ?',
         figure: QFig.spec(fig, { labels: Figure.fullEdgeLabels(fig).filter(function (l) { return l.facing === 'down' || l.facing === 'left'; }) }),
         choices: c.choices, answer: c.answer,
         explain: { sentence: '1辺が1cmの正方形の広さを 1cm²（1平方センチメートル）とよぶよ。面積は、この1cm²のタイルが何まい分か、だよ。' }
@@ -2000,7 +2019,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const s = rectSides(rng, { min: 2, max: 6, square: kind === 'square', tall: kind === 'tall', wide: kind === 'wide' });
       const spec = QFig.rectSpec(s.w, s.h, { grid: true, labels: 'none', interaction: 'tiles' });
       return {
-        prompt: 'タイルをおいて、数えよう。1cm²のタイルは 何まいならぶ? （面積は何cm²?）',
+        prompt: 'タイルを おいて 数えよう。何まい ならぶ?（面積は 何cm²?）',
         figure: spec,
         answer: s.h * s.w, unit: 'cm²',
         wrong: rectWrong(s.h, s.w),
@@ -2019,7 +2038,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const placedRows = rng.int(1, s.h - 1);
       const spec = QFig.rectSpec(s.w, s.h, { grid: true, labels: 'none', interaction: 'tiles', tilesPlaced: { rows: placedRows } });
       return {
-        prompt: '上の ' + placedRows + 'だんには、もう タイルを おいたよ。のこりの マスにも おくと、ぜんぶで 何まい?',
+        prompt: '上の ' + placedRows + 'だんは もう おいたよ。のこりも おくと、ぜんぶで 何まい?',
         figure: spec,
         answer: s.h * s.w, unit: 'まい',
         wrong: (function () { const w = {}; w[String(placedRows * s.w)] = 'placed-only'; return w; })(),
@@ -2037,7 +2056,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const s = rectSides(rng, { min: 3, max: 9 });
       const spec = QFig.rectSpec(s.w, s.h, { grid: true, labels: 'none', tilesPlaced: { rows: 1, cols: 1 } });
       return {
-        prompt: 'ぜんぶ おかなくても数えられる? たてに' + s.h + 'まい、よこに' + s.w + 'まいならぶ。ぜんぶで何まい?',
+        prompt: 'ぜんぶ おかずに 数えよう。たて' + s.h + 'まい、よこ' + s.w + 'まい。ぜんぶで 何まい?',
         figure: spec,
         answer: s.h * s.w, unit: 'まい',
         wrong: rectWrong(s.h, s.w),
@@ -2179,7 +2198,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: '右のほうが広い' }
       ], { keepOrder: true });
       return {
-        prompt: 'たて' + s.h + 'cm・よこ' + s.w + 'cm の長方形と、たて' + s.w + 'cm・よこ' + s.h + 'cm の長方形。面積は 同じ? ちがう?',
+        prompt: 'たて' + s.h + 'cm・よこ' + s.w + 'cm と、たて' + s.w + 'cm・よこ' + s.h + 'cm。面積は 同じ?',
         figures: [QFig.rectSpec(s.w, s.h, { grid: true }), QFig.rectSpec(s.h, s.w, { grid: true })],
         choices: c.choices, answer: c.answer,
         explain: {
@@ -2407,7 +2426,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const area = rng.pick(PAIR_AREAS);
       const pairs = Util.divisorPairs(area);
       return {
-        prompt: '面積が' + area + 'cm²になる長方形（正方形もふくむ）を ぜんぶ見つけよう。たて・よこは整数。たて2・よこ9 と たて9・よこ2 は 1つと数えるよ。',
+        prompt: '面積 ' + area + 'cm² の 長方形（正方形も）を ぜんぶ 見つけよう。2×9 と 9×2 は 同じ。',
         pairs: { area: area, answer: pairs },
         answer: pairs.length,
         explain: {
@@ -2636,7 +2655,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const area = rng.pick([24, 36, 30, 40, 48]);
       const pairs = Util.divisorPairs(area);
       return {
-        prompt: '面積が' + area + 'cm²になる長方形を ぜんぶ作ろう（正方形もふくむ。たて・よこは整数）。',
+        prompt: '面積が ' + area + 'cm² の 長方形を ぜんぶ 作ろう（正方形も）。',
         pairs: { area: area, answer: pairs },
         answer: pairs.length,
         explain: { sentence: '1から順に「' + area + '÷□ が わり切れるか」を たしかめると、もれなく見つかるよ。' }
@@ -2689,7 +2708,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: 'わり算の 問題だから' }
       ]);
       return {
-        prompt: '面積' + area + 'cm²、たて' + h + 'cm の長方形。よこを ' + area + '÷' + h + ' で 出せる。なぜ わり算で いいの?',
+        prompt: '面積' + area + 'cm²、たて' + h + 'cm。よこを ' + area + '÷' + h + ' で 出せるのは なぜ?',
         figure: QFig.rectSpec(w, h, { grid: true, labels: 'h', areaText: area + 'cm²' }),
         choices: c.choices, answer: c.answer,
         explain: {
@@ -2736,7 +2755,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: '作れない。' + h + '×□＝' + area + ' になる整数の□がない', correct: true }
       ]);
       return {
-        prompt: '面積' + area + 'cm²で、たて' + h + 'cm。1cm²のマスを ぴったりならべた長方形は 作れる?',
+        prompt: '面積' + area + 'cm²、たて' + h + 'cm。マスを ぴったり ならべた 長方形は 作れる?',
         figure: QFig.rectSpec(over, h, { grid: false, labels: 'h', areaText: '面積 ' + area + 'cm²?', caption: 'よこは 何cm?' }),
         choices: c.choices, answer: c.answer,
         explain: {
@@ -2869,9 +2888,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: '合っている' }
       ], { keepOrder: true });
       return {
-        prompt: 'ほかの子の答案：「たて' + s.h + '、よこ' + s.w + 'だから、面積は ' + wrongValue + 'cm²」。どこが まちがい?',
+        prompt: 'ほかの子の 答案の どこが まちがい?',
         figure: QFig.rectSpec(s.w, s.h, { grid: false }),
-        peerAnswer: wrongValue + 'cm²',
+        peerAnswer: 'たて' + s.h + '、よこ' + s.w + 'だから、面積は ' + wrongValue + 'cm²',
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: kind === 'sum'
@@ -2893,9 +2912,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: '合っている', correct: true }
       ], { keepOrder: true });
       return {
-        prompt: 'ほかの子の答案：「たて' + s.h + '、よこ' + s.w + 'だから、面積は ' + s.h * s.w + 'cm²」。これは どう?',
+        prompt: 'ほかの子の 答案は どう?',
         figure: QFig.rectSpec(s.w, s.h, { grid: false }),
-        peerAnswer: s.h * s.w + 'cm²',
+        peerAnswer: 'たて' + s.h + '、よこ' + s.w + 'だから、面積は ' + s.h * s.w + 'cm²',
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: 'たて×よこ は タイルのまい数を出す式。この答案の式が どうなっているか、もう一度 見てみよう。',
@@ -3235,7 +3254,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     id: 'f9-ladder-fill', floor: 9, format: 'fields',
     make: function () {
       return {
-        prompt: '単位のはしご。□には 何倍が入る?　cm² →□倍→ m² →□倍→ a →□倍→ ha →□倍→ km²',
+        prompt: '□に 何倍が 入る?　cm² →□倍→ m² →□倍→ a →□倍→ ha →□倍→ km²',
         fields: [
           { key: 'k1', label: 'cm²→m²', unit: '倍', answer: 10000 },
           { key: 'k2', label: 'm²→a', unit: '倍', answer: 100 },
@@ -3604,7 +3623,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const L = randomL(rng, { minW: 6, maxW: 9, minH: 5, maxH: 7 });
       const built = buildLQuestion(rng, L, { maxHidden: 0 });
       return {
-        prompt: '同じ形を 3通りで とこう。たてに切る、よこに切る、大きい長方形で かこんでひく。答えは 同じ?',
+        prompt: '3通りで とこう（たてに切る・よこに切る・かこんでひく）。答えは 同じ?',
         figure: built.figure,
         cut: { guide: 'three', modes: ['v', 'h', 'e'] },
         finalChoice: {
@@ -3824,7 +3843,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const wrong = {};
       wrong[String(value)] = kind;
       return {
-        prompt: 'ほかの子の 答案は まちがっている。どこが ちがうか 考えて、正しい 面積を 出そう。何cm²?',
+        prompt: 'この 答案は まちがい。正しい 面積は 何cm²?',
         figure: QFig.fromFigure(fig, Figure.fullEdgeLabels(fig), [], { interaction: null }),
         peerAnswer: expr + '　答え ' + value + 'cm²',
         answer: area, unit: 'cm²', wrong: wrong,
@@ -3916,7 +3935,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       wrong[String(W * H)] = 'no-cut';
       wrong[String(W * H - r)] = 'no-cut';
       return {
-        prompt: 'たて' + H + 'm、よこ' + W + 'm の畑に、はば' + r + 'm の道が たてに通っている。畑（色のついた部分）の面積は何m²?',
+        prompt: 'はば' + r + 'm の 道が 通る 畑。畑（色の 部分）の 面積は 何m²?',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + r + 'm' }),
         answer: area, unit: 'm²', wrong: wrong,
         explain: {
@@ -3940,7 +3959,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       wrong[String(inner)] = 'inner-only';
       wrong[String(W * H - (W - b) * (H - b))] = 'wrong-side';
       return {
-        prompt: 'たて' + H + 'cm、よこ' + W + 'cm の がくぶち。はばは どこも ' + b + 'cm。がくぶち（色のついた部分）の面積は何cm²?',
+        prompt: 'はばが どこも ' + b + 'cm の がくぶち。色の 部分の 面積は 何cm²?',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば ' + b + 'cm' }),
         answer: area, unit: 'cm²', wrong: wrong,
         explain: {
@@ -3959,7 +3978,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const fig = Shapes.lShape(L.W, L.H, L.cw, L.ch, 'tr', { grid: true });
       const box = L.W * L.H, cut = L.cw * L.ch;
       return {
-        prompt: '「かこんでひく」で とこう。かこむ 大きい 長方形の 面積、欠けたところの 面積、ひいた 答えを 入れよう。',
+        prompt: '「かこんでひく」で とこう。3つの 面積を 入れよう。',
         figure: QFig.fromFigure(fig, Figure.fullEdgeLabels(fig), [], { interaction: null, marks: [{ kind: 'enclose-hint' }] }),
         fields: [
           { key: 'ba', label: '大きい 長方形', answer: box, unit: 'cm²' },
@@ -5675,7 +5694,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const singleGap = cands.filter(function (l) { const list = l.axis === 'x' ? coords.xs : coords.ys; const i = list.indexOf(l.a); return i >= 0 && list[i + 1] === l.b; }).map(function (l) { return l.id; });
     // 「かべからのはば」「地面からの高さ」の寸法線を先にかくし、ふみ面とだんの高さは残す → 推理が6手までのびる
     const dimIds = cands.filter(function (l) { return l.kind === 'dim'; }).map(function (l) { return l.id; });
-    const plan = Hide.planWithTarget(fig, cands, { rng: Util.createRng('b26-b'), targetHidden: 14, maxHidden: 14, maxOps: 7, targetOps: 6, preferHide: dimIds.concat(singleGap), tries: 24 });
+    const plan = Hide.prune(fig, Hide.planWithTarget(fig, cands, { rng: Util.createRng('b26-b'), targetHidden: 14, maxHidden: 14, maxOps: 7, targetOps: 6, preferHide: dimIds.concat(singleGap), tries: 24 }));
     const sol = plan.solution;
     const area = Figure.area(fig);
     return {
@@ -5704,7 +5723,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     wrongMap[String(wrong)] = 'double-sub';
     return {
       format: 'number',
-      prompt: 'たてに道が2本（はば' + r1 + 'mと' + r2 + 'm）、よこに道が1本（はば' + rh + 'm）通る土地。ほかの子の 答案は 正しい? 自分で 計算して、道を のぞいた 土地の 面積を 答えよう。何m²?',
+      prompt: '道を のぞいた 土地の 面積は 何m²? 答案が 正しいか、自分で 計算しよう。',
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + r1 + 'm・' + r2 + 'm・' + rh + 'm' }),
       peerAnswer: expr,
       answer: right, unit: 'm²', wrong: wrongMap,
@@ -5730,7 +5749,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const plan = Hide.planWithTarget(fig, all.concat(inner), { rng: Util.createRng('b28'), targetHidden: all.length + inner.length - 1, maxHidden: all.length + inner.length - 1, maxOps: 8, squares: squares, tries: 20 });
     const area = Figure.area(fig);
     return {
-      prompt: '9つの正方形で ぴったり しきつめた長方形。書いてある辺は これだけ。全体の面積は何cm²?',
+      prompt: '9つの 正方形で しきつめた 長方形。全体の 面積は 何cm²?',
       figure: QFig.fromFigure(fig, plan.shown, plan.hidden, { interaction: null }),
       answer: area, unit: 'cm²',
       hiddenCount: plan.hidden.length, ops: plan.solution.maxOps,
@@ -5759,7 +5778,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     wrongMap[String(W * H - innerW * (H - b))] = 'wrong-side';
     return {
       format: 'number',
-      prompt: 'がくのはばが 左' + l + 'm・右' + r + 'm・上' + t + 'm・下' + b + 'm。ほかの子の 答案は 正しい? 自分で 計算して、がくぶちの 面積を 答えよう。何m²?',
+      prompt: 'がくぶちの 面積は 何m²? 答案が 正しいか、自分で 計算しよう。',
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば 左' + l + ' 右' + r + ' 上' + t + ' 下' + b }),
       peerAnswer: expr,
       answer: area, unit: 'm²', wrong: wrongMap,
@@ -5849,11 +5868,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const candidates = dedupeCandidates(cands0);
     const full = Deduce.solve(fig, candidates, { squares: o.squares || [], areas: o.areas || [] });
     if (!full.determined) throw new Error('generator bug: figure not determined with all labels');
-    return Hide.planWithTarget(fig, candidates, {
+    const planned = Hide.planWithTarget(fig, candidates, {
       rng: rng.fork('hide'), targetHidden: o.hidden, maxHidden: o.hidden, maxOps: o.ops == null ? 3 : o.ops, targetOps: o.ops,
       preferHide: singleGapLabelIds(fig, candidates),
       squares: o.squares || [], areas: o.areas || [], mustShow: o.mustShow || [], tries: o.tries || 12
     });
+    return Hide.prune(fig, planned, { squares: o.squares || [], areas: o.areas || [], mustShow: o.mustShow || [] });
   }
 
   // ---- かいだん型 ----
@@ -6016,7 +6036,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const h = rng.int(2, 9), w = rng.int(h + 1, 15);
       const area = h * w, perim = 2 * (h + w);
       return {
-        prompt: '面積' + area + unit + '²、まわりの長さ' + perim + unit + ' の長方形。たてと よこは?（たて<よこ）',
+        prompt: '面積' + area + unit + '²、まわり' + perim + unit + ' の 長方形。たてと よこは?（たて<よこ）',
         figure: QFig.rectSpec(w, h, { grid: false, unit: unit, labels: 'none', areaText: area + unit + '²', marks: [{ kind: 'perimeter', text: 'まわり ' + perim + unit }] }),
         fields: [{ key: 'h', label: 'たて', unit: unit, answer: h }, { key: 'w', label: 'よこ', unit: unit, answer: w }],
         explain: { sentence: 'たて＋よこ＝' + (perim / 2) + '。たして' + (perim / 2) + '、かけて' + area + 'になる 2つの数をさがす。', steps: [{ key: 'half', label: 'たて＋よこ', parts: [B('half', perim / 2, unit)] }, { key: 'pair', label: '2つの数', parts: ['たて', B('h', h, unit), 'よこ', B('w', w, unit)] }] }
@@ -6116,7 +6136,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       wrongMap[String(W * H)] = 'no-cut';
       return {
         format: 'number',
-        prompt: 'はば' + rw + unit + 'と' + rh + unit + 'の道が通る土地。ほかの子の 答案は 正しい? 自分で 計算して、道を のぞいた 面積を 答えよう。何' + unit + '²?',
+        prompt: '道を のぞいた 面積は 何' + unit + '²? 答案が 正しいか、自分で 計算しよう。',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + rw + unit + '・' + rh + unit }),
         peerAnswer: expr,
         answer: right, unit: unit + '²', wrong: wrongMap,
@@ -6134,7 +6154,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     wrongMap[String(wrongInner)] = 'wrong-side';
     return {
       format: 'number',
-      prompt: 'はば' + b + unit + 'の がくぶち。ほかの子の 答案は 正しい? 自分で 計算して、がくぶちの 面積を 答えよう。何' + unit + '²?',
+      prompt: 'がくぶちの 面積は 何' + unit + '²? 答案が 正しいか、自分で 計算しよう。',
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば ' + b + unit }),
       peerAnswer: expr,
       answer: right, unit: unit + '²', wrong: wrongMap,
@@ -6154,7 +6174,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const edges = Figure.fullEdgeLabels(fig);
     const dims = [Figure.dimLabel('x', 0, W, W, -1), Figure.dimLabel('y', 0, H, H, -1), Figure.dimLabel('x', 0, b, b, Math.floor(H / 2)), Figure.dimLabel('x', roadAt, roadAt + rw, rw, H + 1), Figure.dimLabel('y', 0, b, b, Math.floor(W / 2))];
     const plan = planFor(rng, fig, edges.concat(dims), o);
-    return figureQuestion(fig, plan, { prompt: 'がくぶちの形の土地に、たてに道が通っている。土地（色のついた部分）の面積は?', sentence: 'がくぶちの面積（外−内）から、道が がくぶちと重なる部分をひく。道は 上と下の2か所で がくぶちを通るよ。' });
+    return figureQuestion(fig, plan, { prompt: 'がくぶちの 土地に 道が 通る。色の 部分の 面積は?', sentence: 'がくぶちの面積（外−内）から、道が がくぶちと重なる部分をひく。道は 上と下の2か所で がくぶちを通るよ。' });
   }
 
   // ---- 塔の切り口の図と手帳 ----
@@ -6267,7 +6287,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       return { key: 'blank:' + bl.labelId, label: bl.floor + '階', dim: null, parts: [bl.text.replace('□m', ''), B('v-' + bl.labelId, bl.value, 'm')] };
     });
     return {
-      prompt: 'はかり手の手帳を開いて、この塔の切り口の図の面積を出そう。□の辺は 書いてある辺から出す。どの階も 高さ3m。',
+      prompt: '塔の 切り口の 面積は 何m²? 手帳で □の 辺を 出そう。どの階も 高さ3m。',
       figure: QFig.fromFigure(fig, shown.concat([Figure.dimLabel('y', 0, 42, 42, -2)]), hb.hidden, { interaction: 'cut', caption: '14階ぶん。まどは ふきぬけ' }),
       answer: area, unit: 'm²',
       handbook: true,
@@ -6314,11 +6334,11 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     { no: 18, type: 'reverse', opts: { kind: 'L-area-side' }, name: '面積から辺を' },
     { no: 19, type: 'unit-mixed', opts: { steps: 3, hidden: 2, ops: 2 }, name: 'mとcm' },
     { no: 20, type: 'equal-cut', opts: { kind: 'stairs' }, name: '半分に分ける線 2' },
-    { no: 21, type: 'overlap', opts: { n: 3, hidden: 2, ops: 2 }, name: '3つの重なり' },
-    { no: 22, type: 'squares', opts: { n: 8, showLabels: 1, ops: 4 }, name: '8つの正方形' },
-    { no: 23, type: 'frame-road', opts: { hidden: 2, ops: 2 }, name: 'がくぶちと道 2' },
-    { no: 24, type: 'stairs', opts: { steps: 6, hidden: 4, ops: 3 }, name: '6だんのかいだん' },
-    { no: 25, type: 'overlap', opts: { n: 3, hidden: 3, ops: 3, unit: 'm' }, name: '3つの重なり 2' },
+    { no: 21, type: 'overlap', opts: { n: 3, hidden: 3, ops: 3 }, name: '3つの重なり' },
+    { no: 22, type: 'squares', opts: { n: 8, showLabels: 1, ops: 5 }, name: '8つの正方形' },
+    { no: 23, type: 'frame-road', opts: { hidden: 3, ops: 3 }, name: 'がくぶちと道 2' },
+    { no: 24, type: 'stairs', opts: { steps: 6, hidden: 5, ops: 3 }, name: '6だんのかいだん' },
+    { no: 25, type: 'overlap', opts: { n: 3, hidden: 4, ops: 4, unit: 'm' }, name: '3つの重なり 2' },
     { no: 26, type: 'handmade', opts: { no: 26 }, name: 'ボス: 深いかいだん' },
     { no: 27, type: 'handmade', opts: { no: 27 }, name: 'ボス: この答案は正しい?' },
     { no: 28, type: 'handmade', opts: { no: 28 }, name: 'ボス: 9つの正方形' },
@@ -7972,6 +7992,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   const SHAPE_LINE = '#2f3f75';
   const DIM = '#c2661f';
   const HELP = '#7b60a9';
+  // 図の 外に 出した 寸法線は 1本ずつ 色を かえる（1本目は ふだんの 色）
+  const DIM_COLORS = [DIM, '#2f8a57', '#8a4fc7', '#c23b6b', '#1f7f8c', '#8a6a12'];
   const FREE_FILLS = ['#5d8fd8', '#6cbd6f', '#ef9448', '#a48ad0'];     // 自分で切ったとき（1つ目は そのまま青）
   const GUIDE_FILLS = ['#6cbd6f', '#ef9448', '#a48ad0', '#5d8fd8'];    // 解説（左=緑、右=オレンジ）
   const TILE = '#ffd37c';        // おいた タイル
@@ -8027,13 +8049,39 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     // 寸法線は ぜんぶ 図の 外に「列」で ならべる（辺の 数より 外。短いものほど 図の 近く。かさならない 列には いっしょに 入れる）
     function outsideDims(spec, b, margin) {
       const all = (spec.labels || []).map(function (l) { return { l: l, hid: false }; }).concat((spec.hidden || []).map(function (l) { return { l: l, hid: true }; }));
+      // 行ごと・列ごとの 図の はし（寸法線から 図の かどへ 引く 点線と、どちらの がわに 出すかに 使う）
+      const maps = { rowMin: {}, rowMax: {}, colMin: {}, colMax: {} };
+      Figure.cellSet(spec.fig).forEach(function (k) {
+        const c = Figure.parseKey(k);
+        if (maps.rowMin[c.y] == null || c.x < maps.rowMin[c.y]) maps.rowMin[c.y] = c.x;
+        if (maps.rowMax[c.y] == null || c.x + 1 > maps.rowMax[c.y]) maps.rowMax[c.y] = c.x + 1;
+        if (maps.colMin[c.x] == null || c.y < maps.colMin[c.x]) maps.colMin[c.x] = c.y;
+        if (maps.colMax[c.x] == null || c.y + 1 > maps.colMax[c.x]) maps.colMax[c.x] = c.y + 1;
+      });
+      const origSide = function (l) {
+        if (l.axis === 'x') return l.at <= b.y1 ? 'bottom' : l.at >= b.y2 ? 'top' : (l.at - b.y1 <= b.y2 - l.at ? 'bottom' : 'top');
+        return l.at <= b.x1 ? 'left' : l.at >= b.x2 ? 'right' : (l.at - b.x1 <= b.x2 - l.at ? 'left' : 'right');
+      };
+      // 図が へこんでいる がわ（かいだんの 角が ある がわ）に 出すと、点線が 角に まっすぐ とどいて わかりやすい
+      const sideFor = function (l) {
+        const full = l.axis === 'x' ? (l.a <= b.x1 && l.b >= b.x2) : (l.a <= b.y1 && l.b >= b.y2);
+        if (full) return origSide(l);
+        let lo = 0, hi = 0;
+        [l.a, l.b - 1].forEach(function (e) {
+          if (l.axis === 'y') { if (maps.rowMin[e] != null) { lo = Math.max(lo, maps.rowMin[e] - b.x1); hi = Math.max(hi, b.x2 - maps.rowMax[e]); } }
+          else if (maps.colMin[e] != null) { lo = Math.max(lo, maps.colMin[e] - b.y1); hi = Math.max(hi, b.y2 - maps.colMax[e]); }
+        });
+        if (hi > lo) return l.axis === 'y' ? 'right' : 'top';
+        if (lo > hi) return l.axis === 'y' ? 'left' : 'bottom';
+        return origSide(l);
+      };
       const sides = { bottom: [], top: [], left: [], right: [] };
+      const sideOf = new Map();
       all.forEach(function (o, i) {
         const l = o.l;
         if (l.kind !== 'dim' || l.at == null) return;
-        let side;
-        if (l.axis === 'x') side = l.at <= b.y1 ? 'bottom' : l.at >= b.y2 ? 'top' : (l.at - b.y1 <= b.y2 - l.at ? 'bottom' : 'top');
-        else side = l.at <= b.x1 ? 'left' : l.at >= b.x2 ? 'right' : (l.at - b.x1 <= b.x2 - l.at ? 'left' : 'right');
+        const side = sideFor(l);
+        sideOf.set(o, side);
         sides[side].push({ o: o, len: l.b - l.a, i: i });
       });
       const newAt = new Map();
@@ -8052,12 +8100,35 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
           newAt.set(it.o, side === 'bottom' ? b.y1 - d : side === 'top' ? b.y2 + d : side === 'left' ? b.x1 - d : b.x2 + d);
         });
       });
-      const out = { labels: [], hidden: [] };
+      const out = { labels: [], hidden: [], maps: maps };
       all.forEach(function (o) {
-        const l = newAt.has(o) ? Object.assign({}, o.l, { at: newAt.get(o), at0: o.l.at }) : o.l;
+        const l = newAt.has(o) ? Object.assign({}, o.l, { at: newAt.get(o), at0: o.l.at, side: sideOf.get(o) }) : o.l;
         (o.hid ? out.hidden : out.labels).push(l);
       });
       return out;
+    }
+
+    // 寸法線の 両はしから 図の はし（かど）まで 細い 点線（どこから どこまでの 長さか わかるように）
+    // 線と 同じ色で 引き、図の かどに 点を 打つ（線が まじわっても、どの かどまでの 長さか 色で たどれる）
+    function drawExt(pl, l, g, color) {
+      const m = pl.ext && pl.ext.maps;
+      if (!m || !l.side) return;
+      const col = color || '#c9a37a';
+      [l.a, l.b].forEach(function (end, i) {
+        const idx = i === 0 ? l.a : l.b - 1;
+        let fx, fy, tx, ty;
+        if (l.axis === 'y') {
+          const ex = l.side === 'right' ? m.rowMax[idx] : m.rowMin[idx];
+          if (ex == null) return;
+          fx = pl.X(ex); fy = pl.Y(end); tx = pl.X(l.at); ty = fy;
+        } else {
+          const ey = l.side === 'top' ? m.colMax[idx] : m.colMin[idx];
+          if (ey == null) return;
+          fx = pl.X(end); fy = pl.Y(ey); tx = fx; ty = pl.Y(l.at);
+        }
+        svg('line', { x1: fx, y1: fy, x2: tx, y2: ty, stroke: col, 'stroke-width': 2, 'stroke-dasharray': '5 4', opacity: 0.75 }, g);
+        svg('circle', { cx: fx, cy: fy, r: Math.max(4, Math.min(7, geo.cell * 0.22)), fill: col, stroke: '#fbf9f2', 'stroke-width': 1.5 }, g);
+      });
     }
 
     function extentOf(spec, margin) {
@@ -8070,7 +8141,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         else { x1 = Math.min(x1, l.at - margin * 1.2); x2 = Math.max(x2, l.at + margin * 1.2); }
       });
       if (spec.caption || (spec.marks || []).some(function (m) { return m.kind === 'perimeter'; })) y1 -= margin * 0.9;
-      return { x1: x1, x2: x2, y1: y1, y2: y2, w: x2 - x1, h: y2 - y1, b: b, labels: moved.labels, hidden: moved.hidden };
+      return { x1: x1, x2: x2, y1: y1, y2: y2, w: x2 - x1, h: y2 - y1, b: b, labels: moved.labels, hidden: moved.hidden, maps: moved.maps };
     }
 
     // 数や「?」の 置き場所が かさならないように（あとから 置くものを 辺から はなれる ほうへ ずらす）
@@ -8257,7 +8328,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
           if (p.role === 'cutout') svg('rect', { x: pl.X(p.x), y: pl.Y(p.y + p.h), width: p.w * cell, height: p.h * cell, fill: 'url(#hatch)', stroke: '#c9402f', 'stroke-width': 3, 'stroke-dasharray': '8 5' }, g);
         });
       }
-      const gridIn = fig.grid !== false && cell >= 6;
+      // 図形の 中の 方眼は「マスを 数えて よい 問題」だけ（本人の指定 2026-09-15: 背景の 方眼は あってよい）
+      const gridIn = fig.grid !== false && cell >= 6 && model.innerGrid !== false;
       cells.forEach(function (k) {
         const c = Figure.parseKey(k);
         let fill = baseColor;
@@ -8321,10 +8393,12 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         .concat((pl.ext.hidden || spec.hidden || []).map(function (l) { return { l: l, hid: true }; }));
       const rank = function (it) { return it.l.kind === 'dim' ? 0 : it.hid ? 1 : 2; };   // 寸法線 → 「?」 → 辺の 数
       items.sort(function (p1, p2) { return rank(p1) - rank(p2); });
+      let dimNo = 0;
       items.forEach(function (it) {
         const l = it.l;
         const isHelp = helpIds[l.axis + ':' + l.a + '-' + l.b + ':' + (l.at0 != null ? l.at0 : l.at)];
-        if (!it.hid) { drawLabel(pl, l, labelText(l, unit), isHelp ? HELP : DIM, { help: isHelp, lit: primary && lit(l) }); return; }
+        const base = !it.hid && l.kind === 'dim' && l.side ? DIM_COLORS[dimNo++ % DIM_COLORS.length] : DIM;
+        if (!it.hid) { drawLabel(pl, l, labelText(l, unit), isHelp ? HELP : base, { help: isHelp, lit: primary && lit(l) }); return; }
         const show = model.showHidden || (primary && lit(l));
         if (show) drawHidden(pl, l, isHelp);
       });
@@ -8351,6 +8425,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       const g = svg('g', { class: 'board-label' + (opt.help ? ' help' : '') }, root_);
       const fs = geo.fs;
       if (l.kind === 'dim' && l.at != null) {
+        drawExt(pl, l, g, color);
         const thick = opt.help ? 5 : 3;
         const tick = Math.min(18, Math.max(8, geo.cell * 0.5));
         if (l.axis === 'x') {
@@ -8387,11 +8462,17 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       if (isHelp) {
         if (l.axis === 'x') svg('line', { x1: pl.X(l.a), y1: pl.Y(l.at), x2: pl.X(l.b), y2: pl.Y(l.at), stroke: HELP, 'stroke-width': 7 }, g);
         else svg('line', { x1: pl.X(l.at), y1: pl.Y(l.a), x2: pl.X(l.at), y2: pl.Y(l.b), stroke: HELP, 'stroke-width': 7 }, g);
+      } else if (l.kind !== 'dim' && l.at != null) {
+        // 「?」の 辺を 黄色で なぞる（小さい だんで「?」が ならんでも、どの 辺の 長さか わかるように）
+        const inset = Math.min(3, geo.cell * 0.15);
+        if (l.axis === 'x') svg('line', { x1: pl.X(l.a) + inset, y1: pl.Y(l.at), x2: pl.X(l.b) - inset, y2: pl.Y(l.at), stroke: '#f2c230', 'stroke-width': 6 }, g);
+        else svg('line', { x1: pl.X(l.at), y1: pl.Y(l.a) - inset, x2: pl.X(l.at), y2: pl.Y(l.b) + inset, stroke: '#f2c230', 'stroke-width': 6 }, g);
       }
       // 寸法線の「?」は 線も引く（どこの長さが わからないのか 見えるように）
       if (l.kind === 'dim' && l.at != null) {
-        const tick = Math.min(18, Math.max(8, geo.cell * 0.5));
         const col = isHelp ? HELP : '#8c877a';
+        drawExt(pl, l, g, col);
+        const tick = Math.min(18, Math.max(8, geo.cell * 0.5));
         if (l.axis === 'x') {
           const y = pl.Y(l.at), xa = pl.X(l.a), xb = pl.X(l.b);
           svg('line', { x1: xa, y1: y, x2: xb, y2: y, stroke: col, 'stroke-width': 3, 'stroke-dasharray': '6 4' }, g);
@@ -9462,13 +9543,21 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     return lines.join('　');
   }
 
+  // 図形の 中に 方眼を 引くのは、マスを 数える 問題（タイルを おく・4階まで）だけ。公式で とく 図は 中を ぬりつぶす
+  function countable(q) {
+    if (q.figure && q.figure.interaction === 'tiles') return true;
+    let fl = 99;
+    try { fl = MT.Bank.get(q.templateId).floor; } catch (e) { /* 地下など */ }
+    return fl <= 4;
+  }
+
   function figuresModel(q) {
     if (q.tilingDemo) return { tilingDemo: true };
     if (q.figures && q.figures.length) {
       const n = q.figures.length;
-      return { figures: q.figures, names: n === 2 ? ['左', '右'] : n === 3 ? ['左', 'まん中', '右'] : q.figures.map(function (f, i) { return String(i + 1); }) };
+      return { figures: q.figures, innerGrid: countable(q), names: n === 2 ? ['左', '右'] : n === 3 ? ['左', 'まん中', '右'] : q.figures.map(function (f, i) { return String(i + 1); }) };
     }
-    if (q.figure) return { figures: [q.figure] };
+    if (q.figure) return { figures: [q.figure], innerGrid: countable(q) };
     return null;
   }
 
@@ -10247,7 +10336,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     left.appendChild(wrap);
     let model = null;
     if (guide) {
-      model = { figures: [q.figure], showHidden: true, partColors: MT.Board.GUIDE_FILLS, lines: guide.lines };
+      model = { figures: [q.figure], showHidden: true, partColors: MT.Board.GUIDE_FILLS, lines: guide.lines, innerGrid: false };
       if (parts.length) model.parts = parts;
       const cs = Guide.currentStep(guide);
       if (cs && cs.part != null) model.activePart = cs.part;
