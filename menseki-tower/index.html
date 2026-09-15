@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260915-77315 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260915-10763 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -566,6 +566,33 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 .admin-q.head { color: #ffd37c; }
 .admin-q .id { font-size: 12px; color: #9fc4ef; }
 .admin-fab { position: absolute; left: 50%; top: 4px; transform: translateX(-50%); z-index: 60; background: #7b60a9; color: #fbf9f2; border: 2px solid #fbf9f2; box-shadow: 2px 2px 0 #1e1d2a; padding: 0 12px; min-height: 30px; font-size: 13px; cursor: pointer; font-family: inherit; }
+.admin-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 10px; padding-bottom: 10px; border-bottom: 2px solid #2f3f75; }
+.admin-tabs .admin-btn { font-size: 16px; min-height: 44px; }
+.adm-ctrl { margin-top: 8px; align-items: center; }
+.adm-sep { width: 10px; }
+.adm-title { display: flex; flex-wrap: wrap; gap: 14px; align-items: baseline; margin: 14px 0 6px; font-size: 18px; color: #ffd37c; }
+.adm-status { font-size: 15px; color: #9fc4ef; }
+.adm-status.bad { color: #ff8a73; }
+.adm-grid { display: grid; gap: 12px; align-items: start; }
+.adm-card { background: #1f2a4a; border: 3px solid #2f3f75; padding: 6px; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.adm-card.bad { border-color: #e2553f; }
+.adm-card.warn { border-color: #f4a23c; }
+.adm-card-head { font-size: 14px; color: #ffd37c; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+.adm-card-head .id { font-size: 11px; color: #9fc4ef; }
+.adm-thumb { position: relative; overflow: hidden; background: #0d1226; cursor: zoom-in; }
+.adm-frame { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; pointer-events: none; background: #141b33; }
+.adm-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #9fc4ef; font-size: 13px; }
+.adm-card-body { display: flex; flex-direction: column; gap: 3px; }
+.adm-prompt { font-size: 13px; line-height: 1.45; color: #f2efe6; }
+.adm-ans { font-size: 13px; color: #b8f0c0; }
+.adm-line { font-size: 12px; line-height: 1.4; color: #ffd9cf; word-break: break-all; }
+.adm-badge { display: inline-block; font-size: 12px; padding: 0 6px; margin-right: 6px; background: #b8321f; color: #fff; }
+.adm-badge.w { background: #b8680f; }
+.adm-card-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.adm-card-btns .admin-btn { min-height: 34px; font-size: 13px; }
+.adm-big-back { position: absolute; inset: 0; z-index: 70; background: rgba(8, 10, 20, 0.88); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.adm-big-box { position: relative; overflow: hidden; border: 2px solid #ffd37c; background: #141b33; }
+.adm-big-bar { display: flex; flex-wrap: wrap; gap: 8px; }
 .admin-answer { position: absolute; left: 50%; top: 38px; transform: translateX(-50%); z-index: 59; background: rgba(123, 96, 169, 0.95); color: #fff; border: 2px solid #fbf9f2; padding: 2px 12px; font-size: 14px; pointer-events: none; max-width: 70vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* 動きを へらす設定の端末では アニメを止める（出てくる前の 見えない状態で 止まらないように） */
@@ -8399,7 +8426,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         const isHelp = helpIds[l.axis + ':' + l.a + '-' + l.b + ':' + (l.at0 != null ? l.at0 : l.at)];
         const base = !it.hid && l.kind === 'dim' && l.side ? DIM_COLORS[dimNo++ % DIM_COLORS.length] : DIM;
         if (!it.hid) { drawLabel(pl, l, labelText(l, unit), isHelp ? HELP : base, { help: isHelp, lit: primary && lit(l) }); return; }
-        const show = model.showHidden || (primary && lit(l));
+        // かくした 寸法線（辺では ない 長さ）は「?」を 出さない。ただの「書いていない 長さ」で、出すと 線だらけに なる（本人の指摘 2026-09-15）
+        const show = (primary && lit(l)) || (model.showHidden && (l.kind !== 'dim' || isHelp));
         if (show) drawHidden(pl, l, isHelp);
       });
       if (spec.areaText) tag((pl.X(b.x1) + pl.X(b.x2)) / 2, (pl.Y(b.y1) + pl.Y(b.y2)) / 2, spec.areaText, { fs: Math.max(13, Math.min(geo.fs, 26)) });
@@ -9316,7 +9344,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const logo = h('div', { class: 'logo' });
     // ロゴを 7回 つづけて タップすると 管理者画面（先生の 確認用）
     let taps = 0, tapAt = 0;
-    logo.addEventListener('click', function () { const now = Date.now(); taps = now - tapAt < 1500 ? taps + 1 : 1; tapAt = now; if (taps >= 7) { taps = 0; ctx.go('admin'); } });
+    logo.addEventListener('click', function () { const now = Date.now(); taps = now - tapAt < 1500 ? taps + 1 : 1; tapAt = now; if (taps >= 7) { taps = 0; if (UI.adminOn) UI.adminOn(); ctx.go('admin'); } });
     logo.appendChild(document.createTextNode('面積'));
     logo.appendChild(h('span', { class: 'no', plain: 'の' }));
     logo.appendChild(document.createTextNode('塔'));
@@ -11239,9 +11267,10 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
 
 /* 面積の塔: 管理者画面（先生・作る人の 確認用。子どもには 見せない）
- * ひらき方: ホームの ロゴを 7回 つづけて タップ
- * ここから 始める プレイは「ためしプレイ」。べつの 保存（メモリ）で 動くので、子どもの きろくは かわらない。
- * 「ためしプレイを おわる」で もとの きろくに もどる（ページを 読みこみなおしても もどる）。
+ * ひらき方: ホームの ロゴを 7回 つづけて タップ → この 端末は「管理者モード」に なる（読みこみなおしても つづく）。
+ *   管理者モードの あいだは どの 画面にも「管理」ボタンが 出る。「管理者モードを おわる」で ふつうの 画面に もどる。
+ * ためしプレイ: べつの 保存（mensekiTower.admin:…）で 動くので、子どもの きろくは かわらない。読みこみなおしても つづく。
+ * 問題の 一覧: 階ごとに 問題の 画面を 小さく ならべる（本物の 画面を 小さな 窓で 動かす）。エラーは 赤、はみ出しは だいだいの わく。
  */
 (function (root) {
   'use strict';
@@ -11250,13 +11279,51 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   const h = UI.h;
   UI.screens = UI.screens || {};
 
-  function range(a, b) { const out = []; for (let i = a; i <= b; i += 1) out.push(i); return out; }
+  const K_MODE = 'mensekiTower.admin';          // 'on' = 管理者モード
+  const K_PLAY = 'mensekiTower.admin.play';     // '1' = ためしプレイ中
+  const K_ANS = 'mensekiTower.admin.answer';    // '0' = こたえを 出さない
+  const SLOT = 'mensekiTower.admin:';           // ためしプレイの 保存（子どもの きろくの 名前の 前に つける）
 
-  // ためしプレイ用の エンジン。その階の 手前まで クリアした ことにする
+  function range(a, b) { const out = []; for (let i = a; i <= b; i += 1) out.push(i); return out; }
+  function uniq(list) { return list.filter(function (x, i, a) { return a.indexOf(x) === i; }); }
+  function lsGet(k) { try { return root.localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { if (v == null) root.localStorage.removeItem(k); else root.localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
+
+  let slotMem = null;
+  function slot() {
+    try { root.localStorage.setItem(SLOT + 'probe', '1'); root.localStorage.removeItem(SLOT + 'probe'); } catch (e) { return slotMem || (slotMem = MT.Progress.memoryStorage()); }
+    return {
+      getItem: function (k) { return root.localStorage.getItem(SLOT + k); },
+      setItem: function (k, v) { root.localStorage.setItem(SLOT + k, v); },
+      removeItem: function (k) { root.localStorage.removeItem(SLOT + k); }
+    };
+  }
+
+  UI.adminMode = {
+    on: function () { return lsGet(K_MODE) === 'on'; },
+    set: function (v) {
+      lsSet(K_MODE, v ? 'on' : null);
+      if (!v) { lsSet(K_PLAY, null); lsSet(K_ANS, null); try { slot().removeItem(MT.Progress.STORAGE_KEY); } catch (e) { /* ignore */ } }
+    },
+    playing: function () { return lsGet(K_PLAY) === '1'; },
+    setPlaying: function (v) { lsSet(K_PLAY, v ? '1' : null); },
+    showAnswer: function () { return lsGet(K_ANS) !== '0'; },
+    setShowAnswer: function (v) { lsSet(K_ANS, v ? null : '0'); },
+    // ためしプレイの つづき（なければ null）
+    resumeEngine: function () {
+      const s = slot();
+      if (!s.getItem(MT.Progress.STORAGE_KEY)) return null;
+      const E = MT.Engine.create({ storage: s, seed: 'admin' + Date.now() });
+      E.resume();
+      return E;
+    }
+  };
+
+  // ためしプレイ用の エンジン。その階の 手前まで クリアした ことにする（mem: 小さい 窓の 中だけで 使う 保存）
   function sandbox(floor, o) {
     const opts = o || {};
     const P = MT.Progress;
-    const s = P.memoryStorage();
+    const s = opts.mem ? P.memoryStorage() : slot();
     const p = P.create('せんせい');
     p.howSeen = true;
     const f = Math.max(1, Math.min(15, floor));
@@ -11284,20 +11351,21 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     return String(Number(q.answer) + 1);
   }
 
-  function startFloor(n, intro) {
-    const E = sandbox(n, { intro: intro }).engine;
+  function startFloor(n, intro, o) {
+    const E = sandbox(n, Object.assign({}, o, { intro: intro })).engine;
     E.startFloor();
     return E;
   }
 
-  // えらんだ 問題 1問だけの 10問（1問）にする。toRetry なら まちがえて まちがい直しへ
-  function onlyQuestion(n, item, toRetry) {
-    const sb = sandbox(n);
+  // えらんだ 問題 1問だけの 回にする。toRetry なら まちがえて まちがい直しへ
+  function onlyQuestion(n, item, toRetry, o) {
+    const opts = o || {};
+    const sb = sandbox(n, opts);
     let E = sb.engine;
     E.startFloor();
     if (E.phase() === 'intro') E.finishIntro('100');
     const p = E.progress();
-    p.session.items = [{ templateId: item.t, seed: 1 + Math.floor(Math.random() * 999999), params: item.p || {}, role: 'own' }];
+    p.session.items = [{ templateId: item.t, seed: opts.seed || 1 + Math.floor(Math.random() * 999999), params: item.p || {}, role: 'own' }];
     p.session.index = 0;
     p.session.answers = [];
     sb.storage.setItem(MT.Progress.STORAGE_KEY, JSON.stringify(p));
@@ -11310,8 +11378,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     return E;
   }
 
-  function floorAllWrong(n, toRetry) {
-    const E = sandbox(n).engine;
+  function floorAllWrong(n, toRetry, o) {
+    const E = sandbox(n, o).engine;
     E.startFloor();
     if (E.phase() === 'intro') E.finishIntro('100');
     let g = 0;
@@ -11320,78 +11388,333 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     return E;
   }
 
-  function startUg(n) {
-    const E = sandbox(15, { ug: n }).engine;
+  function startUg(n, o) {
+    const E = sandbox(15, Object.assign({}, o, { ug: n })).engine;
     E.startUnderground();
     return E;
   }
 
+  // 小さい 窓（問題の 一覧）の 中で 動かす エンジン
+  function previewEngine(sp) {
+    const o = { mem: true, seed: sp.seed };
+    if (sp.k === 'ug') return startUg(sp.n, o);
+    return onlyQuestion(sp.f, { t: sp.t, p: sp.p }, !!sp.r, o);
+  }
+
+  // 小さい 窓の 中身を そのまま ためしプレイに（同じ 数・同じ 画面から）
+  function playProgress(json, view) {
+    const s = slot();
+    s.setItem(MT.Progress.STORAGE_KEY, json);
+    const E = MT.Engine.create({ storage: s, seed: 'admin' + Date.now() });
+    E.resume();
+    UI.adminEnter(E, view);
+  }
+
   // 開発用ページの ?act= からも 使う
-  UI.adminApi = { sandbox: sandbox, startFloor: startFloor, startUg: startUg, onlyQuestion: onlyQuestion, floorAllWrong: floorAllWrong };
+  UI.adminApi = { sandbox: sandbox, startFloor: startFloor, startUg: startUg, onlyQuestion: onlyQuestion, floorAllWrong: floorAllWrong, previewEngine: previewEngine, playProgress: playProgress };
+
+  // ---------------- 問題の 一覧（小さい 窓） ----------------
+  // この ページ自身の HTML（画面の 部品を のぞく）。窓の 中で もう一度 動かす
+  let srcCache = null;
+  function pageSource() {
+    if (srcCache) return srcCache;
+    const clone = document.documentElement.cloneNode(true);
+    const body = clone.querySelector('body');
+    Array.prototype.slice.call(body.children).forEach(function (n) { if (n.tagName !== 'SCRIPT') body.removeChild(n); });
+    const app = document.createElement('div');
+    app.id = 'app';
+    body.insertBefore(app, body.firstChild);
+    srcCache = '<!DOCTYPE html>\n' + clone.outerHTML;
+    return srcCache;
+  }
+
+  function makeFrame(spec, vw, vh, scale, done) {
+    const ifr = document.createElement('iframe');
+    ifr.className = 'adm-frame';
+    ifr.setAttribute('tabindex', '-1');
+    ifr.setAttribute('aria-hidden', 'true');
+    ifr.name = 'mt-preview:' + JSON.stringify(spec);
+    ifr.style.width = vw + 'px';
+    ifr.style.height = vh + 'px';
+    ifr.style.transform = 'scale(' + scale + ')';
+    let fired = false;
+    const fin = function () { if (fired) return; fired = true; setTimeout(function () { done(ifr); }, 350); };
+    ifr.addEventListener('load', fin);
+    setTimeout(fin, 12000);
+    ifr.srcdoc = pageSource();
+    return ifr;
+  }
+
+  // 窓の 中の ようすを 読む: いまの 問題・エラー・はみ出し（はみ出しは 全画面の 点検と 同じ 見方）
+  function inspect(ifr) {
+    const out = { q: null, err: '', ovf: [], progress: null };
+    try {
+      const w = ifr.contentWindow;
+      const d = ifr.contentDocument;
+      const E = w.MT && w.MT.app && w.MT.app.engine;
+      if (E) {
+        const ph = E.phase();
+        out.q = ph === 'underground-session' ? E.undergroundQuestion() : ph === 'retry' ? (E.retryView() || {}).question : ph === 'session' ? E.currentQuestion() : null;
+        out.progress = JSON.stringify(E.progress());
+      }
+      const eb = d.querySelector('.error-box');
+      if (eb) out.err = ((eb.querySelector('.mini') || eb).textContent || '').slice(0, 240);
+      if (!out.err && w.__mtErrors && w.__mtErrors.length) out.err = String(w.__mtErrors[0]).slice(0, 240);
+      const W = w.innerWidth, H = w.innerHeight;
+      d.querySelectorAll('.q-right,.q-left,.todo-list,.choices,.order-list,.res-list,.fill-rows').forEach(function (e) { if (e.scrollHeight > e.clientHeight + 4) out.ovf.push(String(e.className).split(' ')[0]); });
+      d.querySelectorAll('.answer-btn,.big-btn,.key,.choice-btn,.floor-label,.head-tag').forEach(function (e) { const r = e.getBoundingClientRect(); if (r.width && (r.bottom > H + 1 || r.right > W + 1 || r.left < -1)) out.ovf.push(String(e.className).split(' ')[0]); });
+      out.ovf = uniq(out.ovf);
+    } catch (e) { out.err = out.err || String(e && e.message || e); }
+    return out;
+  }
+
+  // 窓は 2つずつ 読みこむ（いっぺんに 開くと 重い）
+  const queue = [];
+  let running = 0;
+  function pump() {
+    while (running < 2 && queue.length) {
+      const job = queue.shift();
+      if (!job.alive()) continue;
+      running += 1;
+      job.run(function () { running -= 1; pump(); });
+    }
+  }
+
+  function floorItems(n) {
+    const f = MT.Floors.get(n);
+    const seen = {};
+    const out = [];
+    ((f && f.own) || []).forEach(function (it, i) {
+      const key = it.t + JSON.stringify(it.p || {});
+      if (seen[key]) { seen[key].times += 1; return; }
+      seen[key] = { k: 'q', f: n, t: it.t, p: it.p || {}, core: !!it.core, no: i + 1, times: 1 };
+      out.push(seen[key]);
+    });
+    return out;
+  }
+  function ugItems(a, b) {
+    return range(a, b).map(function (n) {
+      const u = (MT.Underground.FLOORS || []).filter(function (x) { return x.no === n; })[0];
+      return { k: 'ug', n: n, name: u ? u.name : '' };
+    });
+  }
+
+  function makeStats(el, total) {
+    const got = {};
+    function upd() {
+      const vals = Object.keys(got).map(function (k) { return got[k]; });
+      const nErr = vals.filter(function (v) { return v.err; }).length;
+      const nOvf = vals.filter(function (v) { return !v.err && v.ovf.length; }).length;
+      el.textContent = '見た ' + vals.length + '／' + total + (nErr ? '　エラー ' + nErr : '') + (nOvf ? '　はみ出し ' + nOvf : '') + (vals.length === total && !nErr && !nOvf ? '　ぜんぶ OK' : '');
+      el.classList.toggle('bad', nErr > 0);
+    }
+    upd();
+    return { update: function (k, info) { got[k] = info; upd(); } };
+  }
+
+  function mkBtn(label, fn, cls) { return h('button', { class: 'admin-btn' + (cls ? ' ' + cls : ''), type: 'button', onclick: fn }, [label]); }
+
+  // 大きく 見る（同じ 数の 窓を 大きく）
+  function openBig(spec, onPlay) {
+    const app = document.getElementById('app');
+    const vw = root.innerWidth, vh = root.innerHeight;
+    const s = Math.min(0.9, (vh - 64) / vh);
+    let info = null;
+    const back = h('div', { class: 'adm-big-back' });
+    const box = h('div', { class: 'adm-big-box', style: 'width:' + Math.floor(vw * s) + 'px;height:' + Math.floor(vh * s) + 'px' });
+    box.appendChild(makeFrame(spec, vw, vh, s, function (ifr) { if (ifr.isConnected) info = inspect(ifr); }));
+    const close = function () { if (back.parentNode) back.parentNode.removeChild(back); };
+    back.appendChild(box);
+    back.appendChild(h('div', { class: 'adm-big-bar' }, [
+      mkBtn('この 画面から ためしプレイ', function () { close(); onPlay(info); }, 'on'),
+      mkBtn('とじる', close)
+    ]));
+    back.addEventListener('click', function (ev) { if (ev.target === back) close(); });
+    app.appendChild(back);
+  }
+
+  function card(ctx, it, mode, geo, stats, scr) {
+    const st = ctx.state;
+    const seeds = st.adminSeeds || (st.adminSeeds = {});
+    const retry = mode === 'retry' && it.k !== 'ug';
+    const key = (it.k === 'ug' ? 'ug' + it.n : it.f + ':' + it.t + ':' + JSON.stringify(it.p)) + (retry ? ':r' : '');
+    if (!seeds[key]) seeds[key] = 1 + Math.floor(Math.random() * 999999);
+    const spec = function () { return it.k === 'ug' ? { k: 'ug', n: it.n, seed: seeds[key] } : { k: 'q', f: it.f, t: it.t, p: it.p, r: retry, seed: seeds[key] }; };
+    let info = null;
+    const params = it.k !== 'ug' && Object.keys(it.p).length ? ' ' + JSON.stringify(it.p) : '';
+    const head = it.k === 'ug'
+      ? h('div', { class: 'adm-card-head' }, [h('span', { plain: 'B' + it.n + ' ' + it.name })])
+      : h('div', { class: 'adm-card-head' }, [h('span', { plain: it.no + '. ' + MT.Titles.title(it.t) + (it.core ? '（核）' : '') + (it.times > 1 ? ' ×' + it.times : '') }), h('span', { class: 'id', plain: it.t + params })]);
+    const thumb = h('div', { class: 'adm-thumb', style: 'width:' + geo.w + 'px;height:' + geo.h + 'px' }, [h('div', { class: 'adm-loading', plain: '…' })]);
+    thumb.title = '大きく 見る';
+    const body = h('div', { class: 'adm-card-body' });
+    const play = function () {
+      st.adminScroll = scr.scrollTop;
+      if (info && info.progress) { playProgress(info.progress); return; }
+      if (it.k === 'ug') UI.adminEnter(startUg(it.n));
+      else UI.adminEnter(onlyQuestion(it.f, { t: it.t, p: it.p }, retry, { seed: seeds[key] }));
+    };
+    thumb.addEventListener('click', function () { openBig(spec(), function (bigInfo) { st.adminScroll = scr.scrollTop; if (bigInfo && bigInfo.progress) playProgress(bigInfo.progress); else play(); }); });
+    const el = h('div', { class: 'adm-card' }, [head, thumb, body, h('div', { class: 'adm-card-btns' }, [
+      mkBtn(retry ? 'まちがい直しを ためす' : 'ためしプレイ', play),
+      mkBtn('べつの 数', function () { seeds[key] = 1 + Math.floor(Math.random() * 999999); load(); })
+    ])]);
+    function show() {
+      body.innerHTML = '';
+      el.classList.toggle('bad', !!info.err);
+      el.classList.toggle('warn', !info.err && info.ovf.length > 0);
+      if (info.err) body.appendChild(h('div', { class: 'adm-line' }, [h('span', { class: 'adm-badge', plain: 'エラー' }), h('span', { class: 'adm-err', plain: info.err })]));
+      if (info.ovf.length) body.appendChild(h('div', { class: 'adm-line' }, [h('span', { class: 'adm-badge w', plain: 'はみ出し' }), h('span', { class: 'adm-err', plain: info.ovf.join(' ') })]));
+      if (info.q) {
+        body.appendChild(h('div', { class: 'adm-prompt', plain: String(info.q.prompt || '') }));
+        body.appendChild(h('div', { class: 'adm-ans', plain: 'こたえ： ' + UI.adminAnswerText(info.q) }));
+      }
+      stats.update(key, info);
+    }
+    function load() {
+      info = null;
+      thumb.innerHTML = '';
+      thumb.appendChild(h('div', { class: 'adm-loading', plain: '読みこみ中…' }));
+      queue.push({
+        alive: function () { return el.isConnected; },
+        run: function (next) {
+          thumb.appendChild(makeFrame(spec(), geo.vw, geo.vh, geo.s, function (ifr) {
+            if (ifr.isConnected) {
+              info = inspect(ifr);
+              const ld = thumb.querySelector('.adm-loading');
+              if (ld) thumb.removeChild(ld);
+              show();
+            }
+            next();
+          }));
+        }
+      });
+      pump();
+    }
+    el._load = load;
+    return el;
+  }
+
+  function listTab(ctx, scr) {
+    const st = ctx.state;
+    const sel = st.adminList || '12';
+    const isUg = sel.indexOf('ug') === 0;
+    const mode = isUg ? 'q' : (st.adminListMode || 'q');
+    const cols = st.adminCols || 3;
+    const go = function (patch) { return function () { Object.assign(st, patch); ctx.render(); }; };
+
+    scr.appendChild(h('div', { class: 'admin-row' }, range(1, 14).map(function (n) { return mkBtn(n + '階', go({ adminList: String(n) }), sel === String(n) ? 'on' : ''); })
+      .concat([['ug1', 'B1〜B10'], ['ug2', 'B11〜B20'], ['ug3', 'B21〜B30']].map(function (u) { return mkBtn(u[1], go({ adminList: u[0] }), sel === u[0] ? 'on' : ''); }))));
+
+    const status = h('span', { class: 'adm-status' });
+    const f = isUg ? 0 : Number(sel);
+    scr.appendChild(h('div', { class: 'admin-row adm-ctrl' }, [
+      mkBtn('問題', go({ adminListMode: 'q' }), mode === 'q' ? 'on' : ''),
+      isUg ? null : mkBtn('まちがい直し', go({ adminListMode: 'retry' }), mode === 'retry' ? 'on' : ''),
+      h('span', { class: 'adm-sep' }),
+      mkBtn('小', go({ adminCols: 4 }), cols === 4 ? 'on' : ''),
+      mkBtn('中', go({ adminCols: 3 }), cols === 3 ? 'on' : ''),
+      mkBtn('大', go({ adminCols: 2 }), cols === 2 ? 'on' : ''),
+      h('span', { class: 'adm-sep' }),
+      mkBtn('ぜんぶ べつの 数で', go({ adminSeeds: {} })),
+      isUg ? null : mkBtn('この階を ぜんぶ まちがえて 結果へ', function () { UI.adminEnter(floorAllWrong(f, false)); }),
+      isUg ? null : mkBtn('ぜんぶ まちがえて まちがい直しへ', function () { UI.adminEnter(floorAllWrong(f, true)); })
+    ]));
+
+    const items = isUg ? (sel === 'ug1' ? ugItems(1, 10) : sel === 'ug2' ? ugItems(11, 20) : ugItems(21, 30)) : floorItems(f);
+    const floor = isUg ? null : MT.Floors.get(f);
+    scr.appendChild(h('div', { class: 'adm-title' }, [
+      h('span', { plain: isUg ? '地下 ' + items[0].n + '〜' + items[items.length - 1].n : f + '階 ' + (floor ? floor.name : '') + '（1回 ' + (floor ? floor.count : '') + '問・問題の 種類 ' + items.length + '）' }),
+      status
+    ]));
+    const stats = makeStats(status, items.length);
+
+    const vw = root.innerWidth, vh = root.innerHeight;
+    const avail = Math.max(300, vw - 64);
+    const w = Math.floor((avail - (cols - 1) * 12) / cols);
+    const geo = { vw: vw, vh: vh, s: w / vw, w: w, h: Math.round(vh * w / vw) };
+    const grid = h('div', { class: 'adm-grid', style: 'grid-template-columns:repeat(' + cols + ',' + w + 'px)' });
+    const cards = items.map(function (it) { return card(ctx, it, mode, geo, stats, scr); });
+    cards.forEach(function (c) { grid.appendChild(c); });
+    scr.appendChild(grid);
+    scr.appendChild(h('p', { class: 'admin-note', plain: '小さい 画面を おすと 大きく 見られる。「ためしプレイ」は その 画面の まま はじまる（管理ボタンで ここに もどる）。窓は 本物の 画面を 小さく 動かして いるので、エラー（赤）・はみ出し（だいだい）も そのまま わかる。' }));
+
+    // 見えている ものから 読みこむ
+    if (typeof root.IntersectionObserver === 'function') {
+      const io = new root.IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting && en.target._load) { const fn = en.target._load; en.target._load = null; io.unobserve(en.target); fn(); } });
+      }, { root: scr, rootMargin: '400px 0px' });
+      cards.forEach(function (c) { io.observe(c); });
+    } else {
+      cards.forEach(function (c) { c._load(); });
+    }
+  }
+
+  function playTab(ctx, scr) {
+    const enter = function (E, view) { UI.adminEnter(E, view); };
+    scr.appendChild(h('h2', { plain: '階から はじめる' }));
+    scr.appendChild(h('div', { class: 'admin-row' }, range(1, 14).map(function (n) { return mkBtn(n + '階', function () { enter(startFloor(n)); }); }).concat([
+      mkBtn('8階（導入から）', function () { enter(startFloor(8, true)); }),
+      mkBtn('9階（導入から）', function () { enter(startFloor(9, true)); }),
+      mkBtn('屋上', function () { enter(startFloor(15)); })
+    ])));
+    scr.appendChild(h('h2', { plain: '地下' }));
+    scr.appendChild(h('div', { class: 'admin-row' }, range(1, 30).map(function (n) { return mkBtn('B' + n, function () { enter(startUg(n)); }); })));
+    scr.appendChild(h('h2', { plain: '画面' }));
+    scr.appendChild(h('div', { class: 'admin-row' }, [
+      mkBtn('結果（12階 ぜんぶ まちがい）', function () { enter(floorAllWrong(12, false)); }),
+      mkBtn('屋上（宝箱）', function () { enter(startFloor(15)); }),
+      mkBtn('地下クリア', function () { enter(startUg(31)); }),
+      mkBtn('エンディング', function () { enter(startUg(31), 'ending'); }),
+      mkBtn('番人ずかん', function () { enter(startUg(31), 'zukan'); }),
+      mkBtn('ホーム（すべて クリア）', function () { const E = startUg(31); E.goMap(); enter(E); }),
+      mkBtn('あそびかた', function () { UI.openHow(null); })
+    ]));
+  }
 
   UI.screens.admin = function (ctx) {
     const st = ctx.state;
     UI.noBg();
     const app = document.getElementById('app');
     if (st.adminShowAnswer == null) st.adminShowAnswer = true;
-    const selFloor = st.adminFloor || 12;
-    const enter = function (E, view) { UI.adminEnter(E, view); };
-    const btn = function (label, fn, cls) { return h('button', { class: 'admin-btn' + (cls ? ' ' + cls : ''), type: 'button', onclick: fn }, [label]); };
-
+    const tab = st.adminTab || 'list';
     const scr = h('div', { class: 'screen admin-screen' });
+
+    const ansLabel = function () { return st.adminShowAnswer ? 'こたえを 表示：ON' : 'こたえを 表示：OFF'; };
+    const ansBtn = mkBtn(ansLabel(), function () {
+      st.adminShowAnswer = !st.adminShowAnswer;
+      UI.adminMode.setShowAnswer(st.adminShowAnswer);
+      ansBtn.textContent = ansLabel();
+      ansBtn.classList.toggle('on', st.adminShowAnswer);
+    }, st.adminShowAnswer ? 'on' : '');
+    // まちがえて おさないように 2回 おして おわる
+    let offArmed = false;
+    const offBtn = mkBtn('管理者モードを おわる', function () {
+      if (!offArmed) { offArmed = true; offBtn.textContent = 'もう一度 おすと おわる（管理ボタンが きえる）'; return; }
+      UI.adminOff();
+    }, 'warn');
+
     scr.appendChild(h('div', { class: 'admin-head' }, [
       h('span', { class: 't', plain: '管理者画面' }),
-      h('span', { class: 'admin-note', plain: st.admin ? 'いまは ためしプレイ中（子どもの きろくは そのまま）' : 'ここから 始めると ためしプレイ（子どもの きろくは かわらない）' }),
+      h('span', { class: 'admin-note', plain: st.admin ? 'いまは ためしプレイ中（子どもの きろくは そのまま）' : 'いまは 子どもの きろく。ためしプレイは べつの 保存で 動く' }),
       h('span', { style: 'flex:1' }),
-      btn(st.adminShowAnswer ? 'こたえを 表示：ON' : 'こたえを 表示：OFF', function () { st.adminShowAnswer = !st.adminShowAnswer; ctx.render(); }, st.adminShowAnswer ? 'on' : ''),
-      st.admin ? btn('ためしプレイを おわる（もとの きろくへ）', function () { UI.adminExit(); }, 'warn') : null,
-      btn('とじる', function () { st.view = null; ctx.render(); })
+      ansBtn,
+      st.admin ? mkBtn('子どもの きろくに もどる', function () { UI.adminExit(); }) : null,
+      offBtn,
+      mkBtn('とじる', function () { st.view = null; ctx.render(); })
+    ]));
+    scr.appendChild(h('div', { class: 'admin-tabs' }, [
+      mkBtn('問題の 一覧（画面を ならべて 見る）', function () { st.adminTab = 'list'; ctx.render(); }, tab === 'list' ? 'on' : ''),
+      mkBtn('階・地下・画面から はじめる', function () { st.adminTab = 'play'; ctx.render(); }, tab === 'play' ? 'on' : '')
     ]));
 
-    scr.appendChild(h('h2', { plain: '階から はじめる' }));
-    scr.appendChild(h('div', { class: 'admin-row' }, range(1, 14).map(function (n) { return btn(n + '階', function () { enter(startFloor(n)); }); }).concat([
-      btn('8階（導入から）', function () { enter(startFloor(8, true)); }),
-      btn('9階（導入から）', function () { enter(startFloor(9, true)); }),
-      btn('屋上', function () { enter(startFloor(15)); })
-    ])));
-
-    scr.appendChild(h('h2', { plain: '地下' }));
-    scr.appendChild(h('div', { class: 'admin-row' }, range(1, 30).map(function (n) { return btn('B' + n, function () { enter(startUg(n)); }); })));
-
-    scr.appendChild(h('h2', { plain: '問題を えらぶ（1問だけ出す ／ まちがえて まちがい直しへ）' }));
-    scr.appendChild(h('div', { class: 'admin-row' }, range(1, 14).map(function (n) { return btn(n + '階', function () { st.adminFloor = n; ctx.render(); }, n === selFloor ? 'on' : ''); })));
-    const floor = MT.Floors.get(selFloor);
-    const list = h('div', { class: 'admin-list' });
-    list.appendChild(h('div', { class: 'admin-q head' }, [
-      h('span', { plain: selFloor + '階 ' + (floor ? floor.name : '') + '（' + (floor ? floor.count : '') + '問）' }),
-      btn('この階を ぜんぶ まちがえて 結果へ', function () { enter(floorAllWrong(selFloor, false)); }),
-      btn('ぜんぶ まちがえて まちがい直しへ', function () { enter(floorAllWrong(selFloor, true)); })
-    ]));
-    ((floor && floor.own) || []).forEach(function (item, i) {
-      const params = item.p && Object.keys(item.p).length ? ' ' + JSON.stringify(item.p) : '';
-      list.appendChild(h('div', { class: 'admin-q' }, [
-        h('span', {}, [h('span', { plain: (i + 1) + '. ' + MT.Titles.title(item.t) + (item.core ? '（核）' : '') }), h('span', { class: 'id', plain: '  ' + item.t + params })]),
-        btn('出す', function () { enter(onlyQuestion(selFloor, item, false)); }),
-        btn('まちがえて 解説へ', function () { enter(onlyQuestion(selFloor, item, true)); })
-      ]));
-    });
-    scr.appendChild(list);
-
-    scr.appendChild(h('h2', { plain: '画面' }));
-    scr.appendChild(h('div', { class: 'admin-row' }, [
-      btn('結果（12階 ぜんぶ まちがい）', function () { enter(floorAllWrong(12, false)); }),
-      btn('屋上（宝箱）', function () { enter(startFloor(15)); }),
-      btn('地下クリア', function () { enter(startUg(31)); }),
-      btn('エンディング', function () { enter(startUg(31), 'ending'); }),
-      btn('番人ずかん', function () { enter(startUg(31), 'zukan'); }),
-      btn('ホーム（すべて クリア）', function () { const E = startUg(31); E.goMap(); enter(E); }),
-      btn('あそびかた', function () { UI.openHow(null); })
-    ]));
-    scr.appendChild(h('p', { class: 'admin-note', plain: '「管理」ボタン（画面の 上の まん中）で いつでも ここに もどれる。こたえの 表示は ためしプレイ中だけ 出る。' }));
+    if (tab === 'play') playTab(ctx, scr);
+    else listTab(ctx, scr);
     app.appendChild(scr);
+    if (st.adminScroll) { const y = st.adminScroll; st.adminScroll = 0; root.requestAnimationFrame(function () { scr.scrollTop = y; }); }
   };
 
-  // 問題の こたえを 1行で（管理者の ためしプレイで 画面の 上に 出す）
+  // 問題の こたえを 1行で（管理者の ためしプレイと 一覧で 出す）
   UI.adminAnswerText = function (q, step, finalChoiceNow) {
     if (!q) return '';
     if (finalChoiceNow && q.finalChoice) { const c = (q.finalChoice.choices || []).filter(function (x) { return x.id === q.finalChoice.answer; })[0]; return c ? c.text : ''; }
@@ -11411,15 +11734,31 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   'use strict';
   const MT = root.MT;
   const UI = MT.UI;
+  // 管理者画面の 問題の 一覧の 小さい 窓の 中で 動くときは、窓の 名前に 出す 問題が 入っている（保存は しない）
+  const PREVIEW = (function () {
+    try { const n = String(root.name || ''); return n.indexOf('mt-preview:') === 0 ? JSON.parse(n.slice(11)) : null; } catch (e) { return null; }
+  })();
+  const AM = PREVIEW ? null : UI.adminMode;
+  let engine = null;
+  let startAdmin = false;
+  if (PREVIEW) {
+    root.__mtErrors = [];
+    root.addEventListener('error', function (ev) { root.__mtErrors.push(String(ev.message || ev)); });
+    try { engine = UI.adminApi.previewEngine(PREVIEW); } catch (err) { root.__mtErrors.push('問題を 作れない: ' + (err && err.message)); engine = MT.Engine.create({ storage: MT.Progress.memoryStorage() }); }
+  } else if (AM && AM.on() && AM.playing()) {
+    // 管理者モードで ためしプレイ中なら、読みこみなおしても ためしプレイの つづきから
+    try { engine = AM.resumeEngine(); startAdmin = !!engine; } catch (err) { engine = null; }
+  }
   // 保存データが こわれていて 作れないときは、こわれたデータを よけて はじめから（まっ白な 画面に しない）
-  let engine;
-  try { engine = MT.Engine.create({}); } catch (err) {
-    try {
-      const raw = localStorage.getItem(MT.Progress.STORAGE_KEY);
-      if (raw) localStorage.setItem(MT.Progress.STORAGE_KEY + '.broken', raw);
-      localStorage.removeItem(MT.Progress.STORAGE_KEY);
-    } catch (e) { /* ignore */ }
-    engine = MT.Engine.create({});
+  if (!engine) {
+    try { engine = MT.Engine.create({}); } catch (err) {
+      try {
+        const raw = localStorage.getItem(MT.Progress.STORAGE_KEY);
+        if (raw) localStorage.setItem(MT.Progress.STORAGE_KEY + '.broken', raw);
+        localStorage.removeItem(MT.Progress.STORAGE_KEY);
+      } catch (e) { /* ignore */ }
+      engine = MT.Engine.create({});
+    }
   }
   const app = document.getElementById('app');
 
@@ -11430,7 +11769,10 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     explainShown: {},     // 解説を読みおえた まちがい直しの問題
     qs: null,             // いま答えている問題の 入力の状態
     rs: null,             // まちがい直しの 入力の状態
-    keyHandler: null
+    keyHandler: null,
+    admin: startAdmin,                       // ためしプレイ中（管理者の べつの 保存で 動いている）
+    adminMode: !!(AM && AM.on()),            // この 端末は 管理者モード（どの 画面にも「管理」ボタン）
+    adminShowAnswer: AM ? AM.showAnswer() : true
   };
 
   const ctx = { engine: engine, state: state, render: render, go: go, setKey: function (fn) { state.keyHandler = fn; } };
@@ -11454,8 +11796,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     } catch (err) {
       showError(err);
     }
-    // 管理者の ためしプレイ中は「管理」ボタンを 出す（管理者画面へ もどる）
-    if (state.admin && state.view !== 'admin') app.appendChild(UI.h('button', { class: 'admin-fab', type: 'button', onclick: function () { state.view = 'admin'; render(); } }, ['管理（ためしプレイ中）']));
+    // 管理者モードの あいだは どの 画面にも「管理」ボタン（管理者画面へ）
+    if (state.adminMode && state.view !== 'admin') app.appendChild(UI.h('button', { class: 'admin-fab', type: 'button', onclick: function () { state.view = 'admin'; render(); } }, [state.admin ? '管理（ためしプレイ中）' : '管理']));
     if (MT.Sound && MT.Sound.bgm) MT.Sound.bgm(bgmFor(), engine.progress().sound);
   }
 
@@ -11463,6 +11805,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   function setEngine(e, admin, view) {
     engine = e; ctx.engine = e; root.MT.app.engine = e;
     state.admin = !!admin;
+    if (AM) { if (admin) { AM.set(true); state.adminMode = true; } AM.setPlaying(!!admin); }
     state.hold = null; state.retryHold = null; state.qs = null; state.rs = null; state.explainShown = {};
     state.intro = null; state.roof = null; state.view = view || null;
     render();
@@ -11474,6 +11817,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     setEngine(e, false, null);
   };
   UI.openAdmin = function () { state.view = 'admin'; render(); };
+  UI.adminOn = function () { if (AM) AM.set(true); state.adminMode = true; };
+  UI.adminOff = function () { if (AM) AM.set(false); state.adminMode = false; UI.adminExit(); };
 
   function bgmFor() {
     const ph = engine.phase();
@@ -11564,7 +11909,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     }, 250);
   });
 
-  try { engine.resume(); } catch (e) { engine.goMap(); }
+  if (!PREVIEW && !startAdmin) { try { engine.resume(); } catch (e) { engine.goMap(); } }
   render();
   root.MT.app = { engine: engine, render: render, state: state };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
