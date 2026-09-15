@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260914-29314 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260915-34124 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -18,7 +18,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #1f2740; col
   font-family: 'DotGothic16', 'BIZ UDGothic', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
   -webkit-text-size-adjust: 100%; }
 button { font-family: inherit; border-radius: 0; }
-#app { position: fixed; inset: 0; overflow: hidden; }
+#app { position: fixed; inset: 0; overflow: hidden; word-break: keep-all; overflow-wrap: break-word; line-break: strict; }
+/* 文は 分かち書き（ことばの間に 空白）なので、行は 空白の ところで 折る（ことばの とちゅうで 折らない） */
 ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
 /* ---- アニメ（すべて steps でコマ送り） ---- */
@@ -80,14 +81,14 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
 /* ---- 番人と ふきだし ---- */
 .speaker-row { display: flex; gap: 1vw; align-items: flex-start; }
-.guard-box { flex-shrink: 0; width: clamp(58px, 6.4vh, 74px); background: #1f2740; border: 3px solid #fbf9f2; box-shadow: 4px 4px 0 #1e1d2a; padding: 0.5vh 0.2vw; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; }
+.guard-box { flex-shrink: 0; width: auto; min-width: clamp(58px, 6.4vh, 74px); max-width: 112px; background: #1f2740; border: 3px solid #fbf9f2; box-shadow: 4px 4px 0 #1e1d2a; padding: 0.5vh 0.2vw; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; }
 .guard-box.light { background: #fbf9f2; border-color: #2b2a3a; }
 .guard-box.dark { background: #1a1c28; border-color: #5a5468; box-shadow: 4px 4px 0 #06070c; }
 .guard-box .sprite-slot { height: clamp(44px, 6.2vh, 58px); display: flex; align-items: flex-end; justify-content: center; }
-.guard-name { font-size: clamp(11px, 1.4vh, 12px); color: #c9c3b3; text-align: center; line-height: 1.1; max-width: 100%; overflow-wrap: anywhere; }
+.guard-name { font-size: clamp(11px, 1.4vh, 12px); color: #c9c3b3; text-align: center; line-height: 1.15; max-width: 100%; word-break: keep-all; overflow-wrap: break-word; }
 .guard-box.light .guard-name { color: #8c877a; }
 .guard-box.dark .guard-name { color: #a8a1b8; }
-.bubble { position: relative; flex: 1; min-width: 0; background: #fbf9f2; border: 3px solid #2b2a3a; box-shadow: 4px 4px 0 #1e1d2a; padding: 1vh 1.4vw; font-size: calc(var(--fs) * clamp(17px, 2.8vh, 28px)); line-height: 1.4; color: #2b2a3a; overflow-wrap: anywhere; }
+.bubble { position: relative; flex: 1; min-width: 0; background: #fbf9f2; border: 3px solid #2b2a3a; box-shadow: 4px 4px 0 #1e1d2a; padding: 1vh 1.4vw; font-size: calc(var(--fs) * clamp(17px, 2.8vh, 28px)); line-height: 1.4; color: #2b2a3a; word-break: keep-all; overflow-wrap: anywhere; }
 .bubble::before { content: ''; position: absolute; left: -12px; top: 18px; width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent; border-right: 12px solid #2b2a3a; }
 .bubble::after { content: ''; position: absolute; left: -8px; top: 20px; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-right: 9px solid #fbf9f2; }
 .bubble.stone { background: #d9d2c4; border-color: #06070c; box-shadow: 4px 4px 0 #06070c; color: #1a1c28; }
@@ -174,11 +175,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 .btn-row2 .answer-btn { font-size: calc(var(--fs) * clamp(16px, 2.8vh, 28px)); }
 
 /* 選択 */
-.choices { display: flex; flex-direction: column; gap: 1vh; flex: 1; min-height: 0; }
-.choice-btn { text-align: left; cursor: pointer; font-size: calc(var(--fs) * clamp(16px, 2.8vh, 28px)); line-height: 1.4; padding: 1.4vh 1.4vw; border: 3px solid #2b2a3a; box-shadow: 4px 4px 0 #1e1d2a; background: #fbf9f2; color: #2b2a3a; display: flex; gap: 1vw; align-items: center; min-height: 64px; flex-shrink: 1; }
-.choices.many .choice-btn { min-height: 48px; padding: 0.8vh 1.1vw; font-size: calc(var(--fs) * clamp(14px, 2.4vh, 24px)); line-height: 1.3; }
-.choices.long .choice-btn { font-size: calc(var(--fs) * clamp(14px, 2.3vh, 23px)); line-height: 1.3; }
-.choice-btn .num { width: clamp(30px, 5vh, 44px); height: clamp(30px, 5vh, 44px); flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 3px solid #2b2a3a; background: #3a4c8a; color: #fbf9f2; font-size: clamp(14px, 2.4vh, 22px); }
+/* 選択肢は 右の列の あいている高さまで 大きくする（本人の指定 2026-09-15） */
+.choices { display: flex; flex-direction: column; gap: 1.2vh; flex: 1; min-height: 0; }
+.choice-btn { text-align: left; cursor: pointer; font-size: calc(var(--fs) * clamp(18px, 3.4vh, 34px)); line-height: 1.35; padding: 1.4vh 1.4vw; border: 3px solid #2b2a3a; box-shadow: 4px 4px 0 #1e1d2a; background: #fbf9f2; color: #2b2a3a; display: flex; gap: 1.2vw; align-items: center; min-height: 64px; flex: 1 1 0; max-height: 150px; }
+.choices.many .choice-btn { min-height: 48px; padding: 0.8vh 1.1vw; font-size: calc(var(--fs) * clamp(15px, 2.7vh, 27px)); line-height: 1.3; }
+.choices.long .choice-btn { font-size: calc(var(--fs) * clamp(15px, 2.7vh, 27px)); line-height: 1.3; }
+.choice-btn .num { width: clamp(32px, 5.6vh, 50px); height: clamp(32px, 5.6vh, 50px); flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 3px solid #2b2a3a; background: #3a4c8a; color: #fbf9f2; font-size: clamp(15px, 2.7vh, 26px); }
 .choices.tight { gap: 0.6vh; }
 .choices.tight .choice-btn { min-height: 40px; padding: 0.4vh 0.9vw; font-size: calc(var(--fs) * clamp(13px, 2vh, 20px)); line-height: 1.25; box-shadow: 3px 3px 0 #1e1d2a; }
 .choices.tight .choice-btn .num { width: clamp(24px, 3.6vh, 34px); height: clamp(24px, 3.6vh, 34px); font-size: clamp(12px, 1.9vh, 18px); }
@@ -381,6 +383,22 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 .how-card .pic .g { display: grid; grid-template-columns: repeat(5, clamp(11px, 1.9vh, 18px)); grid-auto-rows: clamp(11px, 1.9vh, 18px); }
 .how-card .pic .g span { border: 1px solid #e8dcb5; display: block; }
 .how-card .tx { font-size: calc(var(--fs) * clamp(12px, 2vh, 19px)); line-height: 1.5; }
+/* あそびかた（はじめては 自動で 出す。大きく） */
+.modal.how-modal { width: min(1160px, 96vw); max-height: 96vh; }
+.how-modal .modal-body { gap: 1.2vh; }
+.how-modal .how-card .tt { font-size: calc(var(--fs) * clamp(16px, 3vh, 30px)); }
+.how-modal .how-card .tx { font-size: calc(var(--fs) * clamp(14px, 2.4vh, 24px)); }
+.how-rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1vh 1.2vw; }
+.how-rule { display: flex; gap: 0.9vw; align-items: flex-start; background: #fbf9f2; border: 3px solid #2b2a3a; box-shadow: 4px 4px 0 #1e1d2a; padding: 0.8vh 0.9vw; }
+.how-rule.guard { border-color: #c9402f; background: #fff3c4; grid-row: span 2; }
+.how-rule .c { width: clamp(18px, 2.8vh, 28px); height: clamp(18px, 2.8vh, 28px); border: 2px solid #2b2a3a; flex-shrink: 0; margin-top: 0.3vh; display: block; }
+.how-rule .ic { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.how-rule .gate-tag { background: #e2584c; color: #fbf9f2; border: 2px solid #2b2a3a; padding: 0 6px; font-size: clamp(12px, 1.9vh, 18px); }
+.how-rule .bd { min-width: 0; display: flex; flex-direction: column; gap: 0.3vh; }
+.how-rule .tt { font-size: calc(var(--fs) * clamp(15px, 2.8vh, 28px)); color: #2b2a3a; }
+.how-rule.guard .tt { color: #8a2a1e; }
+.how-rule .tx { font-size: calc(var(--fs) * clamp(13px, 2.3vh, 23px)); line-height: 1.45; color: #2b2a3a; }
+.how-go { align-self: center; min-width: min(420px, 60%); }
 .how-note { display: flex; align-items: center; gap: 0.6vw; font-size: calc(var(--fs) * clamp(12px, 2vh, 19px)); }
 .how-note .c { width: clamp(14px, 2.2vh, 20px); height: clamp(14px, 2.2vh, 20px); border: 2px solid #2b2a3a; display: block; flex-shrink: 0; }
 .px-input { font-family: inherit; font-size: calc(var(--fs) * clamp(18px, 3.2vh, 32px)); border: 3px solid #2b2a3a; box-shadow: inset 3px 3px 0 #e8dcb5; background: #fbf9f2; padding: 0.6vh 1vw; color: #2b2a3a; width: 100%; border-radius: 0; }
@@ -552,6 +570,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   .zk-detail .big { display: none; }
   .road { --sw: min(var(--stone-w), calc((100vw - 280px) / var(--stones, 10))); }
   .how-cards { grid-template-columns: minmax(0, 1fr); }
+  .how-rules { grid-template-columns: minmax(0, 1fr); }
+  .how-rule.guard { grid-row: auto; }
+  .how-modal .how-card .pic { display: none; }
   .q-head { flex-wrap: wrap; row-gap: 0.6vh; }
   .redo-note { display: none; }
   .redo-marks { gap: 3px; }
@@ -568,6 +589,20 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   .dc-screen > .dc-sage { grid-area: sage; align-self: end; }
   .dc-screen > .dc-prize { grid-area: prize; align-self: end; }
   .dc-screen > .dc-banner, .dc-screen > .dc-foot { display: none; }
+}
+/* 高さの ひくい 画面（Chromebook で タブや ブックマークの バーが 出ているとき など）: すきまと 最低の高さを つめる */
+@media (max-height: 640px) and (min-aspect-ratio: 4/5) {
+  .q-layout { gap: 0.8vh; padding: 1vh 1.6vw 1.2vh; }
+  .q-layout.redo-layout { padding: calc(1vh + 14px) calc(1.6vw + 8px) calc(1.2vh + 14px); }
+  .answer-btn { min-height: 50px; padding: 0.6vh; }
+  .num-display { min-height: 50px; }
+  .choice-btn { min-height: 50px; }
+  .choices.many .choice-btn { min-height: 42px; }
+  .fill-row { min-height: 46px; padding: 0.4vh 0.8vw; }
+  .guard-box .sprite-slot { height: clamp(34px, 6vh, 48px); }
+  .road { padding-top: clamp(22px, 4.2vh, 36px); }
+  .big-btn { min-height: 54px; }
+  .how-modal .how-card .pic { display: none; }
 }
 @media (max-width: 900px) and (min-aspect-ratio: 4/5) {
   .road { --sw: min(var(--stone-w), calc((100vw - 360px) / var(--stones, 10))); }
@@ -1954,7 +1989,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const placedRows = rng.int(1, s.h - 1);
       const spec = QFig.rectSpec(s.w, s.h, { grid: true, labels: 'none', interaction: 'tiles', tilesPlaced: { rows: placedRows } });
       return {
-        prompt: 'とちゅうまで タイルをおいた。のこりも おくと、ぜんぶで何まい?',
+        prompt: '上の ' + placedRows + 'だんには、もう タイルを おいたよ。のこりの マスにも おくと、ぜんぶで 何まい?',
         figure: spec,
         answer: s.h * s.w, unit: 'まい',
         wrong: (function () { const w = {}; w[String(placedRows * s.w)] = 'placed-only'; return w; })(),
@@ -5220,6 +5255,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       clearedFloors: [],
       roofCleared: false,
       roofSeen: false,
+      howSeen: false,      // あそびかたを 見たか（はじめてのときは 大きく出す）
       floorStats: {},
       carryOver: [],
       handbook: [],
@@ -5253,6 +5289,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     p.currentFloor = Math.min(15, Math.max(1, Number(p.currentFloor) || 1));
     p.clearedFloors = Array.isArray(p.clearedFloors) ? p.clearedFloors.filter(function (n) { return Number.isInteger(n); }) : [];
     p.roofSeen = !!p.roofSeen;
+    p.howSeen = !!p.howSeen;
     p.floorStats = p.floorStats && typeof p.floorStats === 'object' ? p.floorStats : {};
     p.carryOver = Array.isArray(p.carryOver) ? p.carryOver.filter(function (c) { return c && typeof c.templateId === 'string'; }).slice(0, 4) : [];
     p.handbook = Array.isArray(p.handbook) ? p.handbook : [];
@@ -6452,6 +6489,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     engine.phase = function () { return phase; };
     engine.floorInfo = function (no) { return Floors.get(no || p.currentFloor); };
     engine.save = save;
+    engine.markHowSeen = function () { p.howSeen = true; save(); };
 
     engine.reset = function () {
       Progress.clear(storage);
@@ -7180,11 +7218,58 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     let seed = seed0;
     return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   }
+  // 1px ずつの点を、同じ色・同じ行で となりあう（または 1つおきの）ものを まとめて 1回で ぬる。
+  // 絵は 1px ずつ ぬったときと まったく同じ（点どうしは 重ならないので、うすい色を かさねても 同じ）。
+  // 地下の絵は 点が 数十万あり、そのままだと Chromebook で 数秒 止まるため。
+  function batcher(ctx) {
+    let run = null;            // { x0, y, n, step(1 か 2), c, a }
+    let curStyle = null;
+    const patterns = {};
+    function style(s) { if (curStyle !== s) { ctx.fillStyle = s; curStyle = s; } }
+    function pattern(c, parity) {
+      const k = c + '|' + parity;
+      if (!patterns[k]) {
+        const cv = document.createElement('canvas');
+        cv.width = 2; cv.height = 2;
+        const g = cv.getContext('2d');
+        g.fillStyle = c;
+        if (parity === 0) { g.fillRect(0, 0, 1, 1); g.fillRect(1, 1, 1, 1); } else { g.fillRect(1, 0, 1, 1); g.fillRect(0, 1, 1, 1); }
+        patterns[k] = ctx.createPattern(cv, 'repeat');
+      }
+      return patterns[k];
+    }
+    function flush() {
+      if (!run) return;
+      const r = run;
+      run = null;
+      const now = ctx.globalAlpha;
+      if (now !== r.a) ctx.globalAlpha = r.a;
+      if (r.step === 2 && r.n > 1) {
+        // 絵の外（x<0）から はじまる列は、絵の中の 最初の点から ぬる（外の点は どのみち 見えない）
+        let x0 = r.x0, n = r.n;
+        if (x0 < 0) { const k = Math.ceil(-x0 / 2); x0 += 2 * k; n -= k; }
+        if (x0 + 2 * (n - 1) >= W) n = Math.floor((W - 1 - x0) / 2) + 1;
+        if (n > 0 && r.y >= 0 && r.y < H) { ctx.fillStyle = pattern(r.c, (x0 + r.y) & 1); curStyle = null; ctx.fillRect(x0, r.y, 2 * n - 1, 1); }
+      }
+      else { style(r.c); ctx.fillRect(r.x0, r.y, r.step === 1 ? r.n : 1, 1); }
+      if (now !== r.a) ctx.globalAlpha = now;
+    }
+    function px(x, y, c) {
+      const a = ctx.globalAlpha;
+      if (x !== (x | 0) || y !== (y | 0)) { flush(); style(c); ctx.fillRect(x, y, 1, 1); return; }
+      if (run && run.y === y && run.c === c && run.a === a) {
+        if (run.n === 1 && (x === run.x0 + 1 || x === run.x0 + 2)) { run.step = x - run.x0; run.n = 2; return; }
+        if (run.n > 1 && x === run.x0 + run.n * run.step) { run.n += 1; return; }
+      }
+      flush();
+      run = { x0: x, y: y, n: 1, step: 1, c: c, a: a };
+    }
+    function rect(x, y, w, h, c) { flush(); style(c); ctx.fillRect(x, y, w, h); }
+    return { px: px, rect: rect, flush: flush };
+  }
   function tools(ctx) {
-    return {
-      px: function (x, y, c) { ctx.fillStyle = c; ctx.fillRect(x, y, 1, 1); },
-      rect: function (x, y, w, h, c) { ctx.fillStyle = c; ctx.fillRect(x, y, w, h); }
-    };
+    if (!ctx.__batch) ctx.__batch = batcher(ctx);
+    return { px: ctx.__batch.px, rect: ctx.__batch.rect };
   }
   function pixelsOf(rows, pal) { return root.MT.Sprites.pixels(rows, pal); }
 
@@ -7771,7 +7856,9 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, W, H);
     ctx.globalAlpha = 1;
+    ctx.__batch = null;
     try { (SCENES[name] || room)(ctx, opts || {}); } catch (e) { /* 絵が描けなくても 画面は使える */ }
+    finally { if (ctx.__batch) ctx.__batch.flush(); ctx.__batch = null; ctx.globalAlpha = 1; }
   }
 
   root.MT = root.MT || {};
@@ -7796,6 +7883,24 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   const HELP = '#7b60a9';
   const FREE_FILLS = ['#5d8fd8', '#6cbd6f', '#ef9448', '#a48ad0'];     // 自分で切ったとき（1つ目は そのまま青）
   const GUIDE_FILLS = ['#6cbd6f', '#ef9448', '#a48ad0', '#5d8fd8'];    // 解説（左=緑、右=オレンジ）
+  const TILE = '#ffd37c';        // おいた タイル
+  const TILE_LINE = '#b8862f';
+
+  // はじめから おいてある タイルの マス（tilesPlaced: 上の rows だん / 左の cols れつ）
+  function placedCells(spec) {
+    const out = new Set();
+    const placed = spec && spec.tilesPlaced;
+    const F = root.MT.Figure;
+    if (!placed || !spec.fig || !F) return out;
+    const b = F.bounds(spec.fig);
+    F.cellSet(spec.fig).forEach(function (k) {
+      const c = F.parseKey(k);
+      const rowOk = placed.rows != null && (c.y - b.y1) >= (b.h - placed.rows);
+      const colOk = placed.cols != null && (c.x - b.x1) < placed.cols;
+      if (rowOk || colOk) out.add(k);
+    });
+    return out;
+  }
 
   function svg(tag, attrs, parent) {
     const e = document.createElementNS(NS, tag);
@@ -7960,9 +8065,14 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       const primary = figIndex === 0;
       const colored = primary ? partsCells(spec, cells) : {};
       const placed = spec.tilesPlaced || null;
+      const pre = placed ? placedCells(spec) : null;
       const tiles = primary && model.tiles ? model.tiles : null;
       const miss = primary && model.missCells ? model.missCells : null;
       const baseColor = (model.figColors && model.figColors[figIndex]) || SHAPE;
+      // タイルを おく問題は、形を ぬらずに あき地（紙の色）にして、タイルだけを タイルらしく 見せる（本人の指摘 2026-09-15）
+      const tileMode = spec.interaction === 'tiles' || !!placed;
+      // 重ねた2つの形は、べつべつの すける色で（同じ色だと 1つに見えてしまう）
+      const overlay = !!(spec.pieceColors && fig.pieces && fig.pieces.length > 1);
       // 囲んでひく（box/cutout）
       if (primary && model.parts) {
         model.parts.forEach(function (p) {
@@ -7974,26 +8084,35 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         const c = Figure.parseKey(k);
         let fill = baseColor;
         if (colored[k]) fill = colored[k].color;
-        if (placed) {
-          const rowOk = placed.rows != null && (c.y - b.y1) >= (b.h - placed.rows);
-          const colOk = placed.cols != null && (c.x - b.x1) < placed.cols;
-          if (rowOk || colOk) fill = '#6cbd6f';
-        }
-        if (tiles && tiles.has(k)) fill = '#6cbd6f';
+        if (tileMode || overlay) fill = '#fbf9f2';
         if (miss && miss.has(k)) fill = '#ef9448';
         const r = svg('rect', { x: pl.X(c.x), y: pl.Y(c.y + 1), width: cell, height: cell, fill: fill, class: 'fig-cell' }, g);
-        if (gridIn) { r.setAttribute('stroke', tiles && tiles.has(k) ? '#3d6a55' : SHAPE_LINE); r.setAttribute('stroke-width', 1); }
+        if (gridIn) { r.setAttribute('stroke', tileMode ? '#b9b09a' : SHAPE_LINE); r.setAttribute('stroke-width', 1); }
         r.dataset.cell = k;
         r.dataset.fig = figIndex;
+        if ((pre && pre.has(k)) || (tiles && tiles.has(k))) {
+          const inset = Math.max(1, Math.min(3, cell * 0.08));
+          svg('rect', { x: pl.X(c.x) + inset, y: pl.Y(c.y + 1) + inset, width: cell - inset * 2, height: cell - inset * 2, fill: TILE, stroke: TILE_LINE, 'stroke-width': 2, 'pointer-events': 'none', class: 'fig-tile' }, g);
+        }
       });
+      if (overlay) {
+        fig.pieces.forEach(function (pc, i) {
+          const attrs = { x: pl.X(pc.x), y: pl.Y(pc.y + pc.h), width: pc.w * cell, height: pc.h * cell, fill: spec.pieceColors[i % spec.pieceColors.length], 'fill-opacity': 0.6, stroke: i ? '#c9402f' : '#2f5fa8', 'stroke-width': 4, 'pointer-events': 'none' };
+          if (i) attrs['stroke-dasharray'] = '12 6';
+          svg('rect', attrs, g);
+        });
+        fig.pieces.forEach(function (pc, i) {
+          if (pc.name) tag(pl.X(pc.x + pc.w) - geo.fs * 1.1, pl.Y(pc.y + pc.h) + geo.fs * 0.95, pc.name, { fs: Math.max(14, Math.min(geo.fs, 24)), bg: i ? '#c9402f' : '#2f5fa8', fg: '#fbf9f2' });
+        });
+      }
       // 囲む大きい長方形（点線）
       if (primary && model.parts) {
         model.parts.forEach(function (p) {
           if (p.role === 'box') svg('rect', { x: pl.X(p.x), y: pl.Y(p.y + p.h), width: p.w * cell, height: p.h * cell, fill: 'none', stroke: '#3b7dd8', 'stroke-width': 3, 'stroke-dasharray': '10 6' }, g);
         });
       }
-      // 外わく（太線）
-      Figure.boundaryEdgesOfCells(cells).forEach(function (e) {
+      // 外わく（太線）。重ねた形は それぞれの わくを 上で 描いたので いらない
+      if (!overlay) Figure.boundaryEdgesOfCells(cells).forEach(function (e) {
         if (e.axis === 'h') svg('line', { x1: pl.X(e.from), y1: pl.Y(e.at), x2: pl.X(e.to), y2: pl.Y(e.at), stroke: INK, 'stroke-width': 3, 'stroke-linecap': 'square' }, g);
         else svg('line', { x1: pl.X(e.at), y1: pl.Y(e.from), x2: pl.X(e.at), y2: pl.Y(e.to), stroke: INK, 'stroke-width': 3, 'stroke-linecap': 'square' }, g);
       });
@@ -8030,7 +8149,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         drawHidden(pl, l, isHelp);
       });
       if (spec.areaText) tag((pl.X(b.x1) + pl.X(b.x2)) / 2, (pl.Y(b.y1) + pl.Y(b.y2)) / 2, spec.areaText, { fs: Math.max(13, Math.min(geo.fs, 26)) });
-      if (spec.caption) tag((pl.X(b.x1) + pl.X(b.x2)) / 2, pl.bottom - geo.fs * 0.2, spec.caption, { fs: Math.max(12, Math.min(geo.fs * 0.8, 22)), bg: '#1f2740', fg: '#fbf9f2' });
+      // 図の下に とっておいた 帯の まん中に 書く（板の ふちで 切れないように）
+      if (spec.caption) tag((pl.X(b.x1) + pl.X(b.x2)) / 2, pl.bottom - geo.margin * geo.cell * 0.45, spec.caption, { fs: Math.max(12, Math.min(geo.fs * 0.8, 22)), bg: '#1f2740', fg: '#fbf9f2' });
     }
 
     function labelPoint(pl, l) {
@@ -8271,7 +8391,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   }
 
   root.MT = root.MT || {};
-  root.MT.Board = { create: create, GUIDE_FILLS: GUIDE_FILLS, FREE_FILLS: FREE_FILLS };
+  root.MT.Board = { create: create, placedCells: placedCells, GUIDE_FILLS: GUIDE_FILLS, FREE_FILLS: FREE_FILLS };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 
 
@@ -8674,6 +8794,26 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   // ---- 背景の絵 ----
   let bgKey = null;
   let bgEl = null;
+  // 描いた絵は とっておく（地下の絵は 描くのに 時間がかかる。ホームと 行き来しても 描きなおさない）
+  const sceneCache = [];
+  const SCENE_CACHE_MAX = 8;
+  function sceneCanvas(name, opts) {
+    const key = name + ':' + JSON.stringify(opts || {});
+    for (let i = 0; i < sceneCache.length; i += 1) if (sceneCache[i].key === key) return sceneCache[i].canvas;
+    const c = document.createElement('canvas');
+    c.width = MT.Scenes.W; c.height = MT.Scenes.H;
+    MT.Scenes.draw(c, name, opts);
+    sceneCache.push({ key: key, canvas: c });
+    if (sceneCache.length > SCENE_CACHE_MAX) sceneCache.shift();
+    return c;
+  }
+  // 手があいたときに 先に描いておく（ホームで 地下が 開いているとき など）
+  function prewarmScene(name, opts) {
+    const key = name + ':' + JSON.stringify(opts || {});
+    if (sceneCache.some(function (s) { return s.key === key; })) return;
+    const run = function () { try { sceneCanvas(name, opts); } catch (e) { /* ignore */ } };
+    if (root.requestIdleCallback) root.requestIdleCallback(run, { timeout: 3000 }); else setTimeout(run, 600);
+  }
   function bg(name, opts, extra) {
     const o = extra || {};
     const key = name + ':' + JSON.stringify(opts || {});
@@ -8683,7 +8823,10 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       bgKey = null;
     }
     if (bgKey !== key) {
-      MT.Scenes.draw(bgEl.querySelector('canvas'), name, opts);
+      const cv = bgEl.querySelector('canvas');
+      const cx = cv.getContext('2d');
+      cx.clearRect(0, 0, cv.width, cv.height);
+      cx.drawImage(sceneCanvas(name, opts), 0, 0);
       bgKey = key;
     }
     // 絵の上に のせた文字（ホームの看板など）は 毎回 はずす
@@ -8717,7 +8860,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   }
   function keypad(onKey, opts) {
     const o = opts || {};
-    const keys = ['7', '8', '9', '4', '5', '6', '1', '2', '3', 'けす', '0', '←'];
+    // 電話と同じ ならび（左上が 1）。本人の指定 2026-09-15
+    const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'けす', '0', '←'];
     const pad = h('div', { class: 'keypad' + (o.dark ? ' dark' : '') + (o.short ? ' short' : '') });
     keys.forEach(function (k) {
       const cls = 'key' + (k === 'けす' ? ' fn-clear' : k === '←' ? ' fn-back' : '');
@@ -8807,7 +8951,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       o.noClose ? null : h('button', { class: 'modal-close', type: 'button', 'aria-label': 'とじる', onclick: close }, ['✕'])
     ]);
     const body = h('div', { class: 'modal-body' });
-    const box = h('div', { class: 'modal' + (o.wide ? ' wide' : ''), role: 'dialog', 'aria-modal': 'true' }, [head, body]);
+    const box = h('div', { class: 'modal' + (o.wide ? ' wide' : '') + (o.cls ? ' ' + o.cls : ''), role: 'dialog', 'aria-modal': 'true' }, [head, body]);
     const back = h('div', { class: 'modal-back', onclick: function (ev) { if (ev.target === back && !o.noClose) close(); } }, [box]);
     app.appendChild(back);
     if (typeof o.body === 'function') o.body(body, close);
@@ -8853,7 +8997,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
   Object.assign(UI, {
     onMounted: onMounted, flushMounted: flushMounted, setQuiet: setQuiet,
-    h: h, append: append, tx: tx, clear: clear, applySettings: applySettings, bg: bg, noBg: noBg, se: se,
+    h: h, append: append, tx: tx, clear: clear, applySettings: applySettings, bg: bg, noBg: noBg, se: se, prewarmScene: prewarmScene,
     numberInput: numberInput, keypad: keypad, keyFromEvent: keyFromEvent, guardBox: guardBox, walker: walker, road: road,
     stamp: stamp, band: band, modal: modal, confirmBox: confirmBox, bubbleSizeClass: bubbleSizeClass, formatDuration: formatDuration,
     isKana: function () { return kanaOn; }
@@ -8878,6 +9022,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   function startGame(ctx) {
     const E = ctx.engine, st = ctx.state, p = E.progress();
     if (!p.name) { openName(ctx); return; }
+    // はじめての ときは、あそびかたを 大きく 見せてから（本人の指定 2026-09-15）
+    if (!p.howSeen) { openHow(function () { E.markHowSeen(); startGame(ctx); }); return; }
     if (MT.Sound && MT.Sound.unlock) MT.Sound.unlock();
     st.view = null;
     const ph = E.resume();
@@ -8916,7 +9062,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
     const icons = h('div', { class: 'home-icons' }, [
       h('button', { class: 'icon-btn', type: 'button', onclick: function () { openSettings(ctx); } }, [h('span', { class: 'ic-set' }), 'せってい']),
-      h('button', { class: 'icon-btn', type: 'button', onclick: function () { openHow(); } }, [h('span', { class: 'ic-how' }), 'あそびかた']),
+      h('button', { class: 'icon-btn', type: 'button', onclick: function () { openHow(null); } }, [h('span', { class: 'ic-how' }), 'あそびかた']),
       p.handbook.length ? h('button', { class: 'icon-btn', type: 'button', onclick: function () { openHandbook(ctx); } }, [h('span', { class: 'ic-book' }), 'てちょう']) : null
     ]);
     scr.appendChild(icons);
@@ -8965,6 +9111,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     scr.appendChild(h('button', { class: 'start-btn', type: 'button', onclick: function () { startGame(ctx); } }, [h('span', { class: 'tri-w' }), all && p.mode !== 'rematch' ? 'エンディング' : fresh ? 'はじめる' : 'つづける']));
     app.appendChild(scr);
     ctx.setKey(function (k) { if (k === 'enter') startGame(ctx); });
+    // 地下が 開いていたら、地下の絵を 手があいたときに 先に描いておく（入ったときに 止まらないように）
+    if (p.underground.unlocked && !all) UI.prewarmScene('dungeon', {});
   };
 
   // ---- せってい ----
@@ -9018,19 +9166,28 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   }
 
   // ---- あそびかた ----
-  function openHow() {
+  // あそびかた。はじめては 自動で 大きく出す（onDone があるとき）。番人・関所・まちがい直しの きまりも ここで 教える
+  function openHow(onDone) {
     const grid = function (fill) {
       const g = h('div', { class: 'g' });
       for (let y = 0; y < 4; y += 1) for (let x = 0; x < 5; x += 1) g.appendChild(h('span', { style: 'background:' + fill(x, y) }));
       return g;
     };
     const cards = [
-      { no: '1', title: 'マスを 数える', text: 'マス目 1マスが 1cm²。図形に かかる マスの数が 面積。', fill: function (x, y) { return x < 4 && y < 3 ? '#5d8fd8' : 'transparent'; } },
-      { no: '2', title: 'たて × よこ', text: 'ならんだ数を かけると はやい。4 × 3 ＝ 12cm²。', fill: function (x, y) { return x < 4 && y < 3 ? (y === 0 || x === 0 ? '#3a5fb0' : '#5d8fd8') : 'transparent'; } },
-      { no: '3', title: '分ける・ひく', text: 'へこんだ形は 2つに 分ける。または 大きな四角から ひく。', fill: function (x, y) { return x >= 3 && y < 2 ? 'transparent' : (y < 2 ? '#6cbd6f' : '#5d8fd8'); } }
+      { no: '1', title: 'マスを 数える', text: '1マスが 1cm²。形の 中に ならぶ マスの 数が 面積。', fill: function (x, y) { return x < 4 && y < 3 ? '#5d8fd8' : 'transparent'; } },
+      { no: '2', title: 'たて × よこ', text: 'ならんだ 数を かけると はやい。4 × 3 ＝ 12cm²。', fill: function (x, y) { return x < 4 && y < 3 ? (y === 0 || x === 0 ? '#3a5fb0' : '#5d8fd8') : 'transparent'; } },
+      { no: '3', title: '分ける・ひく', text: 'へこんだ 形は 2つに 分ける。または 大きな 四角から ひく。', fill: function (x, y) { return x >= 3 && y < 2 ? 'transparent' : (y < 2 ? '#6cbd6f' : '#5d8fd8'); } }
     ];
-    UI.modal({
-      title: 'あそびかた', sub: 'マス目を 数えて 面積を 出す', wide: true,
+    const guard = MT.Sprites.fitSprite('stone', 44, 44);
+    const rules = [
+      { cls: 'guard', icon: guard, title: '番人と 関所', text: 'どの階にも 番人が いて、問題を 出す。「関所」の しるしが ついた 問題は、番人の だいじな 問題。1つでも まちがえると、まちがい直しの あと、その階を もう一度（数は かわる）。' },
+      { color: '#ffd37c', title: '答え方', text: '数は テンキーで 入れて「こたえる」。えらぶ 問題は ボタンを おす。形に 線を 引く 問題も ある。' },
+      { color: '#7b60a9', title: 'まちがい直し', text: 'まちがえた 問題は、天使ちゃんと いっしょに 見なおして、もう一度 答える。ぜんぶ おわると 上の階へ。' },
+      { color: '#3a5fb0', title: '塔の 上と 下', text: '14階と 屋上を のぼりきると、地下の めいきゅうが ひらく。' }
+    ];
+    const m = UI.modal({
+      title: 'あそびかた', sub: onDone ? 'はじめる前に 読もう' : 'マス目を 数えて 面積を 出す', wide: true, cls: 'how-modal',
+      onClose: function () { if (onDone) onDone(); },
       body: [
         h('div', { class: 'how-cards' }, cards.map(function (c) {
           return h('div', { class: 'how-card' }, [
@@ -9039,11 +9196,13 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
             h('div', { class: 'tx', text: c.text })
           ]);
         })),
-        h('div', { style: 'display:flex;flex-direction:column;gap:0.5vh;' }, [
-          h('div', { class: 'how-note' }, [h('span', { class: 'c', style: 'background:#ffd37c' }), UI.tx('答えは テンキーか、えらんで 入れる。まちがえても まちがい直しで もう一度 ちょうせんできる。')]),
-          h('div', { class: 'how-note' }, [h('span', { class: 'c', style: 'background:#c9402f' }), UI.tx('各階の 番人が 問題を 出す。ぜんぶ 答えて、まちがい直しを おえると つぎの階へ。')]),
-          h('div', { class: 'how-note' }, [h('span', { class: 'c', style: 'background:#7b60a9' }), UI.tx('塔を のぼりきると 地下の うらダンジョンが ひらく。')])
-        ])
+        h('div', { class: 'how-rules' }, rules.map(function (r) {
+          return h('div', { class: 'how-rule' + (r.cls ? ' ' + r.cls : '') }, [
+            r.icon ? h('div', { class: 'ic' }, [r.icon, h('span', { class: 'gate-tag', plain: '関' })]) : h('span', { class: 'c', style: 'background:' + r.color }),
+            h('div', { class: 'bd' }, [h('div', { class: 'tt', text: r.title }), h('div', { class: 'tx', text: r.text })])
+          ]);
+        })),
+        h('button', { class: 'answer-btn how-go', type: 'button', onclick: function () { m.close(); } }, [UI.tx(onDone ? 'わかった！ はじめる　▶' : 'とじる')])
       ]
     });
   }
@@ -9338,6 +9497,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     // ---- 背景 ----
     if (dark) UI.bg('dungeon', {}, { flicker: true, tintClass: 'dungeon-tint' });
     else UI.bg('room', { compound: q.format === 'cut' });
+    // B30 では、つぎに出る 地下クリアの絵を 先に描いておく
+    if (dungeonMain && ugNo >= 30) UI.prewarmScene('dungeonClear', {});
 
     const app = document.getElementById('app');
     const scr = h('div', { class: 'screen' });
@@ -9435,8 +9596,9 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         if (qs.help) model.helpSegs = qs.help;
         const tilesQ = q.format === 'grid' && q.figure && q.figure.interaction === 'tiles';
         if (tilesQ) {
+          const pre = MT.Board.placedCells(q.figure);
           model.tiles = qs.tiles;
-          if (!hold) model.onTile = function (k, add) { if (add) qs.tiles.add(k); else qs.tiles.delete(k); board.set(model); drawRight(); };
+          if (!hold) model.onTile = function (k, add) { if (pre.has(k)) return; if (add) qs.tiles.add(k); else qs.tiles.delete(k); board.set(model); drawRight(); };
         }
         if (drawable) model.onCut = onCut;
       }
@@ -9514,7 +9676,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         return col;
       }
       const tilesQ = q.format === 'grid' && q.figure && q.figure.interaction === 'tiles';
-      if (tilesQ) col.appendChild(h('div', { class: 'col-label', text: 'おいた タイル ' + qs.tiles.size + ' まい' }));
+      // はじめから おいてある タイルも ふくめて 数える
+      if (tilesQ) { const pre = MT.Board.placedCells(q.figure); let n = pre.size; qs.tiles.forEach(function (k) { if (!pre.has(k)) n += 1; }); col.appendChild(h('div', { class: 'col-label', text: 'おいた タイル ' + n + ' まい' })); }
       else if (step) col.appendChild(h('div', { class: 'col-label', text: step.ask }));
       const unit = step ? step.unit : (q.unit || '');
       const valState = hold ? (hold.correct ? 'ok' : 'ng') : qs.numState;
@@ -9882,6 +10045,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       if (fm) {
         model = Object.assign({ showHidden: true }, fm);
         if (fm.figures && fm.figures.length === 2) { model.figColors = FIG_TWO; model.nameColors = ['#3d6a55', '#c2661f']; }
+        // タイルを おく問題の 解説は、ぜんぶ おいた ようすを 見せる
+        if (q.figure && q.figure.interaction === 'tiles' && model.figures) model.tiles = MT.Figure.cellSet(q.figure.fig);
       }
     }
     if (model && v.help && v.help.segments && v.help.segments.length) model.helpSegs = v.help.segments;
@@ -10118,7 +10283,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       if (!model.tilingDemo && kind === 'reanswer') {
         if (q.format === 'grid' && q.figure && q.figure.interaction === 'tiles') {
           model.tiles = rs.tiles;
-          if (!held) model.onTile = function (k, add) { if (add) rs.tiles.add(k); else rs.tiles.delete(k); board.set(model); };
+          const pre = MT.Board.placedCells(q.figure);
+          if (!held) model.onTile = function (k, add) { if (pre.has(k)) return; if (add) rs.tiles.add(k); else rs.tiles.delete(k); board.set(model); };
         }
         if (q.format === 'cut' || (q.figure && q.figure.interaction === 'cut')) {
           model.lines = rs.lines;
