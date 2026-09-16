@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260916-43831 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260916-44684 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -6454,9 +6454,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     let shown = t.plan.shown.slice();
     let hidden = t.plan.hidden.slice();
     const isHeight = function (l) { return l.axis === 'y' && t.heights.some(function (h) { return h.id === l.id; }); };
-    const countFor = function (no) { return shown.filter(function (l) { return !isHeight(l) && floorOfLabel(l) === no; }).length; };
+    // その階の「よこ」が 図にも 手帳にも 出てこないと、その階だけ 面積が 出せない（本人の指摘 2026-09-16「理不尽はだめ」）。
+    // 「上の階より 2m せまい」のような 差の行だけでは よこは 出せないので、よこの 寸法線が あるかで 数える
+    const hasWidth = function (no) {
+      return shown.some(function (l) { return !isHeight(l) && floorOfLabel(l) === no && l.kind === 'dim' && l.axis === 'x' && l.a === 0; });
+    };
     for (let no = 1; no <= 14; no += 1) {
-      if (countFor(no) > 0) continue;
+      if (hasWidth(no)) continue;
       // その階のはばの寸法線を 空らんから見せる側へ移す
       const idx = hidden.findIndex(function (l) { return floorOfLabel(l) === no && l.kind === 'dim' && l.a === 0; });
       if (idx >= 0) { shown.push(hidden[idx]); hidden.splice(idx, 1); }
