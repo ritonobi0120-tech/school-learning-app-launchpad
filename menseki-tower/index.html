@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260916-23293 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260916-30473 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -3532,18 +3532,27 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     'km²': { from: { value: 200, unit: 'ha' }, to: { value: 2, unit: 'km²' }, others: ['ha', 'a', 'm²'] }
   };
 
+  // えらぶ形だと 勘で 当たるので 数で 答える（本人の指定 2026-09-16）
   Bank.register({
-    id: 'f11-same-area', floor: 11, format: 'choice',
+    id: 'f11-same-area', floor: 11, format: 'number',
     make: function (rng, params) {
       const def = SAME_AREA[params.unit || rng.pick(Object.keys(SAME_AREA))];
-      const one = Units.convert(1, def.to.unit, def.from.unit);
-      const c = mkChoice(rng, [{ text: areaText(def.to), correct: true }].concat(def.others.map(function (u) { return { text: def.to.value + u }; })));
+      const fromSmaller = Units.LADDER.indexOf(def.from.unit) < Units.LADDER.indexOf(def.to.unit);
+      const big = fromSmaller ? def.to.unit : def.from.unit;
+      const small = fromSmaller ? def.from.unit : def.to.unit;
+      const per = Units.convert(1, big, small);   // 1big ＝ per small
+      const wrong = {};
+      // 同じ 数のまま 単位だけ かえた 答え（けたの まちがい）
+      def.others.forEach(function (u) {
+        const v = Units.convert(def.from.value, def.from.unit, u);
+        if (Number.isInteger(v) && v > 0 && v !== def.to.value) wrong[String(v)] = 'x100';
+      });
       return {
-        prompt: areaText(def.from) + ' と 同じ 広さは どれ?',
-        choices: c.choices, answer: c.answer,
+        prompt: areaText(def.from) + ' は 何' + def.to.unit + '?',
+        answer: def.to.value, unit: def.to.unit, wrong: wrong,
         explain: {
-          sentence: '1' + def.to.unit + ' は ' + one + def.from.unit + '。' + areaText(def.from) + ' は ' + one + def.from.unit + ' が ' + def.to.value + 'つ分だよ。' + LADDER_TEXT,
-          steps: [{ key: 'conv', label: areaText(def.from) + ' を ' + def.to.unit + ' で', parts: [B('a', def.to.value, def.to.unit, ['div', def.from.value, one])] }, { key: 'rechoose', kind: 'choice', label: 'だから 同じ 広さは?' }]
+          sentence: '1' + big + ' は ' + per + small + '。' + areaText(def.from) + ' を ' + def.to.unit + ' に なおすよ。' + LADDER_TEXT,
+          steps: [{ key: 'conv', label: areaText(def.from) + ' を ' + def.to.unit + ' で', parts: [B('a', def.to.value, def.to.unit, fromSmaller ? ['div', def.from.value, per] : ['mul', def.from.value, per])] }]
         }
       };
     }
@@ -3557,26 +3566,27 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     [{ value: 2, unit: 'km²' }, { value: 150, unit: 'ha' }]
   ];
 
+  // どっちが 広いかは 2つに 1つで 当たるので、「何だけ 広い?」を 数で 答える（本人の指定 2026-09-16）
   Bank.register({
-    id: 'f11-compare', floor: 11, format: 'choice',
+    id: 'f11-compare', floor: 11, format: 'number',
     make: function (rng, params) {
       const pair = COMPARE_SETS[params.set == null ? rng.int(0, COMPARE_SETS.length - 1) : params.set];
       const base = baseUnitOf(pair);
       const a = inUnit(pair[0], base), b = inUnit(pair[1], base);
-      const c = mkChoice(rng, [
-        { text: areaText(pair[0]), correct: a > b },
-        { text: areaText(pair[1]), correct: b > a },
-        { text: '同じ', correct: a === b }
-      ], { keepOrder: true });
+      const hi = Math.max(a, b), lo = Math.min(a, b);
+      const wide = a >= b ? pair[0] : pair[1];
+      const wrong = {};
+      wrong[String(a + b)] = 'sum';
+      wrong[String(Math.abs(pair[0].value - pair[1].value))] = 'unit-mix';   // 単位を そろえずに ひいた
       return {
-        prompt: areaText(pair[0]) + ' と ' + areaText(pair[1]) + '。広いのは どっち?',
-        choices: c.choices, answer: c.answer,
+        prompt: areaText(pair[0]) + ' と ' + areaText(pair[1]) + '。広いほうは 何' + base + ' 広い?',
+        answer: hi - lo, unit: base, wrong: wrong,
         explain: {
-          sentence: '単位を そろえて くらべよう。' + areaText(pair[0]) + '＝' + a + base + '、' + areaText(pair[1]) + '＝' + b + base + '。数が 大きいほうが 広いとは かぎらないよ。',
+          sentence: '単位を そろえてから ひくよ。' + areaText(pair[0]) + '＝' + a + base + '、' + areaText(pair[1]) + '＝' + b + base + '。広いのは ' + areaText(wide) + '。大きいほうから 小さいほうを ひこう。',
           steps: [
             { key: 'l', label: areaText(pair[0]) + ' は', parts: [B('la', a, base)] },
             { key: 'r', label: areaText(pair[1]) + ' は', parts: [B('rb', b, base)] },
-            { key: 'rechoose', kind: 'choice', label: 'だから 広いのは?' }
+            { key: 'diff', label: 'ちがい', parts: [B('hi', hi, base), '−', B('lo', lo, base), '＝', B('d', hi - lo, base)] }
           ]
         }
       };
@@ -4438,8 +4448,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     parts.forEach(function (p, i) {
       const name = (opts && opts.names && opts.names[i]) || (Figure.describeRectPosition(p, q.figure.fig) + 'の長方形');
       if (mode === 'full') {
-        steps.push({ key: 'p' + i + '-h', part: i, ask: name + 'の たては?', answer: p.h * s, unit: u, dim: { axis: 'y', a: p.y, b: p.y + p.h } });
-        steps.push({ key: 'p' + i + '-w', part: i, ask: name + 'の よこは?', answer: p.w * s, unit: u, dim: { axis: 'x', a: p.x, b: p.x + p.w } });
+        // at: その長方形の 左の辺・下の辺の 場所（解説で 赤い 太線を 引くため。本人の指定 2026-09-16）
+        steps.push({ key: 'p' + i + '-h', part: i, ask: name + 'の たては?', answer: p.h * s, unit: u, dim: { axis: 'y', a: p.y, b: p.y + p.h, at: p.x } });
+        steps.push({ key: 'p' + i + '-w', part: i, ask: name + 'の よこは?', answer: p.w * s, unit: u, dim: { axis: 'x', a: p.x, b: p.x + p.w, at: p.y } });
       }
       steps.push({ key: 'p' + i + '-area', part: i, ask: name + 'の 面積は?', answer: p.w * p.h * s * s, unit: u2, formula: (p.h * s) + '×' + (p.w * s), calc: ['mul', p.h * s, p.w * s] });
     });
@@ -4815,6 +4826,38 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     };
   }
 
+  // 関所を おとしたときの みじかい 回: その階の 関所 ＋ ランダムに 2問（本人の指定 2026-09-16）
+  // 階を ぜんぶ やり直すのは 重い。でも 関所の 重みは のこす
+  function buildGateRedo(floorNo, progress, seedText) {
+    const floor = Floors.get(floorNo);
+    if (!floor) throw new Error('unknown floor ' + floorNo);
+    const rng = Util.createRng('redo' + floorNo + ':' + (seedText || Date.now()));
+    const mk = function (t, p, role, extra) {
+      return Object.assign({ templateId: t, params: p || {}, seed: rng.int(1, 1000000000), role: role, format: formatClass(t, p), kind: kindOf(t) }, extra || {});
+    };
+    const isGate = function (item) { try { return !!Bank.get(item.t).gate; } catch (e) { return false; } };
+    const gates = floor.own.filter(isGate);
+    // 巻きぞえの 2問は、その回で まちがえた 問題を 先に えらぶ（なければ ランダム）
+    const missedIds = ((progress && progress.carryOver) || []).map(function (c) { return c.templateId; });
+    const pool = floor.own.filter(function (item) { return !isGate(item); });
+    const missed = pool.filter(function (item) { return missedIds.indexOf(item.t) >= 0; });
+    const others = missed.concat(rng.shuffle(pool.filter(function (item) { return missed.indexOf(item) < 0; }))).slice(0, 2);
+    const picked = gates.concat(others);
+    // 教える順は そのまま
+    const items = floor.own.filter(function (item) { return picked.indexOf(item) >= 0; })
+      .map(function (item) { return mk(item.t, item.p, 'own', { pinned: isGate(item), core: !!item.core }); });
+    if (!items.length) return buildFloor(floorNo, progress, seedText);
+    return {
+      kind: 'redo',
+      floorNo: floorNo,
+      count: items.length,
+      items: items,
+      index: 0,
+      answers: [],
+      startedAt: new Date().toISOString()
+    };
+  }
+
   function questionAt(session, index) {
     const item = session.items[index];
     const q = Bank.build(item.templateId, item.seed, item.params);
@@ -4869,6 +4912,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
   return {
     buildFloor: buildFloor,
+    buildGateRedo: buildGateRedo,
     questionAt: questionAt,
     currentQuestion: currentQuestion,
     answer: answer,
@@ -4976,6 +5020,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
   function currentItem(state) {
     if (state.finished) return null;
+    // すでに おわった 問題は とばす（保存が こわれて 番号が もどっても、ステップの ない 画面に しない）
+    while (state.current < state.items.length && state.items[state.current] && state.items[state.current].done) state.current += 1;
+    if (state.current >= state.items.length) { state.finished = true; return null; }
     return state.items[state.current] || null;
   }
 
@@ -6754,7 +6801,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         const stats = p.floorStats[p.currentFloor] || { attempts: 0, gateFails: 0, cleared: false, hints: 0 };
         stats.attempts += 1;
         p.floorStats[p.currentFloor] = stats;
-        p.session = Session.buildFloor(p.currentFloor, p, seedSalt + ':' + p.name + ':' + stats.attempts + ':' + Date.now());
+        // 関所を おとした直後は、関所＋2問の みじかい 回（階まるごとの やり直しは 重い。本人の指定 2026-09-16）
+        const redo = p.lastOutcome && p.lastOutcome.outcome === 'redo' && p.lastOutcome.floorNo === p.currentFloor;
+        const salt = seedSalt + ':' + p.name + ':' + stats.attempts + ':' + Date.now();
+        p.session = redo ? Session.buildGateRedo(p.currentFloor, p, salt) : Session.buildFloor(p.currentFloor, p, salt);
         p.retry = null;
         p.lastResult = null;
       }
@@ -7122,6 +7172,16 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
     engine.undergroundClearLines = function () { const s = p.undergroundSession; if (s) { s.lines = []; save(); } };
 
+    // 地下の 手がかり: 「辺を出す」の 1手を 見せる。なければ 解き方の 一文（座標は 見せない）
+    function ugHelpText(q) {
+      const steps = (q.explain && q.explain.steps) || [];
+      const gap = steps.filter(function (st) { return String(st.key || '').indexOf('gap:') === 0 && Array.isArray(st.parts); })[0];
+      const text = gap
+        ? gap.parts.filter(function (x) { return typeof x === 'string'; }).join(' ')
+        : ((q.explain && q.explain.sentence) || '');
+      return String(text).replace(/（\d+〜\d+）/g, '').slice(0, 80);
+    }
+
     engine.undergroundAnswer = function (given) {
       const s = p.undergroundSession;
       if (!s) return null;
@@ -7141,6 +7201,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       touch();
       if (!res.correct) {
         res.askWhere = 'どこが ちがう? もう一度。';
+        // 地下には まちがい直しが ないので、3回 まちがえたら 手がかりを 1つ 出す（本人の指定 2026-09-16）
+        if (s.tries >= 3) res.help = ugHelpText(q);
         save();
         return res;
       }
@@ -8468,6 +8530,12 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         if (e.axis === 'h') svg('line', { x1: pl.X(e.from), y1: pl.Y(e.at), x2: pl.X(e.to), y2: pl.Y(e.at), stroke: LIT, 'stroke-width': 7, 'stroke-linecap': 'square' }, g);
         else svg('line', { x1: pl.X(e.at), y1: pl.Y(e.from), x2: pl.X(e.at), y2: pl.Y(e.to), stroke: LIT, 'stroke-width': 7, 'stroke-linecap': 'square' }, g);
       });
+      // 「ここを見る」の 辺に ラベルが ないとき（切った長方形の たて・よこ など）も 赤い 太線を 引く
+      if (primary) (model.litDims || []).forEach(function (d) {
+        if (!d || d.at == null) return;
+        if (d.axis === 'x') svg('line', { x1: pl.X(d.a), y1: pl.Y(d.at), x2: pl.X(d.b), y2: pl.Y(d.at), stroke: LIT, 'stroke-width': 9, 'stroke-linecap': 'round' }, g);
+        else svg('line', { x1: pl.X(d.at), y1: pl.Y(d.a), x2: pl.X(d.at), y2: pl.Y(d.b), stroke: LIT, 'stroke-width': 9, 'stroke-linecap': 'round' }, g);
+      });
       // いま出している長方形（やり直し・ガイド）: 太いわく
       if (primary && model.activePart != null && model.parts && model.parts[model.activePart]) {
         const p = model.parts[model.activePart];
@@ -8785,7 +8853,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     'f8-m2cm2': 'm²→cm²', 'f8-cm2m2': 'cm²→m²', 'f8-rect-m-cm2': 'mで cm²', 'f8-mixed': '単位 まざり', 'f8-gate-peer100': '1m²は 何cm²?', 'f8-gate-why10000': 'なぜ 10000倍?', 'f8-rect-m-m2': 'm²の 面積', 'f8-unit-choose': '単位を えらぶ',
     'f9-unit-square': '単位の 正方形', 'f9-gate-a-shape': 'aの 形', 'f9-gate-x10': '長さと 面積', 'f9-ladder-conv': '単位の はしご', 'f9-field-a': '畑の 面積', 'f9-ladder-fill': 'はしごの 倍', 'f9-km2': 'km²と ha', 'f9-gate-a-ha-why': 'なぜ 100倍?',
     'f10-magnitude': '広さの 感じ', 'f10-approx': 'だいたいの 広さ', 'f10-gate-peer-ground': '運動場の 広さ', 'f10-desk': 'つくえ 4つ分', 'f10-times': '何こ分',
-    'f11-same-area': '同じ 広さ', 'f11-compare': '広いのは どっち', 'f11-order': '小さい 順', 'f11-scene-convert': '単位を なおす',
+    'f11-same-area': '同じ 広さ', 'f11-compare': '広さの ちがい', 'f11-order': '小さい 順', 'f11-scene-convert': '単位を なおす',
     'f12-side-first': '辺を 出す', 'f12-guided': '分けて 出す', 'f12-gate-three-ways': '3通りで とく', 'f12-gate-why-not': 'なぜ 分ける?',
     'f13-half': '切って 出す', 'f13-half-t': '3つに 分ける', 'f13-gate-why-minus': 'なぜ ひき算?', 'f13-road-guided': '道を よせる', 'f13-frame-guided': 'がくぶち',
     'f14-free': '自力で とく', 'f14-peer': '答案を 見る', 'f14-mixed-unit': '単位 まざり', 'f14-both': '面積と まわり', 'f14-road': '道の ある畑', 'f14-frame': 'がくぶち', 'f14-gate-enclose-expr': 'かこんで ひく式'
@@ -10268,7 +10336,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         fbText = fbText.replace(/（\d+〜\d+）/g, '');
         if (dungeonMain && fbText.length > 64) fbText = q.format === 'fields' ? '' : '答えは ' + q.answer + (q.unit || '') + '。';
       }
-      else if (dungeonMain) fbText = (q.format === 'line' && res.message ? res.message + ' ' : '') + 'どこが ちがう? もう一度。';
+      else if (dungeonMain) fbText = (q.format === 'line' && res.message ? res.message + ' ' : '') + 'どこが ちがう? もう一度。' + (res.help ? '　ヒント: ' + res.help : '');
       else if (res.stumbled) fbText = res.message;
       else if (q.format === 'line' && res.message) fbText = res.message;
       st.hold = { key: qs.key, q: q, correct: correct, given: given, res: res, dungeonMain: dungeonMain, guide: guide, lines: snapshotLines, ugNo: ugNo, fbText: fbText, sessIndex: sessIndex };
