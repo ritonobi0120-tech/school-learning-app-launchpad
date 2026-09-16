@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260916-40087 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260916-43831 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -1870,6 +1870,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       areaText: o.areaText || '',      // 図の中に書く面積（「面積12cm²」）
       pieceColors: o.pieceColors || null,
       pieceEdges: !!o.pieceEdges,      // 正方形パズル: 中の 区切り線を 描く（見えないと 解けない。本人の指摘 2026-09-16）
+      askMark: !!o.askMark,            // その辺を「?」と 名ざしで 聞く問題だけ マークを 出す。ふだんは ただの「書いていない 辺」（本人の指摘 2026-09-16「はてな書かんでいい、ノイズになる」）
       tilesPlaced: o.tilesPlaced || null,
       interaction: o.interaction || null
     };
@@ -3742,7 +3743,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       wrong[String(L.W + L.cw)] = 'sum';
       return {
         prompt: '「?」の 辺は 何cm? 面積は まだ 出さなくて いいよ。',
-        figure: QFig.fromFigure(fig, shown, hidden, { interaction: null }),
+        figure: QFig.fromFigure(fig, shown, hidden, { interaction: null, askMark: true }),
         answer: answer, unit: 'cm', wrong: wrong,
         explain: {
           sentence: '下の辺 ' + L.W + 'cm と、上の 2本（「?」と ' + L.cw + 'cm）を 合わせた 長さは 同じ。だから ' + L.W + '−' + L.cw + ' で 出せるよ。',
@@ -3864,7 +3865,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       ]);
       return {
         prompt: '「?」の辺は ' + L.W + '−' + L.cw + ' で出せる。なぜ ' + L.W + '−' + L.cw + ' なの?',
-        figure: QFig.fromFigure(fig, shown, hidden, { interaction: null }),
+        figure: QFig.fromFigure(fig, shown, hidden, { interaction: null, askMark: true }),
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: '下の辺' + L.W + 'と、上の2本（' + (L.W - L.cw) + 'と' + L.cw + '）を合わせた長さは 同じ。だから ' + L.W + '−' + L.cw + ' で出せるよ。',
@@ -6227,7 +6228,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const shownIds = all.filter(function (l) { return l.axis === 'x' && (l.b - l.a === W || l.b - l.a === cw); }).concat(all.filter(function (l) { return l.axis === 'y' && l.b - l.a === H; }));
       return {
         prompt: 'この形の面積は ' + area + unit + '²。「?」の辺は 何' + unit + '?',
-        figure: QFig.fromFigure(fig, shownIds, hiddenId ? [hiddenId] : [], { interaction: null, areaText: area + unit + '²' }),
+        figure: QFig.fromFigure(fig, shownIds, hiddenId ? [hiddenId] : [], { interaction: null, areaText: area + unit + '²', askMark: true }),
         answer: ch, unit: unit,
         explain: { sentence: '大きい長方形（' + W + '×' + H + '）から ' + area + ' をひくと、欠けの面積が出る。それを 欠けのよこ ' + cw + ' でわると、?の辺だよ。', steps: [{ key: 'gap', label: '欠けの面積', parts: [B('big', W * H, unit + '²'), '−', B('area', area, unit + '²'), '＝', B('cut', W * H - area, unit + '²')] }, { key: 'side', label: '辺', parts: [B('cut2', W * H - area, unit + '²'), '÷', B('cw', cw, unit), '＝', B('ch', ch, unit)] }] }
       };
@@ -8634,7 +8635,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         const isLit = primary && lit(l);
         if (!it.hid) { drawLabel(pl, l, labelText(l, unit), isHelp ? HELP : (isLit ? LIT : base), { help: isHelp, lit: isLit }); return; }
         // かくした 寸法線（辺では ない 長さ）は「?」を 出さない。ただの「書いていない 長さ」で、出すと 線だらけに なる（本人の指摘 2026-09-15）
-        const show = (primary && lit(l)) || (model.showHidden && (l.kind !== 'dim' || isHelp));
+        // 「?」は 問題が その辺を 名ざしで 聞くときだけ。ほかは ただの「書いていない 辺」で、出すと ノイズに なる（本人の指摘 2026-09-16）
+        const show = (primary && lit(l)) || isHelp || (model.showHidden && spec.askMark && l.kind !== 'dim');
         if (show) drawHidden(pl, l, isHelp);
       });
       // 面積は 図の 中ではなく 上に 出す（図と かさなって 読みにくい。本人の指摘 2026-09-16）
