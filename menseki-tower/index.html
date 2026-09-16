@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260916-33091 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260916-40087 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -1869,6 +1869,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       caption: o.caption || '',
       areaText: o.areaText || '',      // 図の中に書く面積（「面積12cm²」）
       pieceColors: o.pieceColors || null,
+      pieceEdges: !!o.pieceEdges,      // 正方形パズル: 中の 区切り線を 描く（見えないと 解けない。本人の指摘 2026-09-16）
       tilesPlaced: o.tilesPlaced || null,
       interaction: o.interaction || null
     };
@@ -5897,7 +5898,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const area = Figure.area(fig);
     return {
       prompt: '9つの 正方形で しきつめた 長方形。全体の 面積は 何cm²?',
-      figure: QFig.fromFigure(fig, plan.shown, plan.hidden, { interaction: null }),
+      figure: QFig.fromFigure(fig, plan.shown, plan.hidden, { interaction: null, pieceEdges: true }),
       answer: area, unit: 'cm²',
       hiddenCount: plan.hidden.length, ops: plan.solution.maxOps,
       explain: {
@@ -6172,7 +6173,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const edges = Figure.fullEdgeLabels(fig);
     const target = Math.max(1, edges.length - (o.showLabels || 1));
     const plan = Hide.planWithTarget(fig, edges, { rng: rng.fork('hide'), targetHidden: target, maxHidden: target, maxOps: o.ops == null ? 4 : o.ops, squares: squares, tries: 12 });
-    return figureQuestion(fig, plan, { sentence: '正方形は 4つの辺がみんな同じ。1本わかれば となりの正方形の辺も つぎつぎと わかるよ。', prompt: 'ぜんぶ正方形。面積は何' + fig.unit + '²?' });
+    const q = figureQuestion(fig, plan, { sentence: '正方形は 4つの辺がみんな同じ。1本わかれば となりの正方形の辺も つぎつぎと わかるよ。', prompt: 'ぜんぶ正方形。面積は何' + fig.unit + '²?' });
+    q.figure.pieceEdges = true;   // どこが 1つの 正方形か 見えないと 解けない
+    return q;
   }
 
   // ---- 逆問題 ----
@@ -6528,7 +6531,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     { no: 20, type: 'equal-cut', opts: { kind: 'stairs' }, name: '半分に分ける線 2' },
     // 後半は「数が 多くて 大変」ではなく「数は 少ないのに 考える」へ（本人の指摘 2026-09-16）
     { no: 21, type: 'reverse', opts: { kind: 'L-area-side', big: true }, name: '面積から辺を 2' },
-    { no: 22, type: 'squares', opts: { n: 8, showLabels: 1, ops: 5 }, name: '8つの正方形' },
+    { no: 22, type: 'squares', opts: { n: 8, showLabels: 2, ops: 4 }, name: '8つの正方形' },
     { no: 23, type: 'frame-road', opts: { hidden: 3, ops: 3 }, name: 'がくぶちと道 2' },
     { no: 24, type: 'stairs', opts: { steps: 4, hidden: 3, ops: 3 }, name: '4だんのかいだん' },
     { no: 25, type: 'reverse', opts: { kind: 'frame-area-width' }, name: 'がくぶちの はばは?' },
@@ -8553,6 +8556,11 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
           const inset = Math.max(1, Math.min(3, cell * 0.08));
           svg('rect', { x: pl.X(c.x) + inset, y: pl.Y(c.y + 1) + inset, width: cell - inset * 2, height: cell - inset * 2, fill: TILE, stroke: TILE_LINE, 'stroke-width': 2, 'pointer-events': 'none', class: 'fig-tile' }, g);
         }
+      });
+      // 正方形パズル: 中の 区切り（どこが 1つの 正方形か）を 描く。これが ないと 解けない
+      if (spec.pieceEdges && fig.pieces) fig.pieces.forEach(function (pc) {
+        if (pc.role === 'hole') return;
+        svg('rect', { x: pl.X(pc.x), y: pl.Y(pc.y + pc.h), width: pc.w * cell, height: pc.h * cell, fill: 'none', stroke: INK, 'stroke-width': 2, 'pointer-events': 'none' }, g);
       });
       if (overlay) {
         fig.pieces.forEach(function (pc, i) {
