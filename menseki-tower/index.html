@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260915-10763 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260916-17665 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -2112,7 +2112,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       // まい数は見せない方が数える練習になるので、えらぶ文の文からまい数を消す
       c.choices.forEach(function (ch) { ch.text = ch.text.replace(/（.*）/, ''); });
       return {
-        prompt: 'タイルのまい数が多いのは どっち? （面積が大きいのはどっち?）',
+        prompt: 'タイルの まい数が 多いのは どっち?',
         figures: [left, right],
         choices: c.choices, answer: c.answer,
         explain: {
@@ -2474,7 +2474,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: 'たてとよこを たしたから', misconception: 'sum' }
       ]);
       return {
-        prompt: 'この長方形の面積は ' + area + 'cm²。' + area + 'cm²になった いちばん もとの理由は?',
+        prompt: 'この長方形の 面積は ' + area + 'cm²。なぜ ' + area + 'cm² と 言えるの?',
         figure: QFig.rectSpec(s.w, s.h, { grid: true, areaText: '面積 ' + area + 'cm²' }),
         choices: c.choices, answer: c.answer,
         explain: {
@@ -2915,7 +2915,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: '合っている' }
       ], { keepOrder: true });
       return {
-        prompt: 'ほかの子の 答案の どこが まちがい?',
+        prompt: 'この 答案の どこが まちがい?',
         figure: QFig.rectSpec(s.w, s.h, { grid: false }),
         peerAnswer: 'たて' + s.h + '、よこ' + s.w + 'だから、面積は ' + wrongValue + 'cm²',
         choices: c.choices, answer: c.answer,
@@ -2939,7 +2939,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: '合っている', correct: true }
       ], { keepOrder: true });
       return {
-        prompt: 'ほかの子の 答案は どう?',
+        prompt: 'この 答案は 合っている?',
         figure: QFig.rectSpec(s.w, s.h, { grid: false }),
         peerAnswer: 'たて' + s.h + '、よこ' + s.w + 'だから、面積は ' + s.h * s.w + 'cm²',
         choices: c.choices, answer: c.answer,
@@ -3178,7 +3178,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: '1m×100m のほうが広い' }
       ], { keepOrder: true });
       return {
-        prompt: '10m×10m の土地と、1m×100m の土地。面積は?',
+        prompt: '10m×10m の 土地と、1m×100m の 土地。面積は 同じ? ちがう?',
         figures: [QFig.rectSpec(10, 10, { grid: false, unit: 'm' }), QFig.rectSpec(100, 1, { grid: false, unit: 'm' })],
         choices: c.choices, answer: c.answer,
         explain: {
@@ -3372,7 +3372,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const side = MAGNITUDE_SIDE[item];
       const sideText = side[0] + side[2] + 'と' + side[1] + side[2];
       return {
-        prompt: r.name + 'の広さは、どれくらい?',
+        prompt: r.name + 'の 広さは、およそ どれくらい?',
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: r.name + 'は たて・よこが ' + sideText + ' くらい。たて×よこ で考えよう。' + (r.area.unit === 'ha' ? '10000m² は 1ha だよ。' : '') + ' 単位がちがうと 広さは まるでちがう。1cm²は つめ、1m²は つくえ4つ分、1a は 教室 1つ半、1ha は 運動場、1km² は 市 くらい。',
@@ -3468,84 +3468,139 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     }
   });
 
-  // 11階 単位を選ぶ・並べる
+  // 11階 単位を くらべる・ならべる
   // =========================================================
-  const SCENES = Object.keys(Units.SCENE_UNIT);
-  // やり直し用: 場面の およその大きさ（たて, よこ, 長さの単位）
-  const SCENE_SIZE = {
-    nail: [1, 1, 'cm'], postcard: [15, 10, 'cm'], 'textbook-page': [26, 18, 'cm'],
-    classroom: [8, 8, 'm'], pool: [12, 25, 'm'], gym: [20, 40, 'm'],
-    farm: [30, 100, 'm'], park: [200, 250, 'm'], field: [100, 100, 'm'],
-    city: [10, 10, 'km'], prefecture: [50, 100, 'km']
-  };
-  const UNIT_SIDE_TEXT = { 'cm²': '1cm×1cm', 'm²': '1m×1m', 'a': '10m×10m', 'ha': '100m×100m', 'km²': '1km×1km' };
-  function sceneSentence(scene) {
-    const s = SCENE_SIZE[scene], name = Units.SCENE_NAME[scene], unit = Units.SCENE_UNIT[scene];
-    const prod = s[0] * s[1];
-    const base = name + 'は ' + s[0] + s[2] + '×' + s[1] + s[2] + ' くらいで、' + prod + s[2] + '²。';
-    if (unit === 'a') return base + '1a は 100m² だから ' + (prod / 100) + 'a。だから a が ちょうどいいよ。';
-    if (unit === 'ha') return base + '1ha は 10000m² だから ' + (prod / 10000) + 'ha。だから ha が ちょうどいいよ。';
-    return base + 'だから ' + unit + ' が ちょうどいいよ。';
+  // 「この場面に ちょうどいい単位は?」は 決め手が あいまい（運動場は 1ha とも 100a とも 言える）。
+  // 単位を そろえて くらべる・なおす 問題に かえた（本人の指摘 2026-09-16）。ならべる 形は そのまま のこす。
+  function areaText(v) { return v.value + v.unit; }
+  function inUnit(v, unit) { return Units.convert(v.value, v.unit, unit); }
+  // その ならびの 中で いちばん 小さい 単位（そこに そろえると 整数で くらべられる）
+  function baseUnitOf(list) {
+    let best = list[0].unit;
+    list.forEach(function (v) { if (Units.LADDER.indexOf(v.unit) < Units.LADDER.indexOf(best)) best = v.unit; });
+    return best;
   }
-  function sceneSteps(scene, label) {
-    const s = SCENE_SIZE[scene];
-    return [{ key: 'approx', label: Units.SCENE_NAME[scene] + 'の大きさ', parts: ['たて', B('h', s[0], s[2]), '×', 'よこ', B('w', s[1], s[2]), '＝', B('a', s[0] * s[1], s[2] + '²', ['mul', s[0], s[1]])] }, { key: 'rechoose', kind: 'choice', label: label }];
-  }
-
-  Bank.register({
-    id: 'f11-unit-for-scene', floor: 11, format: 'choice',
-    make: function (rng, params) {
-      const scene = params.scene || rng.pick(SCENES);
-      const unit = Units.SCENE_UNIT[scene];
-      const c = mkChoice(rng, Units.LADDER.map(function (u) { return { text: u, correct: u === unit }; }), { keepOrder: true });
-      return {
-        prompt: Units.SCENE_NAME[scene] + 'の広さを言うのに ちょうどいい単位は?',
-        choices: c.choices, answer: c.answer,
-        explain: { sentence: sceneSentence(scene) + ' 単位が 小さすぎると 数が 大きくなりすぎるし、大きすぎると 1にも ならないよ。', steps: sceneSteps(scene, 'だから ちょうどいい 単位は?') }
-      };
-    }
-  });
-
-  Bank.register({
-    id: 'f11-scene-for-unit', floor: 11, format: 'choice',
-    make: function (rng, params) {
-      const unit = params.unit || rng.pick(Units.LADDER);
-      const matching = SCENES.filter(function (s) { return Units.SCENE_UNIT[s] === unit; });
-      const others = SCENES.filter(function (s) { return Units.SCENE_UNIT[s] !== unit && !(unit === 'm²' && s === 'farm'); });
-      const correct = rng.pick(matching);
-      const wrongs = rng.shuffle(others).slice(0, 3);
-      const c = mkChoice(rng, [{ text: Units.SCENE_NAME[correct], correct: true }].concat(wrongs.map(function (s) { return { text: Units.SCENE_NAME[s] }; })));
-      return {
-        prompt: unit + ' で広さを言うのに ちょうどいいのは どれ?',
-        choices: c.choices, answer: c.answer,
-        explain: { sentence: '1' + unit + ' は ' + UNIT_SIDE_TEXT[unit] + ' の正方形。' + sceneSentence(correct), steps: sceneSteps(correct, 'だから ' + unit + ' が ちょうどいいのは?') }
-      };
-    }
-  });
 
   const ORDER_SETS = [
-    ['nail', 'classroom', 'pool', 'field', 'city'],
-    ['postcard', 'desks4', 'classroom', 'gym', 'field'],
-    ['notebook-cell', 'textbook-page', 'classroom', 'pool', 'tokyo-dome'],
-    ['postcard', 'classroom', 'one-a', 'field', 'city']
+    [{ value: 80, unit: 'm²' }, { value: 1, unit: 'a' }, { value: 300, unit: 'm²' }, { value: 5, unit: 'a' }, { value: 1000, unit: 'm²' }],
+    [{ value: 5000, unit: 'cm²' }, { value: 1, unit: 'm²' }, { value: 30000, unit: 'cm²' }, { value: 6, unit: 'm²' }, { value: 200000, unit: 'cm²' }],
+    [{ value: 50, unit: 'a' }, { value: 1, unit: 'ha' }, { value: 300, unit: 'a' }, { value: 8, unit: 'ha' }, { value: 1, unit: 'km²' }],
+    [{ value: 9000, unit: 'cm²' }, { value: 2, unit: 'm²' }, { value: 3, unit: 'a' }, { value: 4, unit: 'ha' }, { value: 1, unit: 'km²' }]
   ];
 
   Bank.register({
     id: 'f11-order', floor: 11, format: 'order',
     make: function (rng, params) {
       const set = ORDER_SETS[params.set == null ? rng.int(0, ORDER_SETS.length - 1) : params.set];
-      const items = set.map(function (id) { const r = Units.ref(id); return { id: id, text: r.name, value: r.sortValueCm2 }; });
-      const answer = items.slice().sort(function (a, b) { return a.value - b.value; }).map(function (i) { return i.id; });
+      const base = baseUnitOf(set);
+      const items = set.map(function (v, i) { return { id: 'v' + i, text: areaText(v), value: inUnit(v, base) }; });
+      const sorted = items.slice().sort(function (a, b) { return a.value - b.value; });
+      const answer = sorted.map(function (i) { return i.id; });
       return {
-        prompt: '広さが 小さい順に ならべよう。',
+        prompt: '広さが 小さい順に ならべよう。単位が ちがうよ。',
         order: { items: rng.shuffle(items), answer: answer },
         answer: answer,
-        explain: { sentence: '広さの単位は 小さい順に cm² → m² → a → ha → km²。それぞれが どの単位で言う広さかを 考えて ならべよう。' }
+        explain: {
+          sentence: 'ぜんぶ ' + base + ' に なおすと くらべられるよ。' + sorted.map(function (i) { return i.text + '＝' + i.value + base; }).join('、') + '。',
+          steps: [{ key: 'reorder', kind: 'order', label: 'なおしてから ならべよう' }]
+        }
       };
     }
   });
 
-  return { UNIT_SQUARE_CHOICES: UNIT_SQUARE_CHOICES, LADDER_PROBLEMS: LADDER_PROBLEMS, MAGNITUDE_ITEMS: MAGNITUDE_ITEMS, ORDER_SETS: ORDER_SETS };
+  // 同じ広さ: 数は 同じで 単位だけ ちがう えらぶ文（合うのは 1つだけ）
+  const SAME_AREA = {
+    'a': { from: { value: 300, unit: 'm²' }, to: { value: 3, unit: 'a' }, others: ['ha', 'km²', 'm²'] },
+    'ha': { from: { value: 50000, unit: 'm²' }, to: { value: 5, unit: 'ha' }, others: ['a', 'km²', 'm²'] },
+    'm²': { from: { value: 20000, unit: 'cm²' }, to: { value: 2, unit: 'm²' }, others: ['a', 'cm²', 'ha'] },
+    'cm²': { from: { value: 3, unit: 'm²' }, to: { value: 30000, unit: 'cm²' }, others: ['m²', 'a', 'ha'] },
+    'km²': { from: { value: 200, unit: 'ha' }, to: { value: 2, unit: 'km²' }, others: ['ha', 'a', 'm²'] }
+  };
+
+  Bank.register({
+    id: 'f11-same-area', floor: 11, format: 'choice',
+    make: function (rng, params) {
+      const def = SAME_AREA[params.unit || rng.pick(Object.keys(SAME_AREA))];
+      const one = Units.convert(1, def.to.unit, def.from.unit);
+      const c = mkChoice(rng, [{ text: areaText(def.to), correct: true }].concat(def.others.map(function (u) { return { text: def.to.value + u }; })));
+      return {
+        prompt: areaText(def.from) + ' と 同じ 広さは どれ?',
+        choices: c.choices, answer: c.answer,
+        explain: {
+          sentence: '1' + def.to.unit + ' は ' + one + def.from.unit + '。' + areaText(def.from) + ' は ' + one + def.from.unit + ' が ' + def.to.value + 'つ分だよ。' + LADDER_TEXT,
+          steps: [{ key: 'conv', label: areaText(def.from) + ' を ' + def.to.unit + ' で', parts: [B('a', def.to.value, def.to.unit, ['div', def.from.value, one])] }, { key: 'rechoose', kind: 'choice', label: 'だから 同じ 広さは?' }]
+        }
+      };
+    }
+  });
+
+  // くらべる: 数が 大きいほうが 広いとは かぎらない（単位を そろえて くらべる）
+  const COMPARE_SETS = [
+    [{ value: 900, unit: 'm²' }, { value: 8, unit: 'a' }],
+    [{ value: 3, unit: 'ha' }, { value: 400, unit: 'a' }],
+    [{ value: 50000, unit: 'cm²' }, { value: 4, unit: 'm²' }],
+    [{ value: 2, unit: 'km²' }, { value: 150, unit: 'ha' }]
+  ];
+
+  Bank.register({
+    id: 'f11-compare', floor: 11, format: 'choice',
+    make: function (rng, params) {
+      const pair = COMPARE_SETS[params.set == null ? rng.int(0, COMPARE_SETS.length - 1) : params.set];
+      const base = baseUnitOf(pair);
+      const a = inUnit(pair[0], base), b = inUnit(pair[1], base);
+      const c = mkChoice(rng, [
+        { text: areaText(pair[0]), correct: a > b },
+        { text: areaText(pair[1]), correct: b > a },
+        { text: '同じ', correct: a === b }
+      ], { keepOrder: true });
+      return {
+        prompt: areaText(pair[0]) + ' と ' + areaText(pair[1]) + '。広いのは どっち?',
+        choices: c.choices, answer: c.answer,
+        explain: {
+          sentence: '単位を そろえて くらべよう。' + areaText(pair[0]) + '＝' + a + base + '、' + areaText(pair[1]) + '＝' + b + base + '。数が 大きいほうが 広いとは かぎらないよ。',
+          steps: [
+            { key: 'l', label: areaText(pair[0]) + ' は', parts: [B('la', a, base)] },
+            { key: 'r', label: areaText(pair[1]) + ' は', parts: [B('rb', b, base)] },
+            { key: 'rechoose', kind: 'choice', label: 'だから 広いのは?' }
+          ]
+        }
+      };
+    }
+  });
+
+  // 場面の 面積を べつの単位に なおす（量感は 10階、ここは 単位の 関係）
+  const SCENE_CONV = {
+    field: { name: '運動場', from: { value: 1, unit: 'ha' }, to: 'm²' },
+    pool: { name: '25mプール', from: { value: 300, unit: 'm²' }, to: 'a' },
+    gym: { name: '体育館', from: { value: 800, unit: 'm²' }, to: 'a' },
+    city: { name: '市', from: { value: 100, unit: 'km²' }, to: 'ha' }
+  };
+
+  Bank.register({
+    id: 'f11-scene-convert', floor: 11, format: 'number',
+    make: function (rng, params) {
+      const def = SCENE_CONV[params.item || rng.pick(Object.keys(SCENE_CONV))];
+      const answer = inUnit(def.from, def.to);
+      const one = Units.convert(1, def.to, def.from.unit);
+      const wrong = {};
+      const j = Units.LADDER.indexOf(def.to), i = Units.LADDER.indexOf(def.from.unit);
+      const nearer = Units.LADDER[j + (j > i ? -1 : 1)];
+      if (nearer && nearer !== def.from.unit) {
+        const v = inUnit(def.from, nearer);
+        if (Number.isInteger(v) && v !== answer) wrong[String(v)] = 'x100';
+      }
+      return {
+        prompt: def.name + 'の 面積は ' + areaText(def.from) + '。何' + def.to + '?',
+        answer: answer, unit: def.to, wrong: wrong,
+        explain: {
+          sentence: '1' + def.to + ' は ' + one + def.from.unit + '。' + areaText(def.from) + ' は その ' + answer + 'つ分だよ。' + LADDER_TEXT,
+          steps: [{ key: 'conv', label: areaText(def.from) + ' を ' + def.to + ' で', parts: [B('a', answer, def.to)] }]
+        }
+      };
+    }
+  });
+
+  return { UNIT_SQUARE_CHOICES: UNIT_SQUARE_CHOICES, LADDER_PROBLEMS: LADDER_PROBLEMS, MAGNITUDE_ITEMS: MAGNITUDE_ITEMS, ORDER_SETS: ORDER_SETS, COMPARE_SETS: COMPARE_SETS };
 });
 
 
@@ -3635,7 +3690,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const L = randomL(rng, { minW: 6, maxW: 9, minH: 5, maxH: 7 });
       const built = buildLQuestion(rng, L, { maxHidden: variant === 1 ? 0 : (variant === 2 ? 1 : 2) });
       return {
-        prompt: variant === 1 ? 'この形の面積を出そう。まず、どこで切る?' : 'どこで切る? 書いていない辺は、書いてある辺から出そう。',
+        prompt: variant === 1 ? 'この形の 面積を 出そう。まず、どこで 切る?' : 'どこで 切る? 書いていない 辺は 書いてある 辺から 出して、面積を 出そう。',
         figure: built.figure,
         cut: { guide: 'full', hiddenCount: built.plan.hidden.length },
         answer: built.area, unit: 'cm²', wrong: lWrong(L),
@@ -3776,7 +3831,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const labels = [Figure.dimLabel('x', 0, W, W, -1.2), Figure.dimLabel('y', 0, H, H, -1.2), Figure.dimLabel('x', at, at + r, r, H + 1)];
       const area = (W - r) * H;
       return {
-        prompt: 'はば' + r + 'm の道が たてに通る 畑。道を はしに よせて 考えよう。',
+        prompt: 'はば' + r + 'm の 道が ある 畑。道を はしに よせて、畑の 面積を 出そう。',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + r + 'm' }),
         fields: [{ key: 'w', label: 'よせた あとの よこ', unit: 'm', answer: W - r }, { key: 'area', label: '畑の面積', unit: 'm²', answer: area }],
         explain: { sentence: '道を はしに よせると、よこは ' + W + '−' + r + '。それに たて' + H + ' を かけるよ。', steps: [{ key: 'w', label: 'よこ', parts: [B('w', W - r, 'm'), '（' + W + '−' + r + '）'] }, { key: 'a', label: '面積', parts: [B('h', H, 'm'), '×', B('w2', W - r, 'm'), '＝', B('area', area, 'm²', ['mul', H, W - r])] }] }
@@ -3793,41 +3848,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const inner = (W - 2 * b) * (H - 2 * b), area = W * H - inner;
       const labels = [Figure.dimLabel('x', 0, W, W, -1.2), Figure.dimLabel('y', 0, H, H, -1.2), Figure.dimLabel('x', 0, b, b, Math.floor(H / 2))];
       return {
-        prompt: 'はば' + b + 'cm の がくぶち。外の長方形から 内の長方形を ひいて 考えよう。',
-        figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば ' + b + 'cm' }),
-        fields: [{ key: 'outer', label: '外の面積', unit: 'cm²', answer: W * H }, { key: 'inner', label: '内の面積', unit: 'cm²', answer: inner }, { key: 'area', label: 'がくぶち', unit: 'cm²', answer: area }],
-        explain: { sentence: '内の よこは ' + W + '−' + b + '−' + b + '、たては ' + H + '−' + b + '−' + b + '。外 − 内 が がくぶちの面積だよ。', steps: [{ key: 'o', label: '外', parts: [B('oh', H, 'cm'), '×', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'i', label: '内', parts: [B('ih', H - 2 * b, 'cm'), '×', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 's', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }] }
-      };
-    }
-  });
-
-  // 13階: 道の ガイド版（道を はしに よせる を ことばで）
-  Bank.register({
-    id: 'f13-road-guided', floor: 13, format: 'fields',
-    make: function (rng) {
-      const W = rng.int(8, 13), H = rng.int(6, 9), r = rng.int(1, 2), at = rng.int(2, W - r - 2);
-      const fig = Shapes.road(W, H, [{ axis: 'v', at: at, width: r }], { unit: 'm', grid: true });
-      const labels = [Figure.dimLabel('x', 0, W, W, -1.2), Figure.dimLabel('y', 0, H, H, -1.2), Figure.dimLabel('x', at, at + r, r, H + 1)];
-      const area = (W - r) * H;
-      return {
-        prompt: 'はば' + r + 'm の道が たてに通る 畑。道を はしに よせて 考えよう。',
-        figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + r + 'm' }),
-        fields: [{ key: 'w', label: 'よせた あとの よこ', unit: 'm', answer: W - r }, { key: 'area', label: '畑の面積', unit: 'm²', answer: area }],
-        explain: { sentence: '道を はしに よせると、よこは ' + W + '−' + r + '。それに たて' + H + ' を かけるよ。', steps: [{ key: 'w', label: 'よこ', parts: [B('w', W - r, 'm'), '（' + W + '−' + r + '）'] }, { key: 'a', label: '面積', parts: [B('h', H, 'm'), '×', B('w2', W - r, 'm'), '＝', B('area', area, 'm²', ['mul', H, W - r])] }] }
-      };
-    }
-  });
-
-  // 13階: 額ぶちの ガイド版（外−内 を ことばで）
-  Bank.register({
-    id: 'f13-frame-guided', floor: 13, format: 'fields',
-    make: function (rng) {
-      const W = rng.int(7, 12), H = rng.int(6, 9), b = rng.int(1, 2);
-      const fig = Shapes.frame(W, H, { left: b, right: b, top: b, bottom: b }, { unit: 'cm', grid: true });
-      const inner = (W - 2 * b) * (H - 2 * b), area = W * H - inner;
-      const labels = [Figure.dimLabel('x', 0, W, W, -1.2), Figure.dimLabel('y', 0, H, H, -1.2), Figure.dimLabel('x', 0, b, b, Math.floor(H / 2))];
-      return {
-        prompt: 'はば' + b + 'cm の がくぶち。外の長方形から 内の長方形を ひいて 考えよう。',
+        prompt: 'はば' + b + 'cm の がくぶち。外から 内を ひいて、がくぶちの 面積を 出そう。',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば ' + b + 'cm' }),
         fields: [{ key: 'outer', label: '外の面積', unit: 'cm²', answer: W * H }, { key: 'inner', label: '内の面積', unit: 'cm²', answer: inner }, { key: 'area', label: 'がくぶち', unit: 'cm²', answer: area }],
         explain: { sentence: '内の よこは ' + W + '−' + b + '−' + b + '、たては ' + H + '−' + b + '−' + b + '。外 − 内 が がくぶちの面積だよ。', steps: [{ key: 'o', label: '外', parts: [B('oh', H, 'cm'), '×', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'i', label: '内', parts: [B('ih', H - 2 * b, 'cm'), '×', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 's', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }] }
@@ -4094,9 +4115,11 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       own: [c('f10-magnitude', { item: 'classroom' }), c('f10-approx', { item: 'pool' }), c('f10-magnitude', { item: 'field' }), t('f10-gate-peer-ground'), c('f10-times'), c('f10-magnitude', { item: 'postcard' }), c('f10-desk'), c('f10-approx', { item: 'gym' }), t('f10-magnitude', { item: 'pool' }), t('f10-approx', { item: 'classroom' })]
     },
     {
-      no: 11, part: 3, name: '単位をえらぶ・ならべる', count: 10,
+      no: 11, part: 3, name: '単位を くらべる・ならべる', count: 10,
       guardian: 'ものさしの番人',
-      own: [c('f11-unit-for-scene', { scene: 'city' }), c('f11-scene-for-unit', { unit: 'cm²' }), c('f11-order', { set: 0 }), c('f11-unit-for-scene', { scene: 'classroom' }), c('f11-scene-for-unit', { unit: 'ha' }), t('f11-unit-for-scene', { scene: 'field' }), c('f11-order', { set: 3 }), t('f11-unit-for-scene', { scene: 'postcard' }), c('f11-scene-for-unit', { unit: 'km²' }), t('f11-unit-for-scene', { scene: 'farm' })]
+      // 「ちょうどいい単位は?」は 決め手が あいまい（運動場は 1ha でも 100a でも 言える）ので、
+      // 数を そろえて くらべる・なおす 問題に かえた（本人の指摘 2026-09-16）
+      own: [c('f11-same-area', { unit: 'a' }), c('f11-compare', { set: 0 }), c('f11-order', { set: 0 }), c('f11-scene-convert', { item: 'field' }), c('f11-same-area', { unit: 'ha' }), c('f11-order', { set: 2 }), c('f11-compare', { set: 1 }), c('f11-scene-convert', { item: 'pool' }), c('f11-same-area', { unit: 'm²' }), t('f11-order', { set: 3 })]
     },
     {
       no: 12, part: 4, name: 'フルガイド', count: 5, fixed: true,
@@ -4599,7 +4622,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     'f8-rect-m-cm2': 'unit-rect', 'f8-mixed': 'unit-rect',
     'f9-unit-square': 'unit-def', 'f9-gate-a-shape': 'unit-def', 'f9-gate-x10': 'scale',
     'f10-magnitude': 'magnitude', 'f10-desk': 'magnitude', 'f10-approx': 'approx',
-    'f11-unit-for-scene': 'unit-pick', 'f11-scene-for-unit': 'scene-pick', 'f11-order': 'order',
+    'f11-same-area': 'same-area', 'f11-compare': 'compare', 'f11-order': 'order', 'f11-scene-convert': 'convert',
     'f13-half-t': 'cut-t', 'f14-mixed-unit': 'cut-unit', 'f14-both': 'fields',
     'f4-word': 'word', 'f6-word-reverse': 'word', 'f9-field-a': 'word',
     'f7-max-area': 'compare', 'f14-road': 'road', 'f14-frame': 'frame'
@@ -8705,7 +8728,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     'f8-m2cm2': 'm²→cm²', 'f8-cm2m2': 'cm²→m²', 'f8-rect-m-cm2': 'mで cm²', 'f8-mixed': '単位 まざり', 'f8-gate-peer100': '1m²は 何cm²?', 'f8-gate-why10000': 'なぜ 10000倍?', 'f8-rect-m-m2': 'm²の 面積', 'f8-unit-choose': '単位を えらぶ',
     'f9-unit-square': '単位の 正方形', 'f9-gate-a-shape': 'aの 形', 'f9-gate-x10': '長さと 面積', 'f9-ladder-conv': '単位の はしご', 'f9-field-a': '畑の 面積', 'f9-ladder-fill': 'はしごの 倍', 'f9-km2': 'km²と ha', 'f9-gate-a-ha-why': 'なぜ 100倍?',
     'f10-magnitude': '広さの 感じ', 'f10-approx': 'だいたいの 広さ', 'f10-gate-peer-ground': '運動場の 広さ', 'f10-desk': 'つくえ 4つ分', 'f10-times': '何こ分',
-    'f11-unit-for-scene': '単位を えらぶ', 'f11-scene-for-unit': '場面を えらぶ', 'f11-order': '小さい 順',
+    'f11-same-area': '同じ 広さ', 'f11-compare': '広いのは どっち', 'f11-order': '小さい 順', 'f11-scene-convert': '単位を なおす',
     'f12-guided': '分けて 出す', 'f12-gate-three-ways': '3通りで とく', 'f12-gate-why-not': 'なぜ 分ける?',
     'f13-half': '切って 出す', 'f13-half-t': '3つに 分ける', 'f13-gate-why-minus': 'なぜ ひき算?', 'f13-road-guided': '道を よせる', 'f13-frame-guided': 'がくぶち',
     'f14-free': '自力で とく', 'f14-peer': '答案を 見る', 'f14-mixed-unit': '単位 まざり', 'f14-both': '面積と まわり', 'f14-road': '道の ある畑', 'f14-frame': 'がくぶち', 'f14-gate-enclose-expr': 'かこんで ひく式'
