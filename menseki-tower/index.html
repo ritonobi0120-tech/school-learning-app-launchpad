@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260916-17665 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260916-19792 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -3699,6 +3699,36 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     }
   });
 
+  // 12階の 1段目: 切る前に「?」の 辺だけ 出す（面積は まだ 聞かない。本人の案 2026-09-16）
+  Bank.register({
+    id: 'f12-side-first', floor: 12, format: 'number',
+    make: function (rng) {
+      const L = randomL(rng, { minW: 6, maxW: 10, minH: 5, maxH: 8, corner: 'tr' });
+      const fig = Shapes.lShape(L.W, L.H, L.cw, L.ch, 'tr', { grid: true });
+      const all = Figure.fullEdgeLabels(fig);
+      // 下の辺(W)と 欠けの 右の辺(cw)を 見せ、上の 左の辺(W-cw)を「?」に する
+      const hiddenId = all.filter(function (l) { return l.axis === 'x' && l.facing === 'up' && l.b === L.W - L.cw; })[0].id;
+      const shown = all.filter(function (l) { return l.id !== hiddenId; });
+      const hidden = all.filter(function (l) { return l.id === hiddenId; });
+      const answer = L.W - L.cw;
+      const wrong = {};
+      wrong[String(L.W)] = 'side-only';
+      wrong[String(L.W + L.cw)] = 'sum';
+      return {
+        prompt: '「?」の 辺は 何cm? 面積は まだ 出さなくて いいよ。',
+        figure: QFig.fromFigure(fig, shown, hidden, { interaction: null }),
+        answer: answer, unit: 'cm', wrong: wrong,
+        explain: {
+          sentence: '下の辺 ' + L.W + 'cm と、上の 2本（「?」と ' + L.cw + 'cm）を 合わせた 長さは 同じ。だから ' + L.W + '−' + L.cw + ' で 出せるよ。',
+          steps: [
+            { key: 'given', label: '書いてある辺', parts: ['下の辺', B('w', L.W, 'cm'), '、上の 右の辺', B('cw', L.cw, 'cm')] },
+            { key: 'hidden', label: '「?」の辺', parts: [B('w2', L.W, 'cm'), '−', B('cw2', L.cw, 'cm'), '＝', B('q', answer, 'cm')] }
+          ]
+        }
+      };
+    }
+  });
+
   Bank.register({
     id: 'f12-gate-three-ways', floor: 12, format: 'cut', gate: true,
     make: function (rng) {
@@ -4122,9 +4152,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       own: [c('f11-same-area', { unit: 'a' }), c('f11-compare', { set: 0 }), c('f11-order', { set: 0 }), c('f11-scene-convert', { item: 'field' }), c('f11-same-area', { unit: 'ha' }), c('f11-order', { set: 2 }), c('f11-compare', { set: 1 }), c('f11-scene-convert', { item: 'pool' }), c('f11-same-area', { unit: 'm²' }), t('f11-order', { set: 3 })]
     },
     {
-      no: 12, part: 4, name: 'フルガイド', count: 5, fixed: true,
+      no: 12, part: 4, name: 'フルガイド', count: 6, fixed: true,
       guardian: '欠けたゆかの番人',
-      own: [t('f12-guided', { variant: 1 }), t('f12-guided', { variant: 2 }), t('f12-guided', { variant: 3 }), t('f12-gate-three-ways'), t('f12-gate-why-not')]
+      // 1問目は 切る前に「?」の 辺だけ 出す（そのあと 線を引く → 分けた長方形ごとに → ぜんぶたす と つづく）
+      own: [t('f12-side-first'), t('f12-guided', { variant: 1 }), t('f12-guided', { variant: 2 }), t('f12-guided', { variant: 3 }), t('f12-gate-three-ways'), t('f12-gate-why-not')]
     },
     {
       no: 13, part: 4, name: '半分ガイド', count: 10,
@@ -4623,7 +4654,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     'f9-unit-square': 'unit-def', 'f9-gate-a-shape': 'unit-def', 'f9-gate-x10': 'scale',
     'f10-magnitude': 'magnitude', 'f10-desk': 'magnitude', 'f10-approx': 'approx',
     'f11-same-area': 'same-area', 'f11-compare': 'compare', 'f11-order': 'order', 'f11-scene-convert': 'convert',
-    'f13-half-t': 'cut-t', 'f14-mixed-unit': 'cut-unit', 'f14-both': 'fields',
+    'f12-side-first': 'side', 'f13-half-t': 'cut-t', 'f14-mixed-unit': 'cut-unit', 'f14-both': 'fields',
     'f4-word': 'word', 'f6-word-reverse': 'word', 'f9-field-a': 'word',
     'f7-max-area': 'compare', 'f14-road': 'road', 'f14-frame': 'frame'
   };
@@ -8729,7 +8760,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     'f9-unit-square': '単位の 正方形', 'f9-gate-a-shape': 'aの 形', 'f9-gate-x10': '長さと 面積', 'f9-ladder-conv': '単位の はしご', 'f9-field-a': '畑の 面積', 'f9-ladder-fill': 'はしごの 倍', 'f9-km2': 'km²と ha', 'f9-gate-a-ha-why': 'なぜ 100倍?',
     'f10-magnitude': '広さの 感じ', 'f10-approx': 'だいたいの 広さ', 'f10-gate-peer-ground': '運動場の 広さ', 'f10-desk': 'つくえ 4つ分', 'f10-times': '何こ分',
     'f11-same-area': '同じ 広さ', 'f11-compare': '広いのは どっち', 'f11-order': '小さい 順', 'f11-scene-convert': '単位を なおす',
-    'f12-guided': '分けて 出す', 'f12-gate-three-ways': '3通りで とく', 'f12-gate-why-not': 'なぜ 分ける?',
+    'f12-side-first': '辺を 出す', 'f12-guided': '分けて 出す', 'f12-gate-three-ways': '3通りで とく', 'f12-gate-why-not': 'なぜ 分ける?',
     'f13-half': '切って 出す', 'f13-half-t': '3つに 分ける', 'f13-gate-why-minus': 'なぜ ひき算?', 'f13-road-guided': '道を よせる', 'f13-frame-guided': 'がくぶち',
     'f14-free': '自力で とく', 'f14-peer': '答案を 見る', 'f14-mixed-unit': '単位 まざり', 'f14-both': '面積と まわり', 'f14-road': '道の ある畑', 'f14-frame': 'がくぶち', 'f14-gate-enclose-expr': 'かこんで ひく式'
   };
