@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260916-44684 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260916-45504 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -6227,10 +6227,11 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const hiddenId = all.filter(function (l) { return l.axis === 'y' && l.b - l.a === ch && l.a === H - ch && l.at === W - cw; })[0];
       const shownIds = all.filter(function (l) { return l.axis === 'x' && (l.b - l.a === W || l.b - l.a === cw); }).concat(all.filter(function (l) { return l.axis === 'y' && l.b - l.a === H; }));
       return {
-        prompt: 'この形の面積は ' + area + unit + '²。「?」の辺は 何' + unit + '?',
-        figure: QFig.fromFigure(fig, shownIds, hiddenId ? [hiddenId] : [], { interaction: null, areaText: area + unit + '²', askMark: true }),
+        // 「?」と 黄色い わくは 出さない（本人の指定 2026-09-16）。どの辺かは ことばで 言う
+        prompt: 'この形の面積は ' + area + unit + '²。欠けた ところの たては 何' + unit + '?',
+        figure: QFig.fromFigure(fig, shownIds, hiddenId ? [hiddenId] : [], { interaction: null, areaText: area + unit + '²' }),
         answer: ch, unit: unit,
-        explain: { sentence: '大きい長方形（' + W + '×' + H + '）から ' + area + ' をひくと、欠けの面積が出る。それを 欠けのよこ ' + cw + ' でわると、?の辺だよ。', steps: [{ key: 'gap', label: '欠けの面積', parts: [B('big', W * H, unit + '²'), '−', B('area', area, unit + '²'), '＝', B('cut', W * H - area, unit + '²')] }, { key: 'side', label: '辺', parts: [B('cut2', W * H - area, unit + '²'), '÷', B('cw', cw, unit), '＝', B('ch', ch, unit)] }] }
+        explain: { sentence: '大きい長方形（' + W + '×' + H + '）から ' + area + ' をひくと、欠けの面積が出る。それを 欠けのよこ ' + cw + ' でわると、欠けの たてだよ。', steps: [{ key: 'gap', label: '欠けの面積', parts: [B('big', W * H, unit + '²'), '−', B('area', area, unit + '²'), '＝', B('cut', W * H - area, unit + '²')] }, { key: 'side', label: '辺', parts: [B('cut2', W * H - area, unit + '²'), '÷', B('cw', cw, unit), '＝', B('ch', ch, unit)] }] }
       };
     }
     // rect-area-side（大きい数）
