@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260916-19792 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260916-23293 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -210,6 +210,15 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 .blank-btn.ng { border-color: #c9402f; background: #f7dcd8; color: #8a2a1e; animation: shake 0.3s steps(2) 1; }
 .blank-btn.wait { border-style: dashed; color: #8c877a; cursor: default; background: transparent; }
 .blank-unit { font-size: calc(var(--fs) * clamp(13px, 2.2vh, 22px)); color: #6e6a5c; }
+/* わくや すきまを つけると せまい 画面で 行が あふれるので、色だけで 分ける */
+.blank-unit.area { color: #1d3566; background: #d9e8ff; }
+.blank-unit.len { color: #7a3f0f; background: #ffe9d2; }
+/* 聞かれているのが 面積か 長さかを はっきり 出す 札 */
+.ask-tag { align-self: flex-start; padding: 0.3vh 12px; border: 3px solid #2b2a3a; background: #fbf9f2; color: #2b2a3a; box-shadow: 3px 3px 0 #1e1d2a; font-size: calc(var(--fs) * clamp(14px, 2.3vh, 23px)); flex-shrink: 0; }
+.ask-tag.area { background: #d9e8ff; border-color: #2f5fa8; color: #1d3566; }
+.ask-tag.len { background: #ffe9d2; border-color: #c2661f; color: #7a3f0f; }
+.num-display .unit.area { background: #d9e8ff; color: #1d3566; }
+.num-display .unit.len { background: #ffe9d2; color: #7a3f0f; }
 
 /* ならべる */
 .order-list { display: flex; flex-direction: column; gap: 0.9vh; flex: 1; min-height: 0; }
@@ -1669,25 +1678,31 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     return b;
   }
 
+  // dim: この□が 図の どの 辺かを 表す（解説で 赤い 太線で「ここを見る」と 見せる）。whole は 図ぜんたいの たて・よこ
+  // area: この□は 面積（図ぜんたいを 赤く かこむ）
+  function dimW(axis) { return { axis: axis, whole: true }; }
+  function withDim(blank, extra) { return Object.assign(blank, extra); }
+
   function stepsRectArea(h, w, unit, opts) {
     const u = unit || 'cm';
     const u2 = (opts && opts.areaUnit) || (u + '²');
-    return [{ key: 'formula', label: '式', parts: ['たて', B('h', h, u), '×', 'よこ', B('w', w, u), '＝', B('area', h * w, u2, ['mul', h, w])] }];
+    return [{ key: 'formula', label: '式', parts: ['たて', withDim(B('h', h, u), { dim: dimW('y') }), '×', 'よこ', withDim(B('w', w, u), { dim: dimW('x') }), '＝', withDim(B('area', h * w, u2, ['mul', h, w]), { area: true })] }];
   }
 
   function stepsSquareArea(s, unit) {
     const u = unit || 'cm';
-    return [{ key: 'formula', label: '式', parts: ['1辺', B('h', s, u), '×', '1辺', B('w', s, u), '＝', B('area', s * s, u + '²', ['mul', s, s])] }];
+    return [{ key: 'formula', label: '式', parts: ['1辺', withDim(B('h', s, u), { dim: dimW('y') }), '×', '1辺', withDim(B('w', s, u), { dim: dimW('x') }), '＝', withDim(B('area', s * s, u + '²', ['mul', s, s]), { area: true })] }];
   }
 
   function stepsReverse(area, known, knownName, target, targetName, unit) {
     const u = unit || 'cm';
-    return [{ key: 'reverse', label: '式', parts: ['面積', B('area', area, u + '²'), '÷', knownName, B('known', known, u), '＝', targetName, B('target', target, u, ['div', area, known])] }];
+    const kAxis = knownName === 'たて' ? 'y' : 'x';
+    return [{ key: 'reverse', label: '式', parts: ['面積', withDim(B('area', area, u + '²'), { area: true }), '÷', knownName, withDim(B('known', known, u), { dim: dimW(kAxis) }), '＝', targetName, withDim(B('target', target, u, ['div', area, known]), { dim: dimW(kAxis === 'y' ? 'x' : 'y') })] }];
   }
 
   function stepsPerimeter(h, w, unit) {
     const u = unit || 'cm';
-    return [{ key: 'perimeter', label: 'まわりの長さ', parts: ['(', 'たて', B('h', h, u), '+', 'よこ', B('w', w, u), ')', '×2', '＝', B('perimeter', 2 * (h + w), u, ['mul', h + w, 2])] }];
+    return [{ key: 'perimeter', label: 'まわりの長さ', parts: ['(', 'たて', withDim(B('h', h, u), { dim: dimW('y') }), '+', 'よこ', withDim(B('w', w, u), { dim: dimW('x') }), ')', '×2', '＝', B('perimeter', 2 * (h + w), u, ['mul', h + w, 2])] }];
   }
 
   function stepsChoice() {
@@ -8073,6 +8088,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   const SHAPE_LINE = '#2f3f75';
   const DIM = '#c2661f';
   const HELP = '#7b60a9';
+  const LIT = '#d8362a';   // 解説の「ここを見る」（赤い 太線）
   // 図の 外に 出した 寸法線は 1本ずつ 色を かえる（1本目は ふだんの 色）
   const DIM_COLORS = [DIM, '#2f8a57', '#8a4fc7', '#c23b6b', '#1f7f8c', '#8a6a12'];
   const FREE_FILLS = ['#5d8fd8', '#6cbd6f', '#ef9448', '#a48ad0'];     // 自分で切ったとき（1つ目は そのまま青）
@@ -8447,6 +8463,11 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         if (e.axis === 'h') svg('line', { x1: pl.X(e.from), y1: pl.Y(e.at), x2: pl.X(e.to), y2: pl.Y(e.at), stroke: INK, 'stroke-width': 3, 'stroke-linecap': 'square' }, g);
         else svg('line', { x1: pl.X(e.at), y1: pl.Y(e.from), x2: pl.X(e.at), y2: pl.Y(e.to), stroke: INK, 'stroke-width': 3, 'stroke-linecap': 'square' }, g);
       });
+      // 解説で「面積」の らんを うめるとき: 形の ふちを 赤い 太線で かこむ（どこの 面積かを 見せる）
+      if (primary && model.litArea && !overlay) Figure.boundaryEdgesOfCells(cells).forEach(function (e) {
+        if (e.axis === 'h') svg('line', { x1: pl.X(e.from), y1: pl.Y(e.at), x2: pl.X(e.to), y2: pl.Y(e.at), stroke: LIT, 'stroke-width': 7, 'stroke-linecap': 'square' }, g);
+        else svg('line', { x1: pl.X(e.at), y1: pl.Y(e.from), x2: pl.X(e.at), y2: pl.Y(e.to), stroke: LIT, 'stroke-width': 7, 'stroke-linecap': 'square' }, g);
+      });
       // いま出している長方形（やり直し・ガイド）: 太いわく
       if (primary && model.activePart != null && model.parts && model.parts[model.activePart]) {
         const p = model.parts[model.activePart];
@@ -8479,7 +8500,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         const l = it.l;
         const isHelp = helpIds[l.axis + ':' + l.a + '-' + l.b + ':' + (l.at0 != null ? l.at0 : l.at)];
         const base = !it.hid && l.kind === 'dim' && l.side ? DIM_COLORS[dimNo++ % DIM_COLORS.length] : DIM;
-        if (!it.hid) { drawLabel(pl, l, labelText(l, unit), isHelp ? HELP : base, { help: isHelp, lit: primary && lit(l) }); return; }
+        const isLit = primary && lit(l);
+        if (!it.hid) { drawLabel(pl, l, labelText(l, unit), isHelp ? HELP : (isLit ? LIT : base), { help: isHelp, lit: isLit }); return; }
         // かくした 寸法線（辺では ない 長さ）は「?」を 出さない。ただの「書いていない 長さ」で、出すと 線だらけに なる（本人の指摘 2026-09-15）
         const show = (primary && lit(l)) || (model.showHidden && (l.kind !== 'dim' || isHelp));
         if (show) drawHidden(pl, l, isHelp);
@@ -8527,13 +8549,17 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         // 同じ長さの2本: 辺そのものを色で太く
         if (l.axis === 'x') svg('line', { x1: pl.X(l.a), y1: pl.Y(l.at), x2: pl.X(l.b), y2: pl.Y(l.at), stroke: HELP, 'stroke-width': 7 }, g);
         else svg('line', { x1: pl.X(l.at), y1: pl.Y(l.a), x2: pl.X(l.at), y2: pl.Y(l.b), stroke: HELP, 'stroke-width': 7 }, g);
+      } else if (opt.lit) {
+        // 解説の「ここを見る」: その辺を 赤い 太線で なぞる
+        if (l.axis === 'x') svg('line', { x1: pl.X(l.a), y1: pl.Y(l.at), x2: pl.X(l.b), y2: pl.Y(l.at), stroke: LIT, 'stroke-width': 9, 'stroke-linecap': 'round' }, g);
+        else svg('line', { x1: pl.X(l.at), y1: pl.Y(l.a), x2: pl.X(l.at), y2: pl.Y(l.b), stroke: LIT, 'stroke-width': 9, 'stroke-linecap': 'round' }, g);
       }
       const tw = String(text).length * fs * 0.62 + 8, th = fs * 1.3;
       const pt = l.kind === 'dim' && l.at != null ? reserve(clampIn(labelPoint(pl, l), tw, th), tw, th) : placeFree(labelPoint(pl, l), tw, th, l);
       if (opt.lit) {
         const w = text.length * fs * 0.62 + 14;
         const bx = pt.anchor === 'middle' ? pt.x - w / 2 : pt.anchor === 'start' ? pt.x - 4 : pt.x - w + 4;
-        svg('rect', { x: bx, y: pt.y - fs * 0.72, width: w, height: fs * 1.44, fill: '#fff3c4', stroke: '#f4a23c', 'stroke-width': 3 }, g);
+        svg('rect', { x: bx, y: pt.y - fs * 0.72, width: w, height: fs * 1.44, fill: '#fdece9', stroke: LIT, 'stroke-width': 3 }, g);
       }
       const t = svg('text', { x: pt.x, y: pt.y, 'text-anchor': pt.anchor, 'dominant-baseline': 'central', class: 'board-text', fill: color, 'font-size': fs }, g);
       t.textContent = text;
@@ -9749,10 +9775,30 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     return [[hidden].concat(gap ? gap.path.map(function (p) { return p.label; }) : [])];
   }
 
+  // 単位から「面積」か「長さ」かを 見わける（聞かれているのが どっちか わかりにくい。本人の指摘 2026-09-16）
+  function unitKind(unit) {
+    const u = String(unit || '');
+    if (!u) return '';
+    if (u.indexOf('²') >= 0) return 'area';
+    if (/^(mm|cm|m|km)$/.test(u)) return 'len';
+    return '';
+  }
+  function askText(unit) {
+    const k = unitKind(unit);
+    if (k === 'area') return '面積を 答える（' + unit + '）';
+    if (k === 'len') return '長さを 答える（' + unit + '）';
+    if (unit === 'まい') return 'まい数を 答える';
+    return unit ? unit + ' で 答える' : '';
+  }
+  function askTag(unit) {
+    return h('div', { class: 'ask-tag ' + unitKind(unit), text: askText(unit) });
+  }
+
   function numDisplay(value, unit, opts) {
     const o = opts || {};
     const cls = 'val' + (value === '' ? ' empty' : '') + (o.state ? ' ' + o.state : '');
-    return h('div', { class: 'num-display' + (o.dark ? ' dark' : '') }, [h('div', { class: cls, plain: value === '' ? '?' : value }), unit ? h('div', { class: 'unit', plain: unit }) : null]);
+    const uk = unitKind(unit);
+    return h('div', { class: 'num-display' + (o.dark ? ' dark' : '') }, [h('div', { class: cls, plain: value === '' ? '?' : value }), unit ? h('div', { class: 'unit' + (uk ? ' ' + uk : ''), plain: unit }) : null]);
   }
 
   // 選択肢が 入りきらないときは、すきまと 文字を 1段ずつ 小さくする
@@ -9813,7 +9859,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     return h('div', { class: 'peer-card' + (dark ? ' dark' : '') }, [h('span', { class: 'hd', text: 'ほかの子の 答案' }), h('span', { class: 'tx', plain: q.peerAnswer })]);
   }
 
-  Object.assign(UI, { peerCard: peerCard, formulaText: formulaText, figuresModel: figuresModel, mountBoard: mountBoard, hissanGrid: hissanGrid, hissanOverlay: hissanOverlay, flash: flash, numDisplay: numDisplay, choiceList: choiceList, fieldRows: fieldRows, orderList: orderList, floorLabelOf: floorLabelOf, guardOfSession: guardOfSession });
+  Object.assign(UI, { peerCard: peerCard, formulaText: formulaText, figuresModel: figuresModel, mountBoard: mountBoard, hissanGrid: hissanGrid, hissanOverlay: hissanOverlay, flash: flash, numDisplay: numDisplay, choiceList: choiceList, fieldRows: fieldRows, orderList: orderList, floorLabelOf: floorLabelOf, guardOfSession: guardOfSession, unitKind: unitKind, askTag: askTag });
 
   function newState(key, q) {
     return {
@@ -10046,6 +10092,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       if (tilesQ) { const pre = MT.Board.placedCells(q.figure); let n = pre.size; qs.tiles.forEach(function (k) { if (!pre.has(k)) n += 1; }); col.appendChild(h('div', { class: 'col-label', text: 'おいた タイル ' + n + ' まい' })); }
       else if (step) col.appendChild(h('div', { class: 'col-label', text: step.ask }));
       const unit = step ? step.unit : (q.unit || '');
+      // 長さを 聞かれているのか 面積かを はっきり 出す
+      if (!tilesQ && unitKind(unit)) col.appendChild(askTag(unit));
       const valState = hold ? (hold.correct ? 'ok' : 'ng') : qs.numState;
       col.appendChild(numDisplay(hold ? String(hold.given == null ? '' : hold.given) : qs.num.value, unit, { dark: dark, state: valState }));
       col.appendChild(UI.keypad(typeKey, { dark: dark }));
@@ -10433,6 +10481,19 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       }
     }
     if (model && v.help && v.help.segments && v.help.segments.length) model.helpSegs = v.help.segments;
+    // いま うめる □ が 図の どこかを 赤い 太線で 見せる（文字だけでは わかりにくい。本人の指摘 2026-09-16）
+    if (model && !guide) {
+      const ob = openBlank();
+      const src = ob && (ob.dim || ob.area) ? ob : (v.step && (v.step.dim || v.step.area) ? v.step : null);
+      if (src && src.dim) {
+        const d = src.dim;
+        if (d.whole && q.figure && q.figure.fig) {
+          const bb = MT.Figure.bounds(q.figure.fig);
+          model.litDims = [d.axis === 'y' ? { axis: 'y', a: bb.y1, b: bb.y2 } : { axis: 'x', a: bb.x1, b: bb.x2 }];
+        } else if (d.a != null) model.litDims = [d];
+      }
+      if (src && src.area) model.litArea = true;
+    }
     UI.mountBoard(wrap, model, q.prompt);
     const hp = hsEngine || rs.hissan;
     if (hp) wrap.appendChild(UI.hissanOverlay(hp));
@@ -10524,7 +10585,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
             if (hsEngine) kids.push(blankBtn(MT.Hissan.isDone(hsEngine) ? String(hsEngine.answer) : '筆算', MT.Hissan.isDone(hsEngine) ? 'ok' : 'on'));
             else kids.push(blankBtn(rs.value || '□', 'on' + (rs.ng ? ' ng' : '')));
           } else kids.push(blankBtn('□', 'wait'));
-          if (p.unit) kids.push(h('span', { class: 'blank-unit', plain: p.unit }));
+          if (p.unit) kids.push(h('span', { class: 'blank-unit ' + UI.unitKind(p.unit), plain: p.unit }));
         });
         if (state === 'done') kids.push(h('span', { class: 'mark', plain: '✓' }));
         rows.push(h('div', { class: 'fill-row ' + state }, kids));
@@ -10716,6 +10777,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         col.appendChild(UI.fieldRows(q.fields, rs.fields, rs.fieldFocus, { held: locked, onFocus: function (k) { rs.fieldFocus = k; redrawRight(); } }));
         col.appendChild(UI.keypad(onKey));
       } else {
+        if (UI.unitKind(q.unit)) col.appendChild(UI.askTag(q.unit));
         col.appendChild(UI.numDisplay(rs.value, q.unit || '', { state: held ? 'ok' : (rs.fb ? 'ng' : '') }));
         col.appendChild(UI.keypad(onKey));
       }
