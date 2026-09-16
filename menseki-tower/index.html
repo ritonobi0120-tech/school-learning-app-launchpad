@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260916-30473 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260916-33091 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -3889,7 +3889,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: 'はば' + r + 'm の 道が ある 畑。道を はしに よせて、畑の 面積を 出そう。',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + r + 'm' }),
         fields: [{ key: 'w', label: 'よせた あとの よこ', unit: 'm', answer: W - r }, { key: 'area', label: '畑の面積', unit: 'm²', answer: area }],
-        explain: { sentence: '道を はしに よせると、よこは ' + W + '−' + r + '。それに たて' + H + ' を かけるよ。', steps: [{ key: 'w', label: 'よこ', parts: [B('w', W - r, 'm'), '（' + W + '−' + r + '）'] }, { key: 'a', label: '面積', parts: [B('h', H, 'm'), '×', B('w2', W - r, 'm'), '＝', B('area', area, 'm²', ['mul', H, W - r])] }] }
+        explain: { sentence: '道を はしに よせると、よこは ' + W + 'm から 道の ' + r + 'm を ひいた 長さ。それに たて' + H + 'm を かけるよ。', steps: [{ key: 'w', label: 'よこ', rect: { x: 0, y: 0, w: W - r, h: H }, parts: ['よこ ' + W + 'm から 道の ' + r + 'm を ひいて', B('w', W - r, 'm')] }, { key: 'a', label: '面積', rect: { x: 0, y: 0, w: W - r, h: H }, parts: [B('h', H, 'm'), '×', B('w2', W - r, 'm'), '＝', B('area', area, 'm²', ['mul', H, W - r])] }] }
       };
     }
   });
@@ -3906,7 +3906,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: 'はば' + b + 'cm の がくぶち。外から 内を ひいて、がくぶちの 面積を 出そう。',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば ' + b + 'cm' }),
         fields: [{ key: 'outer', label: '外の面積', unit: 'cm²', answer: W * H }, { key: 'inner', label: '内の面積', unit: 'cm²', answer: inner }, { key: 'area', label: 'がくぶち', unit: 'cm²', answer: area }],
-        explain: { sentence: '内の よこは ' + W + '−' + b + '−' + b + '、たては ' + H + '−' + b + '−' + b + '。外 − 内 が がくぶちの面積だよ。', steps: [{ key: 'o', label: '外', parts: [B('oh', H, 'cm'), '×', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'i', label: '内', parts: [B('ih', H - 2 * b, 'cm'), '×', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 's', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }] }
+        explain: { sentence: '内の よこは ' + W + '−' + b + '−' + b + '、たては ' + H + '−' + b + '−' + b + '。外 − 内 が がくぶちの面積だよ。', steps: [{ key: 'o', label: '外', rect: { x: 0, y: 0, w: W, h: H }, parts: [B('oh', H, 'cm'), '×', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'i', label: '内', rect: { x: b, y: b, w: W - 2 * b, h: H - 2 * b }, parts: [B('ih', H - 2 * b, 'cm'), '×', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 's', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }] }
       };
     }
   });
@@ -4043,7 +4043,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         answer: area, unit: 'm²', wrong: wrong,
         explain: {
           sentence: '道を はしに よせると、畑は 1つの長方形になる。よこは ' + W + '−' + r + '。それに たてを かけるよ。',
-          steps: [{ key: 'move', label: '道をよせる', parts: ['よこ', B('w', W - r, 'm'), '（' + W + '−' + r + '）'] }, { key: 'formula', label: '式', parts: ['たて', B('h', H, 'm'), '×', 'よこ', B('w2', W - r, 'm'), '＝', B('area', area, 'm²', ['mul', H, W - r])] }]
+          // 「（11−2）」だけ 置くと 何の 式か わからない（本人の指摘 2026-09-16）。ことばで 書く
+          steps: [{ key: 'move', label: '道をよせる', rect: { x: 0, y: 0, w: W - r, h: H }, parts: ['よこ ' + W + 'm から 道の ' + r + 'm を ひいて', B('w', W - r, 'm')] }, { key: 'formula', label: '式', rect: { x: 0, y: 0, w: W - r, h: H }, parts: ['たて', B('h', H, 'm'), '×', 'よこ', B('w2', W - r, 'm'), '＝', B('area', area, 'm²', ['mul', H, W - r])] }]
         }
       };
     }
@@ -4067,7 +4068,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         answer: area, unit: 'cm²', wrong: wrong,
         explain: {
           sentence: '外の長方形から 内の長方形をひく。内のよこは ' + W + '−' + b + '−' + b + '、内のたては ' + H + '−' + b + '−' + b + '。はばは 両がわにあるよ。',
-          steps: [{ key: 'outer', label: '外', parts: [B('oh', H, 'cm'), '×', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'inner', label: '内', parts: [B('ih', H - 2 * b, 'cm'), '×', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 'sub', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }]
+          // rect: その行が 図の どの長方形か（行と 同じ色の わくを 図に 出す）
+          steps: [{ key: 'outer', label: '外', rect: { x: 0, y: 0, w: W, h: H }, parts: [B('oh', H, 'cm'), '×', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'inner', label: '内', rect: { x: b, y: b, w: W - 2 * b, h: H - 2 * b }, parts: [B('ih', H - 2 * b, 'cm'), '×', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 'sub', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }]
         }
       };
     }
@@ -4092,8 +4094,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         explain: {
           sentence: 'かこむ大きい長方形の面積から、欠けたところの面積を ひくよ。欠けたところは 上の右の 小さい長方形だよ。',
           steps: [
-            { key: 'box', label: 'かこむ大きい長方形', parts: ['たて', B('bh', L.H, 'cm'), '×', 'よこ', B('bw', L.W, 'cm'), '＝', B('ba', L.W * L.H, 'cm²', ['mul', L.H, L.W])] },
-            { key: 'cutout', label: '欠けたところ', parts: ['たて', B('ch', L.ch, 'cm'), '×', 'よこ', B('cw', L.cw, 'cm'), '＝', B('ca', L.cw * L.ch, 'cm²', ['mul', L.ch, L.cw])] },
+            { key: 'box', label: 'かこむ大きい長方形', rect: { x: 0, y: 0, w: L.W, h: L.H }, parts: ['たて', B('bh', L.H, 'cm'), '×', 'よこ', B('bw', L.W, 'cm'), '＝', B('ba', L.W * L.H, 'cm²', ['mul', L.H, L.W])] },
+            { key: 'cutout', label: '欠けたところ', rect: { x: L.W - L.cw, y: L.H - L.ch, w: L.cw, h: L.ch }, parts: ['たて', B('ch', L.ch, 'cm'), '×', 'よこ', B('cw', L.cw, 'cm'), '＝', B('ca', L.cw * L.ch, 'cm²', ['mul', L.ch, L.cw])] },
             { key: 'sub', label: 'ひく', parts: [B('b2', L.W * L.H, 'cm²'), '−', B('c2', L.cw * L.ch, 'cm²'), '＝', B('area', L.W * L.H - L.cw * L.ch, 'cm²')] }
           ]
         }
@@ -4127,7 +4129,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     {
       no: 2, part: 1, name: '数える', count: 10,
       guardian: 'タイルの番人',
-      own: [c('f2-count', { kind: 'rect' }), c('f2-count', { kind: 'square' }), c('f2-compare'), c('f2-partial'), c('f2-shortcut'), t('f2-count', { kind: 'tall' }), c('f2-rows'), t('f2-count', { kind: 'wide' }), c('f2-grid-shape', { kind: 'L' }), t('f2-shortcut')]
+      // 途中まで タイルを おいた 問題（f2-partial）は やめた（本人の指摘 2026-09-16「のこりを 数えさせるために 塗っておく 必要は?」）。
+      // 「ぜんぶ おかずに 数える」は f2-shortcut が やっている
+      own: [c('f2-count', { kind: 'rect' }), c('f2-count', { kind: 'square' }), c('f2-compare'), c('f2-grid-shape', { kind: 'T' }), c('f2-shortcut'), t('f2-count', { kind: 'tall' }), c('f2-rows'), t('f2-count', { kind: 'wide' }), c('f2-grid-shape', { kind: 'L' }), t('f2-shortcut')]
     },
     {
       no: 3, part: 1, name: '正体を問う', count: 10,
@@ -6185,8 +6189,33 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         explain: { sentence: 'たて＋よこ＝' + (perim / 2) + '。たして' + (perim / 2) + '、かけて' + area + 'になる 2つの数をさがす。', steps: [{ key: 'half', label: 'たて＋よこ', parts: [B('half', perim / 2, unit)] }, { key: 'pair', label: '2つの数', parts: ['たて', B('h', h, unit), 'よこ', B('w', w, unit)] }] }
       };
     }
+    // がくぶちの 面積から はばを 出す（数は 3つだけ。ひらめきが いる。本人の案 2026-09-16）
+    if (kind === 'frame-area-width') {
+      let W = 0, H = 0, b = 0;
+      for (let t = 0; t < 40; t += 1) {
+        W = rng.int(10, 20); H = rng.int(8, 16); b = rng.int(1, 3);
+        if (W - 2 * b >= 3 && H - 2 * b >= 3) break;
+      }
+      const fig = Shapes.frame(W, H, { left: b, right: b, top: b, bottom: b }, { unit: unit, grid: false });
+      const area = Figure.area(fig);
+      const labels = [Figure.dimLabel('x', 0, W, W, -1), Figure.dimLabel('y', 0, H, H, -1)];
+      return {
+        prompt: 'たて' + H + unit + '・よこ' + W + unit + ' の がくぶち。色の 部分が ' + area + unit + '² のとき、はばは 何' + unit + '?',
+        figure: QFig.fromFigure(fig, labels, [], { interaction: null, areaText: area + unit + '²' }),
+        answer: b, unit: unit,
+        explain: {
+          sentence: '内の 長方形の 面積は 外ぜんたい から 色の 部分を ひいた 分。はばを 1・2・3 と ためして、内の たて・よこが 合う ところを さがすよ。はばは 両がわに あるから、内の よこは ' + W + ' から はば2つ分を ひく。',
+          steps: [
+            { key: 'inner', label: '内の面積', parts: [B('big', W * H, unit + '²'), '−', B('col', area, unit + '²'), '＝', B('in', (W - 2 * b) * (H - 2 * b), unit + '²')] },
+            { key: 'w', label: 'はば', parts: ['内は たて ' + (H - 2 * b) + '・よこ ' + (W - 2 * b) + '。はばは', B('b', b, unit)] }
+          ]
+        }
+      };
+    }
     if (kind === 'L-area-side') {
-      const W = rng.int(8, 14), H = rng.int(6, 10), cw = rng.int(2, W - 3), ch = rng.int(2, H - 2);
+      const big = !!o.big;
+      const W = big ? rng.int(18, 34) : rng.int(8, 14), H = big ? rng.int(14, 26) : rng.int(6, 10);
+      const cw = rng.int(2, W - 3), ch = rng.int(2, H - 2);
       const fig = Shapes.lShape(W, H, cw, ch, 'tr', { grid: false, unit: unit });
       const area = Figure.area(fig);
       const all = Figure.fullEdgeLabels(fig);
@@ -6219,6 +6248,26 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     if (kind === 'rect') {
       const W = rng.int(3, 6) * 2, H = rng.int(3, 7);
       fig = Shapes.rect(W, H, { unit: unit, grid: true });
+    } else if (kind === 'L') {
+      // 組み合わせた形を 半分に（本人の案 2026-09-16）。1本の線で 半分ずつに できる形だけ 出す（作ってから たしかめる）
+      const halves = function (f, total) {
+        const bb = Figure.bounds(f);
+        const ok = function (line) {
+          const a = Figure.analyzeLines(f, [line]);
+          return a.mode === 'cut' && a.parts.length === 2 && a.parts[0].w * a.parts[0].h === total / 2;
+        };
+        for (let x = bb.x1 + 1; x < bb.x2; x += 1) if (ok({ x1: x, y1: bb.y1, x2: x, y2: bb.y2 })) return true;
+        for (let y = bb.y1 + 1; y < bb.y2; y += 1) if (ok({ x1: bb.x1, y1: y, x2: bb.x2, y2: y })) return true;
+        return false;
+      };
+      for (let t = 0; t < 60 && !fig; t += 1) {
+        const W = rng.int(5, 9), H = rng.int(4, 8);
+        const cw = rng.int(1, W - 2), ch = rng.int(1, H - 2);
+        const f = Shapes.lShape(W, H, cw, ch, rng.pick(['tr', 'tl', 'br', 'bl']), { unit: unit, grid: true });
+        const total = Figure.area(f);
+        if (total % 2 === 0 && halves(f, total)) fig = f;
+      }
+      if (!fig) fig = Shapes.lShape(6, 5, 2, 2, 'tr', { unit: unit, grid: true });
     } else {
       // 下 W1×h1、上 W2×h2 で 面積が同じ → 横に切ると等しい
       const pairs = [[6, 2, 4, 3], [8, 3, 6, 4], [9, 2, 6, 3], [10, 3, 6, 5], [12, 2, 8, 3]];
@@ -6473,15 +6522,16 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     { no: 14, type: 'stairs', opts: { steps: 4, hidden: 4, ops: 3 }, name: 'かくれたかいだん' },
     { no: 15, type: 'stairs', opts: { steps: 4, hidden: 3, ops: 2, unit: 'm', big: true }, name: '大きな数のかいだん' },
     { no: 16, type: 'reverse', opts: { kind: 'rect-area-perim' }, name: '面積とまわりから' },
-    { no: 17, type: 'equal-cut', opts: { kind: 'rect' }, name: '半分に分ける線' },
+    { no: 17, type: 'equal-cut', opts: { kind: 'L' }, name: '半分に分ける線（組み合わせた形）' },
     { no: 18, type: 'reverse', opts: { kind: 'L-area-side' }, name: '面積から辺を' },
     { no: 19, type: 'unit-mixed', opts: { steps: 3, hidden: 2, ops: 2 }, name: 'mとcm' },
     { no: 20, type: 'equal-cut', opts: { kind: 'stairs' }, name: '半分に分ける線 2' },
-    { no: 21, type: 'overlap', opts: { n: 3, hidden: 3, ops: 3 }, name: '3つの重なり' },
+    // 後半は「数が 多くて 大変」ではなく「数は 少ないのに 考える」へ（本人の指摘 2026-09-16）
+    { no: 21, type: 'reverse', opts: { kind: 'L-area-side', big: true }, name: '面積から辺を 2' },
     { no: 22, type: 'squares', opts: { n: 8, showLabels: 1, ops: 5 }, name: '8つの正方形' },
     { no: 23, type: 'frame-road', opts: { hidden: 3, ops: 3 }, name: 'がくぶちと道 2' },
-    { no: 24, type: 'stairs', opts: { steps: 6, hidden: 5, ops: 3 }, name: '6だんのかいだん' },
-    { no: 25, type: 'overlap', opts: { n: 3, hidden: 4, ops: 4, unit: 'm' }, name: '3つの重なり 2' },
+    { no: 24, type: 'stairs', opts: { steps: 4, hidden: 3, ops: 3 }, name: '4だんのかいだん' },
+    { no: 25, type: 'reverse', opts: { kind: 'frame-area-width' }, name: 'がくぶちの はばは?' },
     { no: 26, type: 'handmade', opts: { no: 26 }, name: 'ボス: 深いかいだん' },
     { no: 27, type: 'handmade', opts: { no: 27 }, name: 'ボス: この答案は正しい?' },
     { no: 28, type: 'handmade', opts: { no: 28 }, name: 'ボス: 9つの正方形' },
@@ -8530,6 +8580,11 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         if (e.axis === 'h') svg('line', { x1: pl.X(e.from), y1: pl.Y(e.at), x2: pl.X(e.to), y2: pl.Y(e.at), stroke: LIT, 'stroke-width': 7, 'stroke-linecap': 'square' }, g);
         else svg('line', { x1: pl.X(e.at), y1: pl.Y(e.from), x2: pl.X(e.at), y2: pl.Y(e.to), stroke: LIT, 'stroke-width': 7, 'stroke-linecap': 'square' }, g);
       });
+      // 解説の 行（外・内・かこむ など）が 図の どの長方形かを、行と 同じ色の わくで 見せる
+      if (primary && model.litRect) {
+        const lr = model.litRect;
+        svg('rect', { x: pl.X(lr.x), y: pl.Y(lr.y + lr.h), width: lr.w * cell, height: lr.h * cell, fill: 'none', stroke: model.litRectColor || LIT, 'stroke-width': 6, 'stroke-dasharray': '10 6' }, g);
+      }
       // 「ここを見る」の 辺に ラベルが ないとき（切った長方形の たて・よこ など）も 赤い 太線を 引く
       if (primary) (model.litDims || []).forEach(function (d) {
         if (!d || d.at == null) return;
@@ -8574,7 +8629,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         const show = (primary && lit(l)) || (model.showHidden && (l.kind !== 'dim' || isHelp));
         if (show) drawHidden(pl, l, isHelp);
       });
-      if (spec.areaText) tag((pl.X(b.x1) + pl.X(b.x2)) / 2, (pl.Y(b.y1) + pl.Y(b.y2)) / 2, spec.areaText, { fs: Math.max(13, Math.min(geo.fs, 26)) });
+      // 面積は 図の 中ではなく 上に 出す（図と かさなって 読みにくい。本人の指摘 2026-09-16）
+      if (spec.areaText) tag((pl.X(b.x1) + pl.X(b.x2)) / 2, pl.top + geo.margin * geo.cell * 0.45, spec.areaText, { fs: Math.max(13, Math.min(geo.fs, 26)) });
       // 図の下に とっておいた 帯の まん中に 書く（板の ふちで 切れないように）
       if (spec.caption) tag((pl.X(b.x1) + pl.X(b.x2)) / 2, pl.bottom - geo.margin * geo.cell * 0.45, spec.caption, { fs: Math.max(12, Math.min(geo.fs * 0.8, 22)), bg: '#1f2740', fg: '#fbf9f2' });
     }
@@ -10388,7 +10444,12 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   const Guide = MT.Guide;
   UI.screens = UI.screens || {};
 
-  const ROW_COLORS = { '左': '#6cbd6f', '右': '#ef9448', 'まん中': '#a48ad0' };
+  // 行の 色と、図の その長方形の わくの 色を そろえる（外と内が どこか わからない。本人の指摘 2026-09-16）
+  const ROW_COLORS = {
+    '左': '#6cbd6f', '右': '#ef9448', 'まん中': '#a48ad0',
+    '外': '#3b7dd8', '内': '#ef9448', 'ひく': '#a48ad0',
+    'かこむ大きい長方形': '#3b7dd8', '欠けたところ': '#ef9448', '道をよせる': '#6cbd6f', 'よこ': '#6cbd6f'
+  };
   const FIG_TWO = ['#6cbd6f', '#ef9448'];
 
   function itemKeyOf(v) { return [v.item.index, v.item.templateId, v.item.seed].join(':'); }
@@ -10561,6 +10622,11 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         } else if (d.a != null) model.litDims = [d];
       }
       if (src && src.area) model.litArea = true;
+      // 「外」「内」など、いまの 行が 図の どの長方形かを 同じ色の わくで 見せる
+      if (v.step && v.step.rect) {
+        model.litRect = v.step.rect;
+        model.litRectColor = ROW_COLORS[v.step.label] || null;
+      }
     }
     UI.mountBoard(wrap, model, q.prompt);
     const hp = hsEngine || rs.hissan;
