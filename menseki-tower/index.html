@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260916-45504 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260917-26310 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -1870,6 +1870,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       areaText: o.areaText || '',      // 図の中に書く面積（「面積12cm²」）
       pieceColors: o.pieceColors || null,
       pieceEdges: !!o.pieceEdges,      // 正方形パズル: 中の 区切り線を 描く（見えないと 解けない。本人の指摘 2026-09-16）
+      dimsInside: !!o.dimsInside,      // よこの 寸法は 図の 外に 積まず、帯の 中に 数だけ 書く（塔）
       askMark: !!o.askMark,            // その辺を「?」と 名ざしで 聞く問題だけ マークを 出す。ふだんは ただの「書いていない 辺」（本人の指摘 2026-09-16「はてな書かんでいい、ノイズになる」）
       tilesPlaced: o.tilesPlaced || null,
       interaction: o.interaction || null
@@ -3864,14 +3865,15 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: 'ひき算の問題だから' }
       ]);
       return {
-        prompt: '「?」の辺は ' + L.W + '−' + L.cw + ' で出せる。なぜ ' + L.W + '−' + L.cw + ' なの?',
-        figure: QFig.fromFigure(fig, shown, hidden, { interaction: null, askMark: true }),
+        // 答えは 理由（辺の 長さでは ない）ので「?」は 出さない。どの辺かは ことばで 言う（本人の指定 2026-09-17）
+        prompt: '上の 左がわの 辺は ' + L.W + '−' + L.cw + ' で 出せる。なぜ ' + L.W + '−' + L.cw + ' なの?',
+        figure: QFig.fromFigure(fig, shown, hidden, { interaction: null }),
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: '下の辺' + L.W + 'と、上の2本（' + (L.W - L.cw) + 'と' + L.cw + '）を合わせた長さは 同じ。だから ' + L.W + '−' + L.cw + ' で出せるよ。',
           steps: [
             { key: 'given', label: '書いてある辺', parts: ['下の辺', B('w', L.W, 'cm'), '、上の右の辺', B('cw', L.cw, 'cm')] },
-            { key: 'hidden', label: '「?」の辺', parts: ['下の辺', B('w2', L.W, 'cm'), '−', '上の右の辺', B('cw2', L.cw, 'cm'), '＝', B('q', L.W - L.cw, 'cm')] },
+            { key: 'hidden', label: '上の 左がわの 辺', parts: ['下の辺', B('w2', L.W, 'cm'), '−', '上の右の辺', B('cw2', L.cw, 'cm'), '＝', B('q', L.W - L.cw, 'cm')] },
             { key: 'rechoose', kind: 'choice', label: 'だから なぜ ひき算?' }
           ]
         }
@@ -6227,9 +6229,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const hiddenId = all.filter(function (l) { return l.axis === 'y' && l.b - l.a === ch && l.a === H - ch && l.at === W - cw; })[0];
       const shownIds = all.filter(function (l) { return l.axis === 'x' && (l.b - l.a === W || l.b - l.a === cw); }).concat(all.filter(function (l) { return l.axis === 'y' && l.b - l.a === H; }));
       return {
-        // 「?」と 黄色い わくは 出さない（本人の指定 2026-09-16）。どの辺かは ことばで 言う
+        // 辺の 長さを 聞く問題なので「?」は 出す（黄色い なぞりは 出さない。本人の指定 2026-09-17）
         prompt: 'この形の面積は ' + area + unit + '²。欠けた ところの たては 何' + unit + '?',
-        figure: QFig.fromFigure(fig, shownIds, hiddenId ? [hiddenId] : [], { interaction: null, areaText: area + unit + '²' }),
+        figure: QFig.fromFigure(fig, shownIds, hiddenId ? [hiddenId] : [], { interaction: null, areaText: area + unit + '²', askMark: true }),
         answer: ch, unit: unit,
         explain: { sentence: '大きい長方形（' + W + '×' + H + '）から ' + area + ' をひくと、欠けの面積が出る。それを 欠けのよこ ' + cw + ' でわると、欠けの たてだよ。', steps: [{ key: 'gap', label: '欠けの面積', parts: [B('big', W * H, unit + '²'), '−', B('area', area, unit + '²'), '＝', B('cut', W * H - area, unit + '²')] }, { key: 'side', label: '辺', parts: [B('cut2', W * H - area, unit + '²'), '÷', B('cw', cw, unit), '＝', B('ch', ch, unit)] }] }
       };
@@ -6489,7 +6491,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     });
     return {
       prompt: '塔の 切り口の 面積は 何m²? 手帳で □の 辺を 出そう。どの階も 高さ3m。',
-      figure: QFig.fromFigure(fig, shown.concat([Figure.dimLabel('y', 0, 42, 42, -2)]), hb.hidden, { interaction: 'cut', caption: '14階ぶん。まどは ふきぬけ' }),
+      figure: QFig.fromFigure(fig, shown.concat([Figure.dimLabel('y', 0, 42, 42, -2)]), hb.hidden, { interaction: 'cut', caption: '14階ぶん。まどは ふきぬけ', dimsInside: true }),
       answer: area, unit: 'm²',
       handbook: true,
       explain: {
@@ -8298,6 +8300,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       all.forEach(function (o, i) {
         const l = o.l;
         if (l.kind !== 'dim' || l.at == null) return;
+        // 塔: 各階の よこは 帯の 中に 書く（外に 積むと 図が つぶれる）。まどの 寸法は ふつうに 外へ
+        if (spec.dimsInside && l.axis === 'x' && String(l.facing || '').indexOf('floor') === 0) return;
         const side = sideFor(l);
         sideOf.set(o, side);
         sides[side].push({ o: o, len: l.b - l.a, i: i });
@@ -8638,7 +8642,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         const isHelp = helpIds[l.axis + ':' + l.a + '-' + l.b + ':' + (l.at0 != null ? l.at0 : l.at)];
         const base = !it.hid && l.kind === 'dim' && l.side ? DIM_COLORS[dimNo++ % DIM_COLORS.length] : DIM;
         const isLit = primary && lit(l);
-        if (!it.hid) { drawLabel(pl, l, labelText(l, unit), isHelp ? HELP : (isLit ? LIT : base), { help: isHelp, lit: isLit }); return; }
+        const textOnly = !!(spec.dimsInside && l.kind === 'dim' && l.axis === 'x' && String(l.facing || '').indexOf('floor') === 0);
+        if (!it.hid) { drawLabel(pl, l, labelText(l, unit), isHelp ? HELP : (isLit ? LIT : base), { help: isHelp, lit: isLit, textOnly: textOnly }); return; }
         // かくした 寸法線（辺では ない 長さ）は「?」を 出さない。ただの「書いていない 長さ」で、出すと 線だらけに なる（本人の指摘 2026-09-15）
         // 「?」は 問題が その辺を 名ざしで 聞くときだけ。ほかは ただの「書いていない 辺」で、出すと ノイズに なる（本人の指摘 2026-09-16）
         const show = (primary && lit(l)) || isHelp || (model.showHidden && spec.askMark && l.kind !== 'dim');
@@ -8667,6 +8672,17 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     function drawLabel(pl, l, text, color, opt) {
       const g = svg('g', { class: 'board-label' + (opt.help ? ' help' : '') }, root_);
       const fs = geo.fs;
+      // 帯の 中に 数だけ 書く（塔の 各階の よこ。本人の指定 2026-09-17）。線や 矢じるしは 引かない
+      if (opt.textOnly && l.at != null) {
+        // 左はしに よせる（まどは まん中に あるので かさならない）
+        const fz = Math.max(11, Math.min(fs * 0.8, geo.cell * 1.8));
+        const tw = String(text).length * fz * 0.62 + 10;
+        const cx = pl.X(l.a) + Math.max(3, geo.cell * 0.3) + tw / 2, cy = pl.Y(l.at + 0.5);
+        svg('rect', { x: cx - tw / 2, y: cy - fz * 0.72, width: tw, height: fz * 1.44, fill: '#fbf9f2', 'fill-opacity': 0.92, stroke: color, 'stroke-width': 1.5 }, g);
+        const t0 = svg('text', { x: cx, y: cy, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'board-text', fill: color, 'font-size': fz }, g);
+        t0.textContent = text;
+        return;
+      }
       if (l.kind === 'dim' && l.at != null) {
         drawExt(pl, l, g, color);
         const thick = opt.help ? 5 : 3;
@@ -8709,12 +8725,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       if (isHelp) {
         if (l.axis === 'x') svg('line', { x1: pl.X(l.a), y1: pl.Y(l.at), x2: pl.X(l.b), y2: pl.Y(l.at), stroke: HELP, 'stroke-width': 7 }, g);
         else svg('line', { x1: pl.X(l.at), y1: pl.Y(l.a), x2: pl.X(l.at), y2: pl.Y(l.b), stroke: HELP, 'stroke-width': 7 }, g);
-      } else if (l.kind !== 'dim' && l.at != null) {
-        // 「?」の 辺を 黄色で なぞる（小さい だんで「?」が ならんでも、どの 辺の 長さか わかるように）
-        const inset = Math.min(3, geo.cell * 0.15);
-        if (l.axis === 'x') svg('line', { x1: pl.X(l.a) + inset, y1: pl.Y(l.at), x2: pl.X(l.b) - inset, y2: pl.Y(l.at), stroke: '#f2c230', 'stroke-width': 6 }, g);
-        else svg('line', { x1: pl.X(l.at), y1: pl.Y(l.a) - inset, x2: pl.X(l.at), y2: pl.Y(l.b) + inset, stroke: '#f2c230', 'stroke-width': 6 }, g);
       }
+      // 「?」の 辺を 黄色で なぞるのは やめた（ノイズに なる。本人の指定 2026-09-16）
       // 寸法線の「?」は 線も引く（どこの長さが わからないのか 見えるように）
       if (l.kind === 'dim' && l.at != null) {
         const col = isHelp ? HELP : '#8c877a';
