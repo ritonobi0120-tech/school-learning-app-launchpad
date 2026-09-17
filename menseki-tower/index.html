@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260917-26310 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260917-36144 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -1870,7 +1870,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       areaText: o.areaText || '',      // 図の中に書く面積（「面積12cm²」）
       pieceColors: o.pieceColors || null,
       pieceEdges: !!o.pieceEdges,      // 正方形パズル: 中の 区切り線を 描く（見えないと 解けない。本人の指摘 2026-09-16）
-      dimsInside: !!o.dimsInside,      // よこの 寸法は 図の 外に 積まず、帯の 中に 数だけ 書く（塔）
+      dimsInside: !!o.dimsInside,
+      redEdges: o.redEdges || null,    // 問題で 名ざしする 辺（赤い 太線で 描く）      // よこの 寸法は 図の 外に 積まず、帯の 中に 数だけ 書く（塔）
       askMark: !!o.askMark,            // その辺を「?」と 名ざしで 聞く問題だけ マークを 出す。ふだんは ただの「書いていない 辺」（本人の指摘 2026-09-16「はてな書かんでいい、ノイズになる」）
       tilesPlaced: o.tilesPlaced || null,
       interaction: o.interaction || null
@@ -3859,21 +3860,24 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const hiddenId = all.filter(function (l) { return l.axis === 'x' && l.facing === 'up' && l.b === L.W - L.cw; })[0].id;
       const shown = all.filter(function (l) { return l.id !== hiddenId; });
       const hidden = all.filter(function (l) { return l.id === hiddenId; });
+      // 「ひき算の問題だから」は ある意味 正しく 見えるので やめた（本人の指摘 2026-09-17）。はっきり まちがいと 言える 理由に する
+      const red = L.W - L.cw;
+      const wrongSame = red === L.cw ? 'かけ算の 答えだから' : L.cw + 'cmの 辺と 同じ 長さだから';
       const c = mkChoice(rng, [
         { text: '向かい合う辺は 同じ長さだから', correct: true },
         { text: L.W + 'のほうが 大きいから' },
-        { text: 'ひき算の問題だから' }
+        { text: wrongSame }
       ]);
       return {
-        // 答えは 理由（辺の 長さでは ない）ので「?」は 出さない。どの辺かは ことばで 言う（本人の指定 2026-09-17）
-        prompt: '上の 左がわの 辺は ' + L.W + '−' + L.cw + ' で 出せる。なぜ ' + L.W + '−' + L.cw + ' なの?',
-        figure: QFig.fromFigure(fig, shown, hidden, { interaction: null }),
+        // 答えは 理由なので「?」は 出さない。どの辺かは 赤い 太線で 見せる（本人の指定 2026-09-17）
+        prompt: '赤い 辺は ' + L.W + '−' + L.cw + ' で 出せる。なぜ ' + L.W + '−' + L.cw + ' なの?',
+        figure: QFig.fromFigure(fig, shown, hidden, { interaction: null, redEdges: hidden.map(function (l) { return { axis: l.axis, a: l.a, b: l.b, at: l.at }; }) }),
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: '下の辺' + L.W + 'と、上の2本（' + (L.W - L.cw) + 'と' + L.cw + '）を合わせた長さは 同じ。だから ' + L.W + '−' + L.cw + ' で出せるよ。',
           steps: [
             { key: 'given', label: '書いてある辺', parts: ['下の辺', B('w', L.W, 'cm'), '、上の右の辺', B('cw', L.cw, 'cm')] },
-            { key: 'hidden', label: '上の 左がわの 辺', parts: ['下の辺', B('w2', L.W, 'cm'), '−', '上の右の辺', B('cw2', L.cw, 'cm'), '＝', B('q', L.W - L.cw, 'cm')] },
+            { key: 'hidden', label: '赤い 辺', parts: ['下の辺', B('w2', L.W, 'cm'), '−', '上の右の辺', B('cw2', L.cw, 'cm'), '＝', B('q', L.W - L.cw, 'cm')] },
             { key: 'rechoose', kind: 'choice', label: 'だから なぜ ひき算?' }
           ]
         }
@@ -6478,40 +6482,53 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     return handbookCache;
   }
 
+  // ---- 最終問題: 塔を 横から 見た 形 ----
+  // 14階ぶんの 切り口と 手帳は わかりにくかった（本人の指摘 2026-09-17「意味わからん」）。
+  // 手帳を つかわず、図と 問題文だけで とける 形に した。見せる数は 2つ（いちばん下の よこ・1だんぶんの へこみ）。
+  // 上の だんほど 左右が 同じだけ せまい → だんごとの よこを 自分で 出して たし、高さを かける
+  const FINAL_TOWER = { bottom: 28, step: 2, tiers: 5, height: 3 };
+  function finalTowerWidths() {
+    const T = FINAL_TOWER;
+    const out = [];
+    for (let i = 0; i < T.tiers; i += 1) out.push(T.bottom - 2 * T.step * i);
+    return out;
+  }
+  function finalTowerFig() {
+    const T = FINAL_TOWER;
+    return Figure.create(finalTowerWidths().map(function (w, i) {
+      return { x: T.step * i, y: T.height * i, w: w, h: T.height, name: 'tier' + (i + 1) };
+    }), { unit: 'm', grid: false });
+  }
+
   function makeTower(rng, o) {
-    const t = towerPlan();
-    const hb = handbookLines();
-    const fig = t.fig;
-    const area = Figure.area(fig);
-    const hole = Shapes.TOWER_HOLE;
-    const shown = hb.shown.filter(function (l) { return !t.heights.some(function (h) { return h.id === l.id; }); });
-    const widthsSum = Util.sum(Shapes.TOWER_WIDTHS);
-    const blankSteps = hb.blanks.map(function (bl) {
-      return { key: 'blank:' + bl.labelId, label: bl.floor + '階', dim: null, parts: [bl.text.replace('□m', ''), B('v-' + bl.labelId, bl.value, 'm')] };
-    });
+    const T = FINAL_TOWER;
+    const fig = finalTowerFig();
+    const widths = finalTowerWidths();
+    const sum = Util.sum(widths);
+    const area = sum * T.height;
+    const stepEdge = Figure.fullEdgeLabels(fig).filter(function (l) { return l.axis === 'x' && l.at === T.height && l.a === 0 && l.b === T.step; })[0];
+    const labels = [Figure.dimLabel('x', 0, T.bottom, T.bottom, -1)].concat(stepEdge ? [stepEdge] : []);
     return {
-      prompt: '塔の 切り口の 面積は 何m²? 手帳で □の 辺を 出そう。どの階も 高さ3m。',
-      figure: QFig.fromFigure(fig, shown.concat([Figure.dimLabel('y', 0, 42, 42, -2)]), hb.hidden, { interaction: 'cut', caption: '14階ぶん。まどは ふきぬけ', dimsInside: true }),
+      prompt: '塔を 横から 見た 形。上の だんほど 左右が ' + T.step + 'mずつ せまい。どの だんも 高さ' + T.height + 'm。面積は 何m²?',
+      figure: QFig.fromFigure(fig, labels, [], { interaction: 'cut', caption: T.tiers + 'だんの 塔' }),
       answer: area, unit: 'm²',
-      handbook: true,
       explain: {
-        sentence: '手帳の□を 書いてある辺から出す。階ごとに よこ×3 をたして、さいごに まどの 6×6 をひく。',
-        steps: blankSteps.concat([
-          { key: 'sum-w', label: 'よこの合計', parts: ['14階ぶんの よこを ぜんぶたすと', B('sumw', widthsSum, 'm')] },
-          { key: 'floors', label: '階の面積', parts: [widthsSum + '×3＝', B('floors', widthsSum * 3, 'm²', ['mul', widthsSum, 3])] },
-          { key: 'window', label: 'まど', parts: [B('win', hole.w * hole.h, 'm²'), 'をひいて'] },
-          { key: 'total', label: '塔の面積', parts: [B('area', area, 'm²')] }
-        ])
+        sentence: '上の だんは 左で ' + T.step + 'm、右で ' + T.step + 'm せまいから、よこは ' + (2 * T.step) + 'mずつ へる。だんごとの よこを 出して たし、高さ ' + T.height + 'm を かけるよ。',
+        steps: [
+          { key: 'widths', label: 'だんの よこ', parts: widths.map(function (w, i) { return B('w' + i, w, 'm'); }) },
+          { key: 'sum', label: 'よこの 合計', parts: [B('sum', sum, 'm', ['add', widths])] },
+          { key: 'area', label: '面積', parts: [B('s2', sum, 'm'), '×', B('h', T.height, 'm'), '＝', B('area', area, 'm²', ['mul', sum, T.height])] }
+        ]
       }
     };
   }
 
   function makeTowerToA(rng, o) {
-    const area = Figure.area(Shapes.tower());
+    const area = Util.sum(finalTowerWidths()) * FINAL_TOWER.height;
     return {
-      prompt: '塔の面積は ' + area + 'm²。a で言うと?',
+      prompt: '塔の 面積は ' + area + 'm²。a で 言うと?',
       answer: area / 100, unit: 'a',
-      explain: { sentence: '100m²で 1a。' + area + '÷100＝' + (area / 100) + 'a。', steps: [{ key: 'a', label: '式', parts: [B('v', area, 'm²'), '÷100＝', B('a', area / 100, 'a')] }] }
+      explain: { sentence: '100m²で 1a。' + area + 'm² は 100m² の いくつ分か 考えよう。', steps: [{ key: 'a', label: '式', parts: [B('v', area, 'm²'), '÷100＝', B('a', area / 100, 'a', ['div', area, 100])] }] }
     };
   }
 
@@ -8603,6 +8620,11 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         const lr = model.litRect;
         svg('rect', { x: pl.X(lr.x), y: pl.Y(lr.y + lr.h), width: lr.w * cell, height: lr.h * cell, fill: 'none', stroke: model.litRectColor || LIT, 'stroke-width': 6, 'stroke-dasharray': '10 6' }, g);
       }
+      // 問題が 名ざしする 辺を 赤い 太線で（「赤い 辺は…」。本人の指定 2026-09-17）
+      if (primary && spec.redEdges) spec.redEdges.forEach(function (d) {
+        if (d.axis === 'x') svg('line', { x1: pl.X(d.a), y1: pl.Y(d.at), x2: pl.X(d.b), y2: pl.Y(d.at), stroke: LIT, 'stroke-width': 9, 'stroke-linecap': 'round' }, g);
+        else svg('line', { x1: pl.X(d.at), y1: pl.Y(d.a), x2: pl.X(d.at), y2: pl.Y(d.b), stroke: LIT, 'stroke-width': 9, 'stroke-linecap': 'round' }, g);
+      });
       // 「ここを見る」の 辺に ラベルが ないとき（切った長方形の たて・よこ など）も 赤い 太線を 引く
       if (primary) (model.litDims || []).forEach(function (d) {
         if (!d || d.at == null) return;
