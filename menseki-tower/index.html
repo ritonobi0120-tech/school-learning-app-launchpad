@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260917-36144 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260927-7240 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -3300,7 +3300,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     id: 'f9-ladder-fill', floor: 9, format: 'fields',
     make: function () {
       return {
-        prompt: '□に 何倍が 入る?　cm² →□倍→ m² →□倍→ a →□倍→ ha →□倍→ km²',
+        prompt: '1つ 大きい 単位に なると、何倍? 4つとも 入れよう。',
         fields: [
           { key: 'k1', label: 'cm²→m²', unit: '倍', answer: 10000 },
           { key: 'k2', label: 'm²→a', unit: '倍', answer: 100 },
@@ -3420,7 +3420,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       });
       const c = mkChoice(rng, options, { keepOrder: true });
       return {
-        prompt: r.name + 'は 約何' + def.unit + '?',
+        prompt: r.name + 'の 面積は 約何' + def.unit + '?',
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: item === 'pool' ? 'プールは 25m×12m くらい。25×12 で考えよう。' : item === 'classroom' ? '教室は たて・よこ 8m くらい。8×8 で考えよう。' : item === 'gym' ? '体育館は 20m×40m くらい。20×40 で考えよう。' : 'はがきは 10cm×15cm くらい。10×15 で考えよう。',
@@ -3719,7 +3719,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const L = randomL(rng, { minW: 6, maxW: 9, minH: 5, maxH: 7 });
       const built = buildLQuestion(rng, L, { maxHidden: variant === 1 ? 0 : (variant === 2 ? 1 : 2) });
       return {
-        prompt: variant === 1 ? 'この形の 面積を 出そう。まず、どこで 切る?' : 'どこで 切る? 書いていない 辺は 書いてある 辺から 出して、面積を 出そう。',
+        prompt: variant === 1 ? 'この形の 面積を 出そう。まず、どこで 切る?' : 'この形の 面積は 何cm²? 書いていない 辺は、書いてある 辺から 出せるよ。',
         figure: built.figure,
         cut: { guide: 'full', hiddenCount: built.plan.hidden.length },
         answer: built.area, unit: 'cm²', wrong: lWrong(L),
@@ -3813,7 +3813,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const L = randomL(rng, { minW: 6, maxW: 10, minH: 5, maxH: 8 });
       const built = buildLQuestion(rng, L, { maxHidden: params.hidden == null ? rng.int(1, 2) : params.hidden });
       return {
-        prompt: 'どこで切る? 切ったら、それぞれの面積を出して たそう。',
+        prompt: 'この形の 面積は 何cm²? 切って、それぞれの 面積を たそう。',
         figure: built.figure,
         cut: { guide: 'half', hiddenCount: built.plan.hidden.length },
         answer: built.area, unit: 'cm²', wrong: lWrong(L),
@@ -3841,7 +3841,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const b = Figure.bounds(fig);
       wrong[String(b.w * b.h)] = 'no-cut';
       return {
-        prompt: kind === 't' ? 'どこで切る? 1本の線で 2つの長方形に分けられるよ。' : 'どこで切る? 2本の線で 3つの長方形に分けられるよ。',
+        prompt: kind === 't' ? 'この形の 面積は 何cm²? 1本の 線で 2つの 長方形に 分けられるよ。' : 'この形の 面積は 何cm²? 2本の 線で 3つの 長方形に 分けられるよ。',
         figure: QFig.fromFigure(fig, plan.shown, plan.hidden, { interaction: 'cut' }),
         cut: { guide: 'half', hiddenCount: plan.hidden.length },
         answer: area, unit: 'cm²', wrong: wrong,
@@ -6526,7 +6526,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   function makeTowerToA(rng, o) {
     const area = Util.sum(finalTowerWidths()) * FINAL_TOWER.height;
     return {
-      prompt: '塔の 面積は ' + area + 'm²。a で 言うと?',
+      prompt: '塔の 面積は ' + area + 'm²。これは 何a?',
       answer: area / 100, unit: 'a',
       explain: { sentence: '100m²で 1a。' + area + 'm² は 100m² の いくつ分か 考えよう。', steps: [{ key: 'a', label: '式', parts: [B('v', area, 'm²'), '÷100＝', B('a', area / 100, 'a', ['div', area, 100])] }] }
     };
@@ -9952,7 +9952,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   function unitKind(unit) {
     const u = String(unit || '');
     if (!u) return '';
-    if (u.indexOf('²') >= 0) return 'area';
+    // a・ha も 面積の 単位（ふだが 出ていなかった。2026-09-27）
+    if (u.indexOf('²') >= 0 || u === 'a' || u === 'ha') return 'area';
     if (/^(mm|cm|m|km)$/.test(u)) return 'len';
     return '';
   }
