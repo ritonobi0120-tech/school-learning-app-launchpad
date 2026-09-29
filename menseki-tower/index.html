@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260929-50948 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260929-51712 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -622,7 +622,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 .adm-rv-state.ok { border-color: #6fd08c; color: #b8f0c0; }
 .adm-rv-state.ng { border-color: #f4a23c; color: #ffd9a0; }
 .adm-rv-side .admin-row .admin-btn { min-height: 34px; min-width: 0; font-size: 13px; padding: 0 8px; }
-.adm-rv-side .adm-rv-big .admin-btn { flex: 1; min-height: 50px; font-size: 17px; }
+.adm-rv-side .adm-rv-big .admin-btn { flex: 1 1 0; min-width: 0; min-height: 50px; font-size: 16px; padding: 0 4px; white-space: nowrap; }
+.adm-rv-side .adm-rv-big .admin-btn.ng { flex-grow: 1.3; }
 .adm-rv-memo, .adm-rv-out { width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; line-height: 1.4; padding: 6px; background: #fbf9f2; color: #2b2a3a; border: 2px solid #a8b6d8; resize: vertical; }
 .adm-rv-out { margin-top: 8px; font-size: 13px; }
 .adm-rv-list { display: flex; flex-direction: column; gap: 4px; }
@@ -12449,7 +12450,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const countEl = h('span', { class: 'adm-rv-count' });
     const cur = marks[key];
     const stLabel = h('span', { class: 'adm-rv-state ' + (cur ? cur.s : ''), plain: cur ? (cur.s === 'ok' ? 'OK' : '気になる') : 'まだ' });
-    const memo = h('textarea', { class: 'adm-rv-memo', rows: '2', placeholder: '気になる ことを 書く（書くと「気になる」に なる）' });
+    const memo = h('textarea', { class: 'adm-rv-memo', rows: '2', placeholder: 'メモは 先に 書いてから「気になる」を おす（書かなくても いい）' });
     memo.value = (cur && cur.memo) || '';
     memo.addEventListener('input', function () {
       if (!memo.value && !(marks[key] && marks[key].s === 'ng')) return;
@@ -12463,8 +12464,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       h('div', { class: 'adm-card-head' }, [h('span', { class: 'id', plain: itemId(it) + ' seed=' + seed })]),
       qLine, aLine, warn,
       h('div', { class: 'admin-row adm-rv-big' }, [
-        mkBtn('OK → つぎへ', function () { put('ok', memo.value); move(1); }, 'ok'),
-        mkBtn('気になる', function () { put('ng', memo.value); refresh(); memo.focus(); }, 'ng')
+        mkBtn('OK → つぎ', function () { put('ok', memo.value); move(1); }, 'ok'),
+        mkBtn('気になる → つぎ', function () { put('ng', memo.value); move(1); }, 'ng')
       ]),
       memo,
       h('div', { class: 'admin-row' }, [
