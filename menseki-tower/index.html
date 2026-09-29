@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260927-33211 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260929-50948 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -12417,15 +12417,15 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       if (stateOf(x) === 'ok') g.ok += 1;
       if (stateOf(x) === 'ng') g.ng += 1;
     });
-    scr.appendChild(h('div', { class: 'admin-row adm-rv-groups' }, groups.map(function (g) {
-      const cls = (g.id === it.group ? 'on' : '') + (g.ng ? ' has-ng' : (g.ok === g.n ? ' done' : ''));
-      const b = mkBtn(g.name, function () { jump(g.first); }, cls);
-      b.appendChild(h('span', { class: 'c', plain: (g.ok + g.ng) + '/' + g.n }));
+    const groupBtns = groups.map(function (g) {
+      const b = mkBtn(g.name, function () { jump(g.first); }, g.id === it.group ? 'on' : '');
+      g.btn = b;
+      g.cnt = h('span', { class: 'c' });
+      b.appendChild(g.cnt);
       return b;
-    })));
+    });
+    scr.appendChild(h('div', { class: 'admin-row adm-rv-groups' }, groupBtns));
 
-    const nOk = items.filter(function (x) { return stateOf(x) === 'ok'; }).length;
-    const nNg = items.filter(function (x) { return stateOf(x) === 'ng'; }).length;
     const vw = root.innerWidth, vh = root.innerHeight;
     const sideW = 268;
     const s = Math.max(0.3, Math.min((vw - 48 - sideW - 16) / vw, (vh - 132) / vh));
@@ -12446,6 +12446,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     frame.removeAttribute('aria-hidden');
     box.appendChild(frame);
 
+    const countEl = h('span', { class: 'adm-rv-count' });
     const cur = marks[key];
     const stLabel = h('span', { class: 'adm-rv-state ' + (cur ? cur.s : ''), plain: cur ? (cur.s === 'ok' ? 'OK' : '気になる') : 'まだ' });
     const memo = h('textarea', { class: 'adm-rv-memo', rows: '2', placeholder: '気になる ことを 書く（書くと「気になる」に なる）' });
@@ -12453,17 +12454,17 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     memo.addEventListener('input', function () {
       if (!memo.value && !(marks[key] && marks[key].s === 'ng')) return;
       put('ng', memo.value);
-      stLabel.textContent = '気になる'; stLabel.className = 'adm-rv-state ng';
+      refresh();
     });
 
     const side = h('div', { class: 'adm-rv-side', style: 'width:' + sideW + 'px' }, [
-      h('div', { class: 'adm-rv-pos' }, [h('span', { plain: (rv.i + 1) + '／' + items.length }), stLabel, h('span', { class: 'adm-rv-count', plain: 'OK ' + nOk + '・気になる ' + nNg + '・まだ ' + (items.length - nOk - nNg) })]),
+      h('div', { class: 'adm-rv-pos' }, [h('span', { plain: (rv.i + 1) + '／' + items.length }), stLabel, countEl]),
       h('div', { class: 'adm-rv-name', plain: itemName(it) + (retry ? '（まちがい直し）' : '') }),
       h('div', { class: 'adm-card-head' }, [h('span', { class: 'id', plain: itemId(it) + ' seed=' + seed })]),
       qLine, aLine, warn,
       h('div', { class: 'admin-row adm-rv-big' }, [
         mkBtn('OK → つぎへ', function () { put('ok', memo.value); move(1); }, 'ok'),
-        mkBtn('気になる', function () { put('ng', memo.value); stLabel.textContent = '気になる'; stLabel.className = 'adm-rv-state ng'; memo.focus(); }, 'ng')
+        mkBtn('気になる', function () { put('ng', memo.value); refresh(); memo.focus(); }, 'ng')
       ]),
       memo,
       h('div', { class: 'admin-row' }, [
@@ -12472,7 +12473,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         mkBtn('出しなおす', function () { ctx.render(); }),
         mkBtn('べつの 数', function () { seeds['rv:' + key] = 1 + Math.floor(Math.random() * 999999); ctx.render(); }),
         it.k === 'ug' ? null : mkBtn(retry ? '問題を 見る' : 'まちがい直しを 見る', function () { rv.retry = !retry; ctx.render(); }),
-        cur ? mkBtn('しるしを けす', function () { delete marks[key]; saveMarks(marks); ctx.render(); }) : null
+        mkBtn('しるしを けす', function () { delete marks[key]; saveMarks(marks); memo.value = ''; refresh(); })
       ]),
       h('div', { class: 'admin-row' }, [
         mkBtn('ぜんぶ', function () { rv.only = 'all'; ctx.render(); }, rv.only === 'all' ? 'on' : ''),
@@ -12484,20 +12485,43 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     st.adminKey = function (k) { move(k === 'left' ? -1 : 1); };
 
     // 気になる 一覧（おすと その 問題へ。文字で コピーして 直す人に わたす）
-    scr.appendChild(h('h2', { plain: '気になる 一覧（' + nNg + '）' }));
+    const listHead = h('h2');
+    scr.appendChild(listHead);
     const list = h('div', { class: 'adm-rv-list' });
-    items.forEach(function (x, i) {
-      const m = marks[itemKey(x)];
-      if (!m || m.s !== 'ng') return;
-      list.appendChild(h('button', { class: 'adm-rv-item', type: 'button', onclick: function () { rv.only = 'all'; jump(i); } }, [
-        h('span', { class: 'n', plain: itemName(x) }),
-        h('span', { class: 'm', plain: m.memo || '（メモなし）' })
-      ]));
-    });
-    if (!nNg) list.appendChild(h('div', { class: 'admin-note', plain: 'まだ ない。「気になる」を おすか、メモを 書くと ここに ならぶ。' }));
     scr.appendChild(list);
     const out = h('textarea', { class: 'adm-rv-out', rows: '6', readonly: 'readonly' });
-    out.value = reviewText(items, marks);
+    function refresh() {
+      let ok = 0, ng = 0;
+      groups.forEach(function (g) { g.ok = 0; g.ng = 0; });
+      items.forEach(function (x) {
+        const sx = stateOf(x);
+        const g = groups.filter(function (gg) { return gg.id === x.group; })[0];
+        if (sx === 'ok') { ok += 1; g.ok += 1; }
+        if (sx === 'ng') { ng += 1; g.ng += 1; }
+      });
+      groups.forEach(function (g) {
+        g.cnt.textContent = (g.ok + g.ng) + '/' + g.n;
+        g.btn.classList.toggle('has-ng', g.ng > 0);
+        g.btn.classList.toggle('done', !g.ng && g.ok === g.n);
+      });
+      countEl.textContent = 'OK ' + ok + '・気になる ' + ng + '・まだ ' + (items.length - ok - ng);
+      const c = marks[key];
+      stLabel.textContent = c ? (c.s === 'ok' ? 'OK' : '気になる') : 'まだ';
+      stLabel.className = 'adm-rv-state ' + (c ? c.s : '');
+      listHead.textContent = '気になる 一覧（' + ng + '）';
+      list.innerHTML = '';
+      items.forEach(function (x, i) {
+        const m = marks[itemKey(x)];
+        if (!m || m.s !== 'ng') return;
+        list.appendChild(h('button', { class: 'adm-rv-item', type: 'button', onclick: function () { rv.only = 'all'; jump(i); } }, [
+          h('span', { class: 'n', plain: itemName(x) }),
+          h('span', { class: 'm', plain: m.memo || '（メモなし）' })
+        ]));
+      });
+      if (!ng) list.appendChild(h('div', { class: 'admin-note', plain: 'まだ ない。「気になる」を おすか、メモを 書くと ここに ならぶ。' }));
+      out.value = reviewText(items, marks);
+    }
+    refresh();
     const copyBtn = mkBtn('一覧を コピー', function () {
       out.value = reviewText(items, loadMarks());
       out.select();
