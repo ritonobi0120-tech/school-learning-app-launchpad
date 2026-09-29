@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20260929-51712 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20260929-68029 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -12348,6 +12348,33 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   const K_REVIEW = 'mensekiTower.admin.review';
   function loadMarks() { try { return JSON.parse(lsGet(K_REVIEW) || '{}') || {}; } catch (e) { return {}; } }
   function saveMarks(m) { lsSet(K_REVIEW, JSON.stringify(m)); }
+  const MOVE_HEAD = 'MT1.';
+  function marksToCode(m) {
+    const json = JSON.stringify(m);
+    let b64;
+    try { b64 = root.btoa(unescape(encodeURIComponent(json))); } catch (e) { return ''; }
+    return MOVE_HEAD + b64;
+  }
+  function codeToMarks(text) {
+    const at = String(text || '').indexOf(MOVE_HEAD);
+    if (at < 0) return null;
+    const b64 = String(text).slice(at + MOVE_HEAD.length).replace(/[^A-Za-z0-9+/=]/g, ' ').trim().split(' ')[0];
+    try {
+      const m = JSON.parse(decodeURIComponent(escape(root.atob(b64))));
+      return m && typeof m === 'object' && !Array.isArray(m) ? m : null;
+    } catch (e) { return null; }
+  }
+  // 取りこむ: 同じ 問題は あとで つけた ほうを のこす
+  function mergeMarks(into, from) {
+    let n = 0;
+    Object.keys(from).forEach(function (k) {
+      const v = from[k];
+      if (!v || (v.s !== 'ok' && v.s !== 'ng')) return;
+      const cur = into[k];
+      if (!cur || String(v.at || '') > String(cur.at || '')) { into[k] = v; n += 1; }
+    });
+    return n;
+  }
   function itemKey(it) { return it.k === 'ug' ? 'ug' + it.n : it.f + ':' + it.t + ':' + JSON.stringify(it.p); }
   function fixedSeed(key) { return MT.Util.hashString('review:' + key) % 900000 + 1; }
   const RV_GROUPS = [['ug1', 1, 10, 'B1〜10'], ['ug2', 11, 20, 'B11〜20'], ['ug3', 21, 30, 'B21〜30']];
@@ -12538,6 +12565,33 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     }, 'warn');
     scr.appendChild(h('div', { class: 'admin-row adm-ctrl' }, [copyBtn, clrBtn]));
     scr.appendChild(out);
+
+    // ほかの 端末へ 移す（しるしは 端末ごとに のこるので、コードで 運ぶ）
+    scr.appendChild(h('h2', { plain: 'ほかの 端末で つづける' }));
+    const moveBox = h('textarea', { class: 'adm-rv-out', rows: '3', placeholder: 'ほかの 端末で「コードを コピー」した 文字を ここに 貼って「取りこむ」' });
+    const moveMsg = h('span', { class: 'admin-note' });
+    const codeBtn = mkBtn('この 端末の しるしを コードで コピー', function () {
+      const code = marksToCode(loadMarks());
+      moveBox.value = code;
+      moveBox.select();
+      let done = false;
+      try { done = document.execCommand('copy'); } catch (e) { done = false; }
+      if (!done && root.navigator && root.navigator.clipboard) { root.navigator.clipboard.writeText(code).then(function () { moveMsg.textContent = 'コピーした。ほかの 端末の この 欄に 貼って「取りこむ」'; }, function () { moveMsg.textContent = '上の 文字を えらんで コピーしてね'; }); return; }
+      moveMsg.textContent = done ? 'コピーした。ほかの 端末の この 欄に 貼って「取りこむ」' : '上の 文字を えらんで コピーしてね';
+    });
+    const inBtn = mkBtn('取りこむ', function () {
+      const m = codeToMarks(moveBox.value);
+      if (!m) { moveMsg.textContent = 'コードが 読めない。「MT1.」から はじまる 文字を ぜんぶ 貼ってね'; return; }
+      const cur = loadMarks();
+      const n = mergeMarks(cur, m);
+      saveMarks(cur);
+      st.adminReview = null;
+      ctx.render();
+      root.setTimeout(function () { const note = document.querySelector('.adm-rv-movemsg'); if (note) note.textContent = n + '問ぶんの しるしを 取りこんだ'; }, 0);
+    }, 'on');
+    moveMsg.classList.add('adm-rv-movemsg');
+    scr.appendChild(h('div', { class: 'admin-row adm-ctrl' }, [codeBtn, inBtn, moveMsg]));
+    scr.appendChild(moveBox);
     scr.appendChild(h('p', { class: 'admin-note', plain: '←→ キーで 前・つぎ。窓の 中は 本物の 画面。そのまま さわって 答えを 入れたり 線を 引いたり できる（きろくは のこらない）。しるしと メモは この 端末に のこる。「一覧を コピー」の 文字には 問題の 番号と 数（seed）が 入るので、同じ 画面を 出しなおせる。' }));
   }
 
