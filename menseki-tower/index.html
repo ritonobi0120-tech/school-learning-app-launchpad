@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20261006-66051 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20261006-68868 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -206,6 +206,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 .howto-card .t { font-size: 1.1em; color: #2f5fa8; margin-bottom: 0.6vh; }
 .howto-card p { margin: 0.4vh 0; }
 .howto-card ul { margin: 0.4vh 0 0; padding-left: 1.3em; }
+.phrases .ph { display: inline-block; max-width: 100%; }
+.phrases .ph.paren { white-space: nowrap; }
+.phrases .cl { display: inline-block; max-width: 100%; }
+.phrases .nb { white-space: nowrap; }
 .row-chip { display: inline-block; width: 0.75em; height: 0.75em; margin-right: 0.3em; vertical-align: -0.05em; border: 2px solid #2b2a3a; }
 .fill-part { font-size: calc(var(--fs) * clamp(16px, 2.8vh, 28px)); line-height: 1.1; }
 .fill-row .mark { margin-left: auto; font-size: clamp(18px, 3vh, 30px); color: #3d6a55; flex-shrink: 0; }
@@ -2028,7 +2032,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: 'まだ 決められない', correct: true }
       ], { keepOrder: true });
       return {
-        prompt: '重ねると、はみ出す ところと たりない ところが ある。どっちが 広いか 決められる?',
+        prompt: '重ねると、はみ出す ところも、たりない ところも ある。どっちが 広いか 決められる?',
         figure: QFig.spec(fig, { pieceColors: ['#8fc7ff', '#ffb0a0'] }),
         choices: c.choices, answer: c.answer,
         explain: { sentence: '重ねても、はみ出したところと たりないところが出て、まだ決まらないね。同じ大きさの何かで うめてみよう。' }
@@ -2504,7 +2508,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   function pairsPrompt(area, pairs) {
     const ex = pairs.filter(function (p) { return p[0] !== p[1] && p[0] > 1; })[0] || pairs[0];
     const sq = pairs.some(function (p) { return p[0] === p[1]; });
-    return '面積 ' + area + 'cm²の 長方形の たてと よこを 全部 見つけよう。' + LF_ +
+    return '面積 ' + area + 'cm²の 長方形を 全部 見つけて、たてと よこを 入れよう。' + LF_ +
       ex[0] + '×' + ex[1] + ' と ' + ex[1] + '×' + ex[0] + ' は 同じ。';
   }
   // 板に 大きく 出す ことば（正方形が ある ときは ひとこと 足す）
@@ -3199,7 +3203,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: big ? 'km²' : 'mm²' }
       ], { keepOrder: true });
       return {
-        prompt: (big ? '教室の ゆかの 広さ' : 'はがきの 広さ') + 'を 表すのに ちょうどいい 単位は?',
+        prompt: (big ? '教室の ゆかの 広さ' : 'はがきの 広さ') + 'を 表すのに、ちょうどいい 単位は?',
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: big ? '教室は 8m×8m くらいで 64m²。cm² だと 640000cm² と 数が 大きくなりすぎるよ。' : 'はがきは 10cm×15cm くらいで 150cm²。m² だと 1にも ならないよ。',
@@ -3885,7 +3889,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const L = randomL(rng, { minW: 6, maxW: 10, minH: 5, maxH: 8 });
       const built = buildLQuestion(rng, L, { maxHidden: params.hidden == null ? rng.int(1, 2) : params.hidden });
       return {
-        prompt: 'この形の 面積は 何cm²? 切って、それぞれの 面積を たそう。',
+        prompt: 'この形の 面積は 何cm²? 切った 形の 面積を たそう。',
         figure: built.figure,
         cut: { guide: 'half', hiddenCount: built.plan.hidden.length },
         answer: built.area, unit: 'cm²', wrong: lWrong(L),
@@ -3913,7 +3917,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const b = Figure.bounds(fig);
       wrong[String(b.w * b.h)] = 'no-cut';
       return {
-        prompt: kind === 't' ? 'この形の 面積は 何cm²? 1本の 線で 2つの 長方形に 分けられるよ。' : 'この形の 面積は 何cm²? 2本の 線で 3つの 長方形に 分けられるよ。',
+        prompt: kind === 't' ? 'この形の 面積は 何cm²? 1本の 線で 切ると、2つの 長方形に なるよ。' : 'この形の 面積は 何cm²? 2本の 線で 切ると、3つの 長方形に なるよ。',
         figure: QFig.fromFigure(fig, plan.shown, plan.hidden, { interaction: 'cut' }),
         cut: { guide: 'half', hiddenCount: plan.hidden.length },
         answer: area, unit: 'cm²', wrong: wrong,
@@ -3985,11 +3989,15 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const inner = (W - 2 * b) * (H - 2 * b), area = W * H - inner;
       const labels = [Figure.dimLabel('x', 0, W, W, -1.2), Figure.dimLabel('y', 0, H, H, -1.2), Figure.dimLabel('x', 0, b, b, Math.floor(H / 2))];
       return {
-        prompt: 'はば' + b + 'cmの がくぶち。外がわの 長方形から、内がわの 白い 長方形を ひこう。',
+        prompt: 'はば' + b + 'cmの がくぶちの 面積を 出そう。外がわの 長方形から、内がわを ひくよ。',
         figure: (function () {
-          const sp = QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば ' + b + 'cm' });
-          // 外がわ（青）・内がわ（だいだい）の 長方形を わくで 見せる。答えの 欄と 同じ 色
-          sp.rectMarks = [{ x: 0, y: 0, w: W, h: H, color: '#3b7dd8', text: '外がわ' }, { x: b, y: b, w: W - 2 * b, h: H - 2 * b, color: '#e07b2a', text: '内がわ', inside: true }];
+          // はばは 問題文に ある。札（がくのはば）を へらして 図を 大きく
+          const sp = QFig.fromFigure(fig, labels, [], { interaction: null });
+          // いま 入れている 欄の 長方形だけ 図に 出す。外がわの 長方形は あなまで うまった 大きい 長方形（本人 2026-10-06「外から 中身も 詰まってたら ってことだよね」）
+          sp.rectMarks = [
+            { key: 'outer', x: 0, y: 0, w: W, h: H, color: '#3b7dd8', text: '外がわの 長方形', fill: { x: b, y: b, w: W - 2 * b, h: H - 2 * b }, fillText: 'ここも 入る' },
+            { key: 'inner', x: b, y: b, w: W - 2 * b, h: H - 2 * b, color: '#e07b2a', text: '内がわ', inside: true }
+          ];
           return sp;
         })(),
         fields: [{ key: 'outer', label: '外がわの 長方形', unit: 'cm²', answer: W * H, color: '#3b7dd8' }, { key: 'inner', label: '内がわの 長方形', unit: 'cm²', answer: inner, color: '#e07b2a' }, { key: 'area', label: 'がくぶち', unit: 'cm²', answer: area }],
@@ -5964,7 +5972,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     wrongMap[String(wrong)] = 'double-sub';
     return {
       format: 'number',
-      prompt: '道を のぞいた 土地の 面積は 何m²? 答案が 正しいか、自分で 計算しよう。',
+      prompt: '答案は 正しい? 自分で 計算しよう。道を のぞいた 面積は 何m²?',
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + r1 + 'm・' + r2 + 'm・' + rh + 'm' }),
       peerAnswer: expr,
       answer: right, unit: 'm²', wrong: wrongMap,
@@ -6019,7 +6027,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     wrongMap[String(W * H - innerW * (H - b))] = 'wrong-side';
     return {
       format: 'number',
-      prompt: 'がくぶちの 面積は 何m²? 答案が 正しいか、自分で 計算しよう。',
+      prompt: '答案は 正しい? 自分で 計算しよう。がくぶちの 面積は 何m²?',
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば 左' + l + ' 右' + r + ' 上' + t + ' 下' + b }),
       peerAnswer: expr,
       answer: area, unit: 'm²', wrong: wrongMap,
@@ -6333,7 +6341,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const area = Figure.area(fig);
       const labels = [Figure.dimLabel('x', 0, W, W, -1), Figure.dimLabel('y', 0, H, H, -1)];
       return {
-        prompt: 'たて' + H + unit + '・よこ' + W + unit + ' の がくぶち。色の 部分が ' + area + unit + '² のとき、はばは 何' + unit + '?',
+        prompt: 'たて' + H + unit + '・よこ' + W + unit + ' の がくぶち。' + String.fromCharCode(10) + '色の 部分は ' + area + unit + '²。' + String.fromCharCode(10) + 'はばは 何' + unit + '?',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, areaText: area + unit + '²' }),
         answer: b, unit: unit,
         explain: {
@@ -6412,7 +6420,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const area = Figure.area(fig);
     return {
       format: 'line',
-      prompt: '面積が 半分ずつ（' + (area / 2) + unit + '²ずつ）になるように、1本の線で 2つに分けよう。',
+      prompt: '1本の 線で 2つに 分けよう。面積は ' + (area / 2) + unit + '²ずつ。',
       figure: QFig.fromFigure(fig, labels, [], { interaction: 'cut' }),
       answer: area / 2, unit: unit + '²',
       lineCheck: function (lines) {
@@ -6438,7 +6446,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     base.figure.labels = QFig.labelValueOverride(base.figure.labels, function (l) { return toText(l.b - l.a); });
     base.figure.unitScale = 50;
     base.answer = Figure.area(fig) * 2500;
-    base.prompt = '単位が m と cm で まざっている（1m＝100cm）。面積は何cm²?';
+    base.prompt = 'm と cm が まざって いる。1m＝100cm。面積は 何cm²?';
     base.explain = { sentence: 'まず ぜんぶ cm にそろえる。1m＝100cm。それから 分けて たて×よこ。', steps: [{ key: 'total', label: '面積', parts: ['ぜんぶで', B('area', base.answer, 'cm²')] }] };
     base.cut = { scale: 50 };
     return base;
@@ -6462,7 +6470,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       wrongMap[String(W * H)] = 'no-cut';
       return {
         format: 'number',
-        prompt: '道を のぞいた 面積は 何' + unit + '²? 答案が 正しいか、自分で 計算しよう。',
+        prompt: '答案は 正しい? 自分で 計算しよう。道を のぞいた 面積は 何' + unit + '²?',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + rw + unit + '・' + rh + unit }),
         peerAnswer: expr,
         answer: right, unit: unit + '²', wrong: wrongMap,
@@ -6480,7 +6488,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     wrongMap[String(wrongInner)] = 'wrong-side';
     return {
       format: 'number',
-      prompt: 'がくぶちの 面積は 何' + unit + '²? 答案が 正しいか、自分で 計算しよう。',
+      prompt: '答案は 正しい? 自分で 計算しよう。がくぶちの 面積は 何' + unit + '²?',
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば ' + b + unit }),
       peerAnswer: expr,
       answer: right, unit: unit + '²', wrong: wrongMap,
@@ -6632,7 +6640,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const stepEdge = Figure.fullEdgeLabels(fig).filter(function (l) { return l.axis === 'x' && l.at === T.height && l.a === 0 && l.b === T.step; })[0];
     const labels = [Figure.dimLabel('x', 0, T.bottom, T.bottom, -1)].concat(stepEdge ? [stepEdge] : []);
     return {
-      prompt: '塔を 横から 見た 形。上の だんほど 左右が ' + T.step + 'mずつ せまい。どの だんも 高さ' + T.height + 'm。面積は 何m²?',
+      prompt: '塔を 横から 見た 形。1だん 上がると、左右が ' + T.step + 'mずつ せまい。どの だんも 高さ' + T.height + 'm。面積は 何m²?',
       figure: QFig.fromFigure(fig, labels, [], { interaction: 'cut', caption: T.tiers + 'だんの 塔' }),
       answer: area, unit: 'm²',
       explain: {
@@ -8770,6 +8778,18 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       }
       // 長方形を 色の わくと 名前で 見せる（がくぶちの 外がわ・内がわ。答えの 欄と 同じ 色）
       if (primary) (spec.rectMarks || []).forEach(function (m) {
+        if (m.key && model.activeMark !== m.key) return;   // いま 入れている 欄の ものだけ
+        // あなまで うめて 見せる（外がわの 長方形は 中まで つまった 形）
+        if (m.fill) {
+          svg('rect', { x: pl.X(m.fill.x), y: pl.Y(m.fill.y + m.fill.h), width: m.fill.w * cell, height: m.fill.h * cell, fill: SHAPE, 'fill-opacity': 0.55, 'pointer-events': 'none' }, g);
+          if (m.fillText) {
+            const fz2 = Math.max(14, Math.min(geo.fs * 0.9, 22));
+            const fcx = pl.X(m.fill.x + m.fill.w / 2), fcy = pl.Y(m.fill.y + m.fill.h / 2);
+            tag(fcx, fcy, m.fillText, { fs: fz2, bg: '#fbf9f2', fg: m.color });
+            const tw2 = String(m.fillText).length * fz2 * 0.92 + 20;
+            occupied.push({ x1: fcx - tw2 / 2, x2: fcx + tw2 / 2, y1: fcy - fz2 * 0.75, y2: fcy + fz2 * 0.75 });
+          }
+        }
         const pad = m.inside ? 5 : -5;
         const x = pl.X(m.x) + pad, y = pl.Y(m.y + m.h) + pad, w = m.w * cell - pad * 2, hh = m.h * cell - pad * 2;
         svg('rect', { x: x, y: y, width: w, height: hh, fill: 'none', stroke: m.color, 'stroke-width': 4, 'stroke-dasharray': '10 6', 'pointer-events': 'none' }, g);
@@ -9777,6 +9797,90 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     }
     return document.createTextNode(s);
   }
+  // 問題文: 文（。？で 区切る）と（…）を 1つの まとまりに して、まとまりの 間で だけ 折り返す
+  // 文の 途中で 改行されて 読みにくかった（本人の 指摘 2026-10-06「改行の タイミングが まだ おかしい」）
+  function phraseChunks(str) {
+    const out = [];
+    String(str == null ? '' : str).split(String.fromCharCode(10)).forEach(function (para, pi) {
+      if (pi) out.push({ br: true });
+      // まとまり: 文（。？！まで。文の 中の （…） は 文に ふくめる） ／ 文の あとに つく （…）
+      // 1文字ずつ 読むので 文字が 落ちることは ない
+      let cur = '', depth = 0;
+      const push = function () { const t = cur.trim(); if (t) out.push({ text: t, paren: /^[（(]/.test(t) }); cur = ''; };
+      for (let i = 0; i < para.length; i += 1) {
+        const ch = para[i], next = para[i + 1] || '';
+        if (ch === '（' || ch === '(') depth += 1;
+        if ((ch === '）' || ch === ')') && depth > 0) depth -= 1;
+        cur += ch;
+        if (depth) continue;
+        const endOfSentence = /[。？?！!]/.test(ch) && !/[。？?！!）)]/.test(next);
+        const parenAfterSentence = (ch === '）' || ch === ')') && /^\s*[（(]/.test(cur) && !/[。？?！!]/.test(next);
+        if (endOfSentence || parenAfterSentence) push();
+      }
+      push();
+    });
+    // 4文字までの みじかい 文（「ちがう?」など）は 前の 文と いっしょに（1行に ぽつんと のこらない ように）
+    for (let i = out.length - 1; i > 0; i -= 1) {
+      const c = out[i], p = out[i - 1];
+      if (c.br || p.br || c.paren || p.paren) continue;
+      if (c.text.replace(/[。？?！!\s]/g, '').length <= 4) { p.text = p.text + ' ' + c.text; out.splice(i, 1); }
+    }
+    return out;
+  }
+  // 文が 1行に 入らないときは「、」で 折り返す（文の 中の （…） の 中では 切らない）
+  function clauseChunks(text) {
+    const out = [];
+    let cur = '', depth = 0;
+    for (let i = 0; i < text.length; i += 1) {
+      const ch = text[i];
+      if (ch === '（' || ch === '(') depth += 1;
+      if ((ch === '）' || ch === ')') && depth > 0) depth -= 1;
+      cur += ch;
+      if (!depth && ch === '、') { out.push(cur); cur = ''; }
+    }
+    if (cur) out.push(cur);
+    const parts = out.map(function (s) { return s.trim(); }).filter(function (s) { return s; });
+    // 4文字までの みじかい まとまり（「切って、」など）は つぎと いっしょに（1行に ぽつんと のこらない ように）
+    for (let i = parts.length - 2; i >= 0; i -= 1) {
+      if (parts[i].replace(/[、\s]/g, '').length <= 4) { parts[i] = parts[i] + parts[i + 1]; parts.splice(i + 1, 1); }
+    }
+    return parts;
+  }
+  // （…）の 前後で 切らない（「半分ずつ（18cm²ずつ）になる」が 「）」の あとで 切れて いた）
+  function appendNoParenBreak(el, text) {
+    const re = /\S*[（(][^）)]*[）)]\S*/g;
+    let last = 0, m;
+    while ((m = re.exec(text))) {
+      if (m.index > last) el.appendChild(tx(text.slice(last, m.index)));
+      const nb = document.createElement('span');
+      nb.className = 'nb';
+      nb.appendChild(tx(m[0]));
+      el.appendChild(nb);
+      last = m.index + m[0].length;
+    }
+    if (last < text.length) el.appendChild(tx(text.slice(last)));
+  }
+  function txPhrases(str) {
+    const span = document.createElement('span');
+    span.className = 'phrases';
+    const ZW = String.fromCharCode(0x200B);
+    phraseChunks(str).forEach(function (c, i) {
+      if (c.br) { span.appendChild(document.createElement('br')); return; }
+      // 「?」「!」の あとは すきまを あける（「何m²?答案は」と くっついて いた）
+      if (i && span.lastChild && span.lastChild.nodeName !== 'BR') span.appendChild(document.createTextNode(/[？?！!]$/.test(span.lastChild.textContent) ? ' ' : ZW));
+      const p = document.createElement('span');
+      p.className = 'ph' + (c.paren ? ' paren' : '');
+      clauseChunks(c.text).forEach(function (cl, j) {
+        if (j) p.appendChild(document.createTextNode(ZW));
+        const q = document.createElement('span');
+        q.className = 'cl';
+        appendNoParenBreak(q, cl);
+        p.appendChild(q);
+      });
+      span.appendChild(p);
+    });
+    return span;
+  }
   function clear(e) { while (e.firstChild) e.removeChild(e.firstChild); }
 
   // ---- せってい ----
@@ -9995,7 +10099,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
   Object.assign(UI, {
     onMounted: onMounted, flushMounted: flushMounted, setQuiet: setQuiet,
-    h: h, append: append, tx: tx, clear: clear, applySettings: applySettings, bg: bg, noBg: noBg, se: se, prewarmScene: prewarmScene,
+    h: h, append: append, tx: tx, txPhrases: txPhrases, phraseChunks: phraseChunks, clear: clear, applySettings: applySettings, bg: bg, noBg: noBg, se: se, prewarmScene: prewarmScene,
     numberInput: numberInput, keypad: keypad, keyFromEvent: keyFromEvent, guardBox: guardBox, walker: walker, road: road,
     stamp: stamp, band: band, modal: modal, confirmBox: confirmBox, bubbleSizeClass: bubbleSizeClass, formatDuration: formatDuration,
     isKana: function () { return kanaOn; }
@@ -10297,7 +10401,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   }
 
   function mountBoard(wrap, model, noteText, dark) {
-    if (!model) { wrap.appendChild(h('div', { class: 'board-note' + (dark ? ' dark' : ''), text: noteText || '' })); return null; }
+    if (!model) { wrap.appendChild(h('div', { class: 'board-note' + (dark ? ' dark' : '') }, [UI.txPhrases(noteText || '')])); return null; }
     const host = h('div', { class: 'board' });
     wrap.appendChild(host);
     const b = MT.Board.create(host);
@@ -10596,7 +10700,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     }
     const bubbleKids = [];
     if (tags.length) bubbleKids.push(h('div', { class: 'tags' }, tags));
-    bubbleKids.push(UI.tx(q.prompt));
+    bubbleKids.push(UI.txPhrases(q.prompt));
     let extraText = '';
     if (finalChoiceNow) extraText = q.finalChoice.prompt;
     else if (step) extraText = step.ask;
@@ -10633,6 +10737,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         if (guided && guide.analysis && (guide.analysis.mode === 'cut' || guide.analysis.mode === 'enclose')) model.parts = Guide.partsForDisplay(guide);
         if (step && step.part != null) model.activePart = step.part;
         if (step && step.dim) model.litDims = [step.dim];
+        if (q.format === 'fields') model.activeMark = hold ? null : qs.fieldFocus;
         if (qs.help) model.helpSegs = qs.help;
         const tilesQ = q.format === 'grid' && q.figure && q.figure.interaction === 'tiles';
         if (tilesQ) {
@@ -10676,7 +10781,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         return col;
       }
       if (q.format === 'fields') {
-        col.appendChild(fieldRows(q.fields, qs.fields, qs.fieldFocus, { held: !!hold, results: hold && hold.res && hold.res.result && hold.res.result.fields || (hold && hold.res && hold.res.fields) || null, onFocus: function (k) { qs.fieldFocus = k; drawRight(); } }));
+        col.appendChild(fieldRows(q.fields, qs.fields, qs.fieldFocus, { held: !!hold, results: hold && hold.res && hold.res.result && hold.res.result.fields || (hold && hold.res && hold.res.fields) || null, onFocus: function (k) { focusField(k); } }));
         col.appendChild(UI.keypad(typeKey, { dark: dark }));
         const filled = q.fields.some(function (f) { return (qs.fields[f.key] || '') !== ''; });
         col.appendChild(answerButton(filled, submitFields));
@@ -10755,6 +10860,13 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       return h('button', { class: 'answer-btn' + (dark ? ' dark' : '') + (ready ? '' : ' disabled'), type: 'button', onclick: function () { if (ready) onGo(); } }, [UI.tx(label || (dungeonMain ? 'きざむ' : 'こたえる'))]);
     }
 
+    // 欄を えらぶ。図に その 欄の 長方形を 出す 問題（がくぶち）は 図も かきなおす
+    function focusField(k) {
+      qs.fieldFocus = k;
+      if (board && model && q.figure && q.figure.rectMarks) { model.activeMark = k; board.set(model); }
+      drawRight();
+    }
+
     // ---- 入力 ----
     function typeKey(k) {
       if (hold) { if (k === 'enter') next(); return; }
@@ -10762,7 +10874,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         const f = qs.fieldFocus;
         if (k === 'enter') {
           const empty = q.fields.filter(function (x) { return (qs.fields[x.key] || '') === ''; })[0];
-          if (empty && (qs.fields[f] || '') !== '') { qs.fieldFocus = empty.key; drawRight(); return; }
+          if (empty && (qs.fields[f] || '') !== '') { focusField(empty.key); return; }
           if (q.fields.some(function (x) { return (qs.fields[x.key] || '') !== ''; })) submitFields();
           return;
         }
