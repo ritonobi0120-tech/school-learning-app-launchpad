@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20261006-68868 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20261006-70121 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -1247,13 +1247,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         if (dx && !dy) {
           const lab = Figure.label('y', p.y, p.y + p.h, dx.value, { id: 'sq-y:' + p.index, kind: 'derived' });
           known.push(lab); derived.push(lab); changed = true;
-          const how = dx.path.length > 1 ? 'よこは ' + pathExpression(dx.path) + '＝' + dx.value + '。' : 'よこが' + dx.value + '。';
+          const how = dx.path.length > 1 ? '横は ' + pathExpression(dx.path) + '＝' + dx.value + '。' : '横が' + dx.value + '。';
           steps.push({ rule: 'square', piece: p.index, axis: 'y', value: dx.value, dim: { axis: 'y', a: p.y, b: p.y + p.h }, text: how + '正方形は 4つの辺が同じだから、たても' + dx.value });
         } else if (dy && !dx) {
           const lab = Figure.label('x', p.x, p.x + p.w, dy.value, { id: 'sq-x:' + p.index, kind: 'derived' });
           known.push(lab); derived.push(lab); changed = true;
           const how = dy.path.length > 1 ? 'たては ' + pathExpression(dy.path) + '＝' + dy.value + '。' : 'たてが' + dy.value + '。';
-          steps.push({ rule: 'square', piece: p.index, axis: 'x', value: dy.value, dim: { axis: 'x', a: p.x, b: p.x + p.w }, text: how + '正方形は 4つの辺が同じだから、よこも' + dy.value });
+          steps.push({ rule: 'square', piece: p.index, axis: 'x', value: dy.value, dim: { axis: 'x', a: p.x, b: p.x + p.w }, text: how + '正方形は 4つの辺が同じだから、横も' + dy.value });
         }
       });
       areas.forEach(function (a) {
@@ -1264,12 +1264,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
           const v = a.value / dx.value;
           const lab = Figure.label('y', p.y, p.y + p.h, v, { id: 'area-y:' + p.index, kind: 'derived' });
           known.push(lab); derived.push(lab); changed = true;
-          steps.push({ rule: 'area', piece: p.index, axis: 'y', value: v, dim: { axis: 'y', a: p.y, b: p.y + p.h }, expr: a.value + '÷' + dx.value + '=' + v, text: '面積' + a.value + '÷よこ' + dx.value + '＝たて' + v });
+          steps.push({ rule: 'area', piece: p.index, axis: 'y', value: v, dim: { axis: 'y', a: p.y, b: p.y + p.h }, expr: a.value + '÷' + dx.value + '=' + v, text: '面積' + a.value + '÷横' + dx.value + '＝たて' + v });
         } else if (dy && !dx && a.value % dy.value === 0) {
           const v = a.value / dy.value;
           const lab = Figure.label('x', p.x, p.x + p.w, v, { id: 'area-x:' + p.index, kind: 'derived' });
           known.push(lab); derived.push(lab); changed = true;
-          steps.push({ rule: 'area', piece: p.index, axis: 'x', value: v, dim: { axis: 'x', a: p.x, b: p.x + p.w }, expr: a.value + '÷' + dy.value + '=' + v, text: '面積' + a.value + '÷たて' + dy.value + '＝よこ' + v });
+          steps.push({ rule: 'area', piece: p.index, axis: 'x', value: v, dim: { axis: 'x', a: p.x, b: p.x + p.w }, expr: a.value + '÷' + dy.value + '=' + v, text: '面積' + a.value + '÷たて' + dy.value + '＝横' + v });
         }
       });
     }
@@ -1679,26 +1679,26 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
   // ---- 共通の解説文 ----
   const MISCONCEPTION_TEXT = {
-    sum: 'たてとよこを たしているね。面積は たて×よこ で、1cm²のタイルが何まいならぶかを出すよ。',
+    sum: 'たてと横を たしているね。面積は たて×横 で、1cm²のタイルが何まいならぶかを出すよ。',
     perimeter: 'まわりの長さを 出しているね。面積は まわりではなく、中にならぶタイルのまい数だよ。',
     'one-part': '分けた長方形の かたほうだけを数えているね。面積は、分けた2つの長方形を たすよ。',
     'double-cut': '欠けたところを 2回ひいているね。大きい長方形から、欠けたところを 1回だけひくよ。',
     'wrong-side': '辺の長さを 取りちがえているね。向かい合う辺は 同じ長さだよ。',
-    diagonal: 'ななめの線の長さは 使わないよ。面積は たて×よこ で出すよ。',
-    x100: 'けたが ちがうね。1mは100cm。1m²は たてにもよこにも100まいずつで、100×100＝10000まいだよ。',
-    'unit-mix': '単位を そろえてから計算するよ。1m＝100cm にしてから たて×よこ。',
-    'side-only': '1辺の長さを そのまま答えているね。正方形も たて×よこ で タイルのまい数を出すよ。',
-    'sub-instead': '面積から 辺の長さをひいているね。面積÷たて で よこが、面積÷よこ で たてが出るよ。',
-    'mul-instead': '面積と辺を かけているね。よこは 面積÷たて で出すよ。かけると もっと大きくなってしまうよ。',
+    diagonal: 'ななめの線の長さは 使わないよ。面積は たて×横 で出すよ。',
+    x100: 'けたが ちがうね。1mは100cm。1m²は たてにも横にも100まいずつで、100×100＝10000まいだよ。',
+    'unit-mix': '単位を そろえてから計算するよ。1m＝100cm にしてから たて×横。',
+    'side-only': '1辺の長さを そのまま答えているね。正方形も たて×横 で タイルのまい数を出すよ。',
+    'sub-instead': '面積から 辺の長さをひいているね。面積÷たて で 横が、面積÷横 で たてが出るよ。',
+    'mul-instead': '面積と辺を かけているね。横は 面積÷たて で出すよ。かけると もっと大きくなってしまうよ。',
     remainder: 'わり算に あまりが出るね。あまりが出るときは、1cm²のマスが ぴったりならぶ長方形は作れないよ。',
     'side-as-area': '面積の数を そのまま答えているね。同じ数を2回かけて その面積になる数が、1辺だよ。',
-    'placed-only': 'おいてあるタイルだけを 数えているね。のこりのだんも おくと、1だんのまい数×だんの数 になるよ。',
+    'placed-only': '置いてあるタイルだけを 数えているね。残りのだんも 置くと、1だんのまい数×だんの数 になるよ。',
     'inner-only': '内の長方形だけを 出しているね。外の長方形から 内の長方形をひくよ。',
     'overlap-twice': '重なりを 2回数えているね。AとBをたしたら、重なりを 1回ひくよ。',
     'no-cut': '欠けたところや 道を ひいていないね。大きい長方形から、いらないところを ひくよ。',
-    'unit-cm': '面積の 単位は cm²（平方センチメートル）だよ。cm は 長さの 単位。1cm²のタイルの まい数だから cm² を つかうよ。',
+    'unit-cm': '面積の 単位は cm²（平方センチメートル）だよ。cm は 長さの 単位。1cm²のタイルの まい数だから cm² を 使うよ。',
     'add-cut': '切り取った ところを たしているね。切り取った ところは、大きい長方形から ひくよ。たすのは ちがうよ。',
-    'x100-side': 'それは 長さの倍。面積は たてにも よこにも のびるから、長さの倍×倍 になるよ。',
+    'x100-side': 'それは 長さの倍。面積は たてにも 横にも のびるから、長さの倍×倍 になるよ。',
     calc: '考え方は合っているよ。計算をもう一度たしかめよう。'
   };
 
@@ -1722,7 +1722,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   function stepsRectArea(h, w, unit, opts) {
     const u = unit || 'cm';
     const u2 = (opts && opts.areaUnit) || (u + '²');
-    return [{ key: 'formula', label: '式', parts: ['たて', withDim(B('h', h, u), { dim: dimW('y') }), '×', 'よこ', withDim(B('w', w, u), { dim: dimW('x') }), '＝', withDim(B('area', h * w, u2, ['mul', h, w]), { area: true })] }];
+    return [{ key: 'formula', label: '式', parts: ['たて', withDim(B('h', h, u), { dim: dimW('y') }), '×', '横', withDim(B('w', w, u), { dim: dimW('x') }), '＝', withDim(B('area', h * w, u2, ['mul', h, w]), { area: true })] }];
   }
 
   function stepsSquareArea(s, unit) {
@@ -1738,11 +1738,11 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
   function stepsPerimeter(h, w, unit) {
     const u = unit || 'cm';
-    return [{ key: 'perimeter', label: 'まわりの長さ', parts: ['(', 'たて', withDim(B('h', h, u), { dim: dimW('y') }), '+', 'よこ', withDim(B('w', w, u), { dim: dimW('x') }), ')', '×2', '＝', B('perimeter', 2 * (h + w), u, ['mul', h + w, 2])] }];
+    return [{ key: 'perimeter', label: 'まわりの長さ', parts: ['(', 'たて', withDim(B('h', h, u), { dim: dimW('y') }), '+', '横', withDim(B('w', w, u), { dim: dimW('x') }), ')', '×2', '＝', B('perimeter', 2 * (h + w), u, ['mul', h + w, 2])] }];
   }
 
   function stepsChoice() {
-    return [{ key: 'rechoose', kind: 'choice', label: 'もう一度えらぶ' }];
+    return [{ key: 'rechoose', kind: 'choice', label: 'もう一度選ぶ' }];
   }
 
   function stepsOrder() {
@@ -1754,7 +1754,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   }
 
   function stepsCut() {
-    return [{ key: 'cut', kind: 'cut', label: '切ってから、ひとつずつ' }];
+    return [{ key: 'cut', kind: 'cut', label: '切ってから、一つずつ' }];
   }
 
   function defaultSteps(q) {
@@ -2053,7 +2053,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         // 板が 空だと 何の 話か わからない（本人の 目通し 2026-10-06）。前の 問題の 重ねた 形を 出す
         figure: QFig.spec(Shapes.overlap([{ x: 0, y: 0, w: 16, h: 8 }, { x: 0, y: 0, w: 12, h: 11 }], { grid: false }), { pieceColors: ['#8fc7ff', '#ffb0a0'] }),
         choices: c.choices, answer: c.answer,
-        explain: { sentence: '同じ大きさのタイルで しきつめて、まい数でくらべるよ。まい数が多いほうが広い。', byMisconception: { perimeter: 'まわりの長さでは 広さはくらべられないよ。中をうめるタイルの まい数でくらべよう。' } }
+        explain: { sentence: '同じ大きさのタイルで しきつめて、まい数でくらべるよ。まい数が多い方が広い。', byMisconception: { perimeter: 'まわりの長さでは 広さはくらべられないよ。中をうめるタイルの まい数でくらべよう。' } }
       };
     }
   });
@@ -2062,7 +2062,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     id: 'f1-why-square', floor: 1, format: 'choice',
     make: function (rng) {
       const c = mkChoice(rng, [
-        { text: 'まる' },
+        { text: '丸' },
         { text: '三角' },
         { text: '正方形', correct: true }
       ], { keepOrder: true });
@@ -2071,7 +2071,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: null,
         tilingDemo: true,
         choices: c.choices, answer: c.answer,
-        explain: { sentence: 'まるだと すき間だらけ。三角も すき間なくならぶけれど、数えにくい。正方形なら すき間なく ならんで、たて何まい・よこ何まいと数えやすいよ。' }
+        explain: { sentence: '丸だと すき間だらけ。三角も すき間なくならぶけれど、数えにくい。正方形なら すき間なく ならんで、たて何まい・横何まいと数えやすいよ。' }
       };
     }
   });
@@ -2104,13 +2104,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const s = rectSides(rng, { min: 2, max: 6, square: kind === 'square', tall: kind === 'tall', wide: kind === 'wide' });
       const spec = QFig.rectSpec(s.w, s.h, { grid: true, labels: 'none', interaction: 'tiles' });
       return {
-        prompt: 'タイルを おいて 数えよう。何まい ならぶ?（面積は 何cm²?）',
+        prompt: 'タイルを 置いて 数えよう。何まい ならぶ?（面積は 何cm²?）',
         figure: spec,
         answer: s.h * s.w, unit: 'cm²',
         wrong: rectWrong(s.h, s.w),
         explain: {
-          sentence: 'たてに' + s.h + 'まい、よこに' + s.w + 'まい。たてのまい数 × よこのまい数 で ぜんぶの数が出るよ。',
-          steps: [{ key: 'count', label: '数える', parts: ['たてに', B('h', s.h, 'まい'), 'よこに', B('w', s.w, 'まい'), 'ぜんぶで', B('area', s.h * s.w, 'まい', ['mul', s.h, s.w])] }]
+          sentence: 'たてに' + s.h + 'まい、横に' + s.w + 'まい。たてのまい数 × 横のまい数 で 全部の数が出るよ。',
+          steps: [{ key: 'count', label: '数える', parts: ['たてに', B('h', s.h, 'まい'), '横に', B('w', s.w, 'まい'), '全部で', B('area', s.h * s.w, 'まい', ['mul', s.h, s.w])] }]
         }
       };
     }
@@ -2123,13 +2123,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const placedRows = rng.int(1, s.h - 1);
       const spec = QFig.rectSpec(s.w, s.h, { grid: true, labels: 'none', interaction: 'tiles', tilesPlaced: { rows: placedRows } });
       return {
-        prompt: '上の ' + placedRows + 'だんは もう おいたよ。のこりも おくと、ぜんぶで 何まい?',
+        prompt: '上の ' + placedRows + 'だんは もう 置いたよ。残りも 置くと、全部で 何まい?',
         figure: spec,
         answer: s.h * s.w, unit: 'まい',
         wrong: (function () { const w = {}; w[String(placedRows * s.w)] = 'placed-only'; return w; })(),
         explain: {
-          sentence: '1だんに' + s.w + 'まい。それが' + s.h + 'だん。1だんのまい数 × だんの数 で ぜんぶの数が出るよ。',
-          steps: [{ key: 'count', label: '数える', parts: ['1だんに', B('w', s.w, 'まい'), 'それが', B('h', s.h, 'だん'), 'ぜんぶで', B('area', s.h * s.w, 'まい', ['mul', s.w, s.h])] }]
+          sentence: '1だんに' + s.w + 'まい。それが' + s.h + 'だん。1だんのまい数 × だんの数 で 全部の数が出るよ。',
+          steps: [{ key: 'count', label: '数える', parts: ['1だんに', B('w', s.w, 'まい'), 'それが', B('h', s.h, 'だん'), '全部で', B('area', s.h * s.w, 'まい', ['mul', s.w, s.h])] }]
         }
       };
     }
@@ -2141,13 +2141,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const s = rectSides(rng, { min: 3, max: 9 });
       const spec = QFig.rectSpec(s.w, s.h, { grid: true, labels: 'none', tilesPlaced: { rows: 1, cols: 1 } });
       return {
-        prompt: 'タイルを 全部 置かなくても 数えられるよ。たてに ' + s.h + 'まい、よこに ' + s.w + 'まい。全部で 何まい?',
+        prompt: 'タイルを 全部 置かなくても 数えられるよ。たてに ' + s.h + 'まい、横に ' + s.w + 'まい。全部で 何まい?',
         figure: spec,
         answer: s.h * s.w, unit: 'まい',
         wrong: rectWrong(s.h, s.w),
         explain: {
-          sentence: 'たてに' + s.h + 'まいのならびが、よこに' + s.w + 'つ。' + s.h + '×' + s.w + ' で出せるよ。',
-          steps: [{ key: 'count', label: '数える', parts: ['たて', B('h', s.h, 'まい'), '×', 'よこ', B('w', s.w, 'まい'), '＝', B('area', s.h * s.w, 'まい', ['mul', s.h, s.w])] }]
+          sentence: 'たてに' + s.h + 'まいのならびが、横に' + s.w + 'つ。' + s.h + '×' + s.w + ' で出せるよ。',
+          steps: [{ key: 'count', label: '数える', parts: ['たて', B('h', s.h, 'まい'), '×', '横', B('w', s.w, 'まい'), '＝', B('area', s.h * s.w, 'まい', ['mul', s.h, s.w])] }]
         }
       };
     }
@@ -2174,7 +2174,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figures: [left, right],
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: '左は たて' + a.h + '×よこ' + a.w + '、右は たて' + b.h + '×よこ' + b.w + '。まい数を出して、多いほうが広いよ。',
+          sentence: '左は たて' + a.h + '×横' + a.w + '、右は たて' + b.h + '×横' + b.w + '。まい数を出して、多い方が広いよ。',
           steps: [{ key: 'both', label: '数える', parts: ['左', B('la', a.h * a.w, 'まい'), '右', B('ra', b.h * b.w, 'まい')] }, { key: 'rechoose', kind: 'choice', label: 'どっちが広い?' }]
         }
       };
@@ -2216,8 +2216,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: QFig.rectSpec(s.w, s.h, { grid: true, areaText: '面積 ' + area + 'cm²' }),
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: '面積の数は、1cm²のマスの まい数。長さや まわりの長さとは べつのものだよ。',
-          steps: [{ key: 'count', label: 'マスを数える', parts: ['たてに', B('h', s.h, 'まい'), 'よこに', B('w', s.w, 'まい'), '＝', B('area', area, 'まい', ['mul', s.h, s.w])] }, { key: 'rechoose', kind: 'choice', label: 'だから ' + area + ' は 何が' + area + 'こ?' }]
+          sentence: '面積の数は、1cm²のマスの まい数。長さや まわりの長さとは 別のものだよ。',
+          steps: [{ key: 'count', label: 'マスを数える', parts: ['たてに', B('h', s.h, 'まい'), '横に', B('w', s.w, 'まい'), '＝', B('area', area, 'まい', ['mul', s.h, s.w])] }, { key: 'rechoose', kind: 'choice', label: 'だから ' + area + ' は 何が' + area + 'こ?' }]
         }
       };
     }
@@ -2236,7 +2236,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figures: [QFig.rectSpec(a.w, a.h, { grid: false }), QFig.rectSpec(b.w, b.h, { grid: false })],
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: '左も右も たて×よこ で タイルのまい数を出して、くらべるよ。',
+          sentence: '左も右も たて×横 で タイルのまい数を出して、くらべるよ。',
           steps: [{ key: 'both', label: '面積', parts: ['左', B('la', a.h * a.w, 'cm²'), '右', B('ra', b.h * b.w, 'cm²')] }, { key: 'rechoose', kind: 'choice', label: 'どっちが大きい?' }]
         }
       };
@@ -2258,15 +2258,15 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const perim = 2 * (a[0] + a[1]);
       const c = mkChoice(rng, [
         { text: '面積も同じ', misconception: 'perimeter' },
-        { text: '左のほうが広い', correct: areaA > areaB },
-        { text: '右のほうが広い', correct: areaB > areaA }
+        { text: '左の方が広い', correct: areaA > areaB },
+        { text: '右の方が広い', correct: areaB > areaA }
       ], { keepOrder: true });
       return {
         prompt: 'まわりの長さは どちらも' + perim + 'cm。面積も同じ?',
         figures: [QFig.rectSpec(a[1], a[0], { grid: true }), QFig.rectSpec(b[1], b[0], { grid: true })],
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: 'まわりが同じでも、面積は べつ。左も右も たて×よこ で まい数を出して、くらべよう。',
+          sentence: 'まわりが同じでも、面積は 別。左も右も たて×横 で まい数を出して、くらべよう。',
           steps: [{ key: 'both', label: '面積', parts: ['左', B('la', areaA, 'cm²'), '右', B('ra', areaB, 'cm²')] }, { key: 'rechoose', kind: 'choice', label: '面積が広いのは?' }]
         }
       };
@@ -2279,18 +2279,18 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const s = rectSides(rng, { min: 2, max: 7 });
       const c = mkChoice(rng, [
         { text: '同じ広さ', correct: true },
-        { text: '左のほうが広い' },
-        { text: '右のほうが広い' }
+        { text: '左の方が広い' },
+        { text: '右の方が広い' }
       ], { keepOrder: true });
       return {
-        prompt: 'たて' + s.h + 'cm・よこ' + s.w + 'cm と、たて' + s.w + 'cm・よこ' + s.h + 'cm。面積は 同じ?',
+        prompt: 'たて' + s.h + 'cm・横' + s.w + 'cm と、たて' + s.w + 'cm・横' + s.h + 'cm。面積は 同じ?',
         figures: [QFig.rectSpec(s.w, s.h, { grid: true }), QFig.rectSpec(s.h, s.w, { grid: true })],
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: 'どちらも たて×よこ で タイルのまい数を出してみよう。向きがちがっても、まい数は 変わらないよ。',
+          sentence: 'どちらも たて×横 で タイルのまい数を出してみよう。向きがちがっても、まい数は 変わらないよ。',
           steps: [
-            { key: 'left', label: '左', parts: ['たて', B('lh', s.h, 'cm'), '×', 'よこ', B('lw', s.w, 'cm'), '＝', B('la', s.h * s.w, 'cm²', ['mul', s.h, s.w])] },
-            { key: 'right', label: '右', parts: ['たて', B('rh', s.w, 'cm'), '×', 'よこ', B('rw', s.h, 'cm'), '＝', B('ra', s.h * s.w, 'cm²', ['mul', s.w, s.h])] },
+            { key: 'left', label: '左', parts: ['たて', B('lh', s.h, 'cm'), '×', '横', B('lw', s.w, 'cm'), '＝', B('la', s.h * s.w, 'cm²', ['mul', s.h, s.w])] },
+            { key: 'right', label: '右', parts: ['たて', B('rh', s.w, 'cm'), '×', '横', B('rw', s.h, 'cm'), '＝', B('ra', s.h * s.w, 'cm²', ['mul', s.w, s.h])] },
             { key: 'rechoose', kind: 'choice', label: '面積は 同じ? ちがう?' }
           ]
         }
@@ -2311,7 +2311,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: QFig.rectSpec(s, s, { grid: true, labels: 'h' }),
         answer: s * s, unit: 'cm²', wrong: wrong,
         explain: {
-          sentence: '正方形は よこも' + s + 'cm。たて' + s + '×よこ' + s + ' で出すよ。',
+          sentence: '正方形は 横も' + s + 'cm。たて' + s + '×横' + s + ' で出すよ。',
           steps: Bank.stepsSquareArea(s)
         }
       };
@@ -2328,12 +2328,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       wrong[String(area - h)] = 'sub-instead';
       wrong[String(area * h)] = 'mul-instead';
       return {
-        prompt: 'マスが ' + area + 'まい。たてに' + h + 'まいならんでいるなら、よこには何まい?',
+        prompt: 'マスが ' + area + 'まい。たてに' + h + 'まいならんでいるなら、横には何まい?',
         figure: QFig.rectSpec(w, h, { grid: true, labels: 'h', unit: 'まい', areaText: area + 'まい' }),
         answer: w, unit: 'まい', wrong: wrong,
         explain: {
-          sentence: 'たて' + h + 'まい × よこ□まい ＝ ' + area + 'まい。' + area + '÷' + h + ' で よこのまい数が出るよ。',
-          steps: [{ key: 'reverse', label: '式', parts: [B('area', area, 'まい'), '÷', 'たて', B('h', h, 'まい'), '＝', 'よこ', B('w', w, 'まい', ['div', area, h])] }]
+          sentence: 'たて' + h + 'まい × 横□まい ＝ ' + area + 'まい。' + area + '÷' + h + ' で 横のまい数が出るよ。',
+          steps: [{ key: 'reverse', label: '式', parts: [B('area', area, 'まい'), '÷', 'たて', B('h', h, 'まい'), '＝', '横', B('w', w, 'まい', ['div', area, h])] }]
         }
       };
     }
@@ -2347,16 +2347,17 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const c = mkChoice(rng, [
         { text: '合っている' },
         { text: 'まわりの長さを 答えている', correct: true },
-        { text: 'たてとよこを たしている', misconception: 'sum' }
+        { text: 'たてと横を たしている', misconception: 'sum' }
       ], { keepOrder: true });
       return {
-        prompt: 'ほかの子の答え：「面積は ' + perim + 'cm²」。これ、合ってる?',
+        // 選ぶのは「合っているか・どこが ちがうか」。聞き方を そろえた（Jev 0.55→0.34 2026-10-06）
+        prompt: '他の子の答え：「面積は ' + perim + 'cm²」。この 答えは 合ってる? ちがうなら どこが ちがう?',
         figure: QFig.rectSpec(s.w, s.h, { grid: true }),
         peerAnswer: perim + 'cm²',
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: perim + 'は、(' + s.h + '+' + s.w + ')×2 の まわりの長さだよ。面積は たて×よこ で出すよ。',
-          steps: [{ key: 'formula', label: '面積', parts: ['たて', B('h', s.h, 'cm'), '×', 'よこ', B('w', s.w, 'cm'), '＝', B('area', s.h * s.w, 'cm²')] }, { key: 'rechoose', kind: 'choice', label: 'どこがまちがい?' }]
+          sentence: perim + 'は、(' + s.h + '+' + s.w + ')×2 の まわりの長さだよ。面積は たて×横 で出すよ。',
+          steps: [{ key: 'formula', label: '面積', parts: ['たて', B('h', s.h, 'cm'), '×', '横', B('w', s.w, 'cm'), '＝', B('area', s.h * s.w, 'cm²')] }, { key: 'rechoose', kind: 'choice', label: 'どこがまちがい?' }]
         }
       };
     }
@@ -2374,7 +2375,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: QFig.rectSpec(s.w, s.h, { grid: false, labels: params.square ? 'h' : 'wh' }),
         answer: s.h * s.w, unit: 'cm²', wrong: rectWrong(s.h, s.w),
         explain: {
-          sentence: 'たてに' + s.h + 'まい、よこに' + s.w + 'まいのタイル。たて×よこ で出すよ。',
+          sentence: 'たてに' + s.h + 'まい、横に' + s.w + 'まいのタイル。たて×横 で出すよ。',
           steps: Bank.stepsRectArea(s.h, s.w)
         }
       };
@@ -2391,12 +2392,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       wrong[String(area - h)] = 'sub-instead';
       wrong[String(area * h)] = 'mul-instead';
       return {
-        prompt: '面積' + area + 'cm²の長方形。たてが' + h + 'cmなら、よこは何cm?',
+        prompt: '面積' + area + 'cm²の長方形。たてが' + h + 'cmなら、横は何cm?',
         figure: QFig.rectSpec(w, h, { grid: false, labels: 'h', areaText: area + 'cm²' }),
         answer: w, unit: 'cm', wrong: wrong,
         explain: {
-          sentence: 'たて' + h + '×よこ□＝' + area + '。' + area + '÷' + h + ' で よこが出るよ。',
-          steps: Bank.stepsReverse(area, h, 'たて', w, 'よこ')
+          sentence: 'たて' + h + '×横□＝' + area + '。' + area + '÷' + h + ' で 横が出るよ。',
+          steps: Bank.stepsReverse(area, h, 'たて', w, '横')
         }
       };
     }
@@ -2418,8 +2419,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: QFig.fromFigure(fig, [], [], { interaction: 'tiles' }),
         answer: area, unit: 'cm²',
         explain: {
-          sentence: '1マスが 1cm²。マスの数を かぞえると 面積になる。長方形に 分けて 数えても いいよ。',
-          steps: [{ key: 'count', label: '数える', parts: ['マスは ぜんぶで', B('area', area, 'cm²')] }]
+          sentence: '1マスが 1cm²。マスの数を 数えると 面積になる。長方形に 分けて 数えても いいよ。',
+          steps: [{ key: 'count', label: '数える', parts: ['マスは 全部で', B('area', area, 'cm²')] }]
         }
       };
     }
@@ -2438,12 +2439,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
           { text: 'm²' }
         ], { keepOrder: true });
         return {
-          prompt: 'たて' + h + 'cm、よこ' + w + 'cm の長方形。面積は ' + (h * w) + '□。□に入る 単位は?',
+          prompt: 'たて' + h + 'cm、横' + w + 'cm の長方形。面積は ' + (h * w) + '□。□に入る 単位は?',
           figure: QFig.rectSpec(w, h, { grid: false }),
           choices: c.choices, answer: c.answer,
           explain: {
             sentence: '面積は 1cm²のタイルの まい数だから、単位は cm²。cm は 長さの 単位だよ。',
-            steps: [{ key: 'count', label: 'タイルを数える', parts: ['たてに', B('h', h, 'まい'), 'よこに', B('w', w, 'まい'), '＝', B('a', h * w, 'まい', ['mul', h, w])] }, { key: 'rechoose', kind: 'choice', label: 'タイルのまい数。だから 単位は?' }]
+            steps: [{ key: 'count', label: 'タイルを数える', parts: ['たてに', B('h', h, 'まい'), '横に', B('w', w, 'まい'), '＝', B('a', h * w, 'まい', ['mul', h, w])] }, { key: 'rechoose', kind: 'choice', label: 'タイルのまい数。だから 単位は?' }]
           }
         };
       }
@@ -2453,12 +2454,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: 'まい' }
       ], { keepOrder: true });
       return {
-        prompt: '面積' + (h * w) + 'cm²、たて' + h + 'cm の長方形。よこは ' + w + '□。□に入る 単位は?',
+        prompt: '面積' + (h * w) + 'cm²、たて' + h + 'cm の長方形。横は ' + w + '□。□に入る 単位は?',
         figure: QFig.rectSpec(w, h, { grid: false, labels: 'h', areaText: (h * w) + 'cm²' }),
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: 'よこは 辺の 長さだから、単位は cm。面積の cm² とは ちがうよ。',
-          steps: [{ key: 'reverse', label: '式', parts: ['面積', B('area', h * w, 'cm²'), '÷', 'たて', B('h', h, 'cm'), '＝', 'よこ', B('w', w, 'cm', ['div', h * w, h])] }, { key: 'rechoose', kind: 'choice', label: 'よこは 辺の長さ。だから 単位は?' }]
+          sentence: '横は 辺の 長さだから、単位は cm。面積の cm² とは ちがうよ。',
+          steps: [{ key: 'reverse', label: '式', parts: ['面積', B('area', h * w, 'cm²'), '÷', 'たて', B('h', h, 'cm'), '＝', '横', B('w', w, 'cm', ['div', h * w, h])] }, { key: 'rechoose', kind: 'choice', label: '横は 辺の長さ。だから 単位は?' }]
         }
       };
     }
@@ -2481,11 +2482,11 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const wrong = rectWrong(h, w);
       const sc12 = 12 / Math.max(h, w);
       return {
-        prompt: 'たて' + h + 'cm、よこ' + w + 'cm の' + sc.name + 'があります。面積は何cm²?',
+        prompt: 'たて' + h + 'cm、横' + w + 'cm の' + sc.name + 'があります。面積は何cm²?',
         figure: QFig.rectSpec(Math.max(1, Math.round(w * sc12)), Math.max(1, Math.round(h * sc12)), { grid: false, labels: 'wh' }),
         answer: h * w, unit: 'cm²', wrong: wrong,
         explain: {
-          sentence: '文から、たてとよこの長さを 見つける。面積は たて×よこ で出すよ。',
+          sentence: '文から、たてと横の長さを 見つける。面積は たて×横 で出すよ。',
           steps: Bank.stepsRectArea(h, w)
         }
       };
@@ -2508,13 +2509,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   function pairsPrompt(area, pairs) {
     const ex = pairs.filter(function (p) { return p[0] !== p[1] && p[0] > 1; })[0] || pairs[0];
     const sq = pairs.some(function (p) { return p[0] === p[1]; });
-    return '面積 ' + area + 'cm²の 長方形を 全部 見つけて、たてと よこを 入れよう。' + LF_ +
+    return '面積 ' + area + 'cm²の 長方形を 全部 見つけて、たてと 横を 入れよう。' + LF_ +
       ex[0] + '×' + ex[1] + ' と ' + ex[1] + '×' + ex[0] + ' は 同じ。';
   }
   // 板に 大きく 出す ことば（正方形が ある ときは ひとこと 足す）
   function pairsNote(area, pairs) {
     const sq = pairs.some(function (p) { return p[0] === p[1]; });
-    return pairsPrompt(area, pairs) + (sq ? LF_ + '正方形も 長方形の なかま。' : '');
+    return pairsPrompt(area, pairs) + (sq ? LF_ + '正方形も 長方形の 仲間。' : '');
   }
   Bank.pairsNote = pairsNote;
   const LF_ = String.fromCharCode(10);
@@ -2545,15 +2546,15 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const c = mkChoice(rng, [
         { text: '1cmの 線が ' + area + '本 ならぶから' },
         { text: '1cm²のタイルが ' + area + 'まいならぶから', correct: true },
-        { text: 'たてとよこを たしたから', misconception: 'sum' }
+        { text: 'たてと横を たしたから', misconception: 'sum' }
       ]);
       return {
         prompt: 'この長方形の 面積は ' + area + 'cm²。なぜ ' + area + 'cm² と 言えるの?',
         figure: QFig.rectSpec(s.w, s.h, { grid: true, areaText: '面積 ' + area + 'cm²' }),
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: 'かけ算は 数え方の くふう。面積は、そもそも 1cm²のタイルの まい数だよ。',
-          steps: [{ key: 'count', label: 'タイルを数える', parts: ['たてに', B('h', s.h, 'まい'), 'よこに', B('w', s.w, 'まい'), '＝', B('area', area, 'まい', ['mul', s.h, s.w])] }, { key: 'rechoose', kind: 'choice', label: 'だから ' + area + 'cm² になった もとの理由は?' }]
+          sentence: 'かけ算は 数え方の 工夫。面積は、そもそも 1cm²のタイルの まい数だよ。',
+          steps: [{ key: 'count', label: 'タイルを数える', parts: ['たてに', B('h', s.h, 'まい'), '横に', B('w', s.w, 'まい'), '＝', B('area', area, 'まい', ['mul', s.h, s.w])] }, { key: 'rechoose', kind: 'choice', label: 'だから ' + area + 'cm² になった もとの理由は?' }]
         }
       };
     }
@@ -2569,13 +2570,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       wrong[String(area - w)] = 'sub-instead';
       wrong[String(area * w)] = 'mul-instead';
       return {
-        prompt: 'たて□cm、よこ' + w + 'cm で、面積が' + area + 'cm²。□は いくつ?',
+        prompt: 'たて□cm、横' + w + 'cm で、面積が' + area + 'cm²。□は いくつ?',
         figure: QFig.rectSpec(w, h, { grid: false, labels: 'w', areaText: area + 'cm²' }),
         answer: h, unit: 'cm', wrong: wrong,
         explain: {
           sentence: '□×' + w + '＝' + area + '。' + area + '÷' + w + ' で たてが出るよ。',
-          byMisconception: { 'sub-instead': '面積から よこをひいているね。面積÷よこ で たてが出るよ。' },
-          steps: Bank.stepsReverse(area, w, 'よこ', h, 'たて')
+          byMisconception: { 'sub-instead': '面積から 横をひいているね。面積÷横 で たてが出るよ。' },
+          steps: Bank.stepsReverse(area, w, '横', h, 'たて')
         }
       };
     }
@@ -2610,7 +2611,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: '面積は何cm²?',
         figure: QFig.rectSpec(s.w, s.h, { grid: false }),
         answer: s.h * s.w, unit: 'cm²', wrong: rectWrong(s.h, s.w),
-        explain: { sentence: 'たて' + s.h + 'cm、よこ' + s.w + 'cm。たて×よこ で出すよ。', steps: Bank.stepsRectArea(s.h, s.w) }
+        explain: { sentence: 'たて' + s.h + 'cm、横' + s.w + 'cm。たて×横 で出すよ。', steps: Bank.stepsRectArea(s.h, s.w) }
       };
     }
   });
@@ -2625,7 +2626,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: '正方形の面積は何cm²?',
         figure: QFig.rectSpec(s, s, { grid: false, labels: 'h' }),
         answer: s * s, unit: 'cm²', wrong: wrong,
-        explain: { sentence: '正方形は 4つの辺が同じ長さ。よこも' + s + 'cm。たて×よこ で出すよ。', steps: Bank.stepsSquareArea(s) }
+        explain: { sentence: '正方形は 4つの辺が同じ長さ。横も' + s + 'cm。たて×横 で出すよ。', steps: Bank.stepsSquareArea(s) }
       };
     }
   });
@@ -2644,7 +2645,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: '面積は何cm²?（図には ななめの線の長さも書いてある）',
         figure: QFig.rectSpec(w, h, { grid: false, marks: [{ kind: 'diagonal', text: d + 'cm' }] }),
         answer: h * w, unit: 'cm²', wrong: wrong,
-        explain: { sentence: 'ななめの' + d + 'cmは 使わない。面積は たて' + h + '×よこ' + w + ' で出すよ。', steps: Bank.stepsRectArea(h, w) }
+        explain: { sentence: 'ななめの' + d + 'cmは 使わない。面積は たて' + h + '×横' + w + ' で出すよ。', steps: Bank.stepsRectArea(h, w) }
       };
     }
   });
@@ -2658,7 +2659,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: '面積は何cm²?（図には まわりの長さも書いてある）',
         figure: QFig.rectSpec(s.w, s.h, { grid: false, marks: [{ kind: 'perimeter', text: 'まわりの長さ ' + perim + 'cm' }] }),
         answer: s.h * s.w, unit: 'cm²', wrong: rectWrong(s.h, s.w),
-        explain: { sentence: 'まわりの長さ' + perim + 'cmは 面積には使わない。たて' + s.h + '×よこ' + s.w + ' で出すよ。', steps: Bank.stepsRectArea(s.h, s.w) }
+        explain: { sentence: 'まわりの長さ' + perim + 'cmは 面積には使わない。たて' + s.h + '×横' + s.w + ' で出すよ。', steps: Bank.stepsRectArea(s.h, s.w) }
       };
     }
   });
@@ -2674,11 +2675,11 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: '(' + s.h + '＋' + s.w + ')×2', misconception: 'perimeter' }
       ]);
       return {
-        prompt: 'たて' + s.h + 'cm、よこ' + s.w + 'cm の長方形。面積を 出す式は どれ?',
+        prompt: 'たて' + s.h + 'cm、横' + s.w + 'cm の長方形。面積を 出す式は どれ?',
         figure: QFig.rectSpec(s.w, s.h, { grid: false }),
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: '面積は たて×よこ。たす式は 使わない。(たて＋よこ)×2 は まわりの長さの 式だよ。',
+          sentence: '面積は たて×横。たす式は 使わない。(たて＋横)×2 は まわりの長さの 式だよ。',
           steps: Bank.stepsRectArea(s.h, s.w).concat([{ key: 'rechoose', kind: 'choice', label: 'だから 面積を 出す式は?' }])
         }
       };
@@ -2691,8 +2692,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     make: function (rng) {
       const s = rectSides(rng, { min: 2, max: 6 });
       const c = mkChoice(rng, [
-        { text: 'よこに ならぶマスのまい数' },
-        { text: 'マスのまい数ぜんぶ' },
+        { text: '横に ならぶマスのまい数' },
+        { text: 'マスのまい数全部' },
         { text: 'たてに ならぶマスのまい数', correct: true }
       ]);
       return {
@@ -2701,8 +2702,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         countable: true,
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: '長さの数と、タイルのまい数は べつ。' + s.h + '×' + s.w + ' の' + s.h + 'は、たてに ならぶ 1cm²のタイルを 数えた数だよ。',
-          steps: [{ key: 'count', label: 'タイルを数える', parts: ['たてに ならぶ', B('h', s.h, 'まい'), 'よこに ならぶ', B('w', s.w, 'まい'), 'ぜんぶで', B('area', s.h * s.w, 'まい', ['mul', s.h, s.w])] }, { key: 'rechoose', kind: 'choice', label: 'だから ' + s.h + ' は 何を数えた数?' }]
+          sentence: '長さの数と、タイルのまい数は 別。' + s.h + '×' + s.w + ' の' + s.h + 'は、たてに ならぶ 1cm²のタイルを 数えた数だよ。',
+          steps: [{ key: 'count', label: 'タイルを数える', parts: ['たてに ならぶ', B('h', s.h, 'まい'), '横に ならぶ', B('w', s.w, 'まい'), '全部で', B('area', s.h * s.w, 'まい', ['mul', s.h, s.w])] }, { key: 'rechoose', kind: 'choice', label: 'だから ' + s.h + ' は 何を数えた数?' }]
         }
       };
     }
@@ -2720,10 +2721,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const wrong = {};
       wrong[String(area - h)] = 'sub-instead';
       return {
-        prompt: '面積' + area + 'cm²、たて' + h + 'cm。よこは何cm?',
+        prompt: '面積' + area + 'cm²、たて' + h + 'cm。横は何cm?',
         figure: QFig.rectSpec(w, h, { grid: false, labels: 'h', areaText: area + 'cm²' }),
         answer: w, unit: 'cm', wrong: wrong,
-        explain: { sentence: h + '×□＝' + area + '。' + area + '÷' + h + ' で よこが出るよ。', steps: Bank.stepsReverse(area, h, 'たて', w, 'よこ') }
+        explain: { sentence: h + '×□＝' + area + '。' + area + '÷' + h + ' で 横が出るよ。', steps: Bank.stepsReverse(area, h, 'たて', w, '横') }
       };
     }
   });
@@ -2785,13 +2786,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const spec = QFig.rectSpec(Math.max(1, Math.round(w * sc12)), Math.max(1, Math.round(h * sc12)), { grid: false, unit: sc.unit, labels: 'h', areaText: area + sc.unit + '²' });
       spec.labels = QFig.labelValueOverride(spec.labels, function () { return h + sc.unit; });
       return {
-        prompt: '面積が' + area + sc.unit + '²の長方形の' + sc.name + 'があります。たては' + h + sc.unit + 'です。よこは何' + sc.unit + '?',
+        prompt: '面積が' + area + sc.unit + '²の長方形の' + sc.name + 'があります。たては' + h + sc.unit + 'です。横は何' + sc.unit + '?',
         figure: spec,
         answer: w, unit: sc.unit, wrong: wrong,
         _range: { area: area, h: h, w: w },
         explain: {
-          sentence: '文から、面積と たてを 見つける。たて×よこ＝面積 だから、面積÷たて で よこが出るよ。',
-          steps: Bank.stepsReverse(area, h, 'たて', w, 'よこ', sc.unit)
+          sentence: '文から、面積と たてを 見つける。たて×横＝面積 だから、面積÷たて で 横が出るよ。',
+          steps: Bank.stepsReverse(area, h, 'たて', w, '横', sc.unit)
         }
       };
     }
@@ -2808,18 +2809,18 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const c = mkChoice(rng, [
         { text: 'たて' + h + 'まいの列が 何列 あるかを 数えるから' , correct: true },
         { text: '大きい数を 小さい数で わるから' },
-        { text: '面積は たて＋よこ だから' }
+        { text: '面積は たて＋横 だから' }
       ]);
       return {
-        prompt: 'たて' + h + 'cm、面積' + area + 'cm²の 長方形。よこを ' + area + '÷' + h + 'で 出せる わけは どれ?',
+        prompt: 'たて' + h + 'cm、面積' + area + 'cm²の 長方形。横を ' + area + '÷' + h + 'で 出せる わけは どれ?',
         figure: QFig.rectSpec(w, h, { grid: true, labels: 'h', areaText: area + 'cm²' }),
         countable: true,
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: 'たてに' + h + 'まいの列が、よこに □列 ならんで ' + area + 'まい。' + area + '÷' + h + ' で 列の数（よこ）が 出るよ。',
+          sentence: 'たてに' + h + 'まいの列が、横に □列 ならんで ' + area + 'まい。' + area + '÷' + h + ' で 列の数（横）が 出るよ。',
           steps: [
             { key: 'columns', label: '列で数える', parts: ['たて', B('h', h, 'まい'), 'の列が', B('cols', w, '列'), 'で', B('area', area, 'まい', ['mul', h, w])] },
-            { key: 'reverse', label: '式', parts: ['面積', B('a2', area, 'cm²'), '÷', 'たて', B('h2', h, 'cm'), '＝', 'よこ', B('w2', w, 'cm', ['div', area, h])] },
+            { key: 'reverse', label: '式', parts: ['面積', B('a2', area, 'cm²'), '÷', 'たて', B('h2', h, 'cm'), '＝', '横', B('w2', w, 'cm', ['div', area, h])] },
             { key: 'rechoose', kind: 'choice', label: 'だから なぜ わり算で いいの?' }
           ]
         }
@@ -2833,15 +2834,15 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     make: function (rng) {
       const h = rng.int(2, 8), w = rng.int(h + 1, 12), area = h * w, perim = 2 * (h + w);
       return {
-        prompt: '面積' + area + 'cm²、たて' + h + 'cm の長方形。よこと まわりの長さを 出そう。',
+        prompt: '面積' + area + 'cm²、たて' + h + 'cm の長方形。横と まわりの長さを 出そう。',
         figure: QFig.rectSpec(w, h, { grid: false, labels: 'h', areaText: area + 'cm²' }),
         fields: [
-          { key: 'w', label: 'よこ', unit: 'cm', answer: w },
+          { key: 'w', label: '横', unit: 'cm', answer: w },
           { key: 'perimeter', label: 'まわりの長さ', unit: 'cm', answer: perim }
         ],
         explain: {
-          sentence: 'まず よこを 面積÷たて で 出す。それから まわりの長さは (たて＋よこ)×2 だよ。',
-          steps: Bank.stepsReverse(area, h, 'たて', w, 'よこ').concat(Bank.stepsPerimeter(h, w))
+          sentence: 'まず 横を 面積÷たて で 出す。それから まわりの長さは (たて＋横)×2 だよ。',
+          steps: Bank.stepsReverse(area, h, 'たて', w, '横').concat(Bank.stepsPerimeter(h, w))
         }
       };
     }
@@ -2854,13 +2855,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const area = t[0], h = t[1];
       const under = Math.floor(area / h), over = under + 1;
       const c = mkChoice(rng, [
-        { text: '作れる。よこは ' + over + 'cm', misconception: 'remainder' },
-        { text: '作れる。よこは ' + under + 'cm', misconception: 'remainder' },
+        { text: '作れる。横は ' + over + 'cm', misconception: 'remainder' },
+        { text: '作れる。横は ' + under + 'cm', misconception: 'remainder' },
         { text: '作れない。' + h + '×□＝' + area + ' になる整数の□がない', correct: true }
       ]);
       return {
         prompt: '面積' + area + 'cm²、たて' + h + 'cm。マスを ぴったり ならべた 長方形は 作れる?',
-        figure: QFig.rectSpec(over, h, { grid: false, labels: 'h', areaText: '面積 ' + area + 'cm²?', caption: 'よこは 何cm?' }),
+        figure: QFig.rectSpec(over, h, { grid: false, labels: 'h', areaText: '面積 ' + area + 'cm²?', caption: '横は 何cm?' }),
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: 'たて' + h + 'まいの列を ならべると ' + h + '、' + h * 2 + '、' + h * 3 + '…と' + h + 'ずつふえる。' + area + 'は ' + h + 'のだんに ない。' + h + 'のだんの数なら 作れるよ。',
@@ -2884,10 +2885,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       wrong[String(area - w)] = 'sub-instead';
       wrong[String(area * w)] = 'mul-instead';
       return {
-        prompt: 'たて□cm × よこ' + w + 'cm ＝ ' + area + 'cm²。□は?',
+        prompt: 'たて□cm × 横' + w + 'cm ＝ ' + area + 'cm²。□は?',
         figure: QFig.rectSpec(w, h, { grid: false, labels: 'w', areaText: area + 'cm²' }),
         answer: h, unit: 'cm', wrong: wrong,
-        explain: { sentence: '□×' + w + '＝' + area + '。' + area + '÷' + w + ' で たてが出るよ。', byMisconception: { 'sub-instead': '面積から よこをひいているね。面積÷よこ で たてが出るよ。' }, steps: Bank.stepsReverse(area, w, 'よこ', h, 'たて') }
+        explain: { sentence: '□×' + w + '＝' + area + '。' + area + '÷' + w + ' で たてが出るよ。', byMisconception: { 'sub-instead': '面積から 横をひいているね。面積÷横 で たてが出るよ。' }, steps: Bank.stepsReverse(area, w, '横', h, 'たて') }
       };
     }
   });
@@ -2908,7 +2909,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figures: [QFig.rectSpec(a[1], a[0], { grid: false }), QFig.rectSpec(b[1], b[0], { grid: false })],
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: '左も右も たて×よこ で まい数を出して くらべるよ。まわりが同じでも、面積は べつだよ。',
+          sentence: '左も右も たて×横 で まい数を出して くらべるよ。まわりが同じでも、面積は 別だよ。',
           steps: [{ key: 'both', label: '面積', parts: ['左', B('la', areaA, 'cm²'), '右', B('ra', areaB, 'cm²')] }, { key: 'rechoose', kind: 'choice', label: '大きいのは?' }]
         }
       };
@@ -2930,7 +2931,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figures: [QFig.rectSpec(a[1], a[0], { grid: false }), QFig.rectSpec(b[1], b[0], { grid: false })],
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: 'まわりは (たて+よこ)×2。左も右も 出して くらべるよ。面積が同じでも、まわりは べつだよ。',
+          sentence: 'まわりは (たて+横)×2。左も右も 出して くらべるよ。面積が同じでも、まわりは 別だよ。',
           steps: [{ key: 'both', label: 'まわりの長さ', parts: ['左', B('lp', pa, 'cm'), '右', B('rp', pb, 'cm')] }, { key: 'rechoose', kind: 'choice', label: '長いのは?' }]
         }
       };
@@ -2945,14 +2946,14 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const areaWrong = {}; areaWrong[String(perim)] = 'perimeter'; areaWrong[String(s.h + s.w)] = 'sum';
       const perimWrong = {}; perimWrong[String(area)] = 'perimeter'; perimWrong[String(s.h + s.w)] = 'sum';
       return {
-        prompt: 'たて' + s.h + 'cm、よこ' + s.w + 'cm。面積と まわりの長さを ならべて答えよう。',
+        prompt: 'たて' + s.h + 'cm、横' + s.w + 'cm。面積と まわりの長さを ならべて答えよう。',
         figure: QFig.rectSpec(s.w, s.h, { grid: false }),
         fields: [
           { key: 'area', label: '面積', unit: 'cm²', answer: area, wrong: areaWrong },
           { key: 'perimeter', label: 'まわりの長さ', unit: 'cm', answer: perim, wrong: perimWrong }
         ],
         explain: {
-          sentence: '面積は たて×よこ（中のタイルのまい数）。まわりの長さは (たて+よこ)×2（ふちの長さ）。べつのものだよ。',
+          sentence: '面積は たて×横（中のタイルのまい数）。まわりの長さは (たて+横)×2（ふちの長さ）。別のものだよ。',
           steps: Bank.stepsRectArea(s.h, s.w).concat(Bank.stepsPerimeter(s.h, s.w))
         }
       };
@@ -2967,15 +2968,15 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       for (let h = 1; h <= half / 2; h += 1) cands.push([h, half - h]);
       const picks = rng.shuffle(cands).slice(0, 3);
       const best = picks.slice().sort(function (a, b) { return b[0] * b[1] - a[0] * a[1]; })[0];
-      const c = mkChoice(rng, picks.map(function (p) { return { text: 'たて' + p[0] + 'cm・よこ' + p[1] + 'cm', correct: p === best }; }));
+      const c = mkChoice(rng, picks.map(function (p) { return { text: 'たて' + p[0] + 'cm・横' + p[1] + 'cm', correct: p === best }; }));
       return {
-        prompt: 'まわりの長さが どれも ' + (half * 2) + 'cm の長方形。いちばん 面積が広いのは どれ?',
+        prompt: 'まわりの長さが どれも ' + (half * 2) + 'cm の長方形。一番 面積が広いのは どれ?',
         figures: picks.map(function (p) { return QFig.rectSpec(p[1], p[0], { grid: false }); }),
         stack: 'v', noNames: true,
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: 'それぞれ たて×よこ で 面積を出して くらべるよ。まわりが同じなら、正方形に近い形ほど 広くなるよ。',
-          steps: [{ key: 'areas', label: '面積', parts: picks.map(function (p, i) { return B('a' + i, p[0] * p[1], 'cm²'); }) }, { key: 'rechoose', kind: 'choice', label: 'いちばん広いのは?' }]
+          sentence: 'それぞれ たて×横 で 面積を出して くらべるよ。まわりが同じなら、正方形に近い形ほど 広くなるよ。',
+          steps: [{ key: 'areas', label: '面積', parts: picks.map(function (p, i) { return B('a' + i, p[0] * p[1], 'cm²'); }) }, { key: 'rechoose', kind: 'choice', label: '一番広いのは?' }]
         }
       };
     }
@@ -2988,19 +2989,19 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const s = rectSides(rng, { min: 2, max: 9 });
       const wrongValue = kind === 'sum' ? s.h + s.w : 2 * (s.h + s.w);
       const c = mkChoice(rng, [
-        { text: 'たてと よこを たしている', correct: kind === 'sum', misconception: kind === 'sum' ? null : 'sum' },
+        { text: 'たてと 横を たしている', correct: kind === 'sum', misconception: kind === 'sum' ? null : 'sum' },
         { text: 'まわりの長さを 出している', correct: kind === 'perimeter', misconception: kind === 'perimeter' ? null : 'perimeter' },
         { text: '合っている' }
       ], { keepOrder: true });
       return {
         prompt: 'この 答案の どこが まちがい?',
         figure: QFig.rectSpec(s.w, s.h, { grid: false }),
-        peerAnswer: 'たて' + s.h + '、よこ' + s.w + 'だから、面積は ' + wrongValue + 'cm²',
+        peerAnswer: 'たて' + s.h + '、横' + s.w + 'だから、面積は ' + wrongValue + 'cm²',
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: kind === 'sum'
-            ? wrongValue + 'は ' + s.h + '+' + s.w + '。たしても タイルのまい数にはならない。面積は たて×よこ で出すよ。'
-            : wrongValue + 'は (' + s.h + '+' + s.w + ')×2 で、まわりの長さ。面積は たて×よこ で出すよ。',
+            ? wrongValue + 'は ' + s.h + '+' + s.w + '。たしても タイルのまい数にはならない。面積は たて×横 で出すよ。'
+            : wrongValue + 'は (' + s.h + '+' + s.w + ')×2 で、まわりの長さ。面積は たて×横 で出すよ。',
           steps: Bank.stepsRectArea(s.h, s.w).concat([{ key: 'rechoose', kind: 'choice', label: 'どこがまちがい?' }])
         }
       };
@@ -3012,17 +3013,17 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     make: function (rng) {
       const s = rectSides(rng, { min: 2, max: 9 });
       const c = mkChoice(rng, [
-        { text: 'たてと よこを たしている', misconception: 'sum' },
+        { text: 'たてと 横を たしている', misconception: 'sum' },
         { text: 'まわりの長さを 出している', misconception: 'perimeter' },
         { text: '合っている', correct: true }
       ], { keepOrder: true });
       return {
         prompt: 'この 答案は 合っている?',
         figure: QFig.rectSpec(s.w, s.h, { grid: false }),
-        peerAnswer: 'たて' + s.h + '、よこ' + s.w + 'だから、面積は ' + s.h * s.w + 'cm²',
+        peerAnswer: 'たて' + s.h + '、横' + s.w + 'だから、面積は ' + s.h * s.w + 'cm²',
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: 'たて×よこ は タイルのまい数を出す式。この答案の式が どうなっているか、もう一度 見てみよう。',
+          sentence: 'たて×横 は タイルのまい数を出す式。この答案の式が どうなっているか、もう一度 見てみよう。',
           steps: Bank.stepsRectArea(s.h, s.w).concat([{ key: 'rechoose', kind: 'choice', label: '答案と くらべて、この答案は どう?' }])
         }
       };
@@ -3062,7 +3063,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: k === 1 ? QFig.rectSpec(1, 1, { grid: false, unit: 'm', labels: 'wh' }) : null,
         answer: answer, unit: 'cm²', wrong: wrong,
         explain: {
-          sentence: '1m²は、たてに100まい、よこに100まいの 1cm²。100×100 で出すよ。' + (k > 1 ? 'それが' + k + 'つ分だよ。' : ''),
+          sentence: '1m²は、たてに100まい、横に100まいの 1cm²。100×100 で出すよ。' + (k > 1 ? 'それが' + k + 'つ分だよ。' : ''),
           steps: k === 1
             ? [{ key: 'm2', label: '1m²', parts: ['100', '×', '100', '＝', B('a', 10000, 'cm²')] }]
             : [{ key: 'm2', label: '式', parts: ['1m²＝', B('one', 10000, 'cm²'), '　', B('k', k, ''), '×10000＝', B('a', answer, 'cm²')] }]
@@ -3098,12 +3099,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const wrong = {};
       wrong[String(m2)] = 'x100'; wrong[String(m2 * 100)] = 'x100';
       return {
-        prompt: 'たて' + h + 'm、よこ' + w + 'mの長方形。面積を cm² で答えよう。',
+        prompt: 'たて' + h + 'm、横' + w + 'mの長方形。面積を cm² で答えよう。',
         figure: QFig.rectSpec(w, h, { grid: false, unit: 'm' }),
         answer: answer, unit: 'cm²', wrong: wrong,
         explain: {
-          sentence: 'まず m² で出す（たて×よこ）。それから 1m²＝10000cm² を使って、cm² にするよ。',
-          steps: [{ key: 'm2', label: 'm²で', parts: ['たて', B('h', h, 'm'), '×', 'よこ', B('w', w, 'm'), '＝', B('m2', m2, 'm²', ['mul', h, w])] }, { key: 'cm2', label: 'cm²に', parts: [B('m2b', m2, 'm²'), '×10000＝', B('a', answer, 'cm²', ['mul', m2, 10000])] }]
+          sentence: 'まず m² で出す（たて×横）。それから 1m²＝10000cm² を使って、cm² にするよ。',
+          steps: [{ key: 'm2', label: 'm²で', parts: ['たて', B('h', h, 'm'), '×', '横', B('w', w, 'm'), '＝', B('m2', m2, 'm²', ['mul', h, w])] }, { key: 'cm2', label: 'cm²に', parts: [B('m2b', m2, 'm²'), '×10000＝', B('a', answer, 'cm²', ['mul', m2, 10000])] }]
         }
       };
     }
@@ -3121,12 +3122,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const spec = QFig.rectSpec(wCm / 10, hCm / 10, { grid: false, labels: 'wh' });
       spec.labels = QFig.labelValueOverride(spec.labels, function (l) { return l.axis === 'y' ? hM + 'm' : wCm + 'cm'; });
       return {
-        prompt: 'たて' + hM + 'm、よこ' + wCm + 'cm。面積は何cm²?',
+        prompt: 'たて' + hM + 'm、横' + wCm + 'cm。面積は何cm²?',
         figure: spec,
         answer: answer, unit: 'cm²', wrong: wrong,
         explain: {
-          sentence: '単位をそろえる。' + hM + 'm＝' + hCm + 'cm。それから たて×よこ だよ。',
-          steps: [{ key: 'unit', label: 'そろえる', parts: [hM + 'm＝', B('h', hCm, 'cm')] }, { key: 'formula', label: '式', parts: ['たて', B('h2', hCm, 'cm'), '×', 'よこ', B('w', wCm, 'cm'), '＝', B('a', answer, 'cm²', ['mul', hCm, wCm])] }]
+          sentence: '単位をそろえる。' + hM + 'm＝' + hCm + 'cm。それから たて×横 だよ。',
+          steps: [{ key: 'unit', label: 'そろえる', parts: [hM + 'm＝', B('h', hCm, 'cm')] }, { key: 'formula', label: '式', parts: ['たて', B('h2', hCm, 'cm'), '×', '横', B('w', wCm, 'cm'), '＝', B('a', answer, 'cm²', ['mul', hCm, wCm])] }]
         }
       };
     }
@@ -3137,7 +3138,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     make: function (rng) {
       const c = mkChoice(rng, [
         { text: '1mは 100cmだから、1m²も 100cm²で 合っている', misconception: 'x100' },
-        { text: 'たてにも よこにも 100まいずつ ならぶから、100×100 になる', correct: true },
+        { text: 'たてにも 横にも 100まいずつ ならぶから、100×100 になる', correct: true },
         { text: '1m²は 1000cm²だから。100より 一けた 大きいだけ', misconception: 'x100' }
       ]);
       return {
@@ -3146,8 +3147,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         peerAnswer: '1m²＝100cm²',
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: '長さは100倍でも、面積は たて100まい × よこ100まい。100×100 で考えるよ。',
-          steps: [{ key: 'fill', label: '1m²のなかの 1cm²', parts: ['たてに', B('h', 100, 'まい'), 'よこに', B('w', 100, 'まい'), '＝', B('a', 10000, 'まい', ['mul', 100, 100])] }, { key: 'rechoose', kind: 'choice', label: 'だから どこが まちがい?' }]
+          sentence: '長さは100倍でも、面積は たて100まい × 横100まい。100×100 で考えるよ。',
+          steps: [{ key: 'fill', label: '1m²のなかの 1cm²', parts: ['たてに', B('h', 100, 'まい'), '横に', B('w', 100, 'まい'), '＝', B('a', 10000, 'まい', ['mul', 100, 100])] }, { key: 'rechoose', kind: 'choice', label: 'だから どこが まちがい?' }]
         }
       };
     }
@@ -3158,7 +3159,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     make: function (rng) {
       const c = mkChoice(rng, [
         { text: 'たてに 100まい ならぶ だけだから', misconception: 'x100' },
-        { text: 'たてにも よこにも 100まいずつならぶから', correct: true },
+        { text: 'たてにも 横にも 100まいずつならぶから', correct: true },
         { text: '1000より 大きいから' }
       ]);
       return {
@@ -3170,8 +3171,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         })(),
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: '長さが100倍になると、たてにも よこにも 100まいずつ ならぶ。100×100 で考えるよ。',
-          steps: [{ key: 'fill', label: '1m²のなかの 1cm²', parts: ['たてに', B('h', 100, 'まい'), 'よこに', B('w', 100, 'まい'), '＝', B('a', 10000, 'まい', ['mul', 100, 100])] }, { key: 'rechoose', kind: 'choice', label: 'だから なぜ 10000倍?' }]
+          sentence: '長さが100倍になると、たてにも 横にも 100まいずつ ならぶ。100×100 で考えるよ。',
+          steps: [{ key: 'fill', label: '1m²のなかの 1cm²', parts: ['たてに', B('h', 100, 'まい'), '横に', B('w', 100, 'まい'), '＝', B('a', 10000, 'まい', ['mul', 100, 100])] }, { key: 'rechoose', kind: 'choice', label: 'だから なぜ 10000倍?' }]
         }
       };
     }
@@ -3184,10 +3185,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     make: function (rng) {
       const h = rng.int(2, 9), w = rng.int(2, 12);
       return {
-        prompt: 'たて' + h + 'm、よこ' + w + 'm の花だん。面積は 何m²?',
+        prompt: 'たて' + h + 'm、横' + w + 'm の花だん。面積は 何m²?',
         figure: QFig.rectSpec(Math.min(w, 12), Math.min(h, 12), { grid: false, unit: 'm' }),
         answer: h * w, unit: 'm²', wrong: (function () { const o = {}; o[String(h + w)] = 'sum'; o[String(2 * (h + w))] = 'perimeter'; return o; })(),
-        explain: { sentence: 'm でも たて×よこ。答えの 単位は m² だよ。', steps: Bank.stepsRectArea(h, w, 'm') }
+        explain: { sentence: 'm でも たて×横。答えの 単位は m² だよ。', steps: Bank.stepsRectArea(h, w, 'm') }
       };
     }
   });
@@ -3208,8 +3209,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         explain: {
           sentence: big ? '教室は 8m×8m くらいで 64m²。cm² だと 640000cm² と 数が 大きくなりすぎるよ。' : 'はがきは 10cm×15cm くらいで 150cm²。m² だと 1にも ならないよ。',
           steps: big
-            ? [{ key: 'size', label: '教室の大きさ', parts: ['たて', B('h', 8, 'm'), '×', 'よこ', B('w', 8, 'm'), '＝', B('a', 64, 'm²', ['mul', 8, 8])] }, { key: 'rechoose', kind: 'choice', label: 'だから ちょうどいい 単位は?' }]
-            : [{ key: 'size', label: 'はがきの大きさ', parts: ['たて', B('h', 15, 'cm'), '×', 'よこ', B('w', 10, 'cm'), '＝', B('a', 150, 'cm²', ['mul', 15, 10])] }, { key: 'rechoose', kind: 'choice', label: 'だから ちょうどいい 単位は?' }]
+            ? [{ key: 'size', label: '教室の大きさ', parts: ['たて', B('h', 8, 'm'), '×', '横', B('w', 8, 'm'), '＝', B('a', 64, 'm²', ['mul', 8, 8])] }, { key: 'rechoose', kind: 'choice', label: 'だから ちょうどいい 単位は?' }]
+            : [{ key: 'size', label: 'はがきの大きさ', parts: ['たて', B('h', 15, 'cm'), '×', '横', B('w', 10, 'cm'), '＝', B('a', 150, 'cm²', ['mul', 15, 10])] }, { key: 'rechoose', kind: 'choice', label: 'だから ちょうどいい 単位は?' }]
         }
       };
     }
@@ -3226,7 +3227,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   };
   // やり直しの あなうめ（単位の正方形の 1辺）
   const UNIT_SQUARE_STEPS = {
-    'a': function () { return [{ key: 'side', label: '1a の 1辺', parts: ['1m²のタイルが たてに', B('n', 10, 'まい'), 'よこに', B('n2', 10, 'まい'), '＝', B('a', 100, 'まい', ['mul', 10, 10])] }]; },
+    'a': function () { return [{ key: 'side', label: '1a の 1辺', parts: ['1m²のタイルが たてに', B('n', 10, 'まい'), '横に', B('n2', 10, 'まい'), '＝', B('a', 100, 'まい', ['mul', 10, 10])] }]; },
     'ha': function () { return [{ key: 'side', label: '1ha の 1辺', parts: ['1a の 1辺', B('s', 10, 'm'), 'が 10こ で', B('side', 100, 'm')] }]; },
     'km²': function () { return [{ key: 'side', label: '1km は', parts: [B('m', 1000, 'm')] }]; },
     'm²': function () { return [{ key: 'side', label: '1m は', parts: [B('cm', 100, 'cm')] }]; }
@@ -3257,8 +3258,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     make: function (rng) {
       const c = mkChoice(rng, [
         { text: 'どちらも 100m²（1a）', correct: true },
-        { text: '10m×10m のほうが広い' },
-        { text: '1m×100m のほうが広い' }
+        { text: '10m×10m の方が広い' },
+        { text: '1m×100m の方が広い' }
       ], { keepOrder: true });
       return {
         prompt: '10m×10m の 土地と、1m×100m の 土地。面積は 同じ? ちがう?',
@@ -3266,10 +3267,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         stack: 'v', noNames: true,
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: 'たて×よこ で それぞれ出してみよう。a は 100m² の広さのことで、形は 正方形でなくても いいよ。',
+          sentence: 'たて×横 で それぞれ出してみよう。a は 100m² の広さのことで、形は 正方形でなくても いいよ。',
           steps: [
-            { key: 'left', label: '10m×10m', parts: ['たて', B('lh', 10, 'm'), '×', 'よこ', B('lw', 10, 'm'), '＝', B('la', 100, 'm²', ['mul', 10, 10])] },
-            { key: 'right', label: '1m×100m', parts: ['たて', B('rh', 1, 'm'), '×', 'よこ', B('rw', 100, 'm'), '＝', B('ra', 100, 'm²', ['mul', 1, 100])] },
+            { key: 'left', label: '10m×10m', parts: ['たて', B('lh', 10, 'm'), '×', '横', B('lw', 10, 'm'), '＝', B('la', 100, 'm²', ['mul', 10, 10])] },
+            { key: 'right', label: '1m×100m', parts: ['たて', B('rh', 1, 'm'), '×', '横', B('rw', 100, 'm'), '＝', B('ra', 100, 'm²', ['mul', 1, 100])] },
             { key: 'rechoose', kind: 'choice', label: 'だから 面積は?' }
           ]
         }
@@ -3300,8 +3301,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         noNames: true,
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: 'たてにも よこにも ' + times + '倍 ならぶから、' + times + '×' + times + ' で考えるよ。ここが いちばん大事なところだよ。',
-          steps: [{ key: 'count', label: 'もとの正方形が いくつ ならぶ?', parts: ['たてに', B('a', times, 'こ'), 'よこに', B('b', times, 'こ'), '＝', B('n', times * times, 'こ', ['mul', times, times])] }, { key: 'rechoose', kind: 'choice', label: 'だから 面積は 何倍?' }]
+          sentence: 'たてにも 横にも ' + times + '倍 ならぶから、' + times + '×' + times + ' で考えるよ。ここが 一番大事なところだよ。',
+          steps: [{ key: 'count', label: 'もとの正方形が いくつ ならぶ?', parts: ['たてに', B('a', times, 'こ'), '横に', B('b', times, 'こ'), '＝', B('n', times * times, 'こ', ['mul', times, times])] }, { key: 'rechoose', kind: 'choice', label: 'だから 面積は 何倍?' }]
         }
       };
     }
@@ -3351,14 +3352,14 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const m2Wrong = {}; m2Wrong[String(h + w)] = 'sum'; m2Wrong[String(2 * (h + w))] = 'perimeter';
       const convWrong = {}; convWrong[String(kind === 'a' ? m2 / 10 : m2 / 100)] = 'ladder'; convWrong[String(m2)] = 'ladder';
       return {
-        prompt: 'たて' + h + 'm、よこ' + w + 'm の' + name + 'があります。面積は何m²? それは何' + kind + '?',
+        prompt: 'たて' + h + 'm、横' + w + 'm の' + name + 'があります。面積は何m²? それは何' + kind + '?',
         figure: spec,
         fields: [
           { key: 'm2', label: '面積', unit: 'm²', answer: m2, wrong: m2Wrong },
           { key: 'conv', label: kind + 'で言うと', unit: kind, answer: conv, wrong: convWrong }
         ],
         explain: {
-          sentence: 'まず たて×よこ で m²。それから ' + (kind === 'a' ? '100m²で 1a' : '10000m²で 1ha') + ' を使って ' + kind + ' に直すよ。',
+          sentence: 'まず たて×横 で m²。それから ' + (kind === 'a' ? '100m²で 1a' : '10000m²で 1ha') + ' を使って ' + kind + ' に直すよ。',
           byMisconception: { ladder: (kind === 'a' ? '100m²で 1a。m² を 100 でわるよ。' : '10000m²で 1ha。m² を 10000 でわるよ。') },
           steps: Bank.stepsRectArea(h, w, 'm').concat([{ key: 'conv', label: kind + 'に', parts: [B('m2b', m2, 'm²'), '÷', B('f', kind === 'a' ? 100 : 10000, ''), '＝', B('conv', conv, kind, ['div', m2, kind === 'a' ? 100 : 10000])] }])
         }
@@ -3394,10 +3395,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       if (kind === 'km2') {
         const h = rng.int(2, 9), w = rng.int(2, 9);
         return {
-          prompt: 'たて' + h + 'km、よこ' + w + 'km の 町。面積は 何km²?',
+          prompt: 'たて' + h + 'km、横' + w + 'km の 町。面積は 何km²?',
           figure: QFig.rectSpec(Math.min(w, 10), Math.min(h, 10), { grid: false, unit: 'km' }),
           answer: h * w, unit: 'km²', wrong: (function () { const o = {}; o[String(h + w)] = 'sum'; return o; })(),
-          explain: { sentence: 'km でも たて×よこ。答えの 単位は km²。1km²は 1km×1km の 広さだよ。', steps: Bank.stepsRectArea(h, w, 'km') }
+          explain: { sentence: 'km でも たて×横。答えの 単位は km²。1km²は 1km×1km の 広さだよ。', steps: Bank.stepsRectArea(h, w, 'km') }
         };
       }
       const side = rng.pick([100, 200, 300, 400, 500]);
@@ -3416,9 +3417,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     id: 'f9-gate-a-ha-why', floor: 9, format: 'choice', gate: true,
     make: function (rng) {
       const c = mkChoice(rng, [
-        { text: '1a の 正方形（1辺10m）が、たてに10こ・よこに10こ ならぶから', correct: true },
+        { text: '1a の 正方形（1辺10m）が、たてに10こ・横に10こ ならぶから', correct: true },
         { text: '1a は 10m だから', misconception: 'x100-side' },
-        { text: '100の ほうが 大きいから' }
+        { text: '100の 方が 大きいから' }
       ]);
       return {
         prompt: '1ha は 1a の 100倍。なぜ 100倍?',
@@ -3430,10 +3431,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         countable: true,
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: '1ha は 1辺100m。1a は 1辺10m。長さが 10倍だから、たてに10こ・よこに10こ で 10×10＝100こ 分。だから 100倍だよ。',
+          sentence: '1ha は 1辺100m。1a は 1辺10m。長さが 10倍だから、たてに10こ・横に10こ で 10×10＝100こ 分。だから 100倍だよ。',
           steps: [
             { key: 'side', label: '1辺', parts: ['1ha は 1辺', B('ha', 100, 'm'), '、1a は 1辺', B('a', 10, 'm')] },
-            { key: 'count', label: '1a が いくつ ならぶ?', parts: ['たてに', B('n1', 10, 'こ'), 'よこに', B('n2', 10, 'こ'), '＝', B('n', 100, 'こ', ['mul', 10, 10])] },
+            { key: 'count', label: '1a が いくつ ならぶ?', parts: ['たてに', B('n1', 10, 'こ'), '横に', B('n2', 10, 'こ'), '＝', B('n', 100, 'こ', ['mul', 10, 10])] },
             { key: 'rechoose', kind: 'choice', label: 'だから なぜ 100倍?' }
           ]
         }
@@ -3469,8 +3470,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: r.name + 'の 広さは、およそ どれくらい?',
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: r.name + 'は たて・よこが ' + sideText + ' くらい。たて×よこ で考えよう。' + (r.area.unit === 'ha' ? '10000m² は 1ha だよ。' : '') + ' 単位がちがうと 広さは まるでちがう。1cm²は つめ、1m²は つくえ4つ分、1a は 教室 1つ半、1ha は 運動場、1km² は 市 くらい。',
-          steps: [{ key: 'approx', label: r.name + 'の大きさ', parts: ['たて', B('h', side[0], side[2]), '×', 'よこ', B('w', side[1], side[2]), '＝', B('a', side[0] * side[1], side[2] + '²', ['mul', side[0], side[1]])] }, { key: 'rechoose', kind: 'choice', label: 'だから どれくらい?' }]
+          sentence: r.name + 'は たて・横が ' + sideText + ' くらい。たて×横 で考えよう。' + (r.area.unit === 'ha' ? '10000m² は 1ha だよ。' : '') + ' 単位がちがうと 広さは まるでちがう。1cm²は つめ、1m²は つくえ4つ分、1a は 教室 1つ半、1ha は 運動場、1km² は 市 くらい。',
+          steps: [{ key: 'approx', label: r.name + 'の大きさ', parts: ['たて', B('h', side[0], side[2]), '×', '横', B('w', side[1], side[2]), '＝', B('a', side[0] * side[1], side[2] + '²', ['mul', side[0], side[1]])] }, { key: 'rechoose', kind: 'choice', label: 'だから どれくらい?' }]
         }
       };
     }
@@ -3498,8 +3499,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: r.name + 'の 面積は 約何' + def.unit + '?',
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: item === 'pool' ? 'プールは 25m×12m くらい。25×12 で考えよう。' : item === 'classroom' ? '教室は たて・よこ 8m くらい。8×8 で考えよう。' : item === 'gym' ? '体育館は 20m×40m くらい。20×40 で考えよう。' : 'はがきは 10cm×15cm くらい。10×15 で考えよう。',
-          steps: [{ key: 'approx', label: r.name + 'の大きさ', parts: ['たて', B('h', def.side[0], def.side[2]), '×', 'よこ', B('w', def.side[1], def.side[2]), '＝', B('a', def.side[0] * def.side[1], def.side[2] + '²', ['mul', def.side[0], def.side[1]])] }, { key: 'rechoose', kind: 'choice', label: 'だから 約何' + def.unit + '?' }]
+          sentence: item === 'pool' ? 'プールは 25m×12m くらい。25×12 で考えよう。' : item === 'classroom' ? '教室は たて・横 8m くらい。8×8 で考えよう。' : item === 'gym' ? '体育館は 20m×40m くらい。20×40 で考えよう。' : 'はがきは 10cm×15cm くらい。10×15 で考えよう。',
+          steps: [{ key: 'approx', label: r.name + 'の大きさ', parts: ['たて', B('h', def.side[0], def.side[2]), '×', '横', B('w', def.side[1], def.side[2]), '＝', B('a', def.side[0] * def.side[1], def.side[2] + '²', ['mul', def.side[0], def.side[1]])] }, { key: 'rechoose', kind: 'choice', label: 'だから 約何' + def.unit + '?' }]
         }
       };
     }
@@ -3541,7 +3542,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: 'つくえ1つは 約50cm×60cm。4つ ならべると 約1m×1m だよ。',
-          steps: [{ key: 'desks', label: 'つくえ 2つ分', parts: ['たて 50cm が 2つで', B('h', 100, 'cm'), '、よこ 60cm が 2つで', B('w', 120, 'cm')] }, { key: 'rechoose', kind: 'choice', label: 'およそ 1m×1m。だから どれくらい?' }]
+          steps: [{ key: 'desks', label: 'つくえ 2つ分', parts: ['たて 50cm が 2つで', B('h', 100, 'cm'), '、横 60cm が 2つで', B('w', 120, 'cm')] }, { key: 'rechoose', kind: 'choice', label: 'およそ 1m×1m。だから どれくらい?' }]
         }
       };
     }
@@ -3595,8 +3596,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         order: { items: rng.shuffle(items), answer: answer },
         answer: answer,
         explain: {
-          sentence: 'ぜんぶ ' + base + ' に なおすと くらべられるよ。' + sorted.map(function (i) { return i.text + '＝' + i.value + base; }).join('、') + '。',
-          steps: [{ key: 'reorder', kind: 'order', label: 'なおしてから ならべよう' }]
+          sentence: '全部 ' + base + ' に 直すと くらべられるよ。' + sorted.map(function (i) { return i.text + '＝' + i.value + base; }).join('、') + '。',
+          steps: [{ key: 'reorder', kind: 'order', label: '直してから ならべよう' }]
         }
       };
     }
@@ -3630,7 +3631,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: areaText(def.from) + ' は 何' + def.to.unit + '?',
         answer: def.to.value, unit: def.to.unit, wrong: wrong,
         explain: {
-          sentence: '1' + big + ' は ' + per + small + '。' + areaText(def.from) + ' を ' + def.to.unit + ' に なおすよ。' + LADDER_TEXT,
+          sentence: '1' + big + ' は ' + per + small + '。' + areaText(def.from) + ' を ' + def.to.unit + ' に 直すよ。' + LADDER_TEXT,
           steps: [{ key: 'conv', label: areaText(def.from) + ' を ' + def.to.unit + ' で', parts: [B('a', def.to.value, def.to.unit, fromSmaller ? ['div', def.from.value, per] : ['mul', def.from.value, per])] }]
         }
       };
@@ -3658,10 +3659,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       wrong[String(a + b)] = 'sum';
       wrong[String(Math.abs(pair[0].value - pair[1].value))] = 'unit-mix';   // 単位を そろえずに ひいた
       return {
-        prompt: areaText(pair[0]) + ' と ' + areaText(pair[1]) + '。広いほうは 何' + base + ' 広い?',
+        prompt: areaText(pair[0]) + ' と ' + areaText(pair[1]) + '。広い方は 何' + base + ' 広い?',
         answer: hi - lo, unit: base, wrong: wrong,
         explain: {
-          sentence: '単位を そろえてから ひくよ。' + areaText(pair[0]) + '＝' + a + base + '、' + areaText(pair[1]) + '＝' + b + base + '。広いのは ' + areaText(wide) + '。大きいほうから 小さいほうを ひこう。',
+          sentence: '単位を そろえてから ひくよ。' + areaText(pair[0]) + '＝' + a + base + '、' + areaText(pair[1]) + '＝' + b + base + '。広いのは ' + areaText(wide) + '。大きい方から 小さい方を ひこう。',
           steps: [
             { key: 'l', label: areaText(pair[0]) + ' は', parts: [B('la', a, base)] },
             { key: 'r', label: areaText(pair[1]) + ' は', parts: [B('rb', b, base)] },
@@ -3778,9 +3779,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
   function guidedExplain(built, mode) {
     return {
-      sentence: '分けて 長方形にしてから、それぞれ たて×よこ。さいごに たすよ。',
+      sentence: '分けて 長方形にしてから、それぞれ たて×横。最後に たすよ。',
       byMisconception: L_MISCONCEPTIONS,
-      steps: [{ key: 'cut', kind: 'cut', label: '切って、ひとつずつ', guide: mode || 'full' }]
+      steps: [{ key: 'cut', kind: 'cut', label: '切って、一つずつ', guide: mode || 'full' }]
     };
   }
 
@@ -3840,12 +3841,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const L = randomL(rng, { minW: 6, maxW: 9, minH: 5, maxH: 7 });
       const built = buildLQuestion(rng, L, { maxHidden: 0 });
       return {
-        prompt: '3通りの 切り方で 面積を 出そう。' + String.fromCharCode(10) + 'たてに 切る・よこに 切る・かこんで ひく。',
+        prompt: '3通りの 切り方で 面積を 出そう。' + String.fromCharCode(10) + 'たてに 切る・横に 切る・かこんで ひく。',
         figure: built.figure,
         cut: { guide: 'three', modes: ['v', 'h', 'e'] },
         finalChoice: {
           prompt: '3通りの答えは?',
-          choices: [{ id: 'a', text: 'ぜんぶ同じ' }, { id: 'b', text: '切り方でちがう' }],
+          choices: [{ id: 'a', text: '全部同じ' }, { id: 'b', text: '切り方でちがう' }],
           answer: 'a'
         },
         answer: built.area, unit: 'cm²', wrong: lWrong(L),
@@ -3869,12 +3870,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         { text: '大きすぎるから' }
       ]);
       return {
-        prompt: 'なぜ この図は、そのまま たて×よこ で出せないの?',
+        prompt: 'なぜ この図は、そのまま たて×横 で出せないの?',
         figure: built.figure,
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: 'たて×よこ は 長方形のときだけ使える。長方形でない形は、分けて長方形にしてから使うよ。',
-          steps: [{ key: 'cut', kind: 'cut', label: '分けて 長方形にしてから、ひとつずつ' }, { key: 'rechoose', kind: 'choice', label: 'だから なぜ そのまま 出せないの?' }]
+          sentence: 'たて×横 は 長方形のときだけ使える。長方形でない形は、分けて長方形にしてから使うよ。',
+          steps: [{ key: 'cut', kind: 'cut', label: '分けて 長方形にしてから、一つずつ' }, { key: 'rechoose', kind: 'choice', label: 'だから なぜ そのまま 出せないの?' }]
         }
       };
     }
@@ -3921,7 +3922,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: QFig.fromFigure(fig, plan.shown, plan.hidden, { interaction: 'cut' }),
         cut: { guide: 'half', hiddenCount: plan.hidden.length },
         answer: area, unit: 'cm²', wrong: wrong,
-        explain: { sentence: '長方形になるまで 切る。それぞれ たて×よこ を出して、ぜんぶたす。', byMisconception: L_MISCONCEPTIONS, steps: [{ key: 'cut', kind: 'cut', label: '切って、ひとつずつ', guide: 'full' }] }
+        explain: { sentence: '長方形になるまで 切る。それぞれ たて×横 を出して、全部たす。', byMisconception: L_MISCONCEPTIONS, steps: [{ key: 'cut', kind: 'cut', label: '切って、一つずつ', guide: 'full' }] }
       };
     }
   });
@@ -3943,7 +3944,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const wrongSame = red === L.cw ? 'かけ算の 答えだから' : L.cw + 'cmの 辺と 同じ 長さだから';
       const c = mkChoice(rng, [
         { text: '向かい合う辺は 同じ長さだから', correct: true },
-        { text: L.W + 'のほうが 大きいから' },
+        { text: L.W + 'の方が 大きいから' },
         { text: wrongSame }
       ]);
       return {
@@ -3974,8 +3975,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       return {
         prompt: 'はば' + r + 'm の 道が ある 畑。道を はしに よせて、畑の 面積を 出そう。',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + r + 'm' }),
-        fields: [{ key: 'w', label: 'よせた あとの よこ', unit: 'm', answer: W - r }, { key: 'area', label: '畑の面積', unit: 'm²', answer: area }],
-        explain: { sentence: '道を はしに よせると、よこは ' + W + 'm から 道の ' + r + 'm を ひいた 長さ。それに たて' + H + 'm を かけるよ。', steps: [{ key: 'w', label: 'よこ', rect: { x: 0, y: 0, w: W - r, h: H }, parts: ['よこ ' + W + 'm から 道の ' + r + 'm を ひいて', B('w', W - r, 'm')] }, { key: 'a', label: '面積', rect: { x: 0, y: 0, w: W - r, h: H }, parts: [B('h', H, 'm'), '×', B('w2', W - r, 'm'), '＝', B('area', area, 'm²', ['mul', H, W - r])] }] }
+        fields: [{ key: 'w', label: 'よせた あとの 横', unit: 'm', answer: W - r }, { key: 'area', label: '畑の面積', unit: 'm²', answer: area }],
+        explain: { sentence: '道を はしに よせると、横は ' + W + 'm から 道の ' + r + 'm を ひいた 長さ。それに たて' + H + 'm を かけるよ。', steps: [{ key: 'w', label: '横', rect: { x: 0, y: 0, w: W - r, h: H }, parts: ['横 ' + W + 'm から 道の ' + r + 'm を ひいて', B('w', W - r, 'm')] }, { key: 'a', label: '面積', rect: { x: 0, y: 0, w: W - r, h: H }, parts: [B('h', H, 'm'), '×', B('w2', W - r, 'm'), '＝', B('area', area, 'm²', ['mul', H, W - r])] }] }
       };
     }
   });
@@ -4001,7 +4002,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
           return sp;
         })(),
         fields: [{ key: 'outer', label: '外がわの 長方形', unit: 'cm²', answer: W * H, color: '#3b7dd8' }, { key: 'inner', label: '内がわの 長方形', unit: 'cm²', answer: inner, color: '#e07b2a' }, { key: 'area', label: 'がくぶち', unit: 'cm²', answer: area }],
-        explain: { sentence: '内の よこは ' + W + '−' + b + '−' + b + '、たては ' + H + '−' + b + '−' + b + '。外 − 内 が がくぶちの面積だよ。', steps: [{ key: 'o', label: '外', rect: { x: 0, y: 0, w: W, h: H }, parts: [B('oh', H, 'cm'), '×', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'i', label: '内', rect: { x: b, y: b, w: W - 2 * b, h: H - 2 * b }, parts: [B('ih', H - 2 * b, 'cm'), '×', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 's', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }] }
+        explain: { sentence: '内の 横は ' + W + '−' + b + '−' + b + '、たては ' + H + '−' + b + '−' + b + '。外 − 内 が がくぶちの面積だよ。', steps: [{ key: 'o', label: '外', rect: { x: 0, y: 0, w: W, h: H }, parts: [B('oh', H, 'cm'), '×', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'i', label: '内', rect: { x: b, y: b, w: W - 2 * b, h: H - 2 * b }, parts: [B('ih', H - 2 * b, 'cm'), '×', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 's', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }] }
       };
     }
   });
@@ -4052,11 +4053,11 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
               ? '欠けた ' + L.cw + '×' + L.ch + ' をひくのは 1回。' + L.W + '×' + L.H + ' から 1回だけ ひくよ。'
               : kind === 'add-cut'
                 ? '切り取った ' + L.cw + '×' + L.ch + ' は、大きい長方形から ひくよ。たすと 広くなりすぎる。'
-              : '上の長方形の よこは ' + L.W + ' ではなく ' + leftW + '（' + L.W + '−' + L.cw + '）。向かい合う辺は 同じ長さだよ。',
+              : '上の長方形の 横は ' + L.W + ' ではなく ' + leftW + '（' + L.W + '−' + L.cw + '）。向かい合う辺は 同じ長さだよ。',
           steps: [
-            { key: 'left', label: '左の長方形', parts: ['たて', B('lh', L.H, 'cm'), '×', 'よこ', B('lw', leftW, 'cm'), '＝', B('la', L.H * leftW, 'cm²', ['mul', L.H, leftW])] },
-            { key: 'right', label: '右の長方形', parts: ['たて', B('rh', lowH, 'cm'), '×', 'よこ', B('rw', L.cw, 'cm'), '＝', B('ra', lowH * L.cw, 'cm²', ['mul', lowH, L.cw])] },
-            { key: 'sum', label: 'ぜんぶ', parts: [B('l2', L.H * leftW, 'cm²'), '＋', B('r2', lowH * L.cw, 'cm²'), '＝', B('area', area, 'cm²', ['add', [L.H * leftW, lowH * L.cw]])] }
+            { key: 'left', label: '左の長方形', parts: ['たて', B('lh', L.H, 'cm'), '×', '横', B('lw', leftW, 'cm'), '＝', B('la', L.H * leftW, 'cm²', ['mul', L.H, leftW])] },
+            { key: 'right', label: '右の長方形', parts: ['たて', B('rh', lowH, 'cm'), '×', '横', B('rw', L.cw, 'cm'), '＝', B('ra', lowH * L.cw, 'cm²', ['mul', lowH, L.cw])] },
+            { key: 'sum', label: '全部', parts: [B('l2', L.H * leftW, 'cm²'), '＋', B('r2', lowH * L.cw, 'cm²'), '＝', B('area', area, 'cm²', ['add', [L.H * leftW, lowH * L.cw]])] }
           ]
         }
       };
@@ -4088,7 +4089,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         cut: { guide: 'free', scale: 50 },
         answer: area, unit: 'cm²', wrong: wrong,
         explain: {
-          sentence: 'まず単位を cm にそろえる（1m＝100cm）。それから 分けて たて×よこ、たす。',
+          sentence: 'まず単位を cm にそろえる（1m＝100cm）。それから 分けて たて×横、たす。',
           byMisconception: { 'unit-mix': '単位を cm にそろえてから 計算するよ。1m＝100cm。' },
           steps: [{ key: 'cut', kind: 'cut', label: '単位をそろえて、切る', guide: 'full', scale: 50 }]
         }
@@ -4113,9 +4114,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
           { key: 'perimeter', label: 'まわりの長さ', unit: 'cm', answer: perim, wrong: perimWrong }
         ],
         explain: {
-          sentence: '面積は 分けて たて×よこ をたす。まわりの長さは ふちの辺を ぜんぶたす（L字の形は 大きい長方形のまわりと同じ長さ）。',
+          sentence: '面積は 分けて たて×横 をたす。まわりの長さは ふちの辺を 全部たす（L字の形は 大きい長方形のまわりと同じ長さ）。',
           byMisconception: L_MISCONCEPTIONS,
-          steps: [{ key: 'cut', kind: 'cut', label: '面積', guide: 'full' }, { key: 'perimeter', label: 'まわりの長さ', parts: ['辺をぜんぶたす', '＝', B('perimeter', perim, 'cm')] }]
+          steps: [{ key: 'cut', kind: 'cut', label: '面積', guide: 'full' }, { key: 'perimeter', label: 'まわりの長さ', parts: ['辺を全部たす', '＝', B('perimeter', perim, 'cm')] }]
         }
       };
     }
@@ -4137,9 +4138,9 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + r + 'm' }),
         answer: area, unit: 'm²', wrong: wrong,
         explain: {
-          sentence: '道を はしに よせると、畑は 1つの長方形になる。よこは ' + W + '−' + r + '。それに たてを かけるよ。',
+          sentence: '道を はしに よせると、畑は 1つの長方形になる。横は ' + W + '−' + r + '。それに たてを かけるよ。',
           // 「（11−2）」だけ 置くと 何の 式か わからない（本人の指摘 2026-09-16）。ことばで 書く
-          steps: [{ key: 'move', label: '道をよせる', rect: { x: 0, y: 0, w: W - r, h: H }, parts: ['よこ ' + W + 'm から 道の ' + r + 'm を ひいて', B('w', W - r, 'm')] }, { key: 'formula', label: '式', rect: { x: 0, y: 0, w: W - r, h: H }, parts: ['たて', B('h', H, 'm'), '×', 'よこ', B('w2', W - r, 'm'), '＝', B('area', area, 'm²', ['mul', H, W - r])] }]
+          steps: [{ key: 'move', label: '道をよせる', rect: { x: 0, y: 0, w: W - r, h: H }, parts: ['横 ' + W + 'm から 道の ' + r + 'm を ひいて', B('w', W - r, 'm')] }, { key: 'formula', label: '式', rect: { x: 0, y: 0, w: W - r, h: H }, parts: ['たて', B('h', H, 'm'), '×', '横', B('w2', W - r, 'm'), '＝', B('area', area, 'm²', ['mul', H, W - r])] }]
         }
       };
     }
@@ -4162,7 +4163,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば ' + b + 'cm' }),
         answer: area, unit: 'cm²', wrong: wrong,
         explain: {
-          sentence: '外の長方形から 内の長方形をひく。内のよこは ' + W + '−' + b + '−' + b + '、内のたては ' + H + '−' + b + '−' + b + '。はばは 両がわにあるよ。',
+          sentence: '外の長方形から 内の長方形をひく。内の横は ' + W + '−' + b + '−' + b + '、内のたては ' + H + '−' + b + '−' + b + '。はばは 両がわにあるよ。',
           // rect: その行が 図の どの長方形か（行と 同じ色の わくを 図に 出す）
           steps: [{ key: 'outer', label: '外', rect: { x: 0, y: 0, w: W, h: H }, parts: [B('oh', H, 'cm'), '×', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'inner', label: '内', rect: { x: b, y: b, w: W - 2 * b, h: H - 2 * b }, parts: [B('ih', H - 2 * b, 'cm'), '×', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 'sub', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }]
         }
@@ -4189,8 +4190,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         explain: {
           sentence: 'かこむ大きい長方形の面積から、欠けたところの面積を ひくよ。欠けたところは 上の右の 小さい長方形だよ。',
           steps: [
-            { key: 'box', label: 'かこむ大きい長方形', rect: { x: 0, y: 0, w: L.W, h: L.H }, parts: ['たて', B('bh', L.H, 'cm'), '×', 'よこ', B('bw', L.W, 'cm'), '＝', B('ba', L.W * L.H, 'cm²', ['mul', L.H, L.W])] },
-            { key: 'cutout', label: '欠けたところ', rect: { x: L.W - L.cw, y: L.H - L.ch, w: L.cw, h: L.ch }, parts: ['たて', B('ch', L.ch, 'cm'), '×', 'よこ', B('cw', L.cw, 'cm'), '＝', B('ca', L.cw * L.ch, 'cm²', ['mul', L.ch, L.cw])] },
+            { key: 'box', label: 'かこむ大きい長方形', rect: { x: 0, y: 0, w: L.W, h: L.H }, parts: ['たて', B('bh', L.H, 'cm'), '×', '横', B('bw', L.W, 'cm'), '＝', B('ba', L.W * L.H, 'cm²', ['mul', L.H, L.W])] },
+            { key: 'cutout', label: '欠けたところ', rect: { x: L.W - L.cw, y: L.H - L.ch, w: L.cw, h: L.ch }, parts: ['たて', B('ch', L.ch, 'cm'), '×', '横', B('cw', L.cw, 'cm'), '＝', B('ca', L.cw * L.ch, 'cm²', ['mul', L.ch, L.cw])] },
             { key: 'sub', label: 'ひく', parts: [B('b2', L.W * L.H, 'cm²'), '−', B('c2', L.cw * L.ch, 'cm²'), '＝', B('area', L.W * L.H - L.cw * L.ch, 'cm²')] }
           ]
         }
@@ -4376,7 +4377,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       bd.forEach(function (d, j) {
         if (d === 0) return;
         const v = a * d;
-        steps.push({ key: 'p' + j, label: (PLACE[j] || '') + 'の だん', expr: a + '×' + d, answer: v, shift: j, hint: j > 0 ? 'この だんは ' + (j === 1 ? '十' : j === 2 ? '百' : '') + 'の位から 書きはじめるよ' : null });
+        steps.push({ key: 'p' + j, label: (PLACE[j] || '') + 'の だん', expr: a + '×' + d, answer: v, shift: j, hint: j > 0 ? 'この だんは ' + (j === 1 ? '十' : j === 2 ? '百' : '') + 'の位から 書き始めるよ' : null });
         partials.push({ key: 'p' + j, value: v, shift: j });
         grid.push({ type: 'partial', stepKey: 'p' + j, cells: shiftedCells(cols, v, j), shift: j });
       });
@@ -4410,7 +4411,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const qd = Math.floor(partial / b);
       const productVal = qd * b;
       const rest = partial - productVal;
-      steps.push({ key: 'q' + index, label: 'たてる', expr: partial + '÷' + b, answer: qd, kind: 'quotient', index: index, hint: b + 'に 何をかけると ' + partial + ' に いちばん近くなる?' });
+      steps.push({ key: 'q' + index, label: 'たてる', expr: partial + '÷' + b, answer: qd, kind: 'quotient', index: index, hint: b + 'に 何をかけると ' + partial + ' に 一番近くなる?' });
       quotientCells[index] = { stepKey: 'q' + index, text: String(qd) };
       if (qd > 0) {
         steps.push({ key: 'p' + index, label: 'かける', expr: b + '×' + qd, answer: productVal, kind: 'product', index: index });
@@ -4550,25 +4551,25 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       if (mode === 'full') {
         // at: その長方形の 左の辺・下の辺の 場所（解説で 赤い 太線を 引くため。本人の指定 2026-09-16）
         steps.push({ key: 'p' + i + '-h', part: i, ask: name + 'の たては?', answer: p.h * s, unit: u, dim: { axis: 'y', a: p.y, b: p.y + p.h, at: p.x } });
-        steps.push({ key: 'p' + i + '-w', part: i, ask: name + 'の よこは?', answer: p.w * s, unit: u, dim: { axis: 'x', a: p.x, b: p.x + p.w, at: p.y } });
+        steps.push({ key: 'p' + i + '-w', part: i, ask: name + 'の 横は?', answer: p.w * s, unit: u, dim: { axis: 'x', a: p.x, b: p.x + p.w, at: p.y } });
       }
       steps.push({ key: 'p' + i + '-area', part: i, ask: name + 'の 面積は?', answer: p.w * p.h * s * s, unit: u2, formula: (p.h * s) + '×' + (p.w * s), calc: ['mul', p.h * s, p.w * s] });
     });
     if (opts && opts.enclose) {
       steps.push({ key: 'sub', ask: '大きい長方形から 欠けたところをひくと?', answer: total * s * s, unit: u2, formula: parts.map(function (p, i) { return (i === 0 ? '' : '−') + (p.w * p.h * s * s); }).join('') });
     } else {
-      steps.push({ key: 'sum', ask: 'ぜんぶたすと?', answer: total * s * s, unit: u2, formula: parts.map(function (p) { return p.w * p.h * s * s; }).join('+'), calc: ['add', parts.map(function (p) { return p.w * p.h * s * s; })] });
+      steps.push({ key: 'sum', ask: '全部たすと?', answer: total * s * s, unit: u2, formula: parts.map(function (p) { return p.w * p.h * s * s; }).join('+'), calc: ['add', parts.map(function (p) { return p.w * p.h * s * s; })] });
     }
     return steps;
   }
 
   function addLine(state, q, line) {
-    if (state.finished) return { ok: false, message: 'もう切りおわっているよ。' };
+    if (state.finished) return { ok: false, message: 'もう切り終わっているよ。' };
     const fig = q.figure.fig;
     const trial = state.lines.concat([line]);
     const analysis = Figure.analyzeLines(fig, trial);
     if (analysis.mode === 'invalid') {
-      const msg = analysis.reason === 'not-axis' ? '線は たてか よこに まっすぐ引こう。' : analysis.reason === 'outside' ? '図形の外の線は、かこむ長方形のふちに引こう。' : 'そこでは 切れないよ。';
+      const msg = analysis.reason === 'not-axis' ? '線は たてか 横に まっすぐ引こう。' : analysis.reason === 'outside' ? '図形の外の線は、かこむ長方形のふちに引こう。' : 'そこでは 切れないよ。';
       return { ok: false, message: msg, analysis: analysis };
     }
     state.lines = trial;
@@ -4582,11 +4583,11 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const wanted = (q.cut && q.cut.modes) || ['v', 'h', 'e'];
       if (way === 'x' || wanted.indexOf(way) < 0) {
         state.lines = []; state.analysis = null;
-        return { ok: false, message: 'たてだけ、よこだけ、または かこんでひく で切ろう。', analysis: analysis };
+        return { ok: false, message: 'たてだけ、横だけ、または かこんでひく で切ろう。', analysis: analysis };
       }
       if (state.waysDone.indexOf(way) >= 0) {
         state.lines = []; state.analysis = null;
-        return { ok: false, message: 'その切り方は もうやったよ。べつの切り方で。', analysis: analysis };
+        return { ok: false, message: 'その切り方は もうやったよ。別の切り方で。', analysis: analysis };
       }
     }
     state.way = way;
@@ -4656,14 +4657,14 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   }
 
   function wayName(way) {
-    return { v: 'たてに切る', h: 'よこに切る', e: 'かこんでひく' }[way] || way;
+    return { v: 'たてに切る', h: '横に切る', e: 'かこんでひく' }[way] || way;
   }
 
   function hint(state, q) {
     // 次の一歩だけ出す。使った回数を記録する
     state.hints += 1;
     const step = currentStep(state);
-    if (!state.analysis) return { text: 'まず、図形が長方形に分かれるところに 線を引こう。角と角を むすぶよ。', step: null };
+    if (!state.analysis) return { text: 'まず、図形が長方形に分かれるところに 線を引こう。角と角を 結ぶよ。', step: null };
     if (!step) return { text: '答えのらんに 面積を入れよう。', step: null };
     if (step.dim) {
       const hiddenHit = (q.figure.hidden || []).filter(function (l) { return l.axis === step.dim.axis && l.a === step.dim.a && l.b === step.dim.b; })[0];
@@ -5228,13 +5229,13 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   function helpText(step) {
     const key = String(step.key || '');
     if (step.kind === 'reanswer') return 'さっき あなうめで 出した 答えを 思い出そう。';
-    if (step.kind === 'choice') return '一文を もう一度読んで、図の中の言葉と えらぶ文の言葉を 合わせてみよう。';
-    if (key === 'formula' || key === 'count') return 'たては 左の辺、よこは 下の辺。同じ色の2本を かけるよ。';
-    if (key === 'reverse') return '面積を、わかっている辺で わるよ。';
-    if (key === 'perimeter') return 'まわりは ふちを1周した長さ。たてとよこを たして 2倍。';
+    if (step.kind === 'choice') return '一文を もう一度読んで、図の中の言葉と 選ぶ文の言葉を 合わせてみよう。';
+    if (key === 'formula' || key === 'count') return 'たては 左の辺、横は 下の辺。同じ色の2本を かけるよ。';
+    if (key === 'reverse') return '面積を、分かっている辺で わるよ。';
+    if (key === 'perimeter') return 'まわりは ふちを1周した長さ。たてと横を たして 2倍。';
     if (key.indexOf('cut') === 0) {
-      if (key.indexOf('-area') > 0) return 'この長方形の たて×よこ だよ。';
-      if (key.indexOf('sum') > 0 || key.indexOf('sub') > 0) return '分けた長方形の面積を、ぜんぶ たす（かこんだときは ひく）よ。';
+      if (key.indexOf('-area') > 0) return 'この長方形の たて×横 だよ。';
+      if (key.indexOf('sum') > 0 || key.indexOf('sub') > 0) return '分けた長方形の面積を、全部 たす（かこんだときは ひく）よ。';
       return '向かい合う辺は 同じ長さ。同じ色の2本は 同じ長さだよ。';
     }
     return '一文を もう一度読んで、図を見よう。';
@@ -5285,7 +5286,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
   function submitBlank(state, blankKey, value) {
     const item = currentItem(state);
-    if (!item) return { correct: false, message: 'やり直しは おわっているよ。' };
+    if (!item) return { correct: false, message: 'やり直しは 終わっているよ。' };
     const q = questionOf(item);
     const step = stepNow(item, q);
     if (!step || step.kind) return { correct: false, message: 'ここは 数を入れるところではないよ。' };
@@ -5317,7 +5318,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   function submitHissan(state, value) {
     // 筆算の途中式を1つずつ。全部できたら、その欄は自動で埋まる
     const item = currentItem(state);
-    if (!item || !item.hissan || !Array.isArray(item.hissan.steps)) return { correct: false, message: 'いまは 筆算ではないよ。' };
+    if (!item || !item.hissan || !Array.isArray(item.hissan.steps)) return { correct: false, message: '今は 筆算ではないよ。' };
     const h = item.hissan;
     const n = Util.parseInteger(value);
     if (n == null) return { correct: false, empty: true };   // 空は まちがいに 数えない（0 あつかいに しない）
@@ -5353,7 +5354,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     if (!item) return { correct: false };
     const q = questionOf(item);
     const step = stepNow(item, q);
-    if (!step || step.kind !== 'choice') return { correct: false, message: 'いまは えらぶところではないよ。' };
+    if (!step || step.kind !== 'choice') return { correct: false, message: '今は 選ぶところではないよ。' };
     if (choiceId == null || choiceId === '') return { correct: false, empty: true };
     const res = Bank.check(q, choiceId);
     if (!res.correct) return registerFail(state, item, step);
@@ -5390,7 +5391,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     if (!item) return { correct: false };
     const q = questionOf(item);
     const step = stepNow(item, q);
-    if (!step || step.kind !== 'reanswer') return { correct: false, message: 'いまは 答え直すところではないよ。' };
+    if (!step || step.kind !== 'reanswer') return { correct: false, message: '今は 答え直すところではないよ。' };
     const res = Bank.check(q, given);
     if (res.empty) return { correct: false, empty: true };
     if (!res.correct) return Object.assign(registerFail(state, item, step), { fields: res.fields || null, misconception: res.misconception || null });
@@ -5833,26 +5834,26 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   // 階に入るとき（マップの右がわ）。番人のひとこと
   const FLOOR_ENTER = {
     1: ['入り口の番人「ここは 何ではかる?　答えられたら、通していい」', '石のゆかに、まだタイルは 一まいもない。'],
-    2: ['タイルの番人「数えてみせろ。ぜんぶ おかなくても、数えられるか?」', 'ゆかに タイルが 少しずつ しかれていく。'],
+    2: ['タイルの番人「数えてみせろ。全部 置かなくても、数えられるか?」', 'ゆかに タイルが 少しずつ しかれていく。'],
     3: ['正体の番人「12って、何が12こ? 言えないなら 通さない」', 'ここが 本丸。番人が 二度 立ちふさがる。'],
     4: ['公式の番人「かけ算で出せる。でも、なぜ かけ算でいいのか、言えるか?」', 'ゆかのタイルが きれいに ならんだ。'],
     5: ['早ときの番人「テンポよく。でも 図には よけいな数も書いてあるぞ」', '整った 石づくり。まどから 月が見える。'],
     6: ['さかさの番人「面積から、辺を さがせ」', 'まどの外に、塔の下の町が見える。'],
-    7: ['ふちの番人「面積と まわりの長さは、べつのものだ。分けられるか?」', '番人が 答案を 見せてくる。'],
-    8: ['1mの番人「1m²に、1cm²のタイルは 何まい?　よそうを 言ってみろ」', '広い階。かべに 教室の絵が かかれている。'],
+    7: ['ふちの番人「面積と まわりの長さは、別のものだ。分けられるか?」', '番人が 答案を 見せてくる。'],
+    8: ['1mの番人「1m²に、1cm²のタイルは 何まい?　予想を 言ってみろ」', '広い階。かべに 教室の絵が かかれている。'],
     9: ['はしごの番人「cm²、m²、a、ha、km²。はしごを 上れ」', 'かべに プールと 運動場の絵。'],
     10: ['かべ絵の番人「この広さは、どれだ?」', 'かべ一面に、町の絵。'],
-    11: ['ものさしの番人「場面に合う単位を えらべ。小さい順に ならべろ」', 'かべの絵が、ぜんぶ つながった。'],
+    11: ['ものさしの番人「場面に合う単位を 選べ。小さい順に ならべろ」', 'かべの絵が、全部 つながった。'],
     12: ['欠けたゆかの番人「ゆかが 欠けている。切って、長方形にしろ」', 'この階は 5問。一歩ずつ 聞いていく。'],
-    13: ['かくれた辺の番人「書いていない辺がある。どこで切るかは、きみが決めろ」', 'ヒントは 一歩だけ 出す。'],
+    13: ['かくれた辺の番人「書いていない辺がある。どこで切るかは、君が決めろ」', 'ヒントは 一歩だけ 出す。'],
     14: ['番人の長「もう ガイドはない。自分の力で はかれ」', 'この上は、屋上だ。']
   };
 
   const FLOOR_CLEAR = {
-    default: ['番人が 道をあけた。', '手帳に 手がかりが 1行 ふえた。'],
+    default: ['番人が 道を開けた。', '手帳に 手がかりが 1行 ふえた。'],
     3: ['正体の番人「よく言えた。12は、1cm²のマスのまい数だ」', '手帳に 手がかりが ふえた。'],
     7: ['ふちの番人「面積と まわり、もう まざらないな」', '手帳に 手がかりが ふえた。'],
-    11: ['ものさしの番人「単位は、はかるものに合わせる。おぼえたな」', '上の階は ゆかが欠けている。気をつけろ。'],
+    11: ['ものさしの番人「単位は、はかるものに合わせる。覚えたな」', '上の階は ゆかが欠けている。気をつけろ。'],
     14: ['番人の長「塔を はかり終えた者は、長いあいだ いなかった」', '屋上への かいだんが 開いた。']
   };
 
@@ -5863,27 +5864,27 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   // 屋上で見せる「できるようになったこと」（学習指導要領の4つの到達点）
   const MASTERY = [
     '面積は「1cm²のタイルが 何まい分か」で言える',
-    '長方形・正方形の面積を たて×よこ で出せて、なぜ かけ算でいいのか 言える',
+    '長方形・正方形の面積を たて×横 で出せて、なぜ かけ算でいいのか 言える',
     'L字や十字の形は、長方形に分けて（または かこんでひいて）出せる',
-    'cm²・m²・a・ha・km² を 場面に合わせて えらべて、直せる'
+    'cm²・m²・a・ha・km² を 場面に合わせて 選べて、直せる'
   ];
 
   const UNDERGROUND_ENTER = ['塔より古い めいきゅう。番人はいない。', 'ランタンの明かりの はんいだけ 見える。かべに 問題が きざまれている。'];
   const UNDERGROUND_WRONG = 'かべの文字が 赤く光った。どこが ちがう?';
-  const UNDERGROUND_CLEAR = ['手帳の さいごのページに、塔の絵と 面積が 書きこまれた。', 'はかり手見習い {name}、塔を はかり終える。'];
+  const UNDERGROUND_CLEAR = ['手帳の 最後のページに、塔の絵と 面積が 書きこまれた。', 'はかり手見習い {name}、塔を はかり終える。'];
 
   const INTRO_UNITS = [
     ['10m×10m の正方形の広さを 1a（アール）とよぶ。', '1m² のタイルが 100まい 入る広さだ。'],
     ['100m×100m の正方形の広さを 1ha（ヘクタール）とよぶ。', '1a が 100こ 入る。運動場くらいの広さだ。'],
     ['1km×1km の正方形の広さを 1km² とよぶ。1km は 1000m。', '1ha が 100こ 入る。市の広さを言う単位だ。'],
-    ['はしごで おぼえよう。', 'cm² →10000倍→ m² →100倍→ a →100倍→ ha →100倍→ km²']
+    ['はしごで 覚えよう。', 'cm² →10000倍→ m² →100倍→ a →100倍→ ha →100倍→ km²']
   ];
 
   const INTRO_M2 = [
     ['1cm²のタイル。1辺が1cmの 正方形。', '1階から ここまで、数えてきた タイルだ。'],
     ['1mの ものさし。1mは 100cm。', '1m×1mの 正方形。これを 1m²と よぶ。'],
-    ['1m²の中に、1cm²のタイルは 何まい しきつめられる?', 'よそうを 入れてみよう。'],
-    ['よこに 100まいで 1列。それが 100だん。', '100×100＝10000まい。長さは100倍、面積は 10000倍。']
+    ['1m²の中に、1cm²のタイルは 何まい しきつめられる?', '予想を 入れてみよう。'],
+    ['横に 100まいで 1列。それが 100だん。', '100×100＝10000まい。長さは100倍、面積は 10000倍。']
   ];
 
   function enter(floorNo) { return FLOOR_ENTER[floorNo] || ['', '']; }
@@ -5913,7 +5914,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
   function stepsFromSolution(sol, unit) {
     return (sol.steps || []).map(function (s) {
-      const where = s.dim ? ((s.dim.axis === 'x' ? 'よこ' : 'たて') + 'の辺（' + s.dim.a + '〜' + s.dim.b + '）') : '';
+      const where = s.dim ? ((s.dim.axis === 'x' ? '横' : 'たて') + 'の辺（' + s.dim.a + '〜' + s.dim.b + '）') : '';
       if (s.rule === 'add-sub') return { key: 'gap:' + s.axis + s.a + '-' + s.b, label: '辺を出す', dim: s.dim, segments: s.segments, parts: [where + '：' + s.expr.replace('=', '＝') + unit] };
       return { key: s.rule + ':' + s.piece, label: s.rule === 'square' ? '正方形' : '面積から', dim: s.dim, parts: [s.text] };
     });
@@ -5952,8 +5953,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       answer: area, unit: 'm²',
       hiddenCount: plan.hidden.length, ops: sol.maxOps,
       explain: {
-        sentence: '「かべからのはば」どうしの差が ふみ面の長さ。「地面からの高さ」どうしの差が だんの高さ。1本ずつ ひき算で出して、だんごとに よこ×たて。',
-        steps: stepsFromSolution(sol, 'm').concat([{ key: 'total', label: '面積', parts: ['だんごとに よこ×たて をたす', '＝', B('area', area, 'm²')] }])
+        sentence: '「かべからのはば」どうしの差が ふみ面の長さ。「地面からの高さ」どうしの差が だんの高さ。1本ずつ ひき算で出して、だんごとに 横×たて。',
+        steps: stepsFromSolution(sol, 'm').concat([{ key: 'total', label: '面積', parts: ['だんごとに 横×たて をたす', '＝', B('area', area, 'm²')] }])
       },
       handmadeCheck: { determined: sol.determined, shown: plan.shown.length }
     };
@@ -5976,7 +5977,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + r1 + 'm・' + r2 + 'm・' + rh + 'm' }),
       peerAnswer: expr,
       answer: right, unit: 'm²', wrong: wrongMap,
-      explain: { sentence: 'たて道とよこ道が交わるところは、たて道でも よこ道でも ひかれる。2か所で 2回ずつ ひいているから ' + (r1 * rh + r2 * rh) + 'm² 少ない。道をよせて (' + W + '−' + r1 + '−' + r2 + ')×(' + H + '−' + rh + ')＝' + right + 'm² が正しい。' }
+      explain: { sentence: 'たて道と横道が交わるところは、たて道でも 横道でも ひかれる。2か所で 2回ずつ ひいているから ' + (r1 * rh + r2 * rh) + 'm² 少ない。道をよせて (' + W + '−' + r1 + '−' + r2 + ')×(' + H + '−' + rh + ')＝' + right + 'm² が正しい。' }
     };
   }
 
@@ -6003,7 +6004,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       answer: area, unit: 'cm²',
       hiddenCount: plan.hidden.length, ops: plan.solution.maxOps,
       explain: {
-        sentence: '正方形は 4つの辺がみんな同じ。となり合う辺を たしたり ひいたりして、1本ずつ つぎつぎとに出す。9つの正方形の面積を たしてもいいし、全体のよこ×たて でもいい。',
+        sentence: '正方形は 4つの辺がみんな同じ。となり合う辺を たしたり ひいたりして、1本ずつ 次々と 出す。9つの正方形の面積を たしてもいいし、全体の横×たて でもいい。',
         steps: stepsFromSolution(plan.solution, 'cm').concat([{ key: 'total', label: '面積', parts: ['全体', B('area', area, 'cm²')] }])
       },
       handmadeCheck: { determined: plan.solution.determined, shown: plan.shown.length }
@@ -6031,7 +6032,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば 左' + l + ' 右' + r + ' 上' + t + ' 下' + b }),
       peerAnswer: expr,
       answer: area, unit: 'm²', wrong: wrongMap,
-      explain: { sentence: '内のよこは ' + W + '−' + l + '−' + r + '＝' + innerW + '、内のたては ' + H + '−' + t + '−' + b + '＝' + innerH + '。答案は 合っている。「答案はまちがっている」と決めつけないこと。' }
+      explain: { sentence: '内の横は ' + W + '−' + l + '−' + r + '＝' + innerW + '、内のたては ' + H + '−' + t + '−' + b + '＝' + innerH + '。答案は 合っている。「答案はまちがっている」と決めつけないこと。' }
     };
   }
 
@@ -6068,7 +6069,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
   function solutionSteps(solution, unit) {
     return (solution.steps || []).map(function (s) {
-      const where = s.dim ? ((s.dim.axis === 'x' ? 'よこ' : 'たて') + 'の辺（' + s.dim.a + '〜' + s.dim.b + '）') : '';
+      const where = s.dim ? ((s.dim.axis === 'x' ? '横' : 'たて') + 'の辺（' + s.dim.a + '〜' + s.dim.b + '）') : '';
       if (s.rule === 'add-sub') return { key: 'gap:' + s.axis + s.a + '-' + s.b, label: '辺を出す', dim: s.dim, segments: s.segments, parts: [where + '：' + s.expr.replace('=', '＝') + unit] };
       return { key: s.rule + ':' + s.piece, label: s.rule === 'square' ? '正方形' : '面積から', dim: s.dim, parts: [s.text] };
     });
@@ -6097,8 +6098,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       hiddenCount: plan.hidden.length,
       ops: plan.solution.maxOps,
       explain: {
-        sentence: opts.sentence || '書いてある辺から、書いていない辺を出す。長方形に分けて たて×よこ、たす。',
-        steps: solutionSteps(plan.solution, unit).concat([{ key: 'total', label: '面積', parts: ['ぜんぶで', B('area', area, unit + '²')] }])
+        sentence: opts.sentence || '書いてある辺から、書いていない辺を出す。長方形に分けて たて×横、たす。',
+        steps: solutionSteps(plan.solution, unit).concat([{ key: 'total', label: '面積', parts: ['全部で', B('area', area, unit + '²')] }])
       }
     };
   }
@@ -6176,7 +6177,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       if (i < steps.length - 1) dims.push(Figure.dimLabel('y', 0, yy, yy, -2 - (i % 2)));
     });
     const plan = planFor(rng, fig, Figure.fullEdgeLabels(fig).concat(dims), o);
-    return figureQuestion(fig, plan, { sentence: 'かいだんの ふみ面を ぜんぶたすと 下の辺と同じ長さ。かくれた辺は ひき算で出るよ。' });
+    return figureQuestion(fig, plan, { sentence: 'かいだんの ふみ面を 全部たすと 下の辺と同じ長さ。かくれた辺は ひき算で出るよ。' });
   }
 
   // ---- がくぶち ----
@@ -6230,7 +6231,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const wrong = {};
     wrong[String(W * H)] = 'no-cut';
     wrong[String(W * H - rw * H - (rh ? rh * W : 0))] = 'double-cut';
-    return figureQuestion(fig, plan, { sentence: '道を はしによせると 1つの長方形になる。(全体のよこ−道のはば)×(全体のたて−道のはば)。', wrong: wrong });
+    return figureQuestion(fig, plan, { sentence: '道を はしによせると 1つの長方形になる。(全体の横−道のはば)×(全体のたて−道のはば)。', wrong: wrong });
   }
 
   // ---- 重なり ----
@@ -6269,7 +6270,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const sumAll = Util.sum(rects.map(function (r) { return r.w * r.h; }));
     const wrong = {};
     wrong[String(sumAll)] = 'overlap-twice';
-    const q = figureQuestion(fig, plan, { prompt: n + 'つの 長方形を 重ねた 形。ぜんたいの 面積は 何' + fig.unit + '²?', sentence: 'AとBをたすと 重なりを2回数える。A＋B−重なり。重なりの辺は 全体の長さから出すよ。', wrong: wrong });
+    const q = figureQuestion(fig, plan, { prompt: n + 'つの 長方形を 重ねた 形。全体の 面積は 何' + fig.unit + '²?', sentence: 'AとBをたすと 重なりを2回数える。A＋B−重なり。重なりの辺は 全体の長さから出すよ。', wrong: wrong });
     q.figure.pieceEdges = true;
     // 重なりが 見えるように 2つの 長方形を すける 色で（本人の 目通し 2026-10-06）
     q.figure.pieceColors = ['#8fc7ff', '#ffb0a0', '#b8e6a0'];
@@ -6311,7 +6312,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const edges = Figure.fullEdgeLabels(fig);
     const target = Math.max(1, edges.length - (o.showLabels || 1));
     const plan = Hide.planWithTarget(fig, edges, { rng: rng.fork('hide'), targetHidden: target, maxHidden: target, maxOps: o.ops == null ? 4 : o.ops, squares: squares, tries: 12 });
-    const q = figureQuestion(fig, plan, { sentence: '正方形は 4つの辺がみんな同じ。1本わかれば となりの正方形の辺も つぎつぎと わかるよ。', prompt: 'ぜんぶ正方形。面積は何' + fig.unit + '²?' });
+    const q = figureQuestion(fig, plan, { sentence: '正方形は 4つの辺がみんな同じ。1本分かれば となりの正方形の辺も 次々と 分かるよ。', prompt: '全部正方形。面積は何' + fig.unit + '²?' });
     q.figure.pieceEdges = true;   // どこが 1つの 正方形か 見えないと 解けない
     return q;
   }
@@ -6324,10 +6325,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const h = rng.int(2, 9), w = rng.int(h + 1, 15);
       const area = h * w, perim = 2 * (h + w);
       return {
-        prompt: '面積' + area + unit + '²、まわり' + perim + unit + ' の 長方形。たてと よこは?（たて<よこ）',
+        prompt: '面積' + area + unit + '²、まわり' + perim + unit + ' の 長方形。たてと 横は?（たて<横）',
         figure: QFig.rectSpec(w, h, { grid: false, unit: unit, labels: 'none', areaText: area + unit + '²', marks: [{ kind: 'perimeter', text: 'まわり ' + perim + unit }] }),
-        fields: [{ key: 'h', label: 'たて', unit: unit, answer: h }, { key: 'w', label: 'よこ', unit: unit, answer: w }],
-        explain: { sentence: 'たて＋よこ＝' + (perim / 2) + '。たして' + (perim / 2) + '、かけて' + area + 'になる 2つの数をさがす。', steps: [{ key: 'half', label: 'たて＋よこ', parts: [B('half', perim / 2, unit)] }, { key: 'pair', label: '2つの数', parts: ['たて', B('h', h, unit), 'よこ', B('w', w, unit)] }] }
+        fields: [{ key: 'h', label: 'たて', unit: unit, answer: h }, { key: 'w', label: '横', unit: unit, answer: w }],
+        explain: { sentence: 'たて＋横＝' + (perim / 2) + '。たして' + (perim / 2) + '、かけて' + area + 'になる 2つの数をさがす。', steps: [{ key: 'half', label: 'たて＋横', parts: [B('half', perim / 2, unit)] }, { key: 'pair', label: '2つの数', parts: ['たて', B('h', h, unit), '横', B('w', w, unit)] }] }
       };
     }
     // がくぶちの 面積から はばを 出す（数は 3つだけ。ひらめきが いる。本人の案 2026-09-16）
@@ -6341,14 +6342,14 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const area = Figure.area(fig);
       const labels = [Figure.dimLabel('x', 0, W, W, -1), Figure.dimLabel('y', 0, H, H, -1)];
       return {
-        prompt: 'たて' + H + unit + '・よこ' + W + unit + ' の がくぶち。' + String.fromCharCode(10) + '色の 部分は ' + area + unit + '²。' + String.fromCharCode(10) + 'はばは 何' + unit + '?',
+        prompt: 'たて' + H + unit + '・横' + W + unit + ' の がくぶち。' + String.fromCharCode(10) + '色の 部分は ' + area + unit + '²。' + String.fromCharCode(10) + 'はばは 何' + unit + '?',
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, areaText: area + unit + '²' }),
         answer: b, unit: unit,
         explain: {
-          sentence: '内の 長方形の 面積は 外ぜんたい から 色の 部分を ひいた 分。はばを 1・2・3 と ためして、内の たて・よこが 合う ところを さがすよ。はばは 両がわに あるから、内の よこは ' + W + ' から はば2つ分を ひく。',
+          sentence: '内の 長方形の 面積は 外全体 から 色の 部分を ひいた 分。はばを 1・2・3 と 試して、内の たて・横が 合う ところを さがすよ。はばは 両がわに あるから、内の 横は ' + W + ' から はば2つ分を ひく。',
           steps: [
             { key: 'inner', label: '内の面積', parts: [B('big', W * H, unit + '²'), '−', B('col', area, unit + '²'), '＝', B('in', (W - 2 * b) * (H - 2 * b), unit + '²')] },
-            { key: 'w', label: 'はば', parts: ['内は たて ' + (H - 2 * b) + '・よこ ' + (W - 2 * b) + '。はばは', B('b', b, unit)] }
+            { key: 'w', label: 'はば', parts: ['内は たて ' + (H - 2 * b) + '・横 ' + (W - 2 * b) + '。はばは', B('b', b, unit)] }
           ]
         }
       };
@@ -6368,17 +6369,17 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: 'この形の面積は ' + area + unit + '²。欠けた ところの たては 何' + unit + '?',
         figure: QFig.fromFigure(fig, shownIds, hiddenId ? [hiddenId] : [], { interaction: null, areaText: area + unit + '²', askMark: true }),
         answer: ch, unit: unit,
-        explain: { sentence: '大きい長方形（' + W + '×' + H + '）から ' + area + ' をひくと、欠けの面積が出る。それを 欠けのよこ ' + cw + ' でわると、欠けの たてだよ。', steps: [{ key: 'gap', label: '欠けの面積', parts: [B('big', W * H, unit + '²'), '−', B('area', area, unit + '²'), '＝', B('cut', W * H - area, unit + '²')] }, { key: 'side', label: '辺', parts: [B('cut2', W * H - area, unit + '²'), '÷', B('cw', cw, unit), '＝', B('ch', ch, unit)] }] }
+        explain: { sentence: '大きい長方形（' + W + '×' + H + '）から ' + area + ' をひくと、欠けの面積が出る。それを 欠けの横 ' + cw + ' でわると、欠けの たてだよ。', steps: [{ key: 'gap', label: '欠けの面積', parts: [B('big', W * H, unit + '²'), '−', B('area', area, unit + '²'), '＝', B('cut', W * H - area, unit + '²')] }, { key: 'side', label: '辺', parts: [B('cut2', W * H - area, unit + '²'), '÷', B('cw', cw, unit), '＝', B('ch', ch, unit)] }] }
       };
     }
     // rect-area-side（大きい数）
     const h = rng.int(12, 45), w = rng.int(12, 60);
     const area = h * w;
     return {
-      prompt: '面積' + area + unit + '²、たて' + h + unit + '。よこは何' + unit + '?',
+      prompt: '面積' + area + unit + '²、たて' + h + unit + '。横は何' + unit + '?',
       figure: QFig.rectSpec(w, h, { grid: false, unit: unit, labels: 'h', areaText: area + unit + '²' }),
       answer: w, unit: unit,
-      explain: { sentence: area + '÷' + h + ' で よこが出るよ。', steps: Bank.stepsReverse(area, h, 'たて', w, 'よこ', unit) }
+      explain: { sentence: area + '÷' + h + ' で 横が出るよ。', steps: Bank.stepsReverse(area, h, 'たて', w, '横', unit) }
     };
   }
 
@@ -6447,7 +6448,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     base.figure.unitScale = 50;
     base.answer = Figure.area(fig) * 2500;
     base.prompt = 'm と cm が まざって いる。1m＝100cm。面積は 何cm²?';
-    base.explain = { sentence: 'まず ぜんぶ cm にそろえる。1m＝100cm。それから 分けて たて×よこ。', steps: [{ key: 'total', label: '面積', parts: ['ぜんぶで', B('area', base.answer, 'cm²')] }] };
+    base.explain = { sentence: 'まず 全部 cm にそろえる。1m＝100cm。それから 分けて たて×横。', steps: [{ key: 'total', label: '面積', parts: ['全部で', B('area', base.answer, 'cm²')] }] };
     base.cut = { scale: 50 };
     return base;
   }
@@ -6474,7 +6475,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: '道のはば ' + rw + unit + '・' + rh + unit }),
         peerAnswer: expr,
         answer: right, unit: unit + '²', wrong: wrongMap,
-        explain: { sentence: '道が交わるところは 2本の道に共通。たて道とよこ道を べつべつにひくと、交わる ' + rw + '×' + rh + ' を2回ひいてしまう。道をよせて (' + W + '−' + rw + ')×(' + H + '−' + rh + ')＝' + right + ' が正しい。' }
+        explain: { sentence: '道が交わるところは 2本の道に共通。たて道と横道を 別々にひくと、交わる ' + rw + '×' + rh + ' を2回ひいてしまう。道をよせて (' + W + '−' + rw + ')×(' + H + '−' + rh + ')＝' + right + ' が正しい。' }
       };
     }
     const W = rng.int(12, 30), H = rng.int(10, 24), b = rng.int(1, 4);
@@ -6492,7 +6493,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       figure: QFig.fromFigure(fig, labels, [], { interaction: null, caption: 'がくのはば ' + b + unit }),
       peerAnswer: expr,
       answer: right, unit: unit + '²', wrong: wrongMap,
-      explain: { sentence: 'はばは 左右・上下の両がわにある。内のよこは ' + W + '−' + b + '−' + b + '＝' + (W - 2 * b) + '、内のたては ' + (H - 2 * b) + '。' }
+      explain: { sentence: 'はばは 左右・上下の両がわにある。内の横は ' + W + '−' + b + '−' + b + '＝' + (W - 2 * b) + '、内のたては ' + (H - 2 * b) + '。' }
     };
   }
 
@@ -6556,8 +6557,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   function labelText(l) {
     const H = Shapes.TOWER_FLOOR_HEIGHT;
     const len = l.b - l.a;
-    if (l.kind === 'dim' && l.axis === 'x' && l.a === 0 && l.facing && String(l.facing).indexOf('floor') === 0) return 'よこ ' + len + 'm';
-    if (l.kind === 'dim' && l.axis === 'x' && l.a === Shapes.TOWER_HOLE.x) return 'まどのよこ ' + len + 'm';
+    if (l.kind === 'dim' && l.axis === 'x' && l.a === 0 && l.facing && String(l.facing).indexOf('floor') === 0) return '横 ' + len + 'm';
+    if (l.kind === 'dim' && l.axis === 'x' && l.a === Shapes.TOWER_HOLE.x) return 'まどの横 ' + len + 'm';
     if (l.kind === 'dim' && l.axis === 'x' && l.b === Shapes.TOWER_HOLE.x) return 'かべから まどまで ' + len + 'm';
     if (l.kind === 'dim' && l.axis === 'y') return 'まどのたて ' + len + 'm';
     if (l.kind === 'edge' && l.axis === 'x') {
@@ -6644,10 +6645,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       figure: QFig.fromFigure(fig, labels, [], { interaction: 'cut', caption: T.tiers + 'だんの 塔' }),
       answer: area, unit: 'm²',
       explain: {
-        sentence: '上の だんは 左で ' + T.step + 'm、右で ' + T.step + 'm せまいから、よこは ' + (2 * T.step) + 'mずつ へる。だんごとの よこを 出して たし、高さ ' + T.height + 'm を かけるよ。',
+        sentence: '上の だんは 左で ' + T.step + 'm、右で ' + T.step + 'm せまいから、横は ' + (2 * T.step) + 'mずつ へる。だんごとの 横を 出して たし、高さ ' + T.height + 'm を かけるよ。',
         steps: [
-          { key: 'widths', label: 'だんの よこ', parts: widths.map(function (w, i) { return B('w' + i, w, 'm'); }) },
-          { key: 'sum', label: 'よこの 合計', parts: [B('sum', sum, 'm', ['add', widths])] },
+          { key: 'widths', label: 'だんの 横', parts: widths.map(function (w, i) { return B('w' + i, w, 'm'); }) },
+          { key: 'sum', label: '横の 合計', parts: [B('sum', sum, 'm', ['add', widths])] },
           { key: 'area', label: '面積', parts: [B('s2', sum, 'm'), '×', B('h', T.height, 'm'), '＝', B('area', area, 'm²', ['mul', sum, T.height])] }
         ]
       }
@@ -7176,7 +7177,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       return res;
     }
 
-    const NO_RETRY = { correct: false, message: 'やり直しは おわっているよ。' };
+    const NO_RETRY = { correct: false, message: 'やり直しは 終わっているよ。' };
     engine.retryBlank = function (blankKey, value) { return p.retry ? afterRetryStep(Retry.submitBlank(p.retry, blankKey, value)) : NO_RETRY; };
     engine.retryHissan = function (value) { return p.retry ? afterRetryStep(Retry.submitHissan(p.retry, value)) : NO_RETRY; };
     engine.retryHissanConfirm = function () { return p.retry ? afterRetryStep(Retry.confirmHissan(p.retry)) : NO_RETRY; };
@@ -8890,7 +8891,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     function areaLabel(t) {
       const s = String(t);
       if (/^面積|^ぜんぶ/.test(s)) return s;
-      return (/まい$/.test(s) ? 'ぜんぶで ' : '面積 ') + s;
+      return (/まい$/.test(s) ? '全部で ' : '面積 ') + s;
     }
 
     // ---- 辺の 数の 置き場所（図の 調査 2026-09-27: 「どこから どこまでの 長さか」が 見て わかるように）----
@@ -9374,7 +9375,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
     // ---- 1階: タイルの形（まる・三角・正方形）----
     function drawTiling(bw, bh) {
-      const names = ['まる', '三角', '正方形'];
+      const names = ['丸', '三角', '正方形'];
       const pw = bw / 3.3, cell = Math.min(pw / 4.6, bh / 5.2);
       names.forEach(function (name, i) {
         const cx = bw * (i + 0.5) / 3;
@@ -9421,25 +9422,25 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
   const TITLES = {
     'f1-compare': '見て くらべる', 'f1-overlay': '重ねて くらべる', 'f1-tile-idea': 'くらべ方', 'f1-why-square': 'タイルの形', 'f1-name-1cm2': '1cm²の よび名',
-    'f2-count': 'マスを 数える', 'f2-partial': 'のこりを 数える', 'f2-shortcut': 'はやく 数える', 'f2-compare': 'まい数 くらべ', 'f2-rows': '列で 数える', 'f2-grid-shape': '形の マス',
-    'f3-gate-what12': '何が 何こ?', 'f3-larger': '面積 くらべ', 'f3-gate-sameperim': 'まわりと 面積', 'f3-transpose': '向きを 変える', 'f3-square': '正方形の 面積', 'f3-reverse-rows': 'よこは 何まい', 'f3-peer-perim': '答案を 見る',
-    'f4-formula': 'たて×よこ', 'f4-reverse': 'よこを 出す', 'f4-unit-choose': '単位を えらぶ', 'f4-word': '文章題', 'f4-pairs': '長方形さがし', 'f4-gate-why': 'なぜ かけ算?', 'f4-missing': '□を 出す',
-    'f5-fast': '公式で とく', 'f5-square': '正方形の 面積', 'f5-diagonal': 'よけいな 数', 'f5-perim-extra': 'よけいな 数', 'f5-formula-choose': '式を えらぶ', 'f5-gate-what3': '何を 数えた?',
-    'f6-reverse': 'よこを 出す', 'f6-square-from-area': '1辺を 出す', 'f6-pairs': '長方形さがし', 'f6-word-reverse': '文章題', 'f6-gate-div-why': 'なぜ わり算?', 'f6-gate-possible': '作れる?', 'f6-missing': '□を 出す',
-    'f7-reverse-perim': '面積→まわり', 'f7-cmp-area-sameperim': '面積 くらべ', 'f7-cmp-perim-samearea': 'まわり くらべ', 'f7-both': '面積と まわり', 'f7-max-area': 'いちばん 広い', 'f7-gate-peer': '答案を 見る', 'f7-peer-right': '答案を 見る',
-    'f8-m2cm2': 'm²→cm²', 'f8-cm2m2': 'cm²→m²', 'f8-rect-m-cm2': 'mで cm²', 'f8-mixed': '単位 まざり', 'f8-gate-peer100': '1m²は 何cm²?', 'f8-gate-why10000': 'なぜ 10000倍?', 'f8-rect-m-m2': 'm²の 面積', 'f8-unit-choose': '単位を えらぶ',
+    'f2-count': 'マスを 数える', 'f2-partial': '残りを 数える', 'f2-shortcut': 'はやく 数える', 'f2-compare': 'まい数 くらべ', 'f2-rows': '列で 数える', 'f2-grid-shape': '形の マス',
+    'f3-gate-what12': '何が 何こ?', 'f3-larger': '面積 くらべ', 'f3-gate-sameperim': 'まわりと 面積', 'f3-transpose': '向きを 変える', 'f3-square': '正方形の 面積', 'f3-reverse-rows': '横は 何まい', 'f3-peer-perim': '答案を 見る',
+    'f4-formula': 'たて×横', 'f4-reverse': '横を 出す', 'f4-unit-choose': '単位を 選ぶ', 'f4-word': '文章題', 'f4-pairs': '長方形さがし', 'f4-gate-why': 'なぜ かけ算?', 'f4-missing': '□を 出す',
+    'f5-fast': '公式で とく', 'f5-square': '正方形の 面積', 'f5-diagonal': 'よけいな 数', 'f5-perim-extra': 'よけいな 数', 'f5-formula-choose': '式を 選ぶ', 'f5-gate-what3': '何を 数えた?',
+    'f6-reverse': '横を 出す', 'f6-square-from-area': '1辺を 出す', 'f6-pairs': '長方形さがし', 'f6-word-reverse': '文章題', 'f6-gate-div-why': 'なぜ わり算?', 'f6-gate-possible': '作れる?', 'f6-missing': '□を 出す',
+    'f7-reverse-perim': '面積→まわり', 'f7-cmp-area-sameperim': '面積 くらべ', 'f7-cmp-perim-samearea': 'まわり くらべ', 'f7-both': '面積と まわり', 'f7-max-area': '一番 広い', 'f7-gate-peer': '答案を 見る', 'f7-peer-right': '答案を 見る',
+    'f8-m2cm2': 'm²→cm²', 'f8-cm2m2': 'cm²→m²', 'f8-rect-m-cm2': 'mで cm²', 'f8-mixed': '単位 まざり', 'f8-gate-peer100': '1m²は 何cm²?', 'f8-gate-why10000': 'なぜ 10000倍?', 'f8-rect-m-m2': 'm²の 面積', 'f8-unit-choose': '単位を 選ぶ',
     'f9-unit-square': '単位の 正方形', 'f9-gate-a-shape': 'aの 形', 'f9-gate-x10': '長さと 面積', 'f9-ladder-conv': '単位の はしご', 'f9-field-a': '畑の 面積', 'f9-ladder-fill': 'はしごの 倍', 'f9-km2': 'km²と ha', 'f9-gate-a-ha-why': 'なぜ 100倍?',
     'f10-magnitude': '広さの 感じ', 'f10-approx': 'だいたいの 広さ', 'f10-gate-peer-ground': '運動場の 広さ', 'f10-desk': 'つくえ 4つ分', 'f10-times': '何こ分',
-    'f11-same-area': '同じ 広さ', 'f11-compare': '広さの ちがい', 'f11-order': '小さい 順', 'f11-scene-convert': '単位を なおす',
+    'f11-same-area': '同じ 広さ', 'f11-compare': '広さの ちがい', 'f11-order': '小さい 順', 'f11-scene-convert': '単位を 直す',
     'f12-side-first': '辺を 出す', 'f12-guided': '分けて 出す', 'f12-gate-three-ways': '3通りで とく', 'f12-gate-why-not': 'なぜ 分ける?',
     'f13-half': '切って 出す', 'f13-half-t': '3つに 分ける', 'f13-gate-why-minus': 'なぜ ひき算?', 'f13-road-guided': '道を よせる', 'f13-frame-guided': 'がくぶち',
     'f14-free': '自力で とく', 'f14-peer': '答案を 見る', 'f14-mixed-unit': '単位 まざり', 'f14-both': '面積と まわり', 'f14-road': '道の ある畑', 'f14-frame': 'がくぶち', 'f14-gate-enclose-expr': 'かこんで ひく式'
   };
 
   const MISCONCEPTION_TAG = {
-    sum: 'たて＋よこ', perimeter: 'まわりの長さ', 'one-part': 'かたほうだけ', 'double-cut': '2回 ひいた', 'wrong-side': '辺の 読みちがい',
+    sum: 'たて＋横', perimeter: 'まわりの長さ', 'one-part': 'かたほうだけ', 'double-cut': '2回 ひいた', 'wrong-side': '辺の 読みちがい',
     diagonal: 'ななめの 数', x100: 'けた ちがい', 'unit-mix': '単位 そろえ', 'side-only': '1辺だけ', 'sub-instead': 'ひき算にした',
-    'mul-instead': 'かけ算にした', remainder: 'あまり', 'side-as-area': '面積のまま', 'placed-only': 'おいた分だけ', 'inner-only': '内だけ',
+    'mul-instead': 'かけ算にした', remainder: 'あまり', 'side-as-area': '面積のまま', 'placed-only': '置いた分だけ', 'inner-only': '内だけ',
     'overlap-twice': '重なり 2回', 'no-cut': 'ひいていない', 'unit-cm': 'cmと cm²', 'add-cut': 'たしてしまった', 'x100-side': '長さの 倍', calc: '計算ミス'
   };
 
@@ -9478,7 +9479,10 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     '地下通路': 'ちかつうろ', '通路': 'つうろ', '場面': 'ばめん', '番人': 'ばんにん', '屋上': 'おくじょう', '本丸': 'ほんまる', '正体': 'しょうたい', '手帳': 'てちょう',
     '見習': 'みなら', '文字': 'もじ', '文章題': 'ぶんしょうだい', '理由': 'りゆう', '最終': 'さいしゅう', '大事': 'だいじ', '大切': 'たいせつ', '自分': 'じぶん', '自力': 'じりき',
     '言葉': 'ことば', '関所': 'せきしょ', '結果': 'けっか', '天使': 'てんし', '世界': 'せかい', '味方': 'みかた', '見方': 'みかた', '完全': 'かんぜん', '各階': 'かくかい',
-    '位置': 'いち', '漢字': 'かんじ', '回数': 'かいすう', '黒鉄': 'くろがね', '牛頭': 'ごず', '入口': 'いりぐち', '上手': 'じょうず', '時間': 'じかん', '記録': 'きろく'
+    '位置': 'いち', '漢字': 'かんじ', '回数': 'かいすう', '黒鉄': 'くろがね', '牛頭': 'ごず', '入口': 'いりぐち', '上手': 'じょうず', '時間': 'じかん', '記録': 'きろく',
+    // 漢字に した ことば（本人の 目通し 2026-10-06「漢字も 使って ほしい」）
+    '全部': 'ぜんぶ', '名前': 'なまえ', '仲間': 'なかま', '工夫': 'くふう', '予想': 'よそう', '最後': 'さいご', '最高': 'さいこう', '本当': 'ほんとう',
+    '一番': 'いちばん', '旅人': 'たびびと', '別々': 'べつべつ', '次々': 'つぎつぎ', '見事': 'みごと', '目指': 'めざ', '出会': 'であ'
   };
 
   // 1字のよみ（あとの文字で よみを変えるものは RULES で）
@@ -9493,7 +9497,9 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     '決': 'き', '切': 'き', '使': 'つか', '作': 'つく', '見': 'み', '書': 'か', '考': 'かんが', '同': 'おな', '近': 'ちか', '多': 'おお', '広': 'ひろ', '高': 'たか', '深': 'ふか',
     '赤': 'あか', '青': 'あお', '黒': 'くろ', '明': 'あ', '光': 'ひか', '登': 'のぼ', '聞': 'き', '思': 'おも', '変': 'か', '立': 'た', '終': 'お', '交': 'まじ', '早': 'はや',
     '気': 'き', '欠': 'か', '取': 'と', '向': 'む', '組': 'く', '落': 'お', '引': 'ひ', '進': 'すす', '写': 'うつ', '持': 'も', '読': 'よ', '答': 'こた', '重': 'かさ', '通': 'とお',
-    '開': 'ひら', '合': 'あ', '言': 'い', '表': 'あらわ', '整': 'ととの', '直': 'なお', '習': 'なら', '入': 'い', '来': 'こ', '行': 'い', '止': 'と', '会': 'あ', '出': 'だ'
+    '開': 'ひら', '合': 'あ', '言': 'い', '表': 'あらわ', '整': 'ととの', '直': 'なお', '習': 'なら', '入': 'い', '来': 'こ', '行': 'い', '止': 'と', '会': 'あ', '出': 'だ',
+    '横': 'よこ', '置': 'お', '選': 'えら', '戦': 'たたか', '君': 'きみ', '今': 'いま', '他': 'ほか', '別': 'べつ', '残': 'のこ', '続': 'つづ', '始': 'はじ', '初': 'はじ',
+    '印': 'しるし', '試': 'ため', '覚': 'おぼ', '結': 'むす', '遊': 'あそ', '強': 'つよ', '旅': 'たび', '丸': 'まる'
   };
 
   function isKanji(ch) { return /[一-鿿々]/.test(ch); }
@@ -9505,7 +9511,11 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       case '何': return /[0-9０-９a-zA-Zこまだ階倍列通本回つ×人]/.test(next || '') ? 'なん' : 'なに';
       case '分': return /[けか]/.test(next || '') ? 'わ' : 'ぶん';
       case '上': if (next === 'が') return 'あ'; if (next === 'れ' || next === 'る' || next === 'り') return 'のぼ'; return 'うえ';
-      case '下': return next === 'が' ? 'さ' : 'した';
+      case '下': return next === 'が' ? 'さ' : (next === 'り' ? 'お' : 'した');
+      case '全': return next === 'て' ? 'すべ' : 'ぜん';
+      case '消': return next === 'え' ? 'き' : 'け';
+      case '開': return next === 'け' ? 'あ' : 'ひら';
+      case '学': return /[ぶびべんば]/.test(next || '') ? 'まな' : 'がく';
       case '入': return next === 'る' || next === 'っ' ? 'はい' : 'い';
       case '出': return /[るたて]/.test(next || '') ? 'で' : 'だ';
       case '数': return next === 'え' ? 'かぞ' : 'かず';
@@ -9523,7 +9533,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       case '一': if (next === 'つ' || next === 'け') return 'ひと'; return 'いち';
       case '来': return next === 'い' ? 'こ' : (next === 'た' || next === 'て' ? 'き' : 'く');
       case '者': return 'もの';
-      case '方': return 'かた';
+      case '方': return prev === 'の' || prev === 'い' || prev === ' ' ? 'ほう' : 'かた';   // 多い方・左の方 は ほう、数え方・切り方 は かた
       case '生': return null;
       default: return Object.prototype.hasOwnProperty.call(SINGLE, ch) ? SINGLE[ch] : null;
     }
@@ -9679,7 +9689,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   'use strict';
   const NS = 'http://www.w3.org/2000/svg';
   const STEPS = 5;
-  const CAPTIONS = ['1m² の 正方形（1m × 1m）', '1cm² の タイルが 1まい', 'よこに 100まい', '10だんで 1000まい', '100だんで 10000まい'];
+  const CAPTIONS = ['1m² の 正方形（1m × 1m）', '1cm² の タイルが 1まい', '横に 100まい', '10だんで 1000まい', '100だんで 10000まい'];
   const GREEN = '#9fd3a8', DARK = '#3d8f74', INK = '#2b2a3a', RED = '#c9402f';
 
   function svg(tag, attrs, parent) {
@@ -9739,7 +9749,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       svg('rect', { x: zx, y: zy, width: Z, height: Z, fill: 'none', stroke: RED, 'stroke-width': 3 }, s);
       text(s, zx + Z / 2, zy - 14, '左下を 大きく すると', 'middle', 'intro-label small');
       if (st === 1) text(s, zx + c * 0.5, zy + Z + 20, '1cm²', 'middle', 'intro-label small');
-      if (st === 2) text(s, zx + Z, zy + Z + 22, 'この ならびが 1m まで つづく →', 'end', 'intro-label small');
+      if (st === 2) text(s, zx + Z, zy + Z + 22, 'この ならびが 1m まで 続く →', 'end', 'intro-label small');
     }
 
     container.innerHTML = '';
@@ -9963,11 +9973,11 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   function keypad(onKey, opts) {
     const o = opts || {};
     // 電話と同じ ならび（左上が 1）。本人の指定 2026-09-15
-    const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'けす', '0', '←'];
+    const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '消す', '0', '←'];
     const pad = h('div', { class: 'keypad' + (o.dark ? ' dark' : '') + (o.short ? ' short' : '') });
     keys.forEach(function (k) {
-      const cls = 'key' + (k === 'けす' ? ' fn-clear' : k === '←' ? ' fn-back' : '');
-      pad.appendChild(h('button', { class: cls, type: 'button', 'aria-label': k === '←' ? '1つ けす' : k, onclick: function () { se('tap'); onKey(k === 'けす' ? 'clear' : k === '←' ? 'back' : k); } }, [k]));
+      const cls = 'key' + (k === '消す' ? ' fn-clear' : k === '←' ? ' fn-back' : '');
+      pad.appendChild(h('button', { class: cls, type: 'button', 'aria-label': k === '←' ? '1つ 消す' : k, onclick: function () { se('tap'); onKey(k === '消す' ? 'clear' : k === '←' ? 'back' : k); } }, [k]));
     });
     return pad;
   }
@@ -10115,7 +10125,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   const h = UI.h;
   UI.screens = UI.screens || {};
 
-  const RANKS = ['見習い', 'マスかぞえ', 'はかり手', '図形使い'];
+  const RANKS = ['見習い', 'マス数え', 'はかり手', '図形使い'];
   const THEMES = ['マスのいくつ分', '長方形・正方形', '単位（cm²・m²）', '組み合わせた形'];
   function tierOf(f) { return f <= 4 ? 0 : f <= 7 ? 1 : f <= 11 ? 2 : 3; }
   function pct(v, total) { return (v / total * 100) + '%'; }
@@ -10147,7 +10157,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     MT.Scenes.homePlaques().forEach(function (b, i) {
       bgEl.appendChild(h('div', { class: 'plaque', style: boxStyle(b) }, [h('span', { class: 'r', text: names[i][0] }), h('span', { text: names[i][1] })]));
     });
-    bgEl.appendChild(h('div', { class: 'gate-sign', style: boxStyle(MT.Scenes.homeSign()) }, ['はじめの もん']));
+    bgEl.appendChild(h('div', { class: 'gate-sign', style: boxStyle(MT.Scenes.homeSign()) }, ['初めの もん']));
 
     const scr = h('div', { class: 'screen home-screen' });
     const logo = h('div', { class: 'logo' });
@@ -10158,20 +10168,20 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     logo.appendChild(h('span', { class: 'no', plain: 'の' }));
     logo.appendChild(document.createTextNode('塔'));
     scr.appendChild(h('div', { class: 'home-title' }, [
-      h('div', { class: 'kicker', plain: 'ドットでまなぶ' }),
+      h('div', { class: 'kicker', plain: 'ドットで学ぶ' }),
       logo,
-      h('div', { class: 'catch', text: '図形を といて　塔を のぼろう！' }),
-      h('div', { class: 'lead' }, [UI.tx('キミの ひらめきが'), h('br'), UI.tx('まだ見ぬ てっぺんへ つづく'), h('br'), UI.tx('面積の たびが はじまる――')]),
-      E.persistent === false && !ctx.state.admin ? h('div', { class: 'home-warn', text: 'この ブラウザでは きろくが のこらないよ。とじる前に「せってい」→「ひきつぎコード」を 写しておこう。' }) : null
+      h('div', { class: 'catch', text: '図形を といて　塔を 登ろう！' }),
+      h('div', { class: 'lead' }, [UI.tx('キミの ひらめきが'), h('br'), UI.tx('まだ見ぬ てっぺんへ 続く'), h('br'), UI.tx('面積の 旅が 始まる――')]),
+      E.persistent === false && !ctx.state.admin ? h('div', { class: 'home-warn', text: 'この ブラウザでは 記録が 残らないよ。とじる前に「せってい」→「ひきつぎコード」を 写しておこう。' }) : null
     ]));
 
     const icons = h('div', { class: 'home-icons' }, [
       h('button', { class: 'icon-btn', type: 'button', onclick: function () { openSettings(ctx); } }, [h('span', { class: 'ic-set' }), 'せってい']),
-      h('button', { class: 'icon-btn', type: 'button', onclick: function () { openHow(null); } }, [h('span', { class: 'ic-how' }), 'あそびかた']),
-      p.handbook.length ? h('button', { class: 'icon-btn', type: 'button', onclick: function () { openHandbook(ctx); } }, [h('span', { class: 'ic-book' }), 'てちょう']) : null
+      h('button', { class: 'icon-btn', type: 'button', onclick: function () { openHow(null); } }, [h('span', { class: 'ic-how' }), '遊び方']),
+      p.handbook.length ? h('button', { class: 'icon-btn', type: 'button', onclick: function () { openHandbook(ctx); } }, [h('span', { class: 'ic-book' }), '手帳']) : null
     ]);
     scr.appendChild(icons);
-    scr.appendChild(h('div', { class: 'parchment' }, [UI.tx('問題を といて'), h('br'), UI.tx('1つずつ 上の階へ'), h('br'), UI.tx('めざせ てっぺん！'), h('div', { class: 'flag' })]));
+    scr.appendChild(h('div', { class: 'parchment' }, [UI.tx('問題を といて'), h('br'), UI.tx('1つずつ 上の階へ'), h('br'), UI.tx('目指せ てっぺん！'), h('div', { class: 'flag' })]));
 
     // 左下：プレイヤー
     const tower = p.currentFloor >= MT.Floors.ROOF_FLOOR;
@@ -10179,7 +10189,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const tier = tower ? 3 : tierOf(cur);
     let where, theme, barPct, line;
     const sess = p.session && p.mode !== 'rematch' ? p.session : null;
-    if (all) { where = '塔と 地下'; theme = 'すべて クリア'; barPct = 100; line = 'ずかんで 番人と もう一度 たたかえる'; }
+    if (all) { where = '塔と 地下'; theme = '全て クリア'; barPct = 100; line = 'ずかんで 番人と もう一度 戦える'; }
     else if (tower && p.underground.unlocked) {
       where = '地下 B' + Math.min(30, p.underground.current); theme = 'めいきゅう';
       barPct = Math.round(p.underground.reached / 30 * 100);
@@ -10190,7 +10200,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       const solved = sess ? sess.index : 0;
       where = cur + '階'; theme = THEMES[tier];
       barPct = Math.round(solved / total * 100);
-      line = solved >= total ? 'まちがい直しを おえると 上の階へ' : 'つぎの階まで　あと ' + (total - solved) + ' もん';
+      line = solved >= total ? 'まちがい直しを 終えると 上の階へ' : '次の階まで　あと ' + (total - solved) + ' もん';
     }
     const rankLabel = all ? '面積マスター' : RANKS[tier];
     const chips = THEMES.map(function (t, i) {
@@ -10201,8 +10211,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     scr.appendChild(h('div', { class: 'player-card' }, [
       h('div', { style: 'flex-shrink:0' }, [hero]),
       h('div', { class: 'info' }, [
-        h('div', { class: 'name-row' }, [h('div', { class: 'pname', plain: p.name || 'たびびと' }), h('div', { class: 'rank' + (all ? ' master' : ''), text: rankLabel })]),
-        h('div', { class: 'line' }, [UI.tx('いま ' + where + '　'), h('span', { class: 'theme', text: theme })]),
+        h('div', { class: 'name-row' }, [h('div', { class: 'pname', plain: p.name || '旅人' }), h('div', { class: 'rank' + (all ? ' master' : ''), text: rankLabel })]),
+        h('div', { class: 'line' }, [UI.tx('今 ' + where + '　'), h('span', { class: 'theme', text: theme })]),
         h('div', { class: 'bar' }, [h('div', { style: 'width:' + barPct + '%' })]),
         h('div', { class: 'line', text: line }),
         h('div', { class: 'tiers' }, [h('span', { class: 'line', text: 'だんかい ' + (all ? 4 : tier + 1) + '／4' }), h('span', { class: 'chips' }, chips)])
@@ -10210,10 +10220,10 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     ]));
 
     if (all) {
-      scr.appendChild(h('button', { class: 'zukan-btn', type: 'button', onclick: function () { ctx.go('zukan'); } }, [h('span', { class: 'tri-y' }), UI.tx('ずかんの 番人と たたかう')]));
+      scr.appendChild(h('button', { class: 'zukan-btn', type: 'button', onclick: function () { ctx.go('zukan'); } }, [h('span', { class: 'tri-y' }), UI.tx('ずかんの 番人と 戦う')]));
     }
     const fresh = !p.name || (p.currentFloor === 1 && !p.session && !p.clearedFloors.length);
-    scr.appendChild(h('button', { class: 'start-btn', type: 'button', onclick: function () { startGame(ctx); } }, [h('span', { class: 'tri-w' }), all && p.mode !== 'rematch' ? 'エンディング' : fresh ? 'はじめる' : 'つづける']));
+    scr.appendChild(h('button', { class: 'start-btn', type: 'button', onclick: function () { startGame(ctx); } }, [h('span', { class: 'tri-w' }), all && p.mode !== 'rematch' ? 'エンディング' : fresh ? '始める' : '続ける']));
     app.appendChild(scr);
     ctx.setKey(function (k) { if (k === 'enter') startGame(ctx); });
     // 地下が 開いていたら、地下の絵を 手があいたときに 先に描いておく（入ったときに 止まらないように）
@@ -10240,18 +10250,18 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
           };
           body.appendChild(row('音', 'BGMと こうか音', [opt('ON', p.sound, function () { E.setSound(true); if (MT.Sound) { MT.Sound.unlock(); MT.Sound.play('tap', true); } }), opt('OFF', !p.sound, function () { E.setSound(false); if (MT.Sound && MT.Sound.bgm) MT.Sound.bgm(null, false); })]));
           body.appendChild(row('文字の 大きさ', '問題と ボタン', [opt('小さめ', s.size === 'small', function () { E.setSetting('size', 'small'); }), opt('ふつう', s.size === 'normal', function () { E.setSetting('size', 'normal'); }), opt('大きめ', s.size === 'large', function () { E.setSetting('size', 'large'); })]));
-          body.appendChild(row('ふりがな', '漢字に よみがなを つける', [opt('ON', s.kana, function () { E.setSetting('kana', true); }), opt('OFF', !s.kana, function () { E.setSetting('kana', false); })]));
-          body.appendChild(row('テンキーの 位置', '書く手に あわせる', [opt('右', s.keypad === 'right', function () { E.setSetting('keypad', 'right'); }), opt('左', s.keypad === 'left', function () { E.setSetting('keypad', 'left'); })]));
+          body.appendChild(row('ふりがな', '漢字に 読みがなを つける', [opt('ON', s.kana, function () { E.setSetting('kana', true); }), opt('OFF', !s.kana, function () { E.setSetting('kana', false); })]));
+          body.appendChild(row('テンキーの 位置', '書く手に 合わせる', [opt('右', s.keypad === 'right', function () { E.setSetting('keypad', 'right'); }), opt('左', s.keypad === 'left', function () { E.setSetting('keypad', 'left'); })]));
           if (p.name) {
-            body.appendChild(row('ひきつぎコード', 'べつの たんまつで つづきをする', [h('button', { class: 'opt-btn', type: 'button', onclick: function () { close(); openCode(ctx); } }, ['みる'])]));
+            body.appendChild(row('ひきつぎコード', '別の たんまつで 続きをする', [h('button', { class: 'opt-btn', type: 'button', onclick: function () { close(); openCode(ctx); } }, ['見る'])]));
           }
           body.appendChild(h('div', { class: 'set-sep' }));
           body.appendChild(h('div', { class: 'set-row' }, [
-            h('span', { class: 'danger-text', text: 'はじめから やりなおす' }),
+            h('span', { class: 'danger-text', text: '初めから やり直す' }),
             h('div', { class: 'opts' }, [h('button', { class: 'opt-btn danger', type: 'button', onclick: function () {
               close();
-              UI.confirmBox('きろくを けす', 'のぼった階や ずかんの きろくが ぜんぶ きえるよ。ほんとうに けす?', 'けす', function () { E.reset(); ctx.state.view = null; ctx.state.hold = null; ctx.render(); });
-            } }, ['きろくを けす'])])
+              UI.confirmBox('記録を 消す', '登った階や ずかんの 記録が 全部 消えるよ。本当に 消す?', '消す', function () { E.reset(); ctx.state.view = null; ctx.state.hold = null; ctx.render(); });
+            } }, ['記録を 消す'])])
           ]));
         }
         draw();
@@ -10264,7 +10274,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     UI.modal({
       title: 'ひきつぎコード',
       body: [
-        h('p', { class: 'how-note', text: 'このコードを 写して、べつの たんまつの「なまえ」の 画面で 入れると、同じところから つづけられるよ。自分だけで 大切に もっておこう。' }),
+        h('p', { class: 'how-note', text: 'このコードを 写して、別の たんまつの「名前」の 画面で 入れると、同じところから 続けられるよ。自分だけで 大切に 持っておこう。' }),
         h('div', { class: 'code-box', plain: code })
       ]
     });
@@ -10280,18 +10290,18 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     };
     const cards = [
       { no: '1', title: 'マスを 数える', text: '1マスが 1cm²。形の 中に ならぶ マスの 数が 面積。', fill: function (x, y) { return x < 4 && y < 3 ? '#5d8fd8' : 'transparent'; } },
-      { no: '2', title: 'たて × よこ', text: 'ならんだ 数を かけると はやい。4 × 3 ＝ 12cm²。', fill: function (x, y) { return x < 4 && y < 3 ? (y === 0 || x === 0 ? '#3a5fb0' : '#5d8fd8') : 'transparent'; } },
+      { no: '2', title: 'たて × 横', text: 'ならんだ 数を かけると はやい。4 × 3 ＝ 12cm²。', fill: function (x, y) { return x < 4 && y < 3 ? (y === 0 || x === 0 ? '#3a5fb0' : '#5d8fd8') : 'transparent'; } },
       { no: '3', title: '分ける・ひく', text: 'へこんだ 形は 2つに 分ける。または 大きな 四角から ひく。', fill: function (x, y) { return x >= 3 && y < 2 ? 'transparent' : (y < 2 ? '#6cbd6f' : '#5d8fd8'); } }
     ];
     const guard = MT.Sprites.fitSprite('stone', 44, 44);
     const rules = [
-      { cls: 'guard', icon: guard, title: '番人と 関所', text: 'どの階にも 番人が いて、問題を 出す。「関所」の しるしが ついた 問題は、番人の だいじな 問題。1つでも まちがえると、まちがい直しの あと、その階を もう一度（数は かわる）。' },
-      { color: '#ffd37c', title: '答え方', text: '数は テンキーで 入れて「こたえる」。えらぶ 問題は ボタンを おす。形に 線を 引く 問題も ある。' },
-      { color: '#7b60a9', title: 'まちがい直し', text: 'まちがえた 問題は、天使ちゃんと いっしょに 見なおして、もう一度 答える。ぜんぶ おわると 上の階へ。' },
-      { color: '#3a5fb0', title: '塔の 上と 下', text: '14階と 屋上を のぼりきると、地下の めいきゅうが ひらく。' }
+      { cls: 'guard', icon: guard, title: '番人と 関所', text: 'どの階にも 番人が いて、問題を 出す。「関所」の 印が ついた 問題は、番人の 大事な 問題。1つでも まちがえると、まちがい直しの あと、その階を もう一度（数は 変わる）。' },
+      { color: '#ffd37c', title: '答え方', text: '数は テンキーで 入れて「答える」。選ぶ 問題は ボタンを おす。形に 線を 引く 問題も ある。' },
+      { color: '#7b60a9', title: 'まちがい直し', text: 'まちがえた 問題は、天使ちゃんと いっしょに 見直して、もう一度 答える。全部 終わると 上の階へ。' },
+      { color: '#3a5fb0', title: '塔の 上と 下', text: '14階と 屋上を 登りきると、地下の めいきゅうが 開く。' }
     ];
     const m = UI.modal({
-      title: 'あそびかた', sub: onDone ? 'はじめる前に 読もう' : 'マス目を 数えて 面積を 出す', wide: true, cls: 'how-modal',
+      title: '遊び方', sub: onDone ? '始める前に 読もう' : 'マス目を 数えて 面積を 出す', wide: true, cls: 'how-modal',
       onClose: function () { if (onDone) onDone(); },
       body: [
         h('div', { class: 'how-cards' }, cards.map(function (c) {
@@ -10307,7 +10317,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
             h('div', { class: 'bd' }, [h('div', { class: 'tt', text: r.title }), h('div', { class: 'tx', text: r.text })])
           ]);
         })),
-        h('button', { class: 'answer-btn how-go', type: 'button', onclick: function () { m.close(); } }, [UI.tx(onDone ? 'わかった！ はじめる　▶' : 'とじる')])
+        h('button', { class: 'answer-btn how-go', type: 'button', onclick: function () { m.close(); } }, [UI.tx(onDone ? '分かった！ 始める　▶' : 'とじる')])
       ]
     });
   }
@@ -10316,28 +10326,28 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   function openName(ctx) {
     const E = ctx.engine;
     UI.modal({
-      title: 'なまえ',
+      title: '名前',
       body: function (body, close) {
-        const input = h('input', { class: 'px-input', type: 'text', maxlength: 20, placeholder: 'なまえ', autocomplete: 'off', 'aria-label': 'なまえ' });
+        const input = h('input', { class: 'px-input', type: 'text', maxlength: 20, placeholder: '名前', autocomplete: 'off', 'aria-label': '名前' });
         const msg = h('div', { class: 'modal-msg' });
         const go = function () {
-          if (!E.setName(input.value)) { msg.textContent = 'なまえを 書いてね。'; input.focus(); return; }
+          if (!E.setName(input.value)) { msg.textContent = '名前を 書いてね。'; input.focus(); return; }
           close();
           startGame(ctx);
         };
         input.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' && !ev.isComposing) go(); });
-        body.appendChild(h('p', { class: 'how-note', text: 'きみの なまえを 書いてね。' }));
+        body.appendChild(h('p', { class: 'how-note', text: '君の 名前を 書いてね。' }));
         body.appendChild(input);
-        body.appendChild(h('button', { class: 'answer-btn', type: 'button', onclick: go }, ['はじめる']));
+        body.appendChild(h('button', { class: 'answer-btn', type: 'button', onclick: go }, ['始める']));
         body.appendChild(msg);
         const codeIn = h('input', { class: 'px-input', type: 'text', placeholder: 'ひきつぎコード', autocomplete: 'off', 'aria-label': 'ひきつぎコード' });
         const codeMsg = h('div', { class: 'modal-msg' });
         body.appendChild(h('div', { class: 'set-sep' }));
-        body.appendChild(h('p', { class: 'how-note', text: 'べつの たんまつの つづきから（ひきつぎコード）' }));
+        body.appendChild(h('p', { class: 'how-note', text: '別の たんまつの 続きから（ひきつぎコード）' }));
         body.appendChild(codeIn);
         body.appendChild(h('button', { class: 'opt-btn', type: 'button', onclick: function () {
           try { E.importCode(codeIn.value); close(); ctx.render(); } catch (err) { codeMsg.textContent = err.message || 'コードが ちがうみたい。'; }
-        } }, ['つづきから']));
+        } }, ['続きから']));
         body.appendChild(codeMsg);
         setTimeout(function () { input.focus(); }, 30);
       }
@@ -10588,7 +10598,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   // ほかの子の 答案（大事な 問題なので ふきだしの 中ではなく 大きな カードで 見せる。本人の指摘 2026-09-15）
   function peerCard(q, dark) {
     if (!q || !q.peerAnswer) return null;
-    return h('div', { class: 'peer-card' + (dark ? ' dark' : '') }, [h('span', { class: 'hd', text: 'ほかの子の 答案' }), h('span', { class: 'tx', plain: q.peerAnswer })]);
+    return h('div', { class: 'peer-card' + (dark ? ' dark' : '') }, [h('span', { class: 'hd', text: '他の子の 答案' }), h('span', { class: 'tx', plain: q.peerAnswer })]);
   }
 
   Object.assign(UI, { peerCard: peerCard, formulaText: formulaText, figuresModel: figuresModel, mountBoard: mountBoard, hissanGrid: hissanGrid, hissanOverlay: hissanOverlay, flash: flash, numDisplay: numDisplay, choiceList: choiceList, fieldRows: fieldRows, orderList: orderList, floorLabelOf: floorLabelOf, guardOfSession: guardOfSession, unitKind: unitKind, askTag: askTag });
@@ -10671,7 +10681,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       const status = E.sessionStatus();
       const label = floorLabelOf(sess);
       headLeft = [back, h('div', { class: dark ? 'dungeon-depth' : 'floor-label outline-text', plain: label })];
-      if (rematch) headLeft.push(h('div', { class: 'head-tag', text: 'ずかんで たたかう' }));
+      if (rematch) headLeft.push(h('div', { class: 'head-tag', text: 'ずかんで 戦う' }));
       // 答えた直後は 旅人を 答えた石に のこし、「つぎへ」で 1マス 歩かせる
       const idx = hold && hold.sessIndex != null ? hold.sessIndex : Math.min(status.index, status.count - 1);
       roadEl = UI.road(status.count, idx, status.results, status.gates, { dark: dark });
@@ -10706,7 +10716,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     else if (step) extraText = step.ask;
     else if (guided && gmode === 'three' && !guide.finished) {
       const rest = ((q.cut && q.cut.modes) || ['v', 'h', 'e']).filter(function (w) { return guide.waysDone.indexOf(w) < 0; });
-      extraText = 'のこり：' + rest.map(Guide.wayName).join('、');
+      extraText = '残り：' + rest.map(Guide.wayName).join('、');
     }
     if (qs.hissan) extraText = '式は 合っている。筆算で たしかめよう。';
     if (extraText) bubbleKids.push(h('span', { class: 'step-ask', text: extraText }));
@@ -10716,7 +10726,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     // 線を けす・ヒント・手帳
     const canClear = !hold && (q.format === 'line' || q.format === 'cut' || cutFree) && lines.length > 0 && !(guided && step && guide.stepIndex > 0) && !finalChoiceNow;
     if (q.format === 'line' || q.format === 'cut' || cutFree) {
-      speaker.push(h('button', { class: 'side-btn' + (canClear ? ' on' : ''), type: 'button', onclick: function () { if (canClear) clearLines(); } }, [UI.tx('線を けす')]));
+      speaker.push(h('button', { class: 'side-btn' + (canClear ? ' on' : ''), type: 'button', onclick: function () { if (canClear) clearLines(); } }, [UI.tx('線を 消す')]));
     }
     if (!hold && gmode === 'half' && !qs.hissan) {
       speaker.push(h('button', { class: 'side-btn on', type: 'button', onclick: function () { const hn = E.guideHint(); qs.hint = hn ? hn.text : ''; ctx.render(); } }, ['ヒント']));
@@ -10753,7 +10763,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     if (qs.hissan) wrap.appendChild(hissanOverlay(qs.hissan));
     if (hold) {
       UI.stamp(hold.correct, dark).forEach(function (n) { wrap.appendChild(n); });
-      const title = hold.correct ? (dungeonMain ? 'とおった！' : 'せいかい！') : 'ちがう…';
+      const title = hold.correct ? (dungeonMain ? '通った！' : 'せいかい！') : 'ちがう…';
       wrap.appendChild(UI.band(hold.correct, title, hold.fbText, { dark: dark }));
     }
 
@@ -10770,12 +10780,12 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         col.appendChild(h('div', { class: 'col-label', text: cur ? (cur.label ? cur.label + '　' : '') + cur.expr + ' ＝ ?' : '' }));
         col.appendChild(numDisplay(qs.num.value, '', { dark: dark, state: qs.numState }));
         col.appendChild(UI.keypad(typeKey, { dark: dark }));
-        col.appendChild(h('button', { class: 'answer-btn' + (dark ? ' dark' : '') + (qs.num.value ? '' : ' disabled'), type: 'button', onclick: answerHissan }, ['こたえる']));
+        col.appendChild(h('button', { class: 'answer-btn' + (dark ? ' dark' : '') + (qs.num.value ? '' : ' disabled'), type: 'button', onclick: answerHissan }, ['答える']));
         return col;
       }
       if (finalChoiceNow || q.format === 'choice') {
         const choices = finalChoiceNow ? q.finalChoice.choices : q.choices;
-        col.appendChild(h('div', { class: 'col-label', text: 'ひとつ えらぼう' }));
+        col.appendChild(h('div', { class: 'col-label', text: '一つ 選ぼう' }));
         col.appendChild(choiceList(choices, { selected: qs.choice, held: !!hold, given: hold && hold.given, correct: hold && hold.correct, dark: dark, onPick: function (id) { qs.choice = id; drawRight(); } }));
         col.appendChild(answerButton(qs.choice != null, function () { submitAnswer(qs.choice); }));
         return col;
@@ -10788,7 +10798,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         return col;
       }
       if (q.format === 'order') {
-        col.appendChild(h('div', { class: 'col-label', text: '1が いちばん 小さい' }));
+        col.appendChild(h('div', { class: 'col-label', text: '1が 一番 小さい' }));
         col.appendChild(orderList(q.order.items, qs.order, { held: !!hold, onSwap: function (a, b) { const t = qs.order[a]; qs.order[a] = qs.order[b]; qs.order[b] = t; drawRight(); } }));
         col.appendChild(answerButton(true, function () { submitAnswer(qs.order.slice()); }));
         return col;
@@ -10798,14 +10808,14 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
           h('span', { class: 'row-label', text: 'たて' }),
           h('button', { class: 'blank-btn' + (qs.pairFocus === 'a' ? ' on' : ''), type: 'button', onclick: function () { qs.pairFocus = 'a'; drawRight(); } }, [qs.pairA || '□']),
           h('span', { class: 'fill-part', plain: '×' }),
-          h('span', { class: 'row-label', text: 'よこ' }),
+          h('span', { class: 'row-label', text: '横' }),
           h('button', { class: 'blank-btn' + (qs.pairFocus === 'b' ? ' on' : ''), type: 'button', onclick: function () { qs.pairFocus = 'b'; drawRight(); } }, [qs.pairB || '□']),
           h('button', { class: 'px-btn pair-add', type: 'button', onclick: addPair }, [UI.tx('入れる')])
         ]);
         col.appendChild(h('div', { class: 'fill-rows' }, [row]));
         col.appendChild(h('div', { class: 'pairs-found' }, qs.pairs.map(function (pr) { return h('span', { class: 'pair-chip', plain: pr[0] + '×' + pr[1] }); })));
         col.appendChild(UI.keypad(typeKey, { dark: dark }));
-        col.appendChild(answerButton(qs.pairs.length > 0, function () { submitAnswer(qs.pairs.slice()); }, 'ぜんぶ 見つけた'));
+        col.appendChild(answerButton(qs.pairs.length > 0, function () { submitAnswer(qs.pairs.slice()); }, '全部 見つけた'));
         return col;
       }
       if (q.format === 'line') {
@@ -10819,22 +10829,22 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
           h('div', { class: 't', text: '線の 引き方' }),
           h('p', { text: '図の 上を なぞると、線が 引ける。' }),
           h('p', { text: '切り方は 3通り。どれでも いいよ。' }),
-          h('ul', {}, [h('li', { text: 'たてに 切る' }), h('li', { text: 'よこに 切る' }), h('li', { text: 'まわりを かこんで、欠けた ところを ひく' })])
+          h('ul', {}, [h('li', { text: 'たてに 切る' }), h('li', { text: '横に 切る' }), h('li', { text: 'まわりを かこんで、欠けた ところを ひく' })])
         ]));
         col.appendChild(h('div', { style: 'flex:1' }));
         // 答えたあとは「つぎへ」（数の 欄は 出さない）
-        col.appendChild(hold ? answerButton(true, next) : h('button', { class: 'answer-btn wait', type: 'button' }, [UI.tx('長方形に 分けられたら すすむ')]));
+        col.appendChild(hold ? answerButton(true, next) : h('button', { class: 'answer-btn wait', type: 'button' }, [UI.tx('長方形に 分けられたら 進む')]));
         return col;
       }
       if (guided && !step && !hold) {
         col.appendChild(numDisplay('', '', { dark: dark }));
         col.appendChild(UI.keypad(function () {}, { dark: dark }));
-        col.appendChild(h('button', { class: 'answer-btn wait', type: 'button' }, [UI.tx('線を 引くと すすめる')]));
+        col.appendChild(h('button', { class: 'answer-btn wait', type: 'button' }, [UI.tx('線を 引くと 進める')]));
         return col;
       }
       const tilesQ = q.format === 'grid' && q.figure && q.figure.interaction === 'tiles';
       // はじめから おいてある タイルも ふくめて 数える
-      if (tilesQ) { const pre = MT.Board.placedCells(q.figure); let n = pre.size; qs.tiles.forEach(function (k) { if (!pre.has(k)) n += 1; }); col.appendChild(h('div', { class: 'col-label', text: 'おいた タイル ' + n + ' まい' })); }
+      if (tilesQ) { const pre = MT.Board.placedCells(q.figure); let n = pre.size; qs.tiles.forEach(function (k) { if (!pre.has(k)) n += 1; }); col.appendChild(h('div', { class: 'col-label', text: '置いた タイル ' + n + ' まい' })); }
       else if (step) col.appendChild(h('div', { class: 'col-label', text: step.ask }));
       const unit = step ? step.unit : (q.unit || '');
       // 長さを 聞かれているのか 面積かを はっきり 出す
@@ -10848,16 +10858,16 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
     function answerButton(ready, onGo, label) {
       if (hold) {
-        let lab = 'つぎへ　▶';
+        let lab = '次へ　▶';
         let cls = 'answer-btn next';
         if (hold.dungeonMain) {
-          if (hold.correct) lab = hold.res.extra ? 'つづきへ　▶' : (hold.res.finished ? 'さいごへ　▶' : 'おくへ すすむ　▶');
+          if (hold.correct) lab = hold.res.extra ? '続きへ　▶' : (hold.res.finished ? '最後へ　▶' : 'おくへ 進む　▶');
           else { lab = 'もう一度'; cls = 'answer-btn'; }
           cls += ' dark';
         } else if (dark) cls += ' dark';
         return h('button', { class: cls, type: 'button', onclick: next }, [UI.tx(lab)]);
       }
-      return h('button', { class: 'answer-btn' + (dark ? ' dark' : '') + (ready ? '' : ' disabled'), type: 'button', onclick: function () { if (ready) onGo(); } }, [UI.tx(label || (dungeonMain ? 'きざむ' : 'こたえる'))]);
+      return h('button', { class: 'answer-btn' + (dark ? ' dark' : '') + (ready ? '' : ' disabled'), type: 'button', onclick: function () { if (ready) onGo(); } }, [UI.tx(label || (dungeonMain ? 'きざむ' : '答える'))]);
     }
 
     // 欄を えらぶ。図に その 欄の 長方形を 出す 問題（がくぶち）は 図も かきなおす
@@ -10951,7 +10961,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       if (!r.correct) {
         UI.se('wrong');
         qs.num.clear();
-        if (r.fails >= 3) flash(wrap, '答えは ' + r.step.answer + '。写して すすもう');
+        if (r.fails >= 3) flash(wrap, '答えは ' + r.step.answer + '。写して 進もう');
         else flash(wrap, 'もう一度');
         drawRight();
         return;
@@ -10962,7 +10972,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         qs.hissan = null;
         qs.num.value = String(r.result);
         ctx.render();
-        flash(document.querySelector('.board-wrap'), '筆算で ' + r.result + ' が 出た。こたえる を おそう');
+        flash(document.querySelector('.board-wrap'), '筆算で ' + r.result + ' が 出た。答える を おそう');
         return;
       }
       ctx.render();
@@ -11040,7 +11050,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     }
 
     // 管理者の ためしプレイ: こたえを 画面の 上に 出す
-    if (st.admin && st.adminShowAnswer && !hold && UI.adminAnswerText) scr.appendChild(h('div', { class: 'admin-answer', plain: 'こたえ： ' + UI.adminAnswerText(q, step, finalChoiceNow) }));
+    if (st.admin && st.adminShowAnswer && !hold && UI.adminAnswerText) scr.appendChild(h('div', { class: 'admin-answer', plain: '答え： ' + UI.adminAnswerText(q, step, finalChoiceNow) }));
 
     ctx.setKey(function (k) {
       if (hold) { if (k === 'enter') next(); return; }
@@ -11077,7 +11087,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   const ROW_COLORS = {
     '左': '#6cbd6f', '右': '#ef9448', 'まん中': '#a48ad0',
     '外': '#3b7dd8', '内': '#ef9448', 'ひく': '#a48ad0',
-    'かこむ大きい長方形': '#3b7dd8', '欠けたところ': '#ef9448', '道をよせる': '#6cbd6f', 'よこ': '#6cbd6f'
+    'かこむ大きい長方形': '#3b7dd8', '欠けたところ': '#ef9448', '道をよせる': '#6cbd6f', '横': '#6cbd6f'
   };
   const FIG_TWO = ['#6cbd6f', '#ef9448'];
 
@@ -11166,7 +11176,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     scr.appendChild(layout);
     layout.appendChild(h('div', { class: 'q-head' }, [
       h('div', { class: 'q-head-left' }, [homeBtn(ctx), h('div', { class: 'floor-label outline-text', plain: UI.floorLabelOf(sess) }), h('div', { class: 'head-tag', text: 'まちがい直し' })]),
-      h('div', { class: 'q-head-right' }, [yaPill('きみの答え', v.yourAnswer)])
+      h('div', { class: 'q-head-right' }, [yaPill('君の答え', v.yourAnswer)])
     ]));
     const body = h('div', { class: 'q-body explain-body' });
     layout.appendChild(body);
@@ -11204,7 +11214,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       else say.push(UI.tx('式は 合っているよ。計算を 筆算で たしかめよう。'));
     } else if (v.revealed) {
       const rv = E.retryReveal();
-      say.push(h('span', { class: 'say-reveal', text: '答えは ' + (rv ? rv.text : '') + '。写して すすもう。つぎの階で もう一度 出るよ。' }));
+      say.push(h('span', { class: 'say-reveal', text: '答えは ' + (rv ? rv.text : '') + '。写して 進もう。次の階で もう一度 出るよ。' }));
     } else if (v.help) {
       say.push(h('span', { class: 'say-help', text: v.help.text }));
     } else if (doneMode) {
@@ -11319,7 +11329,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         if (last && last.part == null) {
           const idx = steps.length - 1;
           const areas = steps.filter(function (s) { return /-area$/.test(s.key); });
-          const kids = [h('span', { class: 'chip' }), h('span', { class: 'row-label', text: last.key === 'sub' ? 'ひく' : 'ぜんぶ' })];
+          const kids = [h('span', { class: 'chip' }), h('span', { class: 'row-label', text: last.key === 'sub' ? 'ひく' : '全部' })];
           areas.forEach(function (s, j) {
             if (j) kids.push(h('span', { class: 'fill-part', plain: last.key === 'sub' ? '−' : '＋' }));
             kids.push(h('span', { class: 'fill-part', plain: steps.indexOf(s) < cur ? String(s.answer) : '□' }));
@@ -11372,11 +11382,11 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         col.appendChild(h('div', { style: 'flex:1' }));
       }
       let nextBtn;
-      if (hsEngine && MT.Hissan.isDone(hsEngine)) nextBtn = h('button', { class: 'answer-btn next', type: 'button', onclick: function () { E.retryHissanConfirm(); ctx.render(); } }, ['つぎへ　▶']);
-      else if (doneMode) nextBtn = h('button', { class: 'answer-btn next', type: 'button', onclick: goRedo }, ['つぎへ　▶']);
+      if (hsEngine && MT.Hissan.isDone(hsEngine)) nextBtn = h('button', { class: 'answer-btn next', type: 'button', onclick: function () { E.retryHissanConfirm(); ctx.render(); } }, ['次へ　▶']);
+      else if (doneMode) nextBtn = h('button', { class: 'answer-btn next', type: 'button', onclick: goRedo }, ['次へ　▶']);
       // けた数が 足りなくても 自分で 出せるように（タッチだけでも すすめる）
-      else if (t && rs.value) nextBtn = h('button', { class: 'answer-btn', type: 'button', onclick: function () { const tt = target(); if (tt && rs.value) submit(tt); } }, ['こたえる']);
-      else nextBtn = h('button', { class: 'answer-btn wait', type: 'button' }, [UI.tx('□ を うめると すすめる')]);
+      else if (t && rs.value) nextBtn = h('button', { class: 'answer-btn', type: 'button', onclick: function () { const tt = target(); if (tt && rs.value) submit(tt); } }, ['答える']);
+      else nextBtn = h('button', { class: 'answer-btn wait', type: 'button' }, [UI.tx('□ を うめると 進める')]);
       col.appendChild(nextBtn);
       return col;
     }
@@ -11405,7 +11415,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     function submit(t) {
       if (t.kind === 'ghissan') {
         const r = MT.Hissan.answer(rs.hissan, MT.Util.parseInteger(rs.value));
-        if (!r.correct) { UI.se('wrong'); rs.ng = true; if (r.fails >= 3) UI.flash(wrap, '答えは ' + r.step.answer + '。写して すすもう'); redrawRight(); return; }
+        if (!r.correct) { UI.se('wrong'); rs.ng = true; if (r.fails >= 3) UI.flash(wrap, '答えは ' + r.step.answer + '。写して 進もう'); redrawRight(); return; }
         UI.se('tap');
         if (r.done) { const result = r.result; rs.hissan = null; rs.value = String(result); rs.ng = false; submit({ kind: 'guide', answer: result }); return; }
         rs.value = '';
@@ -11433,7 +11443,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       ctx.render();
     }
 
-    if (st.admin && st.adminShowAnswer) { const rv = E.retryReveal(); if (rv) scr.appendChild(h('div', { class: 'admin-answer', plain: 'こたえ： ' + rv.text })); }
+    if (st.admin && st.adminShowAnswer) { const rv = E.retryReveal(); if (rv) scr.appendChild(h('div', { class: 'admin-answer', plain: '答え： ' + rv.text })); }
     ctx.setKey(onKey);
     app.appendChild(scr);
   }
@@ -11475,7 +11485,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     if (finalPending) say.push(h('span', { class: 'step-ask', text: q.finalChoice.prompt }));
     else if (kind === 'choice' && v.step.label && v.step.label.indexOf('もう一度') !== 0) say.push(h('span', { class: 'step-ask', text: v.step.label }));
     // 答えを見せている問題（1つの問題で 3回まちがえた）は、やり直しモードでも はじめから 答えを出しておく
-    if (v.revealed && !rs.fb) { const rv = E.retryReveal(); if (rv) say.push(h('span', { class: 'step-ask say-reveal', text: '答えは ' + rv.text + '。写して すすもう。' })); }
+    if (v.revealed && !rs.fb) { const rv = E.retryReveal(); if (rv) say.push(h('span', { class: 'step-ask say-reveal', text: '答えは ' + rv.text + '。写して 進もう。' })); }
     if (held) say.splice(0, say.length, h('span', { class: 'say-ok', text: 'よし。通って よい。' }));
     const sayText = say.map(function (n) { return n.textContent || ''; }).join('');
     left.appendChild(h('div', { class: 'speaker-row' }, [UI.guardBox(guardId), h('div', { class: 'bubble' + UI.bubbleSizeClass(sayText) }, say)]));
@@ -11505,7 +11515,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     board = UI.mountBoard(wrap, model, q.prompt);
     if (held) {
       UI.stamp(true).forEach(function (n) { wrap.appendChild(n); });
-      wrap.appendChild(UI.band(true, 'とおった！', held.finished ? 'これで まちがい直しは おわり。' : 'つぎの 問題へ。'));
+      wrap.appendChild(UI.band(true, '通った！', held.finished ? 'これで まちがい直しは 終わり。' : '次の 問題へ。'));
     } else if (rs.fb) {
       UI.stamp(false).forEach(function (n) { wrap.appendChild(n); });
       wrap.appendChild(UI.band(false, 'まだ ちがう', rs.fb.text, { small: true }));
@@ -11520,17 +11530,17 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       const locked = !!held || !!rs.fb;
       if (kind === 'final' || kind === 'choice') {
         const choices = shuffleChoices(kind === 'final' ? q.finalChoice.choices : q.choices, rs);
-        col.appendChild(h('div', { class: 'col-label', text: 'ひとつ えらぼう' }));
+        col.appendChild(h('div', { class: 'col-label', text: '一つ 選ぼう' }));
         col.appendChild(UI.choiceList(choices, { selected: rs.choice, held: locked, given: held ? held.given : rs.lastGiven, correct: !!held, onPick: function (id) { rs.choice = id; redrawRight(); } }));
       } else if (kind === 'order') {
-        col.appendChild(h('div', { class: 'col-label', text: '1が いちばん 小さい' }));
+        col.appendChild(h('div', { class: 'col-label', text: '1が 一番 小さい' }));
         col.appendChild(UI.orderList(q.order.items, rs.order, { held: locked, onSwap: function (a, b) { const t = rs.order[a]; rs.order[a] = rs.order[b]; rs.order[b] = t; redrawRight(); } }));
       } else if (kind === 'pairs') {
         col.appendChild(h('div', { class: 'fill-rows' }, [h('div', { class: 'fill-row active' }, [
           h('span', { class: 'row-label', text: 'たて' }),
           h('button', { class: 'blank-btn' + (rs.pairFocus === 'a' ? ' on' : ''), type: 'button', onclick: function () { rs.pairFocus = 'a'; redrawRight(); } }, [rs.pairA || '□']),
           h('span', { class: 'fill-part', plain: '×' }),
-          h('span', { class: 'row-label', text: 'よこ' }),
+          h('span', { class: 'row-label', text: '横' }),
           h('button', { class: 'blank-btn' + (rs.pairFocus === 'b' ? ' on' : ''), type: 'button', onclick: function () { rs.pairFocus = 'b'; redrawRight(); } }, [rs.pairB || '□']),
           h('button', { class: 'px-btn pair-add', type: 'button', onclick: addPair }, [UI.tx('入れる')])
         ])]));
@@ -11545,9 +11555,9 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         col.appendChild(UI.keypad(onKey));
       }
       let btn;
-      if (held) btn = h('button', { class: 'answer-btn next', type: 'button', onclick: nextItem }, ['つぎへ　▶']);
+      if (held) btn = h('button', { class: 'answer-btn next', type: 'button', onclick: nextItem }, ['次へ　▶']);
       else if (rs.fb) btn = h('button', { class: 'answer-btn again', type: 'button', onclick: again }, ['もう一度']);
-      else btn = h('button', { class: 'answer-btn' + (ready() ? '' : ' disabled'), type: 'button', onclick: function () { if (ready()) submit(); } }, ['こたえる']);
+      else btn = h('button', { class: 'answer-btn' + (ready() ? '' : ' disabled'), type: 'button', onclick: function () { if (ready()) submit(); } }, ['答える']);
       col.appendChild(btn);
       return col;
     }
@@ -11582,7 +11592,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       if (!res.correct) {
         UI.se('wrong');
         let text;
-        if (res.reveal) { const rv = E.retryReveal(); text = rv ? '答えは ' + rv.text + '。写して すすもう。つぎの階で もう一度 出るよ。' : ''; }
+        if (res.reveal) { const rv = E.retryReveal(); text = rv ? '答えは ' + rv.text + '。写して 進もう。次の階で もう一度 出るよ。' : ''; }
         else if (res.help) text = res.help.text;
         else text = MT.Bank.explanationFor(q, { misconception: res.misconception || v.item.misconception });
         rs.fb = { text: text };
@@ -11605,7 +11615,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
     function nextItem() { st.retryHold = null; ctx.render(); }
 
-    if (st.admin && st.adminShowAnswer && !held) { const rv = E.retryReveal(); if (rv) scr.appendChild(h('div', { class: 'admin-answer', plain: 'こたえ： ' + rv.text })); }
+    if (st.admin && st.adminShowAnswer && !held) { const rv = E.retryReveal(); if (rv) scr.appendChild(h('div', { class: 'admin-answer', plain: '答え： ' + rv.text })); }
 
     function onKey(k) {
       if (held) { if (k === 'enter') nextItem(); return; }
@@ -11681,7 +11691,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     layout.appendChild(h('div', { class: 'q-head' }, [h('div', { class: 'q-head-left' }, [
       h('div', { class: 'floor-label outline-text', plain: UI.floorLabelOf(sess) }),
       h('div', { class: 'head-tag', text: '結果' }),
-      rematch ? h('div', { class: 'head-tag', text: 'ずかんで たたかう' }) : null
+      rematch ? h('div', { class: 'head-tag', text: 'ずかんで 戦う' }) : null
     ])]));
     const body = h('div', { class: 'result-body' });
     layout.appendChild(body);
@@ -11700,8 +11710,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       const win = !r.gateFailed && r.correct >= Math.ceil(r.total * 0.7);
       gateText = win ? 'たおした！' : 'もう少し'; gateColor = win ? '#6cbd6f' : '#e2584c';
     } else if (!gateAnswers.length) { gateText = '関所は なし'; gateColor = '#fbf9f2'; }
-    else if (!r.gateFailed) { gateText = gateAnswers.length + '／' + gateAnswers.length + ' とおった'; gateColor = '#6cbd6f'; }
-    else { gateText = 'おちた　この階を やり直し'; gateColor = '#e2584c'; }
+    else if (!r.gateFailed) { gateText = gateAnswers.length + '／' + gateAnswers.length + ' 通った'; gateColor = '#6cbd6f'; }
+    else { gateText = '落ちた　この階を やり直し'; gateColor = '#e2584c'; }
     const guardId = UI.guardOfSession(sess);
     const gs = MT.Sprites.fitSprite(guardId, 52, 44);
     left.appendChild(h('div', { class: 'gate-card' }, [gs ? h('div', { style: 'flex-shrink:0' }, [gs]) : null, h('div', { style: 'min-width:0' }, [h('div', { class: 'l', text: rematch ? '番人' : '関所' }), h('div', { class: 'v', style: 'color:' + gateColor, text: gateText })])]));
@@ -11737,7 +11747,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       secondaryLabel = 'ホームへ';
       secondary = function () { E.endRematch(); st.view = null; ctx.render(); };
     } else if (rematch) {
-      primaryLabel = n ? 'まちがい直し（' + n + '問）' : 'つぎへ　▶';
+      primaryLabel = n ? 'まちがい直し（' + n + '問）' : '次へ　▶';
       primary = function () { E.beginRetry(); ctx.render(); };
       secondaryLabel = 'ずかんへ';
       secondary = function () { E.endRematch(); st.view = 'zukan'; ctx.render(); };
@@ -11776,9 +11786,9 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       const nextNo = o.floorNo + 1;
       if (nextNo <= 14) {
         const enter = Story.enter(nextNo);
-        box.appendChild(h('div', { class: 'speaker-row' }, [UI.guardBox(MT.Guards.guardFor(nextNo)), h('div', { class: 'bubble long' }, [h('span', { class: 'step-ask', style: 'margin:0', text: 'つぎは ' + nextNo + '階' }), UI.tx(quoteOf(enter[0]))])]));
+        box.appendChild(h('div', { class: 'speaker-row' }, [UI.guardBox(MT.Guards.guardFor(nextNo)), h('div', { class: 'bubble long' }, [h('span', { class: 'step-ask', style: 'margin:0', text: '次は ' + nextNo + '階' }), UI.tx(quoteOf(enter[0]))])]));
       }
-      go1Label = 'つぎの階へ　▶'; go1 = function () { E.acknowledgeOutcome(); E.startFloor(); ctx.render(); };
+      go1Label = '次の階へ　▶'; go1 = function () { E.acknowledgeOutcome(); E.startFloor(); ctx.render(); };
       go2Label = 'ホームへ'; go2 = function () { E.acknowledgeOutcome(); ctx.render(); };
       UI.se('clear');
     } else if (o.outcome === 'redo') {
@@ -11791,9 +11801,9 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     } else {
       const sp = MT.Sprites.byId(o.guardId);
       box.appendChild(h('div', { class: 'outcome-title' + (o.win ? '' : ' redo'), text: o.win ? 'たおした！' : 'まだまだ…' }));
-      box.appendChild(h('div', { class: 'speaker-row' }, [UI.guardBox(o.guardId), h('div', { class: 'bubble', text: o.win ? 'みごとだ。また いつでも 来い。' : 'まだまだ だな。もう一度 来い。' })]));
+      box.appendChild(h('div', { class: 'speaker-row' }, [UI.guardBox(o.guardId), h('div', { class: 'bubble', text: o.win ? '見事だ。また いつでも 来い。' : 'まだまだ だな。もう一度 来い。' })]));
       box.appendChild(h('div', { class: 'outcome-note', text: (sp ? sp.name + '　' : '') + 'せいかい ' + o.correct + '／' + o.total }));
-      go1Label = 'もう一度 たたかう'; go1 = function () { E.acknowledgeOutcome(); const res = E.startRematch(o.guardId); if (!res) st.view = 'zukan'; ctx.render(); };
+      go1Label = 'もう一度 戦う'; go1 = function () { E.acknowledgeOutcome(); const res = E.startRematch(o.guardId); if (!res) st.view = 'zukan'; ctx.render(); };
       go2Label = 'ずかんへ'; go2 = function () { E.acknowledgeOutcome(); st.view = 'zukan'; ctx.render(); };
       UI.se(o.win ? 'fanfare' : 'gate');
     }
@@ -11820,9 +11830,9 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   const ANIM_SAY = [
     'この 大きな 正方形が 1m²（1m × 1m）。ここに 1cm² の タイルを しきつめると、何まい?',
     '左下の すみを 大きく すると… これが 1cm² の タイル 1まい。',
-    '1m は 100cm。だから よこに ならぶのは 100まい。',
-    'その 1れつを 10だん かさねると、100 × 10 ＝ 1000まい。',
-    '100だん かさねると、100 × 100 ＝ 10000まい。'
+    '1m は 100cm。だから 横に ならぶのは 100まい。',
+    'その 1れつを 10だん 重ねると、100 × 10 ＝ 1000まい。',
+    '100だん 重ねると、100 × 100 ＝ 10000まい。'
   ];
   UI.screens.intro = function (ctx) {
     const E = ctx.engine, st = ctx.state, p = E.progress();
@@ -11846,7 +11856,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     body.appendChild(left);
     const texts = kind === 'm2' ? MT.Story.INTRO_M2 : MT.Story.INTRO_UNITS;
     let lines;
-    if (kind === 'm2' && is.step === 3) lines = [ANIM_SAY[is.animStep]].concat(is.animStep >= 4 ? texts[3].concat(['きみの よそう：' + is.guess + 'まい → 答え：10000まい']) : []);
+    if (kind === 'm2' && is.step === 3) lines = [ANIM_SAY[is.animStep]].concat(is.animStep >= 4 ? texts[3].concat(['君の 予想：' + is.guess + 'まい → 答え：10000まい']) : []);
     else lines = texts[Math.min(is.step, texts.length - 1)] || [];
     const bubble = h('div', { class: 'bubble long' });
     lines.forEach(function (t, i) { if (i) bubble.appendChild(h('br')); bubble.appendChild(UI.tx(t)); });
@@ -11893,16 +11903,16 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     function draw() {
       UI.clear(right);
       if (kind === 'm2' && is.step === 2) {
-        right.appendChild(h('div', { class: 'col-label', text: 'よそう' }));
+        right.appendChild(h('div', { class: 'col-label', text: '予想' }));
         right.appendChild(UI.numDisplay(is.num.value, 'まい'));
         right.appendChild(UI.keypad(onKey));
-        right.appendChild(h('button', { class: 'answer-btn' + (is.num.value ? '' : ' disabled'), type: 'button', onclick: guess }, ['こたえる']));
+        right.appendChild(h('button', { class: 'answer-btn' + (is.num.value ? '' : ' disabled'), type: 'button', onclick: guess }, ['答える']));
         return;
       }
       right.appendChild(h('div', { style: 'flex:1' }));
       const anim = kind === 'm2' && is.step === 3;
       const last = (anim && is.animStep >= MT.IntroAnim.STEPS - 1) || (kind === 'units' && is.step >= 3);
-      const label = last ? p.currentFloor + '階へ　▶' : 'つぎへ　▶';
+      const label = last ? p.currentFloor + '階へ　▶' : '次へ　▶';
       const go = h('button', { class: 'answer-btn next', type: 'button', onclick: advance }, [label]);
       if (anim) right.appendChild(h('div', { class: 'btn-row2' }, [h('button', { class: 'answer-btn' + (is.animStep > 0 ? '' : ' disabled'), type: 'button', onclick: back }, ['◀ もどる']), go]));
       else right.appendChild(go);
@@ -11933,8 +11943,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const key = MT.Sprites.ICONS.key;
     if (rf.scene === 1) {
       const top = h('div', { style: 'display:flex;flex-direction:column;gap:1.4vh;' }, [
-        h('div', { style: 'display:flex;align-items:center;gap:1.2vw;' }, [h('div', { class: 'floor-label outline-text', plain: '屋上' }), h('div', { class: 'head-tag', text: '15階を のぼりきった' })]),
-        h('div', { class: 'speaker-row' }, [UI.guardBox('elder'), h('div', { class: 'bubble', style: 'flex:0 1 auto', text: rf.opened ? 'この塔の 下には、もっと 古い めいきゅうが ある。' : 'よく のぼってきた。この 箱を あけてみよ。' })])
+        h('div', { style: 'display:flex;align-items:center;gap:1.2vw;' }, [h('div', { class: 'floor-label outline-text', plain: '屋上' }), h('div', { class: 'head-tag', text: '15階を 登りきった' })]),
+        h('div', { class: 'speaker-row' }, [UI.guardBox('elder'), h('div', { class: 'bubble', style: 'flex:0 1 auto', text: rf.opened ? 'この塔の 下には、もっと 古い めいきゅうが ある。' : 'よく 登ってきた。この 箱を 開けてみよ。' })])
       ]);
       const mid = rf.opened ? h('div', { class: 'roof-key' }, [h('div', { class: 'bob' }, [MT.Sprites.sprite(key.rows, key.pal, 6)]), h('div', { class: 'msg', text: '地下通路の かぎを 手に入れた！' })]) : h('div');
       const advance = function () {
@@ -11942,7 +11952,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         else rf.scene = 2;
         ctx.render();
       };
-      const btnRow = h('div', { style: 'display:flex;justify-content:flex-end;' }, [h('button', { class: 'big-btn', type: 'button', style: 'min-height:72px;padding:0 1.6vw;', onclick: advance }, [UI.tx(rf.opened ? 'てっぺんを 見る　▶' : '箱を あける')])]);
+      const btnRow = h('div', { style: 'display:flex;justify-content:flex-end;' }, [h('button', { class: 'big-btn', type: 'button', style: 'min-height:72px;padding:0 1.6vw;', onclick: advance }, [UI.tx(rf.opened ? 'てっぺんを 見る　▶' : '箱を 開ける')])]);
       scr.appendChild(h('div', { class: 'roof-chest' }, [top, mid, btnRow]));
       ctx.setKey(function (k) { if (k === 'enter') advance(); });
     } else {
@@ -11953,12 +11963,12 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       ]));
       const mastery = h('div', { class: 'mastery' }, [h('div', { class: 'hd', text: 'できるように なったこと' })]);
       (MT.Story.MASTERY || []).forEach(function (t) { mastery.appendChild(h('div', { class: 'ln', text: '✓ ' + t })); });
-      mastery.appendChild(h('div', { class: 'rec' }, [UI.tx('のぼった階'), h('span', { class: 'v', plain: '15／15' }), UI.tx('せいかいした問題'), h('span', { class: 'v', plain: p.stats.correct + '問' })]));
+      mastery.appendChild(h('div', { class: 'rec' }, [UI.tx('登った階'), h('span', { class: 'v', plain: '15／15' }), UI.tx('せいかいした問題'), h('span', { class: 'v', plain: p.stats.correct + '問' })]));
       view.appendChild(mastery);
       const goDown = function () { st.roof = null; E.leaveRoof(); E.startUnderground(); ctx.render(); };
       const goHome = function () { st.roof = null; E.leaveRoof(); ctx.render(); };
       view.appendChild(h('div', { class: 'roof-actions' }, [
-        h('button', { class: 'big-btn purple', type: 'button', onclick: goDown }, [h('span', { class: 'shine' }, [MT.Sprites.sprite(key.rows, key.pal, 2)]), UI.tx('地下へ おりる')]),
+        h('button', { class: 'big-btn purple', type: 'button', onclick: goDown }, [h('span', { class: 'shine' }, [MT.Sprites.sprite(key.rows, key.pal, 2)]), UI.tx('地下へ 下りる')]),
         h('button', { class: 'big-btn navy', type: 'button', onclick: goHome }, [UI.tx('ホームに もどる')])
       ]));
       scr.appendChild(view);
@@ -11974,8 +11984,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const app = document.getElementById('app');
     const scr = h('div', { class: 'screen dc-screen' });
     const I = MT.Sprites.ICONS;
-    scr.appendChild(h('div', { class: 'dc-logo' }, [h('div', { class: 'k', plain: 'ドットでまなぶ' }), h('div', { class: 'm' }, [h('span', { plain: '面積の塔' }), h('span', { style: 'padding-bottom:4px' }, [MT.Sprites.icon('tower', 4)])])]));
-    [{ left: '4vw', top: '24vh', text: '考える力で 世界は 広がる' }, { left: '12.5vw', top: '40vh', text: 'ひらめきが 道を ひらく' }, { right: '30vw', top: '30vh', text: '図形は きみの 味方だ' }].forEach(function (b) {
+    scr.appendChild(h('div', { class: 'dc-logo' }, [h('div', { class: 'k', plain: 'ドットで学ぶ' }), h('div', { class: 'm' }, [h('span', { plain: '面積の塔' }), h('span', { style: 'padding-bottom:4px' }, [MT.Sprites.icon('tower', 4)])])]));
+    [{ left: '4vw', top: '24vh', text: '考える力で 世界は 広がる' }, { left: '12.5vw', top: '40vh', text: 'ひらめきが 道を 開く' }, { right: '30vw', top: '30vh', text: '図形は 君の 味方だ' }].forEach(function (b) {
       scr.appendChild(h('div', { class: 'dc-banner', style: (b.left ? 'left:' + b.left : 'right:' + b.right) + ';top:' + b.top }, [h('div', { class: 'rod' }), h('div', { class: 'cloth' }, [h('div', { class: 'crown', plain: '♛' }), h('div', { class: 'vt', text: b.text })])]));
     });
     const big = h('div', { class: 'big' }, [UI.tx('完全クリア！')]);
@@ -11985,7 +11995,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     scr.appendChild(h('div', { class: 'dc-head' }, [
       h('div', { class: 'k' }, [h('span', { class: 'bar' }), UI.tx('うらダンジョン'), h('span', { class: 'bar' })]),
       big,
-      h('div', { class: 'lead' }, [UI.tx('すべての 番人を たおし、問題を といた きみは'), h('br'), UI.tx('まさに '), h('span', { class: 'y', text: '面積マスター' }), UI.tx(' の ちょうせんしゃ です！')])
+      h('div', { class: 'lead' }, [UI.tx('全ての 番人を たおし、問題を といた 君は'), h('br'), UI.tx('まさに '), h('span', { class: 'y', text: '面積マスター' }), UI.tx(' の ちょうせんしゃ です！')])
     ]));
     const stats = [
       [MT.Sprites.icon('clock', 3), 'クリアまでの 時間', UI.formatDuration(p.stats.playMs)],
@@ -11996,22 +12006,22 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const bars = h('span', { class: 'bars' }, [h('span', { style: 'height:9px' }), h('span', { style: 'height:15px' }), h('span', { style: 'height:20px' })]);
     const goEnd = function () { ctx.go('ending'); };
     scr.appendChild(h('div', { class: 'dc-buttons' }, [
-      h('button', { class: 'dc-btn main', type: 'button', onclick: goEnd }, [h('span', { class: 'tri-w' }), UI.tx('つぎの たびへ')]),
+      h('button', { class: 'dc-btn main', type: 'button', onclick: goEnd }, [h('span', { class: 'tri-w' }), UI.tx('次の 旅へ')]),
       h('button', { class: 'dc-btn', type: 'button', onclick: function () { openStats(ctx); } }, [bars, UI.tx('せいせきを 見る')]),
       h('button', { class: 'dc-btn', type: 'button', onclick: function () { st.view = null; E.goMap(); ctx.render(); } }, [MT.Sprites.icon('home', 3), UI.tx('ホームに もどる')])
     ]));
-    scr.appendChild(h('div', { class: 'dc-foot' }, [h('div', { class: 'tx' }, [UI.tx('図形で つながる'), h('br'), UI.tx('もっと ひろい せかいへ ―')]), MT.Sprites.icon('tower', 3)]));
+    scr.appendChild(h('div', { class: 'dc-foot' }, [h('div', { class: 'tx' }, [UI.tx('図形で つながる'), h('br'), UI.tx('もっと 広い 世界へ ―')]), MT.Sprites.icon('tower', 3)]));
     const sage = MT.Sprites.fitSprite('wizard', 70, 80);
     scr.appendChild(h('div', { class: 'dc-sage' }, [
       h('div', { style: 'display:flex;flex-direction:column;align-items:flex-start;' }, [
-        h('div', { class: 'say' }, [UI.tx('やったのう！'), h('br'), UI.tx('きみは 真の'), h('br'), h('span', { class: 'o', text: '面積マスター' }), UI.tx('じゃ！'), h('br'), UI.tx('これからも 図形の 世界を'), h('br'), UI.tx('たんけんして いってくれ！'), h('span', { class: 'caret' })]),
+        h('div', { class: 'say' }, [UI.tx('やったのう！'), h('br'), UI.tx('君は 真の'), h('br'), h('span', { class: 'o', text: '面積マスター' }), UI.tx('じゃ！'), h('br'), UI.tx('これからも 図形の 世界を'), h('br'), UI.tx('たんけんして いってくれ！'), h('span', { class: 'caret' })]),
         h('div', { class: 'tail' })
       ]),
       h('div', { class: 'bob' }, [sage])
     ]));
     scr.appendChild(h('div', { class: 'dc-prize' }, [
       h('div', { class: 'hd' }, [MT.Sprites.icon('smallKey', 3), UI.tx('手に 入れたもの')]),
-      h('div', { class: 'bd' }, [h('div', { class: 'nm', text: '面積マスターの あかし' }), h('div', { class: 'bob' }, [MT.Sprites.icon('medal', 5)]), h('div', { class: 'ds', text: '考える きみは、どこまでも つよく なれる。' })])
+      h('div', { class: 'bd' }, [h('div', { class: 'nm', text: '面積マスターの あかし' }), h('div', { class: 'bob' }, [MT.Sprites.icon('medal', 5)]), h('div', { class: 'ds', text: '考える 君は、どこまでも 強く なれる。' })])
     ]));
     ctx.setKey(function (k) { if (k === 'enter') goEnd(); });
     app.appendChild(scr);
@@ -12021,12 +12031,12 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const p = ctx.engine.progress();
     const floorsDone = p.clearedFloors.length;
     const rows = [
-      ['のぼった 階', (floorsDone + (p.roofCleared ? 1 : 0)) + '／15'],
+      ['登った 階', (floorsDone + (p.roofCleared ? 1 : 0)) + '／15'],
       ['地下', 'B' + p.underground.reached + '／B30'],
       ['せいかいした 問題', p.stats.correct + '問'],
       ['答えた 問題', p.stats.answered + '問'],
       ['たおした 番人', p.stats.beaten + '体'],
-      ['あそんだ 時間', UI.formatDuration(p.stats.playMs)]
+      ['遊んだ 時間', UI.formatDuration(p.stats.playMs)]
     ];
     UI.modal({
       title: 'せいせき',
@@ -12044,13 +12054,13 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     if (src) boxEl.appendChild(h('img', { src: src, alt: '' }));
     const studs = ['left:4px;top:4px', 'right:4px;top:4px', 'left:4px;bottom:4px', 'right:4px;bottom:4px'];
     boxEl.appendChild(h('div', { class: 'end-logo' }, [h('div', { class: 'plate' }, [
-      h('div', { class: 'rib', plain: 'ドットでまなぶ' }),
+      h('div', { class: 'rib', plain: 'ドットで学ぶ' }),
       h('div', { class: 'row' }, [h('span', { class: 'nm', plain: '面積の塔' }), MT.Sprites.icon('logoTower', 3)])
     ].concat(studs.map(function (s) { return h('span', { class: 'stud', style: s }); })))]));
     const floors = p.clearedFloors.length + (p.roofCleared ? 1 : 0);
     boxEl.appendChild(h('div', { class: 'end-words' }, [
       h('div', { class: 'k' }, [h('span', { class: 'bar' }), h('span', { class: 't' }, [UI.tx('まだ見ぬ '), h('span', { class: 'y', text: '図形の 世界' }), UI.tx('へ')]), h('span', { class: 'bar' })]),
-      h('div', { class: 's', text: '考える力が きみの 世界を もっと 広げる' }),
+      h('div', { class: 's', text: '考える力が 君の 世界を もっと 広げる' }),
       h('div', { class: 'end-tags' }, [
         h('span', { text: '塔 ' + floors + '／15階' }),
         h('span', { text: 'めいきゅう B' + p.underground.reached + '／B30' }),
@@ -12058,10 +12068,10 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         h('span', { class: 'title', text: '面積マスター' })
       ])
     ]));
-    boxEl.appendChild(h('div', { class: 'end-vert', text: 'つぎは、ここから はじまる。' }));
+    boxEl.appendChild(h('div', { class: 'end-vert', text: '次は、ここから 始まる。' }));
     boxEl.appendChild(h('div', { class: 'end-buttons' }, [
-      h('button', { class: 'end-btn', type: 'button', onclick: function () { st.view = null; E.goMap(); ctx.render(); } }, [h('span', { class: 'tri-w' }), UI.tx('ぼうけんを つづける')]),
-      h('button', { class: 'end-btn book', type: 'button', onclick: function () { E.goMap(); ctx.go('zukan'); } }, [MT.Sprites.icon('book', 3), UI.tx('ばんにんずかん')])
+      h('button', { class: 'end-btn', type: 'button', onclick: function () { st.view = null; E.goMap(); ctx.render(); } }, [h('span', { class: 'tri-w' }), UI.tx('ぼうけんを 続ける')]),
+      h('button', { class: 'end-btn book', type: 'button', onclick: function () { E.goMap(); ctx.go('zukan'); } }, [MT.Sprites.icon('book', 3), UI.tx('番人ずかん')])
     ]));
     app.appendChild(h('div', { class: 'screen ending-screen' }, [boxEl]));
     ctx.setKey(function (k) { if (k === 'enter') { st.view = null; E.goMap(); ctx.render(); } });
@@ -12069,8 +12079,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
   // ================= 番人ずかん =================
   const THEMES = {
-    stone: 'くらべ方', owl: 'マスを 数える', slime: '面積の しょうたい', mushroom: 'たて×よこ', knight: '公式で とく', ghost: '面積から 辺を 出す', golem: '面積と まわり',
-    bat: 'm²と cm²', book: 'a・ha・km²', rabbit: '広さの 感じ', frog: '単位を えらぶ', crystal: '分けて 出す', gargoyle: 'かくれた 辺', wizard: '自力で とく', elder: '15階までの まとめ',
+    stone: 'くらべ方', owl: 'マスを 数える', slime: '面積の 正体', mushroom: 'たて×横', knight: '公式で とく', ghost: '面積から 辺を 出す', golem: '面積と まわり',
+    bat: 'm²と cm²', book: 'a・ha・km²', rabbit: '広さの 感じ', frog: '単位を 選ぶ', crystal: '分けて 出す', gargoyle: 'かくれた 辺', wizard: '自力で とく', elder: '15階までの まとめ',
     wisp: 'がくぶち・道', rockspider: '重なり・かいだん', shadow: '重なりと 道', skullking: '正方形パズル', blackgolem: '大きな 数', minotaur: '面積から 辺を', dragonet: 'mと cm',
     darkknight: '8つの 正方形', lich: 'ボスの 問題', boss: '塔の 面積'
   };
@@ -12098,8 +12108,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     scr.appendChild(h('div', { class: 'zk-head' }, [
       h('button', { class: 'back-btn', type: 'button', 'aria-label': 'もどる', onclick: function () { st.view = null; E.goMap(); ctx.render(); } }, ['◀']),
       h('div', { class: 'zk-title', text: '番人ずかん' }),
-      h('div', { class: 'zk-sub', text: 'えらぶと もう一度 たたかえる' }),
-      h('div', { class: 'zk-met', plain: 'であった ' + met.length + '／' + ids.length })
+      h('div', { class: 'zk-sub', text: '選ぶと もう一度 戦える' }),
+      h('div', { class: 'zk-met', plain: '出会った ' + met.length + '／' + ids.length })
     ]));
     const grid = h('div', { class: 'zk-grid' });
     const cardH = Math.max(34, Math.min(64, (root.innerHeight || 700) * 0.075));
@@ -12123,20 +12133,20 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const fight = function () {
       if (!isMet) return;
       const r = E.startRematch(sel);
-      if (!r) { UI.flash(document.querySelector('.zk-detail'), 'いまは たたかえない。とちゅうの 問題を 先に おえよう'); return; }
+      if (!r) { UI.flash(document.querySelector('.zk-detail'), '今は 戦えない。とちゅうの 問題を 先に 終えよう'); return; }
       st.view = null; st.qs = null; st.hold = null;
       ctx.render();
     };
     const detail = h('div', { class: 'zk-detail', style: 'position:relative' }, [
-      h('div', { class: 'l', text: 'えらんだ 番人' }),
+      h('div', { class: 'l', text: '選んだ 番人' }),
       h('div', { class: 'big' }, [h('div', { class: 'bob' }, [MT.Sprites.sprite(sp.rows, isMet ? MT.Sprites.PAL : silhouette(sp), bigScale)])]),
       h('div', { class: 'nm', text: isMet ? sp.name : '？？？' }),
       h('div', { class: 'meta' }, [h('span', { class: 'f', plain: floorLabelOfGuard(sel) }), h('span', { class: 'th', text: THEMES[sel] || '' })]),
       h('div', { class: 'rec' }, [
         h('div', {}, [UI.tx('たおした 回数'), h('span', { class: 'v', plain: z.wins + '回' })]),
-        h('div', {}, [UI.tx('さいこう きろく'), h('span', { class: 'v', plain: z.total ? z.best + '／' + z.total + '問' : '―' })])
+        h('div', {}, [UI.tx('最高 記録'), h('span', { class: 'v', plain: z.total ? z.best + '／' + z.total + '問' : '―' })])
       ]),
-      h('button', { class: 'zk-fight', type: 'button', disabled: !isMet, onclick: fight }, [h('span', { class: 'tri-w' }), UI.tx(isMet ? 'もう一度 たたかう' : 'まだ 会っていない')])
+      h('button', { class: 'zk-fight', type: 'button', disabled: !isMet, onclick: fight }, [h('span', { class: 'tri-w' }), UI.tx(isMet ? 'もう一度 戦う' : 'まだ 会っていない')])
     ]);
     scr.appendChild(h('div', { class: 'zk-body' }, [grid, detail]));
     ctx.setKey(function (k) { if (k === 'enter') fight(); });
@@ -12936,7 +12946,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       showError(err);
     }
     // 管理者モードの あいだは どの 画面にも「管理」ボタン（管理者画面へ）
-    if (state.adminMode && state.view !== 'admin') app.appendChild(UI.h('button', { class: 'admin-fab', type: 'button', onclick: function () { state.view = 'admin'; render(); } }, [state.admin ? '管理（ためしプレイ中）' : '管理']));
+    if (state.adminMode && state.view !== 'admin') app.appendChild(UI.h('button', { class: 'admin-fab', type: 'button', onclick: function () { state.view = 'admin'; render(); } }, [state.admin ? '管理（試しプレイ中）' : '管理']));
     if (MT.Sound && MT.Sound.bgm) MT.Sound.bgm(bgmFor(), engine.progress().sound);
   }
 
@@ -13007,7 +13017,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       h('p', { text: 'もう一度 読みこむか、ホームに もどってね。' }),
       h('div', { style: 'display:flex;gap:1.4vw;' }, [
         // GAS の中では location.reload() で 白い画面に なることがあるので、保存データから 作りなおす
-        h('button', { class: 'big-btn', type: 'button', onclick: function () { state.hold = null; state.retryHold = null; state.qs = null; state.rs = null; try { engine.resume(); } catch (e) { /* ignore */ } render(); } }, ['もう一度 ためす']),
+        h('button', { class: 'big-btn', type: 'button', onclick: function () { state.hold = null; state.retryHold = null; state.qs = null; state.rs = null; try { engine.resume(); } catch (e) { /* ignore */ } render(); } }, ['もう一度 試す']),
         h('button', { class: 'big-btn navy', type: 'button', onclick: function () { state.hold = null; state.retryHold = null; state.view = null; try { engine.goMap(); } catch (e) { /* ignore */ } render(); } }, ['ホームへ'])
       ]),
       h('p', { class: 'mini', plain: String(err && err.stack || err) })
