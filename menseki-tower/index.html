@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20261006-70121 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20261007-37031 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -633,6 +633,16 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 .adm-rv-side .admin-row .admin-btn { min-height: 34px; min-width: 0; font-size: 13px; padding: 0 8px; }
 .adm-rv-side .adm-rv-big .admin-btn { flex: 1 1 0; min-width: 0; min-height: 50px; font-size: 16px; padding: 0 4px; white-space: nowrap; }
 .adm-rv-side .adm-rv-big .admin-btn.ng { flex-grow: 1.3; }
+.sync-note { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 65; background: #fff1c9; color: #2b2a3a; border: 3px solid #2b2a3a; box-shadow: 3px 3px 0 #1e1d2a; padding: 0.6vh 1.6vw; font-size: calc(var(--fs) * clamp(15px, 2.6vh, 24px)); pointer-events: none; white-space: nowrap; }
+.adm-rv-mode { gap: 6px; align-items: center; margin-bottom: 6px; }
+.adm-rv-mode .admin-btn { min-height: 36px; font-size: 14px; }
+.adm-rv-mode .admin-note { font-size: 12px; }
+.adm-rv-retry { display: flex; flex-direction: column; gap: 4px; padding: 6px; border: 2px solid #7b60a9; background: rgba(123, 96, 169, 0.18); }
+.adm-rv-sub { font-size: 12px; color: #cdbdf0; }
+.adm-rv-stages { gap: 4px; }
+.adm-rv-side .adm-rv-stages .admin-btn { min-height: 30px; font-size: 12px; padding: 0 6px; }
+.adm-rv-wl { font-size: 13px; color: #f2efe6; line-height: 1.3; flex: 1 1 100%; }
+.adm-rv-retry > .admin-btn { min-height: 32px; font-size: 13px; }
 .adm-rv-memo, .adm-rv-out { width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; line-height: 1.4; padding: 6px; background: #fbf9f2; color: #2b2a3a; border: 2px solid #a8b6d8; resize: vertical; }
 .adm-rv-out { margin-top: 8px; font-size: 13px; }
 .adm-rv-list { display: flex; flex-direction: column; gap: 4px; }
@@ -2081,7 +2091,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     make: function (rng) {
       const fig = Shapes.rect(1, 1, { grid: true });
       const c = mkChoice(rng, [
-        { text: '1cm' },
+        { text: '1cm', misconception: 'unit-cm' },
         { text: '1cm²', correct: true },
         { text: '1m²' }
       ], { keepOrder: true });
@@ -2375,7 +2385,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: QFig.rectSpec(s.w, s.h, { grid: false, labels: params.square ? 'h' : 'wh' }),
         answer: s.h * s.w, unit: 'cm²', wrong: rectWrong(s.h, s.w),
         explain: {
-          sentence: 'たてに' + s.h + 'まい、横に' + s.w + 'まいのタイル。たて×横 で出すよ。',
+          sentence: 'たて' + s.h + 'cm、横' + s.w + 'cm。1cm²の タイルが たてに' + s.h + 'まい、横に' + s.w + 'まい ならぶ。たて×横 で出すよ。',
           steps: Bank.stepsRectArea(s.h, s.w)
         }
       };
@@ -3046,7 +3056,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
   const B = Bank.B;
   const mkChoice = P1.mkChoice;
 
-  const LADDER_TEXT = '単位のはしごは cm² →10000倍→ m² →100倍→ a →100倍→ ha →100倍→ km²。';
+  const LADDER_TEXT = '1m² は 10000cm²、1a は 100m²、1ha は 100a、1km² は 100ha。';
 
   // =========================================================
   // 8階 cm² と m²
@@ -3063,7 +3073,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         figure: k === 1 ? QFig.rectSpec(1, 1, { grid: false, unit: 'm', labels: 'wh' }) : null,
         answer: answer, unit: 'cm²', wrong: wrong,
         explain: {
-          sentence: '1m²は、たてに100まい、横に100まいの 1cm²。100×100 で出すよ。' + (k > 1 ? 'それが' + k + 'つ分だよ。' : ''),
+          sentence: '1m² の 中には、1cm² の タイルが たてに 100まい、横に 100まい ならぶ。100×100 で出すよ。' + (k > 1 ? 'それが' + k + 'つ分だよ。' : ''),
           steps: k === 1
             ? [{ key: 'm2', label: '1m²', parts: ['100', '×', '100', '＝', B('a', 10000, 'cm²')] }]
             : [{ key: 'm2', label: '式', parts: ['1m²＝', B('one', 10000, 'cm²'), '　', B('k', k, ''), '×10000＝', B('a', answer, 'cm²')] }]
@@ -3302,7 +3312,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         choices: c.choices, answer: c.answer,
         explain: {
           sentence: 'たてにも 横にも ' + times + '倍 ならぶから、' + times + '×' + times + ' で考えるよ。ここが 一番大事なところだよ。',
-          steps: [{ key: 'count', label: 'もとの正方形が いくつ ならぶ?', parts: ['たてに', B('a', times, 'こ'), '横に', B('b', times, 'こ'), '＝', B('n', times * times, 'こ', ['mul', times, times])] }, { key: 'rechoose', kind: 'choice', label: 'だから 面積は 何倍?' }]
+          steps: [{ key: 'count', label: 'もとの正方形が いくつ ならぶ?', parts: ['たてに', B('a', times, 'こ'), '×', '横に', B('b', times, 'こ'), '＝', B('n', times * times, 'こ', ['mul', times, times])] }, { key: 'rechoose', kind: 'choice', label: 'だから 面積は 何倍?' }]
         }
       };
     }
@@ -3499,7 +3509,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: r.name + 'の 面積は 約何' + def.unit + '?',
         choices: c.choices, answer: c.answer,
         explain: {
-          sentence: item === 'pool' ? 'プールは 25m×12m くらい。25×12 で考えよう。' : item === 'classroom' ? '教室は たて・横 8m くらい。8×8 で考えよう。' : item === 'gym' ? '体育館は 20m×40m くらい。20×40 で考えよう。' : 'はがきは 10cm×15cm くらい。10×15 で考えよう。',
+          // たて・横の じゅんばんを 下の 欄と そろえる（「25m×12m」と 書いて、欄は たて12 だった。2026-10-07 まちがい直しの 点検）
+          sentence: ({ pool: 'プール', classroom: '教室', gym: '体育館', postcard: 'はがき' })[item] + 'は たて' + def.side[0] + def.side[2] + '、横' + def.side[1] + def.side[2] + ' くらい。' + def.side[0] + '×' + def.side[1] + ' で考えよう。',
           steps: [{ key: 'approx', label: r.name + 'の大きさ', parts: ['たて', B('h', def.side[0], def.side[2]), '×', '横', B('w', def.side[1], def.side[2]), '＝', B('a', def.side[0] * def.side[1], def.side[2] + '²', ['mul', def.side[0], def.side[1]])] }, { key: 'rechoose', kind: 'choice', label: 'だから 約何' + def.unit + '?' }]
         }
       };
@@ -3698,7 +3709,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         prompt: def.name + 'の 面積は ' + areaText(def.from) + '。何' + def.to + '?',
         answer: answer, unit: def.to, wrong: wrong,
         explain: {
-          sentence: '1' + def.to + ' は ' + one + def.from.unit + '。' + areaText(def.from) + ' は その ' + answer + 'つ分だよ。' + LADDER_TEXT,
+          // 小さい 単位に なおすときは「1m² は 0.0001ha」の ような 小数を 出さない（4年生は 習っていない。2026-10-07 まちがい直しの 点検）
+          sentence: one < 1
+            ? '1' + def.from.unit + ' の 中に 1' + def.to + ' が 何こ 入るかを 考えるよ。' + (def.from.value > 1 ? areaText(def.from) + ' は その ' + def.from.value + 'こ分だよ。' : '') + LADDER_TEXT
+            : '1' + def.to + ' は ' + one + def.from.unit + '。' + areaText(def.from) + ' は その ' + answer + 'つ分だよ。' + LADDER_TEXT,
           steps: [{ key: 'conv', label: areaText(def.from) + ' を ' + def.to + ' で', parts: [B('a', answer, def.to)] }]
         }
       };
@@ -4002,7 +4016,8 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
           return sp;
         })(),
         fields: [{ key: 'outer', label: '外がわの 長方形', unit: 'cm²', answer: W * H, color: '#3b7dd8' }, { key: 'inner', label: '内がわの 長方形', unit: 'cm²', answer: inner, color: '#e07b2a' }, { key: 'area', label: 'がくぶち', unit: 'cm²', answer: area }],
-        explain: { sentence: '内の 横は ' + W + '−' + b + '−' + b + '、たては ' + H + '−' + b + '−' + b + '。外 − 内 が がくぶちの面積だよ。', steps: [{ key: 'o', label: '外', rect: { x: 0, y: 0, w: W, h: H }, parts: [B('oh', H, 'cm'), '×', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'i', label: '内', rect: { x: b, y: b, w: W - 2 * b, h: H - 2 * b }, parts: [B('ih', H - 2 * b, 'cm'), '×', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 's', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }] }
+        // 問題文と 同じ ことば（外がわ・内がわ）で 言う（2026-10-07 まちがい直しの 点検）
+        explain: { sentence: '内がわの 横は ' + W + '−' + b + '−' + b + '、たては ' + H + '−' + b + '−' + b + '。外がわ − 内がわ が がくぶちの 面積だよ。', steps: [{ key: 'o', label: '外がわ', rect: { x: 0, y: 0, w: W, h: H }, parts: ['たて', B('oh', H, 'cm'), '×', '横', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'i', label: '内がわ', rect: { x: b, y: b, w: W - 2 * b, h: H - 2 * b }, parts: ['たて', B('ih', H - 2 * b, 'cm'), '×', '横', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 's', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }] }
       };
     }
   });
@@ -4165,7 +4180,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
         explain: {
           sentence: '外の長方形から 内の長方形をひく。内の横は ' + W + '−' + b + '−' + b + '、内のたては ' + H + '−' + b + '−' + b + '。はばは 両がわにあるよ。',
           // rect: その行が 図の どの長方形か（行と 同じ色の わくを 図に 出す）
-          steps: [{ key: 'outer', label: '外', rect: { x: 0, y: 0, w: W, h: H }, parts: [B('oh', H, 'cm'), '×', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'inner', label: '内', rect: { x: b, y: b, w: W - 2 * b, h: H - 2 * b }, parts: [B('ih', H - 2 * b, 'cm'), '×', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 'sub', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }]
+          steps: [{ key: 'outer', label: '外', rect: { x: 0, y: 0, w: W, h: H }, parts: ['たて', B('oh', H, 'cm'), '×', '横', B('ow', W, 'cm'), '＝', B('outer', W * H, 'cm²', ['mul', H, W])] }, { key: 'inner', label: '内', rect: { x: b, y: b, w: W - 2 * b, h: H - 2 * b }, parts: ['たて', B('ih', H - 2 * b, 'cm'), '×', '横', B('iw', W - 2 * b, 'cm'), '＝', B('inner', inner, 'cm²', ['mul', H - 2 * b, W - 2 * b])] }, { key: 'sub', label: 'ひく', parts: [B('o2', W * H, 'cm²'), '−', B('i2', inner, 'cm²'), '＝', B('area', area, 'cm²')] }]
         }
       };
     }
@@ -5179,12 +5194,12 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     if (given == null) return '';
     if (q.format === 'cut' && q.finalChoice) {
       const fc = (q.finalChoice.choices || []).filter(function (x) { return x.id === given; })[0];
-      return fc ? fc.text : '（答えなし）';
+      return fc ? '「' + fc.text + '」' : '（答えなし）';
     }
     if (q.format === 'line') return '（線）';
     if (q.format === 'choice') {
       const c = (q.choices || []).filter(function (x) { return x.id === given; })[0];
-      return c ? c.text : String(given);
+      return c ? '「' + c.text + '」' : String(given);
     }
     if (q.format === 'fields') {
       return q.fields.map(function (f) { return f.label + ' ' + (given && given[f.key] != null ? given[f.key] : '') + f.unit; }).join(' / ');
@@ -5230,7 +5245,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const key = String(step.key || '');
     if (step.kind === 'reanswer') return 'さっき あなうめで 出した 答えを 思い出そう。';
     if (step.kind === 'choice') return '一文を もう一度読んで、図の中の言葉と 選ぶ文の言葉を 合わせてみよう。';
-    if (key === 'formula' || key === 'count') return 'たては 左の辺、横は 下の辺。同じ色の2本を かけるよ。';
+    if (key === 'formula' || key === 'count') return 'たては 左の辺、横は 下の辺。その 2つを かけるよ。';
     if (key === 'reverse') return '面積を、分かっている辺で わるよ。';
     if (key === 'perimeter') return 'まわりは ふちを1周した長さ。たてと横を たして 2倍。';
     if (key.indexOf('cut') === 0) {
@@ -6836,6 +6851,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     if (loadInfo.readError) storage = Progress.memoryStorage();
     const seedSalt = o.seed || '';
     let guide = null;
+    // 2つの 画面（タブ）で 開いたとき、古い 画面が 新しい 進み具合を 上書きしない（まちがいを 消す ズルにも なる。本人 2026-10-07）
+    // 読みこんだ ときの 版（rev）と 保存の 版が ちがえば、ほかの 画面が 先に 書いた。この 画面は もう 書かず、読みなおしを まつ
+    let baseRev = Number(p.rev) || 0;
+    let stale = false;
     sanitize(p);
     let phase = computePhase();
     if (phase === 'outcome-pending') {
@@ -6844,7 +6863,23 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       phase = 'map';
     }
 
-    function save() { Progress.save(storage, p); }
+    function storedRev() {
+      try {
+        const raw = storage.getItem(Progress.STORAGE_KEY);
+        if (!raw) return 0;
+        const o = JSON.parse(raw);
+        return Number(o && o.rev) || 0;
+      } catch (e) { return null; }
+    }
+    function save() {
+      if (stale) return;
+      if (!storage.isMemory) {
+        const cur = storedRev();
+        if (cur != null && cur !== baseRev) { stale = true; return; }
+        p.rev = Math.max(cur || 0, baseRev, Number(p.rev) || 0) + 1;
+      } else p.rev = (Number(p.rev) || 0) + 1;
+      if (Progress.save(storage, p)) baseRev = p.rev;
+    }
 
     function knownTemplate(id) {
       try { Bank.get(id); return true; } catch (e) { return false; }
@@ -6936,12 +6971,16 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
 
     engine.progress = function () { return p; };
     engine.phase = function () { return phase; };
+    // ほかの 画面が 先に 進めた（この 画面は 保存を やめている。画面は 読みなおす）
+    engine.isStale = function () { if (!stale && !storage.isMemory) { const cur = storedRev(); if (cur != null && cur !== baseRev) stale = true; } return stale; };
     engine.floorInfo = function (no) { return Floors.get(no || p.currentFloor); };
     engine.save = save;
     engine.markHowSeen = function () { p.howSeen = true; save(); };
 
     engine.reset = function () {
       Progress.clear(storage);
+      baseRev = 0;
+      stale = false;
       const keepSettings = Object.assign({}, p.settings);
       const keepSound = p.sound;
       p = Progress.create('');
@@ -7057,9 +7096,19 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       if (!guide || guide.forIndex !== p.session.index) {
         guide = Guide.create(q, q.cut && q.cut.guide);
         guide.forIndex = p.session.index;
+        // 読みこみなおしても、つまずいた 回数と ヒントの 回数は のこす（3回 つまずくと やり直しへ、を 読みこみなおしで 0 に できない）
+        const memo = p.session.guideMemo;
+        if (memo && memo.index === p.session.index) {
+          guide.stops = Object.assign({}, memo.stops || {});
+          guide.hints = Number(memo.hints) || 0;
+        }
       }
       return guide;
     };
+    function rememberGuide(g) {
+      if (!p.session || !g) return;
+      p.session.guideMemo = { index: p.session.index, stops: Object.assign({}, g.stops || {}), hints: g.hints || 0 };
+    }
 
     engine.guideAddLine = function (line) {
       if (!validLine(line)) return { ok: false, message: 'そこでは 切れないよ。' };
@@ -7080,6 +7129,7 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       const g = engine.guide();
       if (!g) return { correct: false };
       const res = Guide.answerStep(g, q, value);
+      if (res && !res.empty && !res.correct) { rememberGuide(g); save(); }
       return res;
     };
 
@@ -7090,8 +7140,10 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
       p.hintTotal += 1;
       const stats = p.floorStats[p.currentFloor];
       if (stats && p.mode !== 'rematch') stats.hints = (stats.hints || 0) + 1;
+      const r = Guide.hint(g, q);
+      rememberGuide(g);
       save();
-      return Guide.hint(g, q);
+      return r;
     };
 
     // 何も入れていない答え（空の文字・null・欄がぜんぶ空）。問題を 進めずに 返す
@@ -9198,6 +9250,11 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         const w = text.length * fs * 0.62 + 14;
         const bx = pt.anchor === 'middle' ? pt.x - w / 2 : pt.anchor === 'start' ? pt.x - 4 : pt.x - w + 4;
         svg('rect', { x: bx, y: pt.y - fs * 0.72, width: w, height: fs * 1.44, fill: '#fdece9', stroke: LIT, 'stroke-width': 3 }, g);
+      } else if (l.kind === 'dim' && l.at != null) {
+        // 寸法線の 上の 数は 地の 色で 線を かくす（「11cm」の 1と1の すき間から 線が のぞいて「1·1cm」に 見えた。2026-10-07）
+        const w = String(text).length * fs * 0.6 + 6;
+        const bx = pt.anchor === 'middle' ? pt.x - w / 2 : pt.anchor === 'start' ? pt.x - 3 : pt.x - w + 3;
+        svg('rect', { x: bx, y: pt.y - fs * 0.6, width: w, height: fs * 1.2, fill: '#f6efd9' }, g);
       }
       const t = svg('text', { x: pt.x, y: pt.y, 'text-anchor': pt.anchor, 'dominant-baseline': 'central', class: 'board-text', fill: color, 'font-size': fs }, g);
       t.textContent = text;
@@ -10161,9 +10218,15 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
 
     const scr = h('div', { class: 'screen home-screen' });
     const logo = h('div', { class: 'logo' });
-    // ロゴを 7回 つづけて タップすると 管理者画面（先生の 確認用）
+    // ロゴを 7回 つづけて タップすると 先生の 番号を 聞く（子どもが 見つけても 管理者画面に 入れない。本人 2026-10-07「ズルが できない 構造か」）
     let taps = 0, tapAt = 0;
-    logo.addEventListener('click', function () { const now = Date.now(); taps = now - tapAt < 1500 ? taps + 1 : 1; tapAt = now; if (taps >= 7) { taps = 0; if (UI.adminOn) UI.adminOn(); ctx.go('admin'); } });
+    logo.addEventListener('click', function () {
+      const now = Date.now(); taps = now - tapAt < 1500 ? taps + 1 : 1; tapAt = now;
+      if (taps < 7) return;
+      taps = 0;
+      if (UI.adminMode && UI.adminMode.on()) { ctx.go('admin'); return; }
+      askAdminCode(ctx);
+    });
     logo.appendChild(document.createTextNode('面積'));
     logo.appendChild(h('span', { class: 'no', plain: 'の' }));
     logo.appendChild(document.createTextNode('塔'));
@@ -10319,6 +10382,34 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         })),
         h('button', { class: 'answer-btn how-go', type: 'button', onclick: function () { m.close(); } }, [UI.tx(onDone ? '分かった！ 始める　▶' : 'とじる')])
       ]
+    });
+  }
+
+  // ---- 先生の 番号（管理者画面の 入り口）----
+  // 1回 入れた 端末は 管理者モードの まま（読みこみなおしても 聞かない）。3回 ちがうと とじる
+  const ADMIN_CODE = '7351';
+  function askAdminCode(ctx) {
+    let tries = 0;
+    UI.modal({
+      title: '先生の 番号',
+      body: function (body, close) {
+        const input = h('input', { class: 'px-input', type: 'password', inputmode: 'numeric', maxlength: 8, autocomplete: 'off', 'aria-label': '番号' });
+        const msg = h('div', { class: 'modal-msg' });
+        const go = function () {
+          if (String(input.value).trim() === ADMIN_CODE) { close(); if (UI.adminOn) UI.adminOn(); ctx.go('admin'); return; }
+          tries += 1;
+          input.value = '';
+          if (tries >= 3) { close(); return; }
+          msg.textContent = '番号が ちがう';
+          input.focus();
+        };
+        input.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' && !ev.isComposing) go(); });
+        body.appendChild(h('p', { class: 'how-note', text: '先生用の 画面です。番号を 入れてください。' }));
+        body.appendChild(input);
+        body.appendChild(h('button', { class: 'answer-btn', type: 'button', onclick: go }, ['開く']));
+        body.appendChild(msg);
+        setTimeout(function () { input.focus(); }, 30);
+      }
     });
   }
 
@@ -11086,7 +11177,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   // 行の 色と、図の その長方形の わくの 色を そろえる（外と内が どこか わからない。本人の指摘 2026-09-16）
   const ROW_COLORS = {
     '左': '#6cbd6f', '右': '#ef9448', 'まん中': '#a48ad0',
-    '外': '#3b7dd8', '内': '#ef9448', 'ひく': '#a48ad0',
+    '外': '#3b7dd8', '内': '#ef9448', 'ひく': '#a48ad0', '外がわ': '#3b7dd8', '内がわ': '#ef9448',
     'かこむ大きい長方形': '#3b7dd8', '欠けたところ': '#ef9448', '道をよせる': '#6cbd6f', '横': '#6cbd6f'
   };
   const FIG_TWO = ['#6cbd6f', '#ef9448'];
@@ -11161,7 +11252,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const g = v.step && v.step.kind === 'cut' ? E.retryGuide() : null;
     const finalPending = !!(g && g.guide.finished && v.question.finalChoice);
     const redoStage = v.isReanswer || finalPending;
-    if (redoStage && st.explainShown[key]) { renderRedo(ctx, v, null, g, finalPending); return; }
+    if (redoStage && (st.explainShown[key] || st.previewRedo)) { renderRedo(ctx, v, null, g, finalPending); return; }
     renderExplain(ctx, v, g, redoStage, key);
   };
 
@@ -11204,22 +11295,29 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     }
     if (q.figures && q.figures.length === 2) { colorPairs.push({ word: '左は', color: '#3d6a55' }); colorPairs.push({ word: '右は', color: '#c2661f' }); }
 
+    // 自分で あなうめや 切る問題を やりおえたか（選ぶだけの 問題は、まちがえた 直後に この 画面が 出る）
+    const didWork = !!g || !!rs.guideSnap || v.steps.slice(0, v.stepIndex).some(function (s) { return !MT.Retry.isReanswerStep(s); });
     // ふきだし
     const hsEngine = v.hissan;
     const say = [];
-    if (guide && guide.mode === 'three' && guide.way && !guide.finished) say.push(h('span', { class: 'step-ask', style: 'margin-top:0;margin-bottom:0.3vh', text: Guide.wayName(guide.way) + ' で 分けたよ' }));
+    if (guide && guide.mode === 'three' && guide.way && !guide.finished) say.push(h('span', { class: 'step-ask', style: 'margin-top:0;margin-bottom:0.3vh', text: '「' + Guide.wayName(guide.way) + '」で 分けたよ。' }));
     if (hsEngine || rs.hissan) {
       const hp = hsEngine || rs.hissan;
       if (MT.Hissan.isDone(hp)) say.push(h('span', { class: 'say-ok', text: '筆算が できた。答えは ' + hp.answer + '。' }));
       else say.push(UI.tx('式は 合っているよ。計算を 筆算で たしかめよう。'));
     } else if (v.revealed) {
+      // どこに 写すかを はっきり（「答えは 2cm」だけでは、面積の 答えなのか どの □ なのか 分からなかった。2026-10-07）
       const rv = E.retryReveal();
-      say.push(h('span', { class: 'say-reveal', text: '答えは ' + (rv ? rv.text : '') + '。写して 進もう。次の階で もう一度 出るよ。' }));
+      const where = doneMode ? '答えは ' : '光っている □ に 入るのは ';
+      say.push(h('span', { class: 'say-reveal', text: where + (rv ? rv.text : '') + '。写して 進もう。次の階で もう一度 出るよ。' }));
     } else if (v.help) {
       say.push(h('span', { class: 'say-help', text: v.help.text }));
     } else if (doneMode) {
-      say.push(h('span', { class: 'say-ok', text: 'そのとおり。' }));
-      say.push(h('br'));
+      // 「そのとおり」は あなうめや 切る問題を 自分で やりおえた ときだけ。選ぶだけの 問題は まちがえた 直後なので 言わない
+      if (didWork) {
+        say.push(h('span', { class: 'say-ok', text: 'そのとおり。' }));
+        say.push(h('br'));
+      }
       colorize(v.sentence, colorPairs).forEach(function (n) { say.push(n); });
     } else {
       colorize(v.sentence, colorPairs).forEach(function (n) { say.push(n); });
@@ -11317,8 +11415,9 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
           const list = byPart[pi];
           const kids = [h('span', { class: 'chip', style: 'background:' + (chipOf[pi] || '#5d8fd8') }), h('span', { class: 'row-label', text: partName(list[0].s.ask) })];
           list.forEach(function (it) {
-            if (/-h$/.test(it.s.key)) kids.push(bOf(it.s, it.idx));
-            else if (/-w$/.test(it.s.key)) { kids.push(h('span', { class: 'fill-part', plain: '×' })); kids.push(bOf(it.s, it.idx)); }
+            // □ の 前に たて・横 を 書く（どっちを 先に 入れるか 分からなかった。2026-10-07）
+            if (/-h$/.test(it.s.key)) { kids.push(h('span', { class: 'fill-part', text: 'たて' })); kids.push(bOf(it.s, it.idx)); }
+            else if (/-w$/.test(it.s.key)) { kids.push(h('span', { class: 'fill-part', plain: '×' })); kids.push(h('span', { class: 'fill-part', text: '横' })); kids.push(bOf(it.s, it.idx)); }
             else { if (list.length > 1) kids.push(h('span', { class: 'fill-part', plain: '＝' })); kids.push(bOf(it.s, it.idx)); kids.push(h('span', { class: 'blank-unit', plain: it.s.unit || '' })); }
           });
           const allDone = list.every(function (it) { return it.idx < cur; });
@@ -11383,7 +11482,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       }
       let nextBtn;
       if (hsEngine && MT.Hissan.isDone(hsEngine)) nextBtn = h('button', { class: 'answer-btn next', type: 'button', onclick: function () { E.retryHissanConfirm(); ctx.render(); } }, ['次へ　▶']);
-      else if (doneMode) nextBtn = h('button', { class: 'answer-btn next', type: 'button', onclick: goRedo }, ['次へ　▶']);
+      else if (doneMode) nextBtn = h('button', { class: 'answer-btn next', type: 'button', onclick: goRedo }, [didWork ? '次へ　▶' : 'もう一度 答える　▶']);
       // けた数が 足りなくても 自分で 出せるように（タッチだけでも すすめる）
       else if (t && rs.value) nextBtn = h('button', { class: 'answer-btn', type: 'button', onclick: function () { const tt = target(); if (tt && rs.value) submit(tt); } }, ['答える']);
       else nextBtn = h('button', { class: 'answer-btn wait', type: 'button' }, [UI.tx('□ を うめると 進める')]);
@@ -11483,7 +11582,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     const kind = finalPending ? 'final' : v.step.kind;
     const say = [UI.tx('もう一度。'), UI.tx(q.prompt)];
     if (finalPending) say.push(h('span', { class: 'step-ask', text: q.finalChoice.prompt }));
-    else if (kind === 'choice' && v.step.label && v.step.label.indexOf('もう一度') !== 0) say.push(h('span', { class: 'step-ask', text: v.step.label }));
+    // 問題文が もう「どこが ちがう?」と 聞いて いるときは、同じ 問いを 2回 出さない
+    else if (kind === 'choice' && v.step.label && v.step.label.indexOf('もう一度') !== 0 && !(/どこが/.test(v.step.label) && /どこが/.test(q.prompt))) say.push(h('span', { class: 'step-ask', text: v.step.label }));
     // 答えを見せている問題（1つの問題で 3回まちがえた）は、やり直しモードでも はじめから 答えを出しておく
     if (v.revealed && !rs.fb) { const rv = E.retryReveal(); if (rv) say.push(h('span', { class: 'step-ask say-reveal', text: '答えは ' + rv.text + '。写して 進もう。' })); }
     if (held) say.splice(0, say.length, h('span', { class: 'say-ok', text: 'よし。通って よい。' }));
@@ -12241,6 +12341,135 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     return String(Number(q.answer) + 1);
   }
 
+  // まちがえ方の 一覧。まちがい直しの 一文は まちがえ方で かわるので、目通しで 1つずつ 見られるように する
+  function wrongOptions(q) {
+    const out = [];
+    const tagOf = function (given) {
+      let m = null;
+      try { m = MT.Bank.check(q, given).misconception; } catch (e) { m = null; }
+      return m && MT.Titles && MT.Titles.tagOf ? MT.Titles.tagOf({ misconception: m }) : '見方だけ';
+    };
+    const add = function (label, given) {
+      const sig = JSON.stringify(given);
+      if (out.some(function (o) { return JSON.stringify(o.given) === sig; })) return;
+      out.push({ label: label, given: given });
+    };
+    if (q.format === 'choice') {
+      (q.choices || []).forEach(function (c) { if (c.id !== q.answer) add(c.text, c.id); });
+    } else if (q.format === 'cut' && q.finalChoice) {
+      (q.finalChoice.choices || []).forEach(function (c) { if (c.id !== q.finalChoice.answer) add(c.text, c.id); });
+    } else if (q.format === 'fields') {
+      add('どの 欄も 1 多い（' + tagOf(wrongGiven(q)) + '）', wrongGiven(q));
+      q.fields.forEach(function (f) {
+        Object.keys(f.wrong || {}).forEach(function (v) {
+          const g = {};
+          q.fields.forEach(function (x) { g[x.key] = String(x.answer); });
+          g[f.key] = String(v);
+          add(f.label + ' ' + v + f.unit + '（' + tagOf(g) + '）', g);
+        });
+      });
+    } else if (q.format === 'order' || q.format === 'pairs' || q.format === 'line') {
+      add('まちがい', wrongGiven(q));
+    } else {
+      add(wrongGiven(q) + (q.unit || '') + '（' + tagOf(wrongGiven(q)) + '）', wrongGiven(q));
+      Object.keys(q.wrong || {}).forEach(function (v) { add(v + (q.unit || '') + '（' + tagOf(String(v)) + '）', String(v)); });
+    }
+    return out.length ? out : [{ label: 'まちがい', given: wrongGiven(q) }];
+  }
+
+  // ---- まちがい直しの 場面を 作る（目通しで「助け」「答えを 見せる」「筆算」「もう一度」を 見る） ----
+  function rightGiven(q) {
+    if (q.format === 'fields') { const o = {}; q.fields.forEach(function (f) { o[f.key] = String(f.answer); }); return o; }
+    if (q.format === 'choice') return q.answer;
+    return String(q.answer);
+  }
+  function openBlankOf(v) {
+    if (!v || !v.step || v.step.kind || !Array.isArray(v.step.parts)) return null;
+    const bl = v.step.parts.filter(function (p) { return p && typeof p === 'object' && p.blank; });
+    for (let i = 0; i < bl.length; i += 1) if (!v.item.blankDone[v.step.key + '.' + bl[i].blank]) return bl[i];
+    return null;
+  }
+  // いまの ところを 1つ 正しく 答える（あなうめは 1つの □、切る問題は 1つの 問い）
+  function retryRight(E) {
+    const v = E.retryView();
+    if (!v || !v.step) return false;
+    const q = v.question, step = v.step;
+    if (v.hissan) {
+      if (MT.Hissan.isDone(v.hissan)) { E.retryHissanConfirm(); return true; }
+      const cur = MT.Hissan.current(v.hissan);
+      if (!cur) return false;
+      E.retryHissan(String(cur.answer));
+      return true;
+    }
+    if (!step.kind) { const b = openBlankOf(v); if (!b) return false; E.retryBlank(b.blank, String(b.answer)); return true; }
+    if (step.kind === 'choice') { E.retryChoice(q.answer); return true; }
+    if (step.kind === 'order') { E.retryOrder(q.order.answer.slice()); return true; }
+    if (step.kind === 'pairs') { E.retryPairs(q.pairs.answer.map(function (p) { return p.slice(); })); return true; }
+    if (step.kind === 'reanswer') { E.retryReanswer(rightGiven(q)); return true; }
+    if (step.kind === 'cut') {
+      const g = E.retryGuide();
+      if (!g) return false;
+      if (g.guide.finished && q.finalChoice) { E.retryGuideFinalChoice(q.finalChoice.answer); return true; }
+      const cs = MT.Guide.currentStep(g.guide);
+      if (!cs) return false;
+      E.retryGuideAnswer(String(cs.answer));
+      return true;
+    }
+    return false;
+  }
+  // いまの ところを 1回 まちがえる
+  function retryWrong(E) {
+    const v = E.retryView();
+    if (!v || !v.step) return false;
+    const q = v.question, step = v.step;
+    if (v.hissan) { const cur = MT.Hissan.current(v.hissan); if (cur) E.retryHissan(String(cur.answer + 1)); return !!cur; }
+    if (!step.kind) { const b = openBlankOf(v); if (!b) return false; E.retryBlank(b.blank, String(b.answer + 1)); return true; }
+    if (step.kind === 'choice') { E.retryChoice(wrongGiven(q)); return true; }
+    if (step.kind === 'order') { E.retryOrder(wrongGiven(q)); return true; }
+    if (step.kind === 'pairs') { E.retryPairs([[1, 1]]); return true; }
+    if (step.kind === 'reanswer') { E.retryReanswer(wrongGiven(q)); return true; }
+    if (step.kind === 'cut') {
+      const g = E.retryGuide();
+      if (!g) return false;
+      if (g.guide.finished && q.finalChoice) { E.retryGuideFinalChoice(wrongGiven(q)); return true; }
+      const cs = MT.Guide.currentStep(g.guide);
+      if (!cs) return false;
+      E.retryGuideAnswer(String(cs.answer + 1));
+      return true;
+    }
+    return false;
+  }
+  // 式の 欄は 合っていて、答えの 欄だけ まちがえた ことが ある 問題か（筆算が 出る）
+  // （式の 欄が 前に ある ときだけ。式の ない 計算の 欄では 筆算は 出ない）
+  function hasCalcStep(q) {
+    return MT.Retry.stepsOf(q).some(function (s) {
+      if (s.kind) return false;
+      const bl = (s.parts || []).filter(function (p) { return p && typeof p === 'object' && p.blank; });
+      return bl.some(function (p, i) { return p.calc && i > 0; });
+    });
+  }
+  function applyStage(E, stage) {
+    let g = 0;
+    if (stage === 'mid') { retryRight(E); return; }
+    if (stage === 'help') { retryWrong(E); retryWrong(E); return; }
+    if (stage === 'reveal') { retryWrong(E); retryWrong(E); retryWrong(E); return; }
+    if (stage !== 'redo' && stage !== 'calc') return;
+    while (g++ < 80 && E.phase() === 'retry') {
+      const v = E.retryView();
+      if (!v || !v.step) return;
+      if (stage === 'redo') {
+        if (v.isReanswer) return;
+        if (v.step.kind === 'cut') { const gg = E.retryGuide(); if (gg && gg.guide.finished && v.question.finalChoice) return; }
+      }
+      if (stage === 'calc') {
+        if (v.hissan || v.isReanswer) return;
+        const b = openBlankOf(v);
+        if (b && b.calc) { E.retryBlank(b.blank, String(b.answer + 1)); return; }
+      }
+      if (!retryRight(E)) return;
+    }
+  }
+
   function startFloor(n, intro, o) {
     const E = sandbox(n, Object.assign({}, o, { intro: intro })).engine;
     E.startFloor();
@@ -12262,8 +12491,11 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     E = MT.Engine.create({ storage: sb.storage, seed: 'admin' + Date.now() });
     E.resume();
     if (toRetry) {
-      E.answer(wrongGiven(E.currentQuestion()));
+      // まちがえ方（opts.wrong 番め）で まちがえて、まちがい直しの 場面（opts.stage）まで すすめる
+      const ws = wrongOptions(E.currentQuestion());
+      E.answer(ws[Math.min(ws.length - 1, Math.max(0, Number(opts.wrong) || 0))].given);
       if (E.phase() === 'result') E.beginRetry();
+      if (opts.stage && E.phase() === 'retry') applyStage(E, opts.stage);
     }
     return E;
   }
@@ -12288,7 +12520,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   function previewEngine(sp) {
     const o = { mem: true, seed: sp.seed };
     if (sp.k === 'ug') return startUg(sp.n, o);
-    return onlyQuestion(sp.f, { t: sp.t, p: sp.p }, !!sp.r, o);
+    return onlyQuestion(sp.f, { t: sp.t, p: sp.p }, !!sp.r, Object.assign(o, { wrong: sp.w, stage: sp.rs }));
   }
 
   // 小さい 窓の 中身を そのまま ためしプレイに（同じ 数・同じ 画面から）
@@ -12301,7 +12533,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   }
 
   // 開発用ページの ?act= からも 使う
-  UI.adminApi = { sandbox: sandbox, startFloor: startFloor, startUg: startUg, onlyQuestion: onlyQuestion, floorAllWrong: floorAllWrong, previewEngine: previewEngine, playProgress: playProgress };
+  UI.adminApi = { sandbox: sandbox, startFloor: startFloor, startUg: startUg, onlyQuestion: onlyQuestion, floorAllWrong: floorAllWrong, previewEngine: previewEngine, playProgress: playProgress, wrongOptions: wrongOptions, applyStage: applyStage, hasCalcStep: hasCalcStep };
 
   // ---------------- 問題の 一覧（小さい 窓） ----------------
   // この ページ自身の HTML（画面の 部品を のぞく）。窓の 中で もう一度 動かす
@@ -12607,55 +12839,99 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   }
   function itemName(it) { return it.k === 'ug' ? 'B' + it.n + ' ' + it.name : it.f + '階 ' + it.no + '. ' + MT.Titles.title(it.t); }
   function itemId(it) { return it.k === 'ug' ? 'B' + it.n : it.t + (Object.keys(it.p).length ? ' ' + JSON.stringify(it.p) : ''); }
+  // まちがい直しの 目通しで 見る 場面
+  const RV_STAGES = [['start', 'はじめ'], ['mid', '1つ うめた'], ['help', '2回 まちがい（助け）'], ['reveal', '3回 まちがい（答え）'], ['calc', '計算ミス（筆算）'], ['redo', 'もう一度 答える']];
+  function stageName(s) { const x = RV_STAGES.filter(function (r) { return r[0] === s; })[0]; return x ? x[1] : 'はじめ'; }
+  function retryItems() { return allItems().filter(function (x) { return x.k !== 'ug'; }); }
   function reviewText(items, marks) {
     const d = new Date();
     const lines = ['面積の塔 気になる 一覧（' + d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2) + '）'];
     let n = 0;
-    items.forEach(function (it) {
-      const m = marks[itemKey(it)];
+    const add = function (it, r) {
+      const m = marks[itemKey(it) + (r ? ':r' : '')];
       if (!m || m.s !== 'ng') return;
       n += 1;
-      lines.push(n + '. ' + itemName(it) + (m.retry ? '（まちがい直し）' : '') + ' ［' + itemId(it) + ' seed=' + m.seed + '］');
+      const tagR = r ? '（まちがい直し・' + stageName(m.stage) + (m.wl ? '・まちがえ方「' + m.wl + '」' : '') + '）' : (m.retry ? '（まちがい直し）' : '');
+      lines.push(n + '. ' + itemName(it) + tagR + ' ［' + itemId(it) + ' seed=' + m.seed + '］');
       if (m.prompt) lines.push('   問題文: ' + m.prompt);
       lines.push('   メモ: ' + (m.memo || '（なし）'));
-    });
+    };
+    items.forEach(function (it) { add(it, false); });
+    items.forEach(function (it) { if (it.k !== 'ug') add(it, true); });
     if (!n) lines.push('（気になる 問題は ない）');
-    const ok = items.filter(function (it) { const m = marks[itemKey(it)]; return m && m.s === 'ok'; }).length;
-    lines.push('見た: OK ' + ok + '・気になる ' + n + '・まだ ' + (items.length - ok - n) + '（ぜんぶで ' + items.length + '）');
+    const count = function (list, r) {
+      let ok = 0, ng = 0;
+      list.forEach(function (it) { const m = marks[itemKey(it) + (r ? ':r' : '')]; if (m && m.s === 'ok') ok += 1; if (m && m.s === 'ng') ng += 1; });
+      return 'OK ' + ok + '・気になる ' + ng + '・まだ ' + (list.length - ok - ng) + '（ぜんぶで ' + list.length + '）';
+    };
+    lines.push('問題の 目通し: ' + count(items, false));
+    lines.push('まちがい直しの 目通し: ' + count(items.filter(function (x) { return x.k !== 'ug'; }), true));
     return lines.join('\n');
   }
 
   function reviewTab(ctx, scr) {
     const st = ctx.state;
-    const items = allItems();
+    const rv0 = st.adminReview;
+    // 問題の 目通し（q）と、まちがい直しの 目通し（r）。しるしは べつべつに のこす
+    const R = !!(rv0 && rv0.mode === 'r');
+    const items = R ? retryItems() : allItems();
+    const allList = allItems();
     const marks = loadMarks();
     const seeds = st.adminSeeds || (st.adminSeeds = {});
-    const stateOf = function (it) { const m = marks[itemKey(it)]; return m ? m.s : ''; };
+    const mk = function (x) { return itemKey(x) + (R ? ':r' : ''); };
+    const stateOf = function (it) { const m = marks[mk(it)]; return m ? m.s : ''; };
     const pass = function (it, only) { return only === 'ng' ? stateOf(it) === 'ng' : only === 'todo' ? !stateOf(it) : true; };
     if (!st.adminReview) {
       let first = 0;
       for (let i = 0; i < items.length; i += 1) { if (!stateOf(items[i])) { first = i; break; } }
-      st.adminReview = { i: first, retry: false, only: 'all' };
+      st.adminReview = { i: first, retry: false, only: 'all', mode: 'q', stage: 'start', w: 0 };
     }
     const rv = st.adminReview;
     if (rv.i >= items.length || rv.i < 0) rv.i = 0;
     const it = items[rv.i];
-    const key = itemKey(it);
-    const retry = !!rv.retry && it.k !== 'ug';
-    const seed = seeds['rv:' + key] || (marks[key] && marks[key].seed) || fixedSeed(key);
-    const spec = it.k === 'ug' ? { k: 'ug', n: it.n, seed: seed } : { k: 'q', f: it.f, t: it.t, p: it.p, r: retry, seed: seed };
+    const key = mk(it);
+    const retry = R;
+    const seed = seeds['rv:' + itemKey(it)] || (marks[key] && marks[key].seed) || (marks[itemKey(it)] && marks[itemKey(it)].seed) || fixedSeed(itemKey(it));
+    // この 問題の まちがえ方と、出せる 場面
+    let q0 = null;
+    try { q0 = it.k === 'ug' ? null : MT.Bank.build(it.t, seed, it.p); } catch (e) { q0 = null; }
+    const wOpts = R && q0 ? wrongOptions(q0) : [];
+    if (!(rv.w >= 0 && rv.w < wOpts.length)) rv.w = 0;
+    const stages = R && q0 ? RV_STAGES.filter(function (s) {
+      if (s[0] === 'calc') return hasCalcStep(q0);
+      if (s[0] === 'mid') { const ss = MT.Retry.stepsOf(q0); return ss.length > 1 || ss.some(function (x) { return x.kind === 'cut'; }); }
+      return true;
+    }) : [];
+    if (!stages.some(function (s) { return s[0] === rv.stage; })) rv.stage = 'start';
+    const spec = it.k === 'ug' ? { k: 'ug', n: it.n, seed: seed } : { k: 'q', f: it.f, t: it.t, p: it.p, r: retry, seed: seed, rs: R ? rv.stage : undefined, w: R ? rv.w : undefined };
     let info = null;
 
     const move = function (d) {
       let j = rv.i, g = 0;
       while (g++ < items.length) { j = (j + d + items.length) % items.length; if (pass(items[j], rv.only)) break; }
-      rv.i = j; rv.retry = false; ctx.render();
+      rv.i = j; rv.stage = 'start'; rv.w = 0; ctx.render();
     };
-    const jump = function (i) { rv.i = i; rv.retry = false; ctx.render(); };
+    const jump = function (i) { rv.i = i; rv.stage = 'start'; rv.w = 0; ctx.render(); };
+    // 問題 ⇄ まちがい直し（同じ 問題の まま きりかえる）
+    const switchMode = function (toR, target) {
+      const tk = itemKey(target || it);
+      const list = toR ? retryItems() : allItems();
+      let j = 0;
+      list.forEach(function (x, i) { if (itemKey(x) === tk) j = i; });
+      rv.mode = toR ? 'r' : 'q'; rv.i = j; rv.stage = 'start'; rv.w = 0; rv.only = rv.only || 'all';
+      ctx.render();
+    };
     const put = function (s, memo) {
       marks[key] = { s: s, memo: memo, seed: seed, retry: retry, prompt: (info && info.q && info.q.prompt) || (marks[key] && marks[key].prompt) || '', at: new Date().toISOString() };
+      if (R) { marks[key].stage = rv.stage; marks[key].wl = wOpts[rv.w] ? wOpts[rv.w].label : ''; }
       saveMarks(marks);
     };
+
+    scr.appendChild(h('div', { class: 'admin-row adm-rv-mode' }, [
+      mkBtn('問題の 目通し', function () { if (R) switchMode(false); }, R ? '' : 'on'),
+      mkBtn('まちがい直しの 目通し', function () { if (!R) switchMode(true, it.k === 'ug' ? retryItems()[0] : it); }, R ? 'on' : ''),
+      h('span', { class: 'admin-note', plain: R ? 'まちがえた あとの 画面。場面と まちがえ方を えらんで 見る' : '子どもが はじめに 見る 画面' })
+    ]));
 
     // 階ごとの ようす（おすと その 階の 1問目へ）
     const groups = [];
@@ -12706,11 +12982,24 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       refresh();
     });
 
+    // まちがい直し: 場面と まちがえ方
+    const retryCtl = !R ? null : h('div', { class: 'adm-rv-retry' }, [
+      q0 && q0.cut && q0.cut.guide === 'cutonly' ? h('div', { class: 'adm-err', plain: 'この 問題は 線が 引けたら 正解なので、子どもは まちがえない（まちがい直しは 出ない）' }) : null,
+      h('div', { class: 'adm-rv-sub', plain: '場面' }),
+      h('div', { class: 'admin-row adm-rv-stages' }, stages.map(function (s) { return mkBtn(s[1], function () { rv.stage = s[0]; ctx.render(); }, rv.stage === s[0] ? 'on' : ''); })),
+      wOpts.length > 1 ? h('div', { class: 'adm-rv-sub', plain: 'まちがえ方（' + (rv.w + 1) + '／' + wOpts.length + '）' }) : h('div', { class: 'adm-rv-sub', plain: 'まちがえ方' }),
+      h('div', { class: 'admin-row' }, [
+        h('span', { class: 'adm-rv-wl', plain: wOpts[rv.w] ? wOpts[rv.w].label : '' }),
+        wOpts.length > 1 ? mkBtn('べつの まちがえ方', function () { rv.w = (rv.w + 1) % wOpts.length; ctx.render(); }) : null
+      ]),
+      mkBtn('この 場面から 大きく ためす', function () { UI.adminEnter(onlyQuestion(it.f, { t: it.t, p: it.p }, true, { seed: seed, wrong: rv.w, stage: rv.stage })); })
+    ]);
+
     const side = h('div', { class: 'adm-rv-side', style: 'width:' + sideW + 'px' }, [
       h('div', { class: 'adm-rv-pos' }, [h('span', { plain: (rv.i + 1) + '／' + items.length }), stLabel, countEl]),
       h('div', { class: 'adm-rv-name', plain: itemName(it) + (retry ? '（まちがい直し）' : '') }),
       h('div', { class: 'adm-card-head' }, [h('span', { class: 'id', plain: itemId(it) + ' seed=' + seed })]),
-      qLine, aLine, warn,
+      qLine, aLine, warn, retryCtl,
       h('div', { class: 'admin-row adm-rv-big' }, [
         mkBtn('OK → つぎ', function () { put('ok', memo.value); move(1); }, 'ok'),
         mkBtn('気になる → つぎ', function () { put('ng', memo.value); move(1); }, 'ng')
@@ -12721,7 +13010,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         mkBtn('つぎ →', function () { move(1); }),
         mkBtn('出しなおす', function () { ctx.render(); }),
         mkBtn('べつの 数', function () { seeds['rv:' + key] = 1 + Math.floor(Math.random() * 999999); ctx.render(); }),
-        it.k === 'ug' ? null : mkBtn(retry ? '問題を 見る' : 'まちがい直しを 見る', function () { rv.retry = !retry; ctx.render(); }),
+        it.k === 'ug' ? null : mkBtn(retry ? '問題を 見る' : 'まちがい直しを 見る', function () { switchMode(!retry); }),
         mkBtn('しるしを けす', function () { delete marks[key]; saveMarks(marks); memo.value = ''; refresh(); })
       ]),
       h('div', { class: 'admin-row' }, [
@@ -12757,22 +13046,34 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       const c = marks[key];
       stLabel.textContent = c ? (c.s === 'ok' ? 'OK' : '気になる') : 'まだ';
       stLabel.className = 'adm-rv-state ' + (c ? c.s : '');
-      listHead.textContent = '気になる 一覧（' + ng + '）';
+      // 気になる 一覧は 問題と まちがい直しの 両方（おすと その 目通しへ）
       list.innerHTML = '';
-      items.forEach(function (x, i) {
-        const m = marks[itemKey(x)];
-        if (!m || m.s !== 'ng') return;
-        list.appendChild(h('button', { class: 'adm-rv-item', type: 'button', onclick: function () { rv.only = 'all'; jump(i); } }, [
-          h('span', { class: 'n', plain: itemName(x) }),
-          h('span', { class: 'm', plain: m.memo || '（メモなし）' })
-        ]));
+      let ngAll = 0;
+      [false, true].forEach(function (r) {
+        allList.forEach(function (x) {
+          if (r && x.k === 'ug') return;
+          const m = marks[itemKey(x) + (r ? ':r' : '')];
+          if (!m || m.s !== 'ng') return;
+          ngAll += 1;
+          list.appendChild(h('button', { class: 'adm-rv-item', type: 'button', onclick: function () {
+            rv.only = 'all';
+            if (r !== R) { switchMode(r, x); return; }
+            let j = 0;
+            items.forEach(function (y, yi) { if (itemKey(y) === itemKey(x)) j = yi; });
+            jump(j);
+          } }, [
+            h('span', { class: 'n', plain: itemName(x) + (r ? '（まちがい直し・' + stageName(m.stage) + '）' : '') }),
+            h('span', { class: 'm', plain: m.memo || '（メモなし）' })
+          ]));
+        });
       });
-      if (!ng) list.appendChild(h('div', { class: 'admin-note', plain: 'まだ ない。「気になる」を おすか、メモを 書くと ここに ならぶ。' }));
-      out.value = reviewText(items, marks);
+      listHead.textContent = '気になる 一覧（' + ngAll + '）';
+      if (!ngAll) list.appendChild(h('div', { class: 'admin-note', plain: 'まだ ない。「気になる」を おすか、メモを 書くと ここに ならぶ。' }));
+      out.value = reviewText(allList, marks);
     }
     refresh();
     const copyBtn = mkBtn('一覧を コピー', function () {
-      out.value = reviewText(items, loadMarks());
+      out.value = reviewText(allList, loadMarks());
       out.select();
       let done = false;
       try { done = document.execCommand('copy'); } catch (e) { done = false; }
@@ -12921,7 +13222,8 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
     keyHandler: null,
     admin: startAdmin,                       // ためしプレイ中（管理者の べつの 保存で 動いている）
     adminMode: !!(AM && AM.on()),            // この 端末は 管理者モード（どの 画面にも「管理」ボタン）
-    adminShowAnswer: AM ? AM.showAnswer() : true
+    adminShowAnswer: AM ? AM.showAnswer() : true,
+    previewRedo: !!(PREVIEW && PREVIEW.rs === 'redo')   // 目通しの 窓で「もう一度 答える」の 場面を そのまま 出す
   };
 
   const ctx = { engine: engine, state: state, render: render, go: go, setKey: function (fn) { state.keyHandler = fn; } };
@@ -12934,7 +13236,30 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
   const LOCK_MS = 300;
   const ADVANCE_BTN = '.answer-btn,.big-btn,.start-btn,.zukan-btn,.dc-btn,.end-btn,.zk-fight';
 
+  // ほかの 画面（タブ）が 先に 進めたら、この 画面は 保存を やめて 読みなおす（古い 画面で 上書きして まちがいを 消す ことは できない）
+  // お知らせは、その 画面が 見えているときに 出す（うしろの タブで 読みなおしたときは、もどってきたときに 出す）
+  let pendingNote = false;
+  function showSyncNote() {
+    const note = UI.h('div', { class: 'sync-note' }, [UI.tx('別の 画面で 進めたので、そこから 続けるよ')]);
+    app.appendChild(note);
+    setTimeout(function () { if (note.parentNode) note.parentNode.removeChild(note); }, 3500);
+  }
+  function reloadFromStorage() {
+    let e;
+    try { e = MT.Engine.create({}); e.resume(); } catch (err) { return; }
+    setEngine(e, false, null);
+    if (document.hidden) pendingNote = true; else showSyncNote();
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && pendingNote) { pendingNote = false; showSyncNote(); } });
+  if (!PREVIEW) {
+    root.addEventListener('storage', function (ev) {
+      if (ev.key !== MT.Progress.STORAGE_KEY || state.admin) return;
+      reloadFromStorage();
+    });
+  }
+
   function render() {
+    if (!PREVIEW && !state.admin && engine.isStale && engine.isStale()) { reloadFromStorage(); return; }
     lockUntil = Date.now() + LOCK_MS;
     UI.applySettings(engine.progress().settings);
     Array.prototype.slice.call(app.children).forEach(function (c) { if (!c.classList.contains('bg')) app.removeChild(c); });
