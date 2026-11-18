@@ -66,7 +66,7 @@ function doGet() {
 <div class="file"><div><b>Styles</b><span>新しいHTML「Styles」に貼る・73KB</span></div><button type="button" data-file="Styles">コピー</button></div>
 <div class="file"><div><b>Core</b><span>新しいHTML「Core」に貼る・343KB</span></div><button type="button" data-file="Core">コピー</button></div>
 <div class="file"><div><b>Assets</b><span>新しいHTML「Assets」に貼る・272KB</span></div><button type="button" data-file="Assets">コピー</button></div>
-<div class="file"><div><b>Ui</b><span>新しいHTML「Ui」に貼る・352KB</span></div><button type="button" data-file="Ui">コピー</button></div>
+<div class="file"><div><b>Ui</b><span>新しいHTML「Ui」に貼る・356KB</span></div><button type="button" data-file="Ui">コピー</button></div>
 <p class="msg" id="msgB"></p>
 <ol>
 <li>A の 1〜2 と同じ</li>
@@ -76,7 +76,7 @@ function doGet() {
 <li>Ctrl+S で保存 → A の 4〜6 と 8 と同じ</li>
 </ol>
 </section>
-<footer>build 20261118-62642</footer>
+<footer>build 20261118-67267</footer>
 </main>
 <script>
 (function () {
@@ -103,7 +103,7 @@ function doGet() {
   Array.prototype.forEach.call(btns, function (b) {
     var name = b.getAttribute('data-file');
     b.disabled = true; b.textContent = '読みこみ中';
-    fetch('./' + name + '.txt?b=20261118-62642').then(function (r) { return r.text(); }).then(function (t) {
+    fetch('./' + name + '.txt?b=20261118-67267').then(function (r) { return r.text(); }).then(function (t) {
       cache[name] = t; b.disabled = false; b.textContent = 'コピー';
     }, function () { b.textContent = '読めませんでした'; });
     b.addEventListener('click', function () {

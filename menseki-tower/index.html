@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>面積の塔</title>
-  <!-- build 20261007-37031 / PUBLIC_LOCAL_ONLY -->
+  <!-- build 20261118-67267 / PUBLIC_LOCAL_ONLY -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -6178,10 +6178,15 @@ ruby rt { font-size: max(0.5em, 9px); letter-spacing: 0; }
     const big = !!o.big;
     let w = big ? rng.int(30, 60) : rng.int(n * 2 + 4, n * 2 + 10);
     const steps = [];
+    let tread = 0;   // すぐ 下の だんの ふみ面
     for (let i = 0; i < n && w >= 1; i += 1) {
       // だんの 高さ・ふみ面は 2 から（1 だと 辺が 短すぎて、数を 書く 場所が なく 読めない。図の 調査 2026-09-28）
-      steps.push({ w: w, h: big ? rng.int(2, 9) : rng.int(2, 4) });
-      w -= big ? rng.int(3, 9) : rng.int(2, 3);
+      let h = big ? rng.int(2, 9) : rng.int(2, 4);
+      // ふみ面2・高さ2 の へこみの 角には 2つの 数が 入らない（地下6階で「2cm」どうしが かさなった。2026-11-18）→ 高さを 3 に
+      if (!big && tread === 2 && h === 2) h = 3;
+      steps.push({ w: w, h: h });
+      tread = big ? rng.int(3, 9) : rng.int(2, 3);
+      w -= tread;
     }
     const fig = Shapes.stairs(steps, { unit: unitOf(o), grid: !big && !o.noGrid });
     const dims = [];
@@ -9023,6 +9028,20 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
         f.bracket = !!(short || partial || junction) && !f.opt.help && !f.opt.lit;
       });
 
+      // たての 辺の 数を しるしの はしの 先（真上・真下）に 置くと、横の 長さに 読める 場所が ある（ずかんの ほねの王。2026-11-18）
+      //  ・図の わくの 上・下の 外で、上の 辺・下の 辺の 数と 同じ 列に ならぶ（「9cm 3cm 4cm」と よこに 読める）
+      //  ・左右を 図に はさまれた 道・あなの 中（道の はばに 見える）
+      const fb = e.b, yTop = pl.Y(fb.y2), yBot = pl.Y(fb.y1);
+      const rowUsed = {
+        top: free.some(function (h) { return h.l.axis === 'x' && h.l.at === fb.y2; }),
+        bottom: free.some(function (h) { return h.l.axis === 'x' && h.l.at === fb.y1; })
+      };
+      const outerRow = function (bx) { return (bx.y2 <= yTop + 1 && rowUsed.top) || (bx.y1 >= yBot - 1 && rowUsed.bottom); };
+      const inRoad = function (bx) {
+        const m = e.maps, fy = Math.floor(e.y2 - ((bx.y1 + bx.y2) / 2 - pl.top) / cell);
+        const fx1 = e.x1 + (bx.x1 - pl.left) / cell, fx2 = e.x1 + (bx.x2 - pl.left) / cell;
+        return !!(m && m.rowMin[fy] != null && m.rowMin[fy] < fx1 && m.rowMax[fy] > fx2);
+      };
       const T = [0.5, 0.4, 0.6, 0.3, 0.7, 0.22, 0.78];
       const clampBox = function (bx, f) {
         let moved = 0;
@@ -9050,6 +9069,18 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
             const c = clampBox({ x1: cx - f.tw / 2, x2: cx + f.tw / 2, y1: cy - f.th / 2, y2: cy + f.th / 2 }, f);
             out.push({ box: c.box, t: 0.5, k: 0.6, moved: c.moved, end: true });
           });
+          // せまい すきまの たての 辺（すきまより 数の はばが 広いと、ほかの 辺の 線に のる。地下22階。2026-11-18）:
+          //  数を しるしの はしの 真上・真下にも 置ける。ただし 点線が 出て いる 角と、左右を 図に はさまれた 道・あなの 中（横の 長さに 見える）は のぞく
+          if (!f.horiz) {
+            [lo, hi].forEach(function (end) {
+              if ((pl.extDots || []).some(function (d) { return Math.abs(d.x - f.pe) < 4 && Math.abs(d.y - end) < 4; })) return;
+              const cy = end === lo ? lo - 4 - f.th / 2 : hi + 4 + f.th / 2;
+              [f.pe + f.dir * 8, f.pe + f.dir * (14 - f.tw / 2)].forEach(function (cx) {
+                const c = clampBox({ x1: cx - f.tw / 2, x2: cx + f.tw / 2, y1: cy - f.th / 2, y2: cy + f.th / 2 }, f);
+                if (!inRoad(c.box)) out.push({ box: c.box, t: 0.5, k: 0.7, moved: c.moved, end: true });
+              });
+            });
+          }
           return out;
         }
         for (let k = 0; k < 3; k += 1) {
@@ -9105,7 +9136,7 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
             const fixed = free.filter(function (o) { return o !== f && o.box; }).map(function (o) { return o.box; });
             let best = null, bestV = Infinity;
             candidates(f).forEach(function (c) { const v = cost(f, c, fixed); if (v < bestV - 1e-9) { bestV = v; best = c; } });
-            f.box = best.box; f.cost = bestV;
+            f.box = best.box; f.cand = best; f.cost = bestV;
           });
         }
       };
@@ -9122,15 +9153,49 @@ window.MT = window.MT || {}; window.MT.ASSETS = { ending: "data:image/webp;base6
       });
       if (changed) { free.forEach(function (f) { f.box = null; }); solve(3); }
       // たての 数と よこの 数が すぐ そばに ならぶと 入れかわって 読める（へこみの 角）。どちらにも しるしを つける
-      let paired = false;
-      free.forEach(function (p) {
-        free.forEach(function (q) {
-          if (p === q || p.horiz === q.horiz || p.opt.help || p.opt.lit || q.opt.help || q.opt.lit) return;
-          const grown = { x1: p.box.x1 - 12, x2: p.box.x2 + 12, y1: p.box.y1 - 12, y2: p.box.y2 + 12 };
-          if (boxesOverlap(grown, q.box) > 0 && (!p.bracket || !q.bracket)) { p.bracket = true; q.bracket = true; paired = true; }
+      // しるしの ない 数が、となりの 辺の しるしの すぐ 上に 来た ときも 同じ（その しるしの 数に 見える。2026-11-18）。置きなおすと 新しく ならぶ ことが あるので くり返す
+      for (let round = 0; round < 3; round += 1) {
+        let paired = false;
+        free.forEach(function (p) {
+          free.forEach(function (q) {
+            if (p === q || p.horiz === q.horiz || p.opt.help || p.opt.lit || q.opt.help || q.opt.lit) return;
+            const grown = { x1: p.box.x1 - 12, x2: p.box.x2 + 12, y1: p.box.y1 - 12, y2: p.box.y2 + 12 };
+            if (boxesOverlap(grown, q.box) > 0 && (!p.bracket || !q.bracket)) { p.bracket = true; q.bracket = true; paired = true; }
+            if (!p.bracket && q.bracket) {
+              const o = q.dir * 8;
+              const mark = q.horiz ? { x1: q.own.x1, x2: q.own.x2, y1: q.pe + o, y2: q.pe + o } : { x1: q.pe + o, x2: q.pe + o, y1: q.own.y1, y2: q.own.y2 };
+              if (boxSegDist(p.box, mark) < 12) { p.bracket = true; paired = true; }
+            }
+          });
         });
+        if (!paired) break;
+        free.forEach(function (f) { f.box = null; }); solve(3);
+      }
+      // まだ かさなる・線に のる・図に 入る 数は、となりの 数と 2つ いっしょに 置きなおす
+      // （1つずつ 動かすと、どちらも 動けない ことが ある。地下15階 など。2026-11-18）
+      const restOf = function (a, b) { return free.filter(function (o) { return o !== a && o !== b; }).map(function (o) { return o.box; }); };
+      free.forEach(function (f) {
+        const j0 = judge(f, f.box, restOf(f, null));
+        if (!(j0.lab > 0.05 || j0.line > 0 || j0.inside > 0.34)) return;
+        let pick = null, pickGain = 1e-6;
+        free.forEach(function (g) {
+          if (g === f) return;
+          const rest = restOf(f, g);
+          const base = cost(f, f.cand, rest.concat([g.box])) + cost(g, g.cand, rest.concat([f.box]));
+          const cg = candidates(g);
+          // 置きなおしで、たての 辺の 数を わくの 外の 横の 列（上・下の 辺の 数と ならぶ 所）へ 追い出さない
+          const rowOut = function (h, c) { return !h.horiz && c.end && outerRow(c.box); };
+          candidates(f).forEach(function (a) {
+            if (rowOut(f, a)) return;
+            cg.forEach(function (b) {
+              if (rowOut(g, b)) return;
+              const gain = base - (cost(f, a, rest.concat([b.box])) + cost(g, b, rest.concat([a.box])));
+              if (gain > pickGain) { pickGain = gain; pick = { g: g, a: a, b: b }; }
+            });
+          });
+        });
+        if (pick) { f.box = pick.a.box; f.cand = pick.a; pick.g.box = pick.b.box; pick.g.cand = pick.b; }
       });
-      if (paired) { free.forEach(function (f) { f.box = null; }); solve(3); }
 
       const audit = host.__boardAudit || (host.__boardAudit = []);
       // しるしつきの 数は、しるしと 同じ 色に する（となりの しるしとは ちがう 色。どの 数が どの しるしか 色で たどれる）

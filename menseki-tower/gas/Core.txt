@@ -5452,10 +5452,15 @@
     const big = !!o.big;
     let w = big ? rng.int(30, 60) : rng.int(n * 2 + 4, n * 2 + 10);
     const steps = [];
+    let tread = 0;   // すぐ 下の だんの ふみ面
     for (let i = 0; i < n && w >= 1; i += 1) {
       // だんの 高さ・ふみ面は 2 から（1 だと 辺が 短すぎて、数を 書く 場所が なく 読めない。図の 調査 2026-09-28）
-      steps.push({ w: w, h: big ? rng.int(2, 9) : rng.int(2, 4) });
-      w -= big ? rng.int(3, 9) : rng.int(2, 3);
+      let h = big ? rng.int(2, 9) : rng.int(2, 4);
+      // ふみ面2・高さ2 の へこみの 角には 2つの 数が 入らない（地下6階で「2cm」どうしが かさなった。2026-11-18）→ 高さを 3 に
+      if (!big && tread === 2 && h === 2) h = 3;
+      steps.push({ w: w, h: h });
+      tread = big ? rng.int(3, 9) : rng.int(2, 3);
+      w -= tread;
     }
     const fig = Shapes.stairs(steps, { unit: unitOf(o), grid: !big && !o.noGrid });
     const dims = [];
