@@ -2927,7 +2927,7 @@
 
   // ---- 先生の 番号（管理者画面の 入り口）----
   // 1回 入れた 端末は 管理者モードの まま（読みこみなおしても 聞かない）。3回 ちがうと とじる
-  const ADMIN_CODE = '7351';
+  const ADMIN_CODE = '1227';
   function askAdminCode(ctx) {
     let tries = 0;
     UI.modal({

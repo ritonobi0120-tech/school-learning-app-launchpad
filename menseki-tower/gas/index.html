@@ -76,7 +76,7 @@ function doGet() {
 <li>Ctrl+S で保存 → A の 4〜6 と 8 と同じ</li>
 </ol>
 </section>
-<footer>build 20261118-67267</footer>
+<footer>build 20261118-89539</footer>
 </main>
 <script>
 (function () {
@@ -103,7 +103,7 @@ function doGet() {
   Array.prototype.forEach.call(btns, function (b) {
     var name = b.getAttribute('data-file');
     b.disabled = true; b.textContent = '読みこみ中';
-    fetch('./' + name + '.txt?b=20261118-67267').then(function (r) { return r.text(); }).then(function (t) {
+    fetch('./' + name + '.txt?b=20261118-89539').then(function (r) { return r.text(); }).then(function (t) {
       cache[name] = t; b.disabled = false; b.textContent = 'コピー';
     }, function () { b.textContent = '読めませんでした'; });
     b.addEventListener('click', function () {
