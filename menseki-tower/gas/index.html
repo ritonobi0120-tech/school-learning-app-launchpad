@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>面積の塔を学校のGASへ</title>
+<style>
+:root { --ink:#1f2933; --sub:#52606d; --line:#d9e2ec; --bg:#f7f9fb; --card:#fff; --accent:#2f6fb0; --ok:#2f855a; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP","Yu Gothic UI",sans-serif; line-height:1.7; }
+main { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+h1 { font-size:24px; margin:0 0 6px; }
+.lead { color:var(--sub); margin:0 0 24px; }
+section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; margin:0 0 20px; }
+h2 { font-size:19px; margin:0 0 4px; }
+.why { color:var(--sub); margin:0 0 14px; font-size:15px; }
+pre { background:#0f1720; color:#e6edf3; border-radius:8px; padding:14px; overflow-x:auto; font-size:13px; line-height:1.55; margin:0 0 10px; white-space:pre; }
+button { font:inherit; font-size:16px; font-weight:700; color:#fff; background:var(--accent); border:0; border-radius:8px; padding:10px 22px; cursor:pointer; min-width:120px; }
+button.done { background:var(--ok); }
+ol { padding-left:1.4em; margin:14px 0 0; }
+li { margin:0 0 8px; }
+.note { font-size:14px; color:var(--sub); margin:12px 0 0; }
+.file { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid var(--line); }
+.file span { display:block; font-size:13px; color:var(--sub); }
+.copybar { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.msg { font-size:14px; color:var(--ok); }
+footer { color:var(--sub); font-size:12px; text-align:center; }
+</style>
+</head>
+<body>
+<main>
+<h1>面積の塔を学校のGASへ</h1>
+<p class="lead">学校アカウントで、このページを見ながら進めます。「コピー」を押して、GASに貼るだけ。</p>
+
+<section>
+<h2>A　1つ貼るだけ（まずこっち）</h2>
+<p class="why">開くたびに共有版の面積の塔を取ってきて見せます。こちらで直すと、子どもの画面にもそのまま出ます（貼り直しなし）。</p>
+<pre id="codeA">// 面積の塔（学校用）: 開くたびに共有版を取ってきて見せる。子どものデータはどこにも送らない
+function doGet() {
+  var url = 'https://ritonobi0120-tech.github.io/school-learning-app-launchpad/menseki-tower/?t=' + Date.now();
+  var html = UrlFetchApp.fetch(url).getContentText('UTF-8');
+  return HtmlService.createHtmlOutput(html)
+    .setTitle('面積の塔')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+</pre>
+<div class="copybar"><button type="button" id="copyA">コピー</button><span class="msg" id="msgA"></span></div>
+<ol>
+<li>学校アカウントで <b>script.google.com</b> を開き、左上の「新しいプロジェクト」</li>
+<li>左上の「無題のプロジェクト」を押して、名前を「面積の塔」に</li>
+<li>「コード.gs」の中を全部消して（Ctrl+A → Delete）、上のコードを貼る（Ctrl+V）→ Ctrl+S で保存</li>
+<li>右上の「デプロイ」→「新しいデプロイ」</li>
+<li>「種類の選択」の歯車 →「ウェブアプリ」</li>
+<li>「次のユーザーとして実行」は「自分」、「アクセスできるユーザー」は学校のドメイン内の全員（e-net.nara.jp）→「デプロイ」</li>
+<li>「アクセスを承認」が出たら押して、自分の学校アカウントを選び「許可」（外のページを読みにいくための許可）</li>
+<li>出てきた「ウェブアプリ」のURLを「コピー」→ 新しいタブで開き、塔の画面が出たらできあがり。このURLをClassroomへ</li>
+</ol>
+<p class="note">「許可」のところで止められた・開いたらエラーが出た、のときは B へ。</p>
+</section>
+
+<section>
+<h2>B　6つ貼る（A で止まったとき）</h2>
+<p class="why">外のページを読みにいかないので、許可の画面は出ません。直したときは Core と Ui を貼り直します。</p>
+<div class="file"><div><b>Code</b><span>もとからある「コード.gs」に貼る・1KB</span></div><button type="button" data-file="Code">コピー</button></div>
+<div class="file"><div><b>Index</b><span>新しいHTML「Index」に貼る・1KB</span></div><button type="button" data-file="Index">コピー</button></div>
+<div class="file"><div><b>Styles</b><span>新しいHTML「Styles」に貼る・73KB</span></div><button type="button" data-file="Styles">コピー</button></div>
+<div class="file"><div><b>Core</b><span>新しいHTML「Core」に貼る・343KB</span></div><button type="button" data-file="Core">コピー</button></div>
+<div class="file"><div><b>Assets</b><span>新しいHTML「Assets」に貼る・272KB</span></div><button type="button" data-file="Assets">コピー</button></div>
+<div class="file"><div><b>Ui</b><span>新しいHTML「Ui」に貼る・352KB</span></div><button type="button" data-file="Ui">コピー</button></div>
+<p class="msg" id="msgB"></p>
+<ol>
+<li>A の 1〜2 と同じ</li>
+<li>「コード.gs」の中を全部消して、上の「Code」を貼る</li>
+<li>左の「ファイル」の横の「＋」→「HTML」→ 名前に <b>Index</b> と入れて Enter → 中を全部消して「Index」を貼る</li>
+<li>同じように <b>Styles・Core・Assets・Ui</b> も作って貼る（名前は大文字・小文字もこのまま）。Core と Ui は大きいので、貼ったあと数秒待つ</li>
+<li>Ctrl+S で保存 → A の 4〜6 と 8 と同じ</li>
+</ol>
+</section>
+<footer>build 20261118-62642</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function copyText(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.top = '-1000px';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    if (!ok && navigator.clipboard) { navigator.clipboard.writeText(text); ok = true; }
+    return ok;
+  }
+  function mark(btn, msgEl, label) {
+    btn.textContent = 'コピーした'; btn.classList.add('done');
+    msgEl.textContent = label + ' をコピーしました。GASに貼ってね。';
+  }
+  document.getElementById('copyA').addEventListener('click', function () {
+    var t = document.getElementById('codeA').textContent;
+    if (copyText(t)) mark(this, document.getElementById('msgA'), 'A のコード');
+  });
+  var btns = document.querySelectorAll('button[data-file]');
+  Array.prototype.forEach.call(btns, function (b) {
+    var name = b.getAttribute('data-file');
+    b.disabled = true; b.textContent = '読みこみ中';
+    fetch('./' + name + '.txt?b=20261118-62642').then(function (r) { return r.text(); }).then(function (t) {
+      cache[name] = t; b.disabled = false; b.textContent = 'コピー';
+    }, function () { b.textContent = '読めませんでした'; });
+    b.addEventListener('click', function () {
+      if (!cache[name]) return;
+      Array.prototype.forEach.call(btns, function (o) { if (o !== b && cache[o.getAttribute('data-file')]) { o.textContent = 'コピー'; o.classList.remove('done'); } });
+      if (copyText(cache[name])) mark(b, document.getElementById('msgB'), name);
+    });
+  });
+})();
+</script>
+</body>
+</html>
